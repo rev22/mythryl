@@ -1,0 +1,46 @@
+## graph-viewer.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/ml-viewer/graph-view/graph-viewer.pkg
+
+stipulate
+    include threadkit;
+    #
+    package vg  =  planar_subgraph_tree;
+    package w   =  widget;
+    package vf  =  view_font;
+herein
+
+    api Graph_Viewer {
+
+	Graph_Viewer;
+
+	make_graph_viewer:  (vf::Font_Imp, w::Root_Window) -> vg::Attributed_Graph -> Graph_Viewer;
+	as_widget:  Graph_Viewer -> w::Widget;
+
+	Viewdim
+	    =
+	    VIEWDIM
+	      { min:   Int,
+		size:  Int,
+		total: Int
+	      };
+
+	set_horz_view:  Graph_Viewer -> Int -> Void;
+
+	set_vert_view:  Graph_Viewer -> Int -> Void;
+
+	mailop_of
+	    :
+	    Graph_Viewer
+	    ->
+	    Mailop
+	      { horz:  Viewdim,
+		vert:  Viewdim
+	      };
+    };
+
+end;

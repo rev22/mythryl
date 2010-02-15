@@ -1,0 +1,366 @@
+## menu.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/bounce/bounce.make6
+
+
+# This is a very simple menu for the bounce demo; it just returns the selected
+# string (or NULL).
+
+
+stipulate
+    include threadkit;					# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+#    include xgeometry;					# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
+#    include xinput;					# xinput	is from   src/lib/x-kit/xclient/xinput.pkg
+#    include xwindow;					# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+
+    package xc =  xcore;				# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd =  xdraw;				# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xf =  xfont;				# xfont		is from   src/lib/x-kit/xclient/xfont.pkg
+    package xg =  xgeometry;				# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi =  xinput;				# xinput	is from   src/lib/x-kit/xclient/xinput.pkg
+    package xw =  xwindow;				# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+herein
+
+    package menu {
+
+	stipulate
+
+	    menu_font_name = "8x13";
+
+	    x_padding = 4;		# Pad four pixels horizontally.
+
+	    menu_items = [ "Refresh", "Kill All", "Quit" ];
+
+	    # Translate mouse events by delta:
+	    # 
+	    fun translate_mouse delta
+		=
+		trans
+		where
+		    fun trans (xi::MOUSE_MOTION { screen_point, timestamp, window_point } )
+			    => xi::MOUSE_MOTION { screen_point, timestamp, window_point => xg::add_pt (window_point, delta) };
+
+			trans (xi::MOUSE_UP         { button, screen_point, state, timestamp, window_point } )
+			    => xi::MOUSE_UP         { button, screen_point, state, timestamp, window_point => xg::add_pt (window_point, delta) };
+
+			trans (xi::MOUSE_LAST_UP    { button, screen_point,        timestamp, window_point } )
+			    => xi::MOUSE_LAST_UP    { button, screen_point,        timestamp, window_point => xg::add_pt (window_point, delta) };
+
+			trans (xi::MOUSE_DOWN       { button, screen_point, state, timestamp, window_point } )
+			    => xi::MOUSE_DOWN       { button, screen_point, state, timestamp, window_point => xg::add_pt (window_point, delta) };
+
+			trans (xi::MOUSE_FIRST_DOWN { button, screen_point,        timestamp, window_point } )
+			    => xi::MOUSE_FIRST_DOWN { button, screen_point,        timestamp, window_point => xg::add_pt (window_point, delta) };
+
+			trans m
+			    =>
+			    m;
+		    end;
+		end;
+
+	    fun place_items (font, items)
+		=
+		( items,
+		  xg::SIZE { wide, high },
+		  select_item
+		)
+		where
+		    my { ascent, descent }
+			=
+			xf::font_high font;
+
+		    txt_wid = xf::text_width font;
+
+		    item_ht = ascent + descent;
+
+		    pad = x_padding + x_padding;
+
+
+		    fun place ([], cur_y, wid, l)
+			    =>
+			    (reverse l, wid, cur_y);
+
+			place (s ! r, cur_y, wid, l)
+			    =>
+			    place
+			      ( r,
+				cur_y+item_ht,
+				int::max (wid, (txt_wid s) + pad),
+				(xg::POINT { col=>x_padding, row=>cur_y+ascent }, s) ! l
+			      );
+		    end;
+
+
+		    my (items, wide, high)
+			=
+			place (items, 0, 0, []);
+
+
+		    fun select_item (pt as xg::POINT { row=>y, ... } )
+			=
+			if (not (xg::within (pt, xg::BOX { col => 0, row => 0, wide, high } )))
+			    #
+			    NULL;
+			else
+			    i = int::quot (y, item_ht);
+
+			    my (pt as xg::POINT { row=>y, ... }, s)
+				=
+				list::nth (items, i);
+
+			    THE {
+				item     =>  i,
+				text_pos =>  pt,
+				box      =>  xg::BOX { col=>0, row=>y-ascent, wide, high=>item_ht },
+				text     =>  s
+			      };
+			fi;
+
+		end;
+
+	    # Create and draw the menu window,
+	    # returning the window and input dictionary:
+	    #
+	    fun create_menu screen (xg::POINT { col=>x, row=>y }, pen, font, items)
+		=
+		{   my (items, menu_sz as xg::SIZE { wide, high }, select_item)
+			=
+			place_items (font, items);
+
+		    my  xg::SIZE { wide=>scr_wid, high=>scr_ht }
+			=
+			xc::size_of_screen  screen;
+
+		    menu_origin
+			=
+			xg::POINT
+			  {
+			    col => int::min (int::max (x - (wide / 2), 0), scr_wid - wide),
+			    row => int::min (int::max (y - (high / 2), 0), scr_ht  - high)
+			  };
+
+		    my (menu_win, in_dict)
+			=
+			xw::make_simple_popup_window  screen
+			  {
+			    background => xc::white_of_screen  screen,
+			    border     => xc::black_of_screen  screen,
+			    geometry
+				=>
+				xg::WINDOW_FOOTPRINT
+				  { upperleft    =>  xg::sub_pt (menu_origin, xg::POINT { col=>1, row=>1 } ),
+				    size         =>  menu_sz,
+				    border_width =>  1
+				  }
+			  };
+
+		    xw::show_window  menu_win;
+
+		    draw_item
+			=
+			xd::draw_transparent_string  (xd::drawable_of_window  menu_win)  pen  font;
+
+		    map  draw_item  items;		# XXX BUGGO FIXME shouldn't this be 'apply' not 'map'?
+
+		    ( menu_origin,
+                      menu_win,
+                      xi::ignore_all  in_dict,
+                      select_item
+                    );
+		};
+	herein
+
+	    fun popup_menu window
+		=
+		do_menu
+		where
+		    screen   =  xw::screen_of_window    window;
+		    xsession =  xw::xsession_of_window  window;
+
+		    font = xf::open_font  xsession  menu_font_name;
+
+		    my { ascent, ... }
+			=
+			xf::font_high  font;
+
+		    fore_pen = xd::make_pen [xd::FOREGROUND (xc::black_of_screen screen)];
+		    back_pen = xd::make_pen [xd::FOREGROUND (xc::white_of_screen screen)];
+
+		    create = create_menu screen;
+
+		    menu_cursor
+			=
+			xc::get_standard_xcursor  xsession  xcursors::sb_left_arrow;
+
+		    fun do_menu (menu_but, pt, time, m_mailop)
+			=
+			{	xc::change_active_grab_cursor  xsession  menu_cursor;
+
+			    xtracing::xspawn ("Menu: track_mouse", track_mouse);
+
+			    take' reply_slot;
+			}
+			where
+
+			    win_origin
+				=
+				xw::window_pt_to_screen_pt  window  xg::point_00;
+
+
+			    reply_slot
+				=
+				make_mailslot ();
+
+
+			    my (menu_origin, menu_win, menu_dict, select_item)
+				=
+				create (xg::add_pt (win_origin, pt), fore_pen, font, menu_items);
+
+
+			    m_mailop
+				=
+				m_mailop
+				    ==>
+				    (translate_mouse (xg::sub_pt (win_origin, menu_origin)));
+
+
+			    fun send_selection NULL
+				    =>
+				    give (reply_slot, NULL);
+
+				send_selection (THE { item, text_pos, box, text } )
+				    =>
+				    give (reply_slot, THE text);
+			    end;
+
+
+			    drawable
+				=
+				xd::drawable_of_window  menu_win;
+
+
+			    fun flip_on { item, text_pos, box, text }
+				=
+				{   xd::fill_box    drawable  fore_pen  box;
+				    xd::draw_transparent_string  drawable  back_pen  font (text_pos, text);
+				};
+
+
+			    fun flip_off { item, text_pos, box, text }
+				=
+				{   xd::fill_box    drawable  back_pen  box;
+				    xd::draw_transparent_string  drawable  fore_pen  font;
+
+				    (text_pos, text);
+				};
+
+
+			    fun mouse_loop (cur_item, pt)
+				=
+				{   cur_item
+					=
+					case (cur_item, select_item pt)
+					    #
+					    (THE a, THE b)
+						=>
+						if (a.item == b.item)
+						    #
+						    cur_item;
+						else
+						    flip_off a;
+						    flip_on  b;
+						    THE b;
+						fi;
+
+					    (THE a, NULL)
+						=>
+						{   flip_off a;
+						    NULL;
+						};
+
+					    (NULL, THE b)
+						=>
+						{   flip_on b;
+						    THE b;
+						};
+
+					    (NULL, NULL)
+						=>
+						NULL;
+					esac;
+
+
+				    case (do_mailop m_mailop)
+					#
+					(xi::MOUSE_MOTION { screen_point, window_point, ... } )
+					    =>
+					    mouse_loop (cur_item, window_point);
+
+					(xi::MOUSE_LAST_UP { button, ... } )
+					    =>
+					    (cur_item, TRUE);
+
+					(xi::MOUSE_UP { button, state, ... } )
+					    =>
+					    if (button == menu_but)   (cur_item, FALSE);
+					    else                   mouse_loop (cur_item, pt);
+					    fi;
+
+					_   =>
+					    mouse_loop (cur_item, pt);
+				    esac;
+				};
+
+
+			    fun all_up ()
+				=
+				case (do_mailop m_mailop)
+				    #
+				    xi::MOUSE_LAST_UP _ =>  ();
+				    _                   =>  all_up();
+				esac;
+
+
+			    fun track_mouse ()
+				=
+				{   my (selection, last_up)
+					=
+					mouse_loop (NULL, xg::add_pt (pt, xg::sub_pt (win_origin, menu_origin)));
+
+				    xw::destroy_window  menu_win;
+
+				    if (not last_up)   all_up ();   fi;
+
+				    send_selection selection;
+				};
+
+			end;		# fun do_menu
+		  end;			# fun popup_menu window
+	end;				# stipulate
+    };
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

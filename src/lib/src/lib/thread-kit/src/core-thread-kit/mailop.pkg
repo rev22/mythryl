@@ -1,0 +1,841 @@
+## mailop.pkg
+
+# Compiled by:
+#     src/lib/std/stdlib.make6
+
+
+
+# The representation of mail op values and the mail op combinators.
+#
+# Some important requirements on the implementation
+# of base mailop values:
+#
+#  1)  A poll_fn, do_fn or block_fn
+#      is always called from inside an atomic region.
+#
+#  2)  A poll_fn returns an integer priority.
+#      This is  0 when not enabled,
+#	        -1 for fixed priority and
+#               >0 for dynamic priority.
+#      The standard scheme is to associate a counter
+#      with the underlying synchronization value and
+#      to increase it by one for each synchronization attempt.
+#
+#  3)  A block_fn is responsible for exiting the atomic region.
+#      A do_fn should NOT leave the atomic region.
+#
+#  4)  Each block_fn is responsible for executing the
+#      "clean_up" action prior to leaving the atomic region.
+
+
+package mailop: (weak)
+api {
+
+    include Mailop;					# Mailop			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/mailop.api
+
+    atomic_cvar_set:   internal_threadkit_types::Condition_Variable -> Void;
+    cvar_get_mailop:   internal_threadkit_types::Condition_Variable -> Mailop( Void );
+
+}{
+
+    package r = internal_threadkit_types;		# internal_threadkit_types	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/internal-threadkit-types.pkg
+    package s = thread_scheduler;			# thread_scheduler		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
+
+    capture_fate            = fate::capture_fate;
+    escape_fate             = fate::escape_fate;
+    call_with_current_fate  = fate::call_with_current_fate;
+    resume_fate             = fate::resume_fate;
+
+    # Some inline functions
+    # to improve performance:
+
+    fun map f
+        =
+	mapf
+        where
+	    fun mapf [] => [];
+		mapf [a] => [f a];
+		mapf [a, b] => [f a, f b];
+		mapf [a, b, c] => [f a, f b, f c];
+		mapf (a ! b ! c ! d ! r) => (f a) ! (f b) ! (f c) ! (f d) ! (mapf r);
+	    end;
+	end;
+
+    fun apply f
+        =
+	appf
+        where
+	    fun appf [] => ();
+	        appf (x ! r) => { f x; appf r;};
+            end;
+	end;
+
+    fun fold_left f init l
+        =
+	foldf (l, init)
+        where
+	    fun foldf ([], accum) => accum;
+	        foldf (x ! r, accum) => foldf (r, f (x, accum));
+            end;
+	end;
+
+    fun error msg
+        =
+        raise exception FAIL msg;
+
+    Mailop_Status == internal_threadkit_types::Mailop_Status;
+    Mailop        == internal_threadkit_types::Mailop;
+    Base_Mailop(X) = internal_threadkit_types::Base_Mailop( X );
+
+
+    # Condition variables.
+    #
+    # Because these variables are set inside
+    # atomic regions we have to use different
+    # conventions for clean-up, etc.  Instead
+    # of requiring the block_fn fate
+    # to call the clean_up action and to leave
+    # the atomic region, we call the clean_up
+    # function when setting the condition variable
+    # (in atomic_cvar_set), and have the invariant
+    # that the block_fn fate is dispatched
+    # outside the atomic region.
+
+
+    # Set a condition variable.
+    # We assume that this function is always
+    # executed in an atomic region.
+    #
+    fun atomic_cvar_set (r::CONDITION_VARIABLE state)
+        =
+	case *state
+
+	    r::CVAR_UNSET waiting
+                =>
+                {   s::foreground_ready_queue ->  r::THREADKIT_QUEUE { rear, ... };
+
+		    fun add []
+			    =>
+			    *rear;
+
+			add ( { transaction_id=>REF r::CANCELLED_TRANSACTION_ID, ... } ! r)
+			    =>
+			    add r;
+
+			add ( { transaction_id as REF (r::TRANSACTION_ID tid), clean_up, fate } ! r)
+                            =>
+                            {   transaction_id
+                                    :=
+                                    r::CANCELLED_TRANSACTION_ID;
+
+				clean_up ();
+
+				(tid, fate) ! (add r);
+                            };
+                    end;
+
+		    state := r::CVAR_SET 1;
+		    rear := add waiting;
+		};
+
+	     _ => error "cvar already set";
+        esac;
+
+
+    # The mailop constructor for
+    # waiting on a condition variable:
+    #
+    fun cvar_get_mailop (r::CONDITION_VARIABLE  state)
+        =
+	BASE_MAILOPS [poll_fn]
+        where 
+            fun block_fn { transaction_id, clean_up, next }
+                =
+                call_with_current_fate
+                    (fn fate
+			=
+			{   (*state) ->  (r::CVAR_UNSET waiting);
+
+		            item = { transaction_id, clean_up, fate };
+
+		            state := r::CVAR_UNSET (item ! waiting);
+
+		            next ();
+		        }
+                    );
+
+	    fun poll_fn ()
+                =
+                case *state
+
+		    r::CVAR_SET n
+                        =>
+                        {   fun do_fn ()
+                                =
+                                {   state := r::CVAR_SET 1;
+                                    s::reenable_thread_switching ();
+                                };
+
+			    state := r::CVAR_SET (n+1);
+			    MAILOP_ENABLED { priority => n, do_fn };
+			};
+
+		    _ => MAILOP_BLOCKED block_fn;
+                esac;
+	end;
+
+
+    fun always_mailop v
+        =
+        BASE_MAILOPS [   fn ()
+                    =
+                    r::MAILOP_ENABLED
+                      { priority  =>  -1,
+                        do_fn =>  fn () = {   s::reenable_thread_switching ();
+                                              v;
+                                          }
+	              }
+             ];
+
+    never = BASE_MAILOPS [];
+
+    guard = GUARD;
+
+    with_nack = WITH_NACK;
+
+    fun choose (el:  List(  Mailop(X) ))
+        =
+	gather_bevts (reverse el, [])
+        where
+	    fun gather_bevts ([], l) => BASE_MAILOPS l;
+		gather_bevts (BASE_MAILOPS [] ! r, l) => gather_bevts (r, l);
+		gather_bevts (BASE_MAILOPS [bev] ! r, base_mailops') => gather_bevts (r, bev ! base_mailops');
+		gather_bevts (BASE_MAILOPS base_mailops ! r, base_mailops') => gather_bevts (r, base_mailops @ base_mailops');
+		gather_bevts (mail_ops, []) => gather (mail_ops, []);
+		gather_bevts (mail_ops, l) => gather (mail_ops, [BASE_MAILOPS l]);
+            end 
+
+	    also
+	    fun gather ([], [mailop]) => mailop;
+		gather ([], mail_ops) => CHOOSE mail_ops;
+		gather (CHOOSE mail_ops ! r, mail_ops') => gather (r, mail_ops @ mail_ops');
+		gather (BASE_MAILOPS base_mailops ! r, BASE_MAILOPS base_mailops' ! r') => gather (r, BASE_MAILOPS (base_mailops @ base_mailops') ! r');
+		gather (mailop ! r, mail_ops') => gather (r, mailop ! mail_ops');
+            end;
+	end;
+
+    fun wrap (mailop, wfn)
+        =
+	wrap' mailop
+	where
+            fun wrap_base_mailop poll_fn ()
+                =
+                case (poll_fn ())
+		    MAILOP_ENABLED { priority, do_fn } =>  MAILOP_ENABLED { priority, do_fn => wfn o do_fn };
+		    MAILOP_BLOCKED block_fn            =>  MAILOP_BLOCKED (wfn o block_fn);
+                esac;
+
+	    fun wrap' (BASE_MAILOPS base_mailops) => BASE_MAILOPS (map wrap_base_mailop base_mailops);
+		wrap' (CHOOSE mail_ops)    => CHOOSE (map wrap' mail_ops);
+		wrap' (GUARD g)          => GUARD (fn () = wrap (g(), wfn));
+		wrap' (WITH_NACK f)      => WITH_NACK (fn mailop = wrap (f mailop, wfn));
+            end;
+	end;
+
+    (==>) = wrap;		# Infix synonym for readability.
+
+    fun wrap_handler (mailop, hfn)
+        =
+	wrap' mailop
+        where
+            fun wrap f x
+                =
+                f x
+                except
+                    exn = hfn exn;
+
+	    fun wrap_base_mailop poll_fn ()
+                =
+                case (poll_fn ())
+		    MAILOP_ENABLED { priority, do_fn } =>  MAILOP_ENABLED { priority, do_fn => wrap do_fn };
+		    MAILOP_BLOCKED block_fn            =>  MAILOP_BLOCKED (wrap block_fn);
+                esac;
+
+	    fun wrap' (BASE_MAILOPS base_mailops) =>  BASE_MAILOPS (map wrap_base_mailop base_mailops);
+		wrap' (CHOOSE mail_ops)    =>  CHOOSE (map wrap' mail_ops);
+		wrap' (GUARD g)          =>  GUARD  (fn ()  = wrap_handler (g(), hfn));
+		wrap' (WITH_NACK f)      =>  WITH_NACK (fn mailop = wrap_handler (f mailop, hfn));
+            end;
+	end;
+
+    Mailop_Group X
+      = BASE_GRP  List( Base_Mailop(X) )
+      | GRP       List( Mailop_Group(X) )
+      | NACK_GRP  (r::Condition_Variable, Mailop_Group(X))
+      ;
+
+/* +DEBUG
+fun sayGrp (msg, eg) = let
+      fun f (BASE_GRP l, sl) = "BASE_GRP(" ! int::to_string (list::length l) ::()) ! sl
+	| f (GRP l, sl) = "GRP(" ! g (l, ")" ! sl)
+	| f (NACK_GRP l, sl) = "NACK_GRP(" ! f(#2 l, ")" ! sl)
+      also g ([], sl) = sl
+	| g ([x], sl) = f (x, sl)
+	| g (x ! r, sl) = f (x, ", " ! g (r, sl))
+      in
+	Debug::sayDebugId (string::cat (msg ! ": " ! f (eg, ["\n"])))
+      end
+-DEBUG*/
+
+    # Force the evaluation of
+    # any guards in a mailop group:
+    #
+    fun force (BASE_MAILOPS l)
+            =>
+            BASE_GRP l;
+
+        force mailop
+	    =>
+	    force' mailop
+            where
+	        fun force' (GUARD g)
+                        =>
+                        force' (g ());
+
+		    force' (WITH_NACK f)
+                        =>
+                        {   cvar = r::CONDITION_VARIABLE (REF (r::CVAR_UNSET []));
+
+		            NACK_GRP (cvar, force' (f (cvar_get_mailop cvar)));
+		        };
+
+		    force' (BASE_MAILOPS grp)
+                        =>
+                        BASE_GRP grp;
+
+		    force' (CHOOSE mail_ops)
+			=>
+			force_bl (mail_ops, [])
+                        where
+			    fun force_bl ([], base_mailops)
+                                    =>
+                                    BASE_GRP base_mailops;
+
+			        force_bl (mailop ! r, base_mailops')
+                                    =>
+                                    case (force' mailop)
+					BASE_GRP base_mailops =>  force_bl (r, base_mailops @ base_mailops');
+					GRP      grp          =>  force_l  (r, grp @ [BASE_GRP base_mailops']);
+					grp                   =>  force_l  (r, [grp, BASE_GRP base_mailops']);
+                                    esac;
+			    end
+
+			    also
+			    fun force_l ([], [grp]) =>  grp;
+				force_l ([], l)     =>  GRP l;
+
+				force_l (mailop ! r, l)
+				    =>
+				    case (force' mailop, l)
+				      
+					(BASE_GRP base_mailops, BASE_GRP base_mailops' ! r')
+					    =>
+					    force_l (r, BASE_GRP (base_mailops @ base_mailops') ! r');
+
+					(GRP grp, l)
+					    =>
+					    force_l (r, grp @ l);
+
+					(grp, l)
+					    =>
+					    force_l (r, grp ! l);
+				   esac;
+			    end;
+			end;
+                  end;
+	    end;
+    end;
+
+
+    stipulate
+
+	count = REF 0;
+
+	fun random i
+            =
+            {   j = *count;
+
+		if (j == 1000000)   count := 0;
+                else                count := j+1;
+                fi;
+
+		int::rem (j, i);
+	    };
+    herein
+
+	fun select_do_fn ([(_, do_fn)], _)
+                =>
+                do_fn;
+
+	    select_do_fn (l, n)
+		=>
+		max (l, 0, 0, [])
+                where
+
+		    fun priority -1 =>  n;
+			priority  p =>  p;
+		    end;
+
+		    fun max ((p, do_fn) ! r, max_p, k, do_fns)
+			    =>
+			    {   p = priority p;
+
+				if    (p >  max_p)   max (r, p, 1, [do_fn]);
+				elif  (p == max_p)   max (r, max_p, k+1, do_fn ! do_fns);
+				else                 max (r, max_p, k, do_fns);
+				fi;
+			    };
+
+			max ([], _, k, [do_fn])
+			    =>
+                            do_fn;
+
+			max ([], _, k, do_fns)
+			    =>
+                            list::nth (do_fns, random k);
+		    end;
+		end;
+         end;
+    end;
+
+    fun make_flag ()
+        =
+        {   flag = REF (r::TRANSACTION_ID (s::get_current_thread()));
+	  
+	    (flag, fn () =  flag := r::CANCELLED_TRANSACTION_ID);
+	};
+
+
+    fun sync_on_one_mailop (poll_fn:  Base_Mailop( X ))
+        =
+        {   s::disable_thread_switching ();
+
+	    case (poll_fn ())
+	      
+		MAILOP_ENABLED { do_fn, ... }
+		    =>
+		    do_fn ();
+
+		MAILOP_BLOCKED block_fn
+		    =>
+		    {   my (flag, set_flag)
+                            =
+                            make_flag ();
+
+			block_fn { transaction_id=>flag, clean_up=>set_flag, next=>s::reenable_thread_switching_and_dispatch_next_thread };
+		    };
+            esac;
+	};
+
+    # This function handles the case of
+    # synchronizing on a list of base mail_ops
+    # (w/o any negative acknowledgements).
+    #
+    # It also handles the case of synchronizing
+    # on NEVER.
+    #
+    fun sync_on_base_mailops []    =>  s::dispatch_next_thread ();
+	sync_on_base_mailops [bev] =>  sync_on_one_mailop  bev;
+
+	sync_on_base_mailops base_mailops
+            =>
+            {   fun ext ([], block_fns)
+                        =>
+                        capture_fate
+                            (fn fate
+				=
+				{   escape_fate = escape_fate fate;
+
+				    my (transaction_id, set_flag)
+					=
+					make_flag ();
+
+				    fun log []
+					    =>
+					    s::reenable_thread_switching_and_dispatch_next_thread ();
+
+					log (block_fn ! r)
+					    =>
+					    escape_fate
+						(block_fn
+						  { transaction_id,
+						    clean_up =>  set_flag,
+						    next     =>  fn () = log r
+						  }
+						);
+				    end;
+
+				    log block_fns;
+
+				    error "[log]";
+				}
+                            );
+
+		    ext (poll_fn ! r, block_fns)
+                        =>
+                        case (poll_fn ())
+		            MAILOP_ENABLED { priority, do_fn } =>  ext_rdy (r, [(priority, do_fn)], 1);
+			    MAILOP_BLOCKED block_fn            =>  ext     (r, block_fn ! block_fns);
+                        esac;
+		end
+
+                # NOTE: Maybe we should just keep
+                #       track of the max priority?
+                #       What about fairness to fixed
+                #       priority mail_ops (e::g., always, timeout?)
+
+		also
+		fun ext_rdy ([], do_fns, n)
+                        =>
+                        select_do_fn (do_fns, n) ();
+
+		    ext_rdy (poll_fn ! r, do_fns, n)
+                        =>
+                        case (poll_fn ())
+		            MAILOP_ENABLED { priority, do_fn } => ext_rdy (r, (priority, do_fn) ! do_fns, n+1);
+			    _                           => ext_rdy (r, do_fns, n);
+                        esac;
+		end;
+
+		s::disable_thread_switching ();
+		ext (base_mailops, []);
+	    };
+    end;
+
+    # Walk the mailop group tree,
+    # collecting the base mail_ops
+    # (with associated ack flags),
+    # also a list of flag sets.
+    #
+    # A flag set is a
+    #     (cCar, List(Flag(Ack)))
+    # pair, where the flags are
+    # those associated with the
+    # mail_ops covered by the nack
+    # cvar.
+    #
+    fun collect grp
+        =
+        {   un_wrapped_flag
+                =
+                REF FALSE;
+
+	    fun gather_wrapped (grp, bl, flg_sets)
+                    =
+		    {	my (bl, _, flg_sets)
+                            =
+                            gather (grp, bl, [], flg_sets);
+
+			(bl, flg_sets);
+		    }
+                    where
+                        fun gather (BASE_GRP base_mailops, bl, all_flgs, flg_sets)
+                                =>
+                                {   fun append ([], bl, all_flgs)
+                                            =>
+                                            (bl, all_flgs);
+
+				        append (bev ! r, bl, all_flgs)
+                                            =>
+                                            {   flag = REF FALSE;
+
+				                append (r, (bev, flag) ! bl, flag ! all_flgs);
+				            };
+                                    end;
+
+				    my (bl', all_flgs')
+					=
+					append (base_mailops, bl, all_flgs);
+
+				    (bl', all_flgs', flg_sets);
+			        };
+
+			    gather (GRP grp, bl, all_flgs, flg_sets)
+                                =>
+                                {   fun f (grp', (bl', all_flgs', flg_sets'))
+                                        =
+				        gather (grp', bl', all_flgs', flg_sets');
+
+				    fold_left f (bl, all_flgs, flg_sets) grp;
+			        };
+
+			    gather (NACK_GRP (cvar, grp), bl, all_flgs, flg_sets)
+                                =>
+                                {   my (bl', all_flgs', flg_sets')
+                                        =
+				        gather (grp, bl, [], flg_sets);
+
+				    (bl', all_flgs' @ all_flgs, (cvar, all_flgs') ! flg_sets');
+			        };
+                        end;
+		    end;
+	  
+	    case grp
+
+	        GRP _ =>
+		    gather (grp, [], [])
+                    where 
+                        un_wrapped_flag = REF FALSE;
+
+		        fun append ([],      bl) =>  bl;
+		            append (bev ! r, bl) =>  append (r, (bev, un_wrapped_flag) ! bl);
+                        end;
+
+		        fun gather (BASE_GRP base_mailops, bl, flg_sets)
+				=>
+				(append (base_mailops, bl), flg_sets);
+
+		            gather (GRP grp, bl, flg_sets)
+                                =>
+			        fold_left  f  (bl, flg_sets)  grp
+                                where
+                                    fun f (grp', (bl', flg_sets'))
+                                        =
+			                gather (grp', bl', flg_sets');
+                                end;
+			
+
+		            gather (grp as NACK_GRP _, bl, flg_sets)
+                                =>
+			        gather_wrapped (grp, bl, flg_sets);
+                        end;
+		    end;
+
+	        grp =>
+                    gather_wrapped (grp, [], []);
+            esac;
+	};
+
+    # This function handles the more
+    # complicated case of synchronization
+    # on groups of mail_ops where negative
+    # acknowledgements are involved.
+    #
+    fun sync_on_grp grp
+        =
+        {   my (bl, flg_sets)
+                =
+                collect grp;
+
+	    fun check_cvars ()
+                =
+		apply check_cvar flg_sets
+                where
+                    # check_cvar checks the flags of a flag set.
+                    # If they are all FALSE then the
+                    # corresponding cvar is set to signal
+                    # the negative ack.
+		    #
+		    fun check_cvar (cvar, flgs)
+                        =
+			check_flgs flgs
+                        where
+                            fun check_flgs []
+                                    =>
+                                    atomic_cvar_set cvar;
+
+			        check_flgs ((REF TRUE) ! _)
+                                    =>
+                                    ();
+
+			        check_flgs (_ ! r)
+                                    =>
+                                    check_flgs r;
+                            end;
+			end;
+		end;
+
+	    fun ext ([], block_fns)
+                    =>
+                    capture_fate
+                        (fn fate
+			    =
+			    {   escape_fate =  escape_fate  fate;
+
+				    transaction_id
+					=
+					REF (r::TRANSACTION_ID (s::get_current_thread ()));
+
+				    fun set_flag flag ()
+                                        =
+                                        {   transaction_id := r::CANCELLED_TRANSACTION_ID;
+                                            flag := TRUE;
+                                            check_cvars ();
+                                        };
+
+				    fun log []
+                                            =>
+                                            s::reenable_thread_switching_and_dispatch_next_thread ();
+
+				        log ((block_fn, flag) ! r)
+                                            =>
+					    escape_fate
+                                                (block_fn { transaction_id,
+					                    clean_up =>  set_flag flag,
+					                    next     =>  fn () = log r
+					                  }
+                                                );
+                                    end;
+
+				    log  block_fns;
+
+                                    error "[log]";
+		                 }
+                        );
+
+	        ext ((poll_fn, flag) ! r, block_fns)
+                    =>
+                    case (poll_fn())
+		        MAILOP_ENABLED { priority, do_fn } =>  ext_rdy (r, [(priority, (do_fn, flag))], 1);
+		        MAILOP_BLOCKED block_fn            =>  ext (r, (block_fn, flag) ! block_fns);
+                    esac;
+	    end
+
+	    # NOTE: maybe we should just
+            # keep track of the max priority?
+	    # What about fairness to fixed
+            # priority mail_ops (e::g., always, timeout?)
+	    #
+	    also
+	    fun ext_rdy ([], do_fns, n)
+                    =>
+                    {   my (do_fn, flag)
+                            =
+                            select_do_fn (do_fns, n);
+
+			flag := TRUE;
+			check_cvars ();
+			do_fn();
+		    };
+
+	        ext_rdy ((poll_fn, flag) ! r, do_fns, n)
+                    =>
+                    case (poll_fn ())
+
+		        MAILOP_ENABLED { priority, do_fn }
+                            =>
+			    ext_rdy (r, (priority, (do_fn, flag)) ! do_fns, n+1);
+
+		        _   =>
+                            ext_rdy (r, do_fns, n);
+                    esac;
+	    end;
+
+	    s::disable_thread_switching ();
+
+            ext (bl, []);
+	};
+
+
+    fun do_mailop  mailop
+        =
+        case (force mailop)
+	    BASE_GRP base_mailops =>  sync_on_base_mailops  base_mailops;
+	    grp                   =>  sync_on_grp  grp;
+        esac;
+
+
+    fun select mail_ops
+        =
+        {   fun force_bl ([], base_mailops)
+                    =>
+                    BASE_GRP base_mailops;
+
+	        force_bl (mailop ! r, base_mailops')
+                    =>
+                    case (force' mailop)
+		        BASE_GRP base_mailops =>  force_bl (r, base_mailops @ base_mailops');
+			GRP grp       =>  force_l  (r, grp @ [BASE_GRP base_mailops']);
+			grp           =>  force_l  (r, [grp, BASE_GRP base_mailops']);
+                    esac;
+	    end
+
+	    also
+	    fun force_l ([], [grp]) =>  grp;
+	        force_l ([], l)     =>  GRP l;
+
+	        force_l (mailop ! r, l)
+                    =>
+                    case (force' mailop, l)
+
+		        (BASE_GRP base_mailops, BASE_GRP base_mailops' ! r')
+                            =>
+			    force_l (r, BASE_GRP (base_mailops @ base_mailops') ! r');
+
+			(GRP grp, l)
+                            =>
+                            force_l (r, grp @ l);
+
+		 	(grp, l)
+                            =>
+                            force_l (r, grp ! l);
+                    esac;
+	    end
+
+	    also
+	    fun force' (GUARD g)
+                    =>
+                    force' (g ());
+
+		force' (WITH_NACK f)
+                    =>
+                    {   cvar = r::CONDITION_VARIABLE (REF (r::CVAR_UNSET []));
+
+		        NACK_GRP (cvar, force' (f (cvar_get_mailop cvar)));
+		    };
+
+		force' (BASE_MAILOPS grp)
+                    =>
+                    BASE_GRP grp;
+
+		force' (CHOOSE mail_ops)
+                    =>
+                    force_bl (mail_ops, []);
+	    end;
+	  
+	    case (force_bl (mail_ops, []))
+
+	        BASE_GRP base_mailops
+                    =>
+                    sync_on_base_mailops  base_mailops;
+
+	        grp =>
+                    sync_on_grp grp;
+            esac;
+	};				# fun select
+};					# package mailop
+
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1989-1991 John H. Reppy
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

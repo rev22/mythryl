@@ -1,0 +1,9 @@
+app use [
+  "rgeometry.pkg",
+  "vattr.pkg",
+  "viewfont.pkg",
+  "vgraph.pkg",
+  "vgraphaux.pkg",
+  "viewer.pkg",
+  "view.pkg"
+];

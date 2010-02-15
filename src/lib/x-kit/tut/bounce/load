@@ -1,0 +1,22 @@
+# fast-load
+# Load the bounce example assuming that x-kit is already loaded.
+
+
+/* load some MULTIPROG library stuff */
+apply include [
+    "buffer.pkg",
+    "multicast.api",
+    "multicast.pkg"
+  ];
+
+structure BC = BufferChan(MULTIPROG);
+structure MChan = Multicast(BC);
+
+(* load the bounce example *)
+apply include [
+    "heads.pkg",
+    "bounce-dm.pkg",
+    "ball.pkg",
+    "menu.pkg",
+    "bounce.pkg"
+  ];

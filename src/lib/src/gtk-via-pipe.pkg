@@ -1,0 +1,8 @@
+# gtk-external.pkg
+
+# Compiled by:
+#     src/lib/src/lib7.make6
+
+package gtk_via_pipe
+    =
+    gtk_g( gtk_via_pipe_driver );

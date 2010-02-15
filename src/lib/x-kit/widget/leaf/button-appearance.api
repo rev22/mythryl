@@ -1,0 +1,60 @@
+## button-appearance.api
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+
+###             "I do not fear computers.
+###              I fear the lack of them."
+###
+###                      -- Isaac Asimov
+###                         (1920 - 1992)
+
+
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/widget/leaf/arrowbutton-appearance.pkg
+#     src/lib/x-kit/widget/leaf/boxbutton-appearance.pkg
+#     src/lib/x-kit/widget/leaf/checkbutton-appearance.pkg
+#     src/lib/x-kit/widget/leaf/diamondbutton-appearance.pkg
+#     src/lib/x-kit/widget/leaf/labelbutton-appearance.pkg
+#     src/lib/x-kit/widget/leaf/rockerbutton-appearance.pkg
+#     src/lib/x-kit/widget/leaf/roundbutton-appearance.pkg
+#     src/lib/x-kit/widget/leaf/textbutton-appearance.pkg
+
+stipulate
+    package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    #
+    package bb =  button_base;			# button_base		is from   src/lib/x-kit/widget/leaf/button-base.pkg
+    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+herein
+
+    api Button_Appearance {
+
+	Button_Appearance;
+
+	make_button_appearance:  (w::Root_Window, w::View, List(w::Arg)) -> Button_Appearance;
+
+	bounds:       Button_Appearance -> w::Widget_Size_Preference;
+	window_args:  Button_Appearance -> w::Window_Args;
+
+	config
+	   :
+	   ( Button_Appearance,
+	     xc::Window,
+	     xg::Size
+	   )
+	   ->
+	   bb::Button_State
+	   ->
+	   Void;   
+    };
+
+end;
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

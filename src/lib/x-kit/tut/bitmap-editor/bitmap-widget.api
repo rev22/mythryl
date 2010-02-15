@@ -1,0 +1,44 @@
+## bitmap-widget.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/bitmap-editor/bitmap-widget.pkg
+
+stipulate
+    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg =  xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+herein
+
+    api Bitmap_Widget {
+
+	exception BAD_PARAMETER;
+
+	Bitmap_Widget;
+
+	make_bitmap_widget
+	    :
+	    w::Root
+	    ->
+	    { background:  Null_Or( xc::Color ),
+	      foreground:  Null_Or( xc::Color ),
+	      horz_cells:  Int,
+	      vert_cells:  Int
+	    }
+	    ->
+	    Bitmap_Widget;
+
+	as_widget:  Bitmap_Widget -> w::Widget;
+	image_of:   Bitmap_Widget -> xc::Image;
+
+	set_pixel:  Bitmap_Widget -> (Bool, xg::Point) -> Void;
+    };
+
+end;
+
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

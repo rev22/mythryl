@@ -1,0 +1,48 @@
+## planar-subgraph-tree-attributes.pkg
+#
+# Define the per-graph, per-node and per-edge
+# information maintained by the planar-subgraph-tree
+# graphs used to hold graphs once planar layout is done.
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# Compare to:
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg
+
+# This package gets referenced in:
+#     src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
+
+stipulate
+    package da  = dot_subgraph_tree_attributes;			# dot_subgraph_tree_attributes	is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg
+    package dg  = dot_subgraph_tree;				# dot_subgraph_tree		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+    package gf  = xgeometry_float;				# xgeometry_float		is from   src/lib/x-kit/tut/ml-viewer/graph-view/geometry-2d-float.pkg
+herein
+
+    package planar_subgraph_tree_attributes {
+
+	Graph_Info
+	    =
+	    { graph:     dg::Attributed_Graph,
+	      bbox:      gf::Box,
+	      fontsize:  Int
+	    };
+
+	Node_Info
+	    =
+	    { pos:    gf::Point,
+	      shape:  da::Shape,
+	      bbox:   gf::Box,
+	      base:   dg::Node,
+	      label:  String
+	    };
+
+	Edge_Info
+	    =
+	    { bbox:          gf::Box, 			# Bounding box of spline.
+	      pts:     List( gf::Point ),		# Spline control points.
+	      arrows:  List( gf::Point )		# Arrow head.
+	    };
+    };
+
+end;

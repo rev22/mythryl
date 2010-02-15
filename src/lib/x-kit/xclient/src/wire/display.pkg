@@ -1,0 +1,541 @@
+## display.pkg
+#
+
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+stipulate
+    include threadkit;							# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package i2s =  xserver_info_to_string;				# xserver_info_to_string	is from   src/lib/x-kit/xclient/src/stuff/xserver-info-to-string.pkg
+    package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package xok =  xsocket;			    			# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package g   =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package sa  =  crack_xserver_address;				# crack_xserver_address		is from   src/lib/x-kit/xclient/src/wire/crack-xserver-address.pkg
+    package v8s =  unt8_vector_slice;					# unt8_vector_slice		is from   src/lib/std/src/unt8-vector-slice.pkg
+    package v2w =  value_to_wire;					# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package w2v =  wire_to_value;					# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
+    package sok =  socket;						# socket			is from   src/lib/std/socket.pkg
+    package sox =  socket_stuff;					# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
+herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+
+    package display: (weak) Display {					# Display			is from   src/lib/x-kit/xclient/src/wire/display.api
+
+	exception BAD_ADDRESS = sa::BAD_ADDRESS;
+
+	package dns = dns_host_lookup;					# dns_host_lookup		is from   src/lib/std/src/socket/dns-host-lookup.pkg
+	package w8v = unt8_vector;					# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
+
+
+	Xdisplay
+	    =
+	    XDISPLAY
+	      {
+		xsocket:  	    	xok::Xsocket,			# Socket connecting us to the X server. 
+
+		name:  		    	String,				# "host:display.screen". 
+		vendor:  		String,				# Name of the server's vendor. 
+
+		default_screen:  	Int,				# Number of the default screen. 
+		screens:  		List( Xscreen ),		# Screens attached to this display. 
+		pixmap_formats:  	List( xt::Pixmap_Format ),
+		max_request_length:     Int,
+
+		image_byte_order:       xt::Order,
+		bitmap_bit_order:       xt::Order,
+
+		bitmap_scanline_unit:   xt::Raw_Format,
+		bitmap_scanline_pad:    xt::Raw_Format,
+
+		min_keycode: 		xt::Keycode,
+		max_keycode:            xt::Keycode,
+
+		next_xid:  		Void -> xt::Xid   	#  resource id allocator 
+	      }
+
+	also
+	Xscreen
+	    =
+	    XSCREEN
+	      {
+		id:			Int,			# Number of this screen.
+
+		root:  			xt::Window_Id,		# Root window id of this screen.
+		default_colormap:	xt::Colormap_Id,	# 
+
+		white:			xt::Pixel,		# White and Black pixel values.
+		black:			xt::Pixel,
+
+		root_input_mask:	xt::Event_Mask,		# Initial root input mask.
+
+		size_in_pixels:		g::Size,		# Width and height in pixels.
+		size_in_mm:		g::Size,		# Width and height in millimeters.
+
+		root_visual:		xt::Visual_Depth,
+		backing_store:		xt::Backing_Store,
+
+		visualdepths:		List( xt::Visual_Depth ),
+
+		save_unders:		Bool,
+
+		min_installed_cmaps:  Int,
+		max_installed_cmaps:  Int
+	      };
+
+	# Return index of first bit set (starting at 1),
+	# return 0 if n == 0, and
+	# assume that n > 0.
+	#
+	fun find_first_bit_set 0u0
+		=>
+		xgripe::xerror "bogus resource mask";
+
+	    find_first_bit_set w
+		=>
+		lp (w, 0u1)
+		where
+		   fun lp (w, i)
+			=
+			unt::bitwise_and (w, 0u1) == 0u0
+			    ??  lp (unt::(>>) (w, 0u1), i+0u1)
+			    ::  i;
+
+
+		end;
+	end;
+
+	# Handle initial handshake stuff with xserver via a
+	# freshly opened unix- or internet-domain socket:
+	# 
+	fun say_hello_to_xserver (socket, auth, canonical_display_name, screen_number)
+	    =
+	    {
+# +DEBUG
+		xtracing::print_if  xtracing::io_tracing
+		 .{  "initializing xsocket to \"" + canonical_display_name + "\"";  };
+# -DEBUG
+
+		connect_msg
+		    =
+		    v2w::encode_connection_req
+		      {
+			minor_version => 0,
+			auth
+		      };
+
+		sox::send_vector (socket, connect_msg);
+
+# +DEBUG
+		xtracing::print_if  xtracing::io_tracing  .{ "reading connection reply header"; };
+# -DEBUG
+		# ddeboer, fall 2004: error in ssh tunneling happens in following line 
+		# modified to retry on exception.
+
+		fun sleep n
+		    =
+		    do_mailop (timeout_in' (time::from_seconds n));
+
+		fun retry 0 ts => sox::receive_vector (socket, 8);
+		    retry n ts => sox::receive_vector (socket, 8) except _ = { sleep ts; (retry (n - 1) (ts*2));};
+		end;
+
+		header = retry 2 1;
+		#  original: header = SockUtil::recvVec (socket, 8) 
+		len = 4 * large_unt::to_int_x (pack_big_endian_unt16::get_vec (header, 3));
+
+# +DEBUG
+    my _ = xtracing::print_if xtracing::io_tracing .{ cat [ "reading connection reply body (", int::to_string len, " bytes)" ]; };
+# -DEBUG
+
+    #        /* following lines rewritten, ddeboer, Jan 2005:
+    #         * I'm not sure that this is what is causing the problems I'm trying to fix,
+    #         * but if the reply status (w8v::sub (header, 0)) is Authenticate (0u2),
+    #         * the following previous code appears to block waiting for 
+    #         * len bytes to be received into reply:
+    #        reply = SockUtil::recvVec (socket, len)
+    #        fun getMsg () = byte::unpack_string_vector (v8s::slice(
+    #          reply,
+    #          0,
+    #          THE (unt8::toIntX (w8v::sub (header, 1)))))
+    #        fun error msg = (sok::close socket; xgripe::xerror msg)
+    #        in
+    #          case w8v::sub (header, 0)
+    #           of 0u0 => error ("connection refused: " + getMsg())
+    #        | 0u1 => let
+    #            info = w2v::decode_connect_request_reply (header, reply)
+    #            xsocket = xok::make_xsocket socket
+    #            in
+    #              (xsocket, info, canonical_display_name, scrNum)
+    #            end
+    #        | 0u2 => error "xsocket connection requires more authentication"
+    #        | _ => error "unknown connection reply"
+
+
+		fun get_reply len
+		    =
+		    sox::receive_vector (socket, len);
+
+		fun get_msg reply
+		    =
+		    byte::unpack_string_vector (
+			v8s::make_slice(
+			    reply,
+			    0,
+			    THE (unt8::to_int_x (w8v::get (header, 1)))
+			)
+		    );
+										# socket		is from   src/lib/std/socket.pkg
+
+		fun error msg
+		    =
+		    {   sok::close  socket;
+			xgripe::xerror  msg;
+		    };
+
+		case (w8v::get (header, 0))
+		    #
+		    0u0 =>
+			error ("connection refused: " + get_msg (get_reply (len)));
+
+		    0u1 =>
+			{   xserver_info = w2v::decode_connect_request_reply (header, get_reply (len));
+
+			    info_as_string	# Currently unusded; just to force it to compile.
+				=
+				i2s::xserver_info_to_string  xserver_info;
+
+			    xsocket = xok::make_xsocket  socket;
+
+			    (xsocket, xserver_info, canonical_display_name, screen_number);
+			};
+
+		    0u2 => error "connection requires more authentication";
+		    _   => error "unknown connection reply";
+		esac; 
+	    };
+
+	# Crack 'raw_display_name', open
+        # a unix- or internet-domain
+	# socket (as appropriate) and
+	# do the initial handshake with
+	# the X server:
+	#
+	fun connect_to_xserver
+            ( raw_display_name: String,						# ":0.0" or "192.168.0.1:0.0" or such, often from unix DISPLAY environment variable.
+              authentication:   Null_Or( xt::Authentication )
+            )
+	    =
+	    {   # Digest a user-level X server spec
+		# into a form easier to work with:
+		#
+		my { address, canonical_display_name, screen }
+		    =
+		    sa::crack_xserver_address  raw_display_name;
+
+		fun repeat connection_fn
+		    =
+		    loop 4			# Try up to five times.
+		    where
+			fun loop 0 =>  connection_fn();
+			    loop n => (connection_fn() except _ =  loop (n - 1));
+			end;
+		    end
+		    except
+			threadkit_winix::SYSTEM_ERROR (s, _)
+			    =
+			    raise exception BAD_ADDRESS s;
+
+		fun open_internet_domain_socket (address, port)
+		    =
+		    {   tracing::print_if  xtracing::io_tracing .{
+			    #
+			    (   "inet_connection: address = \""
+                            +   dns::to_string  address
+                            +   "\", port = "
+			    +   int::to_string  port
+                            );
+			};
+										# internet_socket	is from   src/lib/std/src/socket/internet-socket.pkg
+
+			# Invoke the glibc socket() fn via
+			# a few layers of wrapping:
+			# 
+			socket = internet_socket::tcp::socket ();
+										# socket		is from   src/lib/std/socket.pkg
+										# socket_guts		is from   src/lib/std/src/socket/socket-guts.pkg
+
+			repeat (fn () = sok::connect (socket, internet_socket::to_address (address, port)));
+
+			say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
+		    };
+
+
+		case address
+		    #
+		    sa::UNIX path
+			=>
+			{   socket = unix_socket::stream::socket ();
+
+			    repeat (fn () = sok::connect (socket, unix_socket::to_address path));
+
+			    say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
+			};
+
+		    sa::INET_ADDR (host, port)
+			=>
+			case (dns::from_string  host)
+			    #
+			    THE address =>  open_internet_domain_socket (address, port);
+			    NULL        =>  raise exception BAD_ADDRESS "Bad IP address format";
+			esac;
+
+
+		    sa::INET_HOSTNAME (host, port)
+			=>
+			case (dns::get_by_name  host)
+			    #
+			    THE entry =>  open_internet_domain_socket (dns::address entry, port);
+			    NULL      =>  raise exception BAD_ADDRESS "Host not found";
+			esac;
+		esac;
+	    };				# fun connect_to_xserver
+
+	# Spawn an xid-factory thread, return
+	# a plea-slot connected to it.
+	#
+	fun spawn_xid_factory_thread (base, mask)
+	    =
+	    {   result_slot =  make_mailslot ();
+
+		# For background on the algorithm see Note[1] in:
+		# 
+		#     src/lib/x-kit/xclient/src/wire/xtypes.pkg
+		#
+		# I have serious doubts about the correctness of this
+		# code.  At the very least, it fails to check for and
+		# warn about exhaustion of assigned space.  XXX BUGGO FIXME.
+
+		increment =  find_first_bit_set  mask;
+
+		fun loop i
+		    =
+		    {    give (result_slot, xt::XID i);
+
+			 loop (i+increment);
+		    };
+
+		#  make_thread "xdisplay" (fn () => (loop base)); 
+
+		xtracing::xspawn ("xid-factory", fn () = loop base);
+
+		.{ take  result_slot; };
+	    };
+
+	fun make_screen
+
+	    screen_number
+
+	    # From w2v::get_screen:
+	    #
+	    { root_window,
+              default_colormap,
+              white,
+              black,
+              input_masks,
+              pixels_wide,
+              pixels_high,
+	      millimeters_wide,
+              millimeters_high,
+              installed_colormaps => { min, max },
+              root_visualid,
+	      backing_store,
+              save_unders,
+              root_depth,
+              visualdepths
+	    }
+
+	    =
+
+	    {   fun get_root_visual []
+			=>
+			xgripe::xerror  "cannot find root visual";
+
+		    get_root_visual ((xt::DEPTH _) ! r)
+			=>
+			get_root_visual r;
+
+		    get_root_visual ((v as xt::VISUAL_DEPTH { id, depth, ... } ) ! r)
+			=>
+			if (id    == root_visualid   and
+			    depth == root_depth)
+			    #
+			    v;
+			else
+			    get_root_visual r;
+			fi;
+		end;
+
+		XSCREEN
+		  {
+		    id => screen_number,
+		    root => root_window,
+		    default_colormap,
+		    white,
+		    black,
+		    root_input_mask => input_masks,
+
+		    size_in_pixels => g::SIZE { wide => pixels_wide,      high => pixels_high      },
+		    size_in_mm     => g::SIZE { wide => millimeters_wide, high => millimeters_high },
+
+		    min_installed_cmaps => min,
+		    max_installed_cmaps => max,
+
+		    root_visual => get_root_visual visualdepths,
+		    backing_store,
+		    save_unders,
+		    visualdepths
+		  };
+	    };				# fun make_screen 
+
+	fun make_screens info_list
+	    =
+	    make_s (0, info_list)
+	    where
+		fun make_s (i, [])       =>  [];
+		    make_s (i, info ! r) =>  (make_screen i info) ! make_s (i+1, r);
+		end;
+	    end;
+
+								# xsocket	is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+	# See comments to fun make_xsession in
+	#
+	#     src/lib/x-kit/xclient/src/window/xsession.pkg
+	#
+	fun open_xdisplay
+            { display_name:    String,				# ":0.0" or unix:0.0" or "foo.com:0.0" or "192.168.0.1:0.0" or such.
+              authentication:  Null_Or( xt::Authentication )
+            }
+	    =
+	    {   # Open unix- or internet-domain
+		# socket and do initial handshake
+		# with x-server:
+		#		
+		my  ( xsocket:      xsocket::Xsocket,
+                      server_info,				# Protocol number, vendor etc etc -- see decode_connect_request_reply in src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
+                      normalized_xserver_address,		# "foo.com:0.0" or such.
+                      screen_number				# Almost always zero.
+                    )
+		    =
+		    connect_to_xserver (display_name, authentication);
+
+		# Arrange to have xserver socket cleanly
+		# closed upon application exit:
+		#
+		socket_closer_imp::note_xsocket  xsocket;
+
+		screens =  make_screens  server_info.screens;
+
+		my (display as (XDISPLAY dpyrec))
+		    =
+		    XDISPLAY {
+			xsocket,
+			name                 =>  normalized_xserver_address,
+			vendor 		     =>  server_info.vendor,
+
+			screens,
+			default_screen	     =>  screen_number,
+
+			pixmap_formats       =>  server_info.pixmap_formats,
+			max_request_length   =>  server_info.max_request_length,
+
+			image_byte_order     =>  server_info.image_byte_order,
+			bitmap_bit_order     =>  server_info.bitmap_order,
+
+			bitmap_scanline_unit =>  server_info.bitmap_scanline_unit,
+			bitmap_scanline_pad  =>  server_info.bitmap_scanline_pad,
+
+			min_keycode          =>  server_info.min_keycode,
+			max_keycode          =>  server_info.max_keycode,
+
+			next_xid             =>  spawn_xid_factory_thread (server_info.xid_base, server_info.xid_mask)
+		    };
+
+		# Set up a handler for error messages
+		# from the X server, with a watcher
+		# to notify us if it dies:
+		#
+		fun err_handler ()
+		    =
+		    {   my (seqn, err_msg)
+			    =
+			    xok::read_xerror  xsocket;
+
+			tracing::print_if xtracing::error_tracing .{
+			    #
+			    (   "Error on request #"
+			    +   unt::fmt  string_conversion::DEC  seqn
+			    +   ": "
+			    +   xerror_to_string::xerror_to_string (w2v::decode_error err_msg)
+			    );
+			};
+
+			err_handler ();
+		    };
+
+		xtracing::xspawn ("errHandler", err_handler);
+
+		display;
+	  };
+
+	# close_display:  xdisplay -> Void 
+	#
+	fun close_display (XDISPLAY { xsocket, ... } )
+	    =
+	    {   thread_id = get_thread_id ();
+
+		tracing::print_if xtracing::io_tracing .{
+		    #
+		    cat [ thread_id_to_string  thread_id,  " ***** close_display *****" ];
+		};
+
+
+		xok::close_xsocket  xsocket;
+		socket_closer_imp::forget_xsocket xsocket;
+	    };
+
+	fun depth_of_visual (xt::DEPTH d) => d;
+	    depth_of_visual (xt::VISUAL_DEPTH { depth, ... } ) => depth;
+	end;
+
+	fun display_class_of_visual (xt::DEPTH _) => NULL;
+	    display_class_of_visual (xt::VISUAL_DEPTH { ilk, ... } ) => THE ilk;
+	end;
+
+    };			# package xdisplay 
+end;			# stipulate
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

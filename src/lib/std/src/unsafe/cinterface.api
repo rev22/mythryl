@@ -1,0 +1,35 @@
+## cinterface.api
+
+# Compiled by:
+#     src/lib/std/src/Base-imp.make6
+
+
+
+api Cinterface {
+
+    exception CFUN_NOT_FOUND  String;
+
+    c_function:  String -> String -> (X -> Y);
+       #
+       # the operation for naming ML callable C functions; raises
+       # the exception CFUN_NOT_FOUND if the function is unknown.
+
+    Cfunction;
+
+    bind_cfun:  ((String, String)) -> Cfunction;
+
+   # utilities for working with system constants 
+    System_Const = ((Int, String));
+
+    exception SYSTEM_CONSTANT_NOT_FOUND  String;
+
+    find_sys_const:  ((String, List( System_Const )) ) -> Null_Or( System_Const );
+    bind_sys_const:  ((String, List( System_Const )) ) -> System_Const;
+};
+
+
+
+
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,26 @@
+# dot-graph-io.api
+#
+#
+# I/O of graphs using the "dot" syntax.
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# Implemented by:
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-graph-io-g.pkg
+
+									# Attributed_Subgraph_Tree	is from   src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree.api
+									# Text_Io			is from   src/lib/std/src/io/text-io.api
+api Dot_Graph_Io {
+
+    package g:   Attributed_Subgraph_Tree;				# It actually makes sense to export these two packages because
+    package io:  Text_Io;						# they are parameters to dot_graph_io_g, hence otherwise unknowable.
+
+    read_graph:    io::Input_Stream -> g::Attributed_Graph;
+    write_graph:  (io::Output_Stream, g::Attributed_Graph) -> Void;
+};
+
+
+# COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

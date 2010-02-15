@@ -1,0 +1,27 @@
+# planar-subgraph-tree.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+					# attributed_subgraph_tree_g		is from   src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree-g.pkg
+					# planar_subgraph_tree_attributes	is from   src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree-attributes.pkg
+
+stipulate
+    package a = planar_subgraph_tree_attributes;
+herein
+
+    package planar_subgraph_tree: (weak) Attributed_Subgraph_Tree {
+
+	package subgraph_tree
+	    =
+	    attributed_subgraph_tree_g (
+		#
+		Graph_Info = a::Graph_Info;
+		Edge_Info  = a::Edge_Info;
+		Node_Info  = a::Node_Info;
+	    );
+
+	include subgraph_tree;
+    };
+
+end;

@@ -1,0 +1,490 @@
+## topwindow.pkg
+#
+#
+#
+# TODO: Allow mapping/unmapping of topwindows
+#       Cleanup and complete topwindow resource usage	XXX BUGGO FIXME
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+
+
+
+###      "You think you know when you learn,
+###       are more sure when you can write,
+###       even more when you can teach,
+###       but certain when you can program."
+###
+###                            -- Alan Perlis
+
+
+stipulate
+    include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package w   =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa  =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package mr  =  xevent_mail_router;		# xevent_mail_router	is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
+    #
+    package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg  =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
+    package xs  =  xselection;			# xselection		is from   src/lib/x-kit/xclient/xselection.pkg
+    package xw  =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
+herein
+
+    package topwindow: (weak)  Topwindow {	# Topwindow		is from   src/lib/x-kit/widget/basic/topwindow.api
+
+	Window_Manager_Hints
+	    =
+	    {    size_hints:  List( xs::Window_Manager_Size_Hint    ),
+	      nonsize_hints:  List( xs::Window_Manager_Nonsize_Hint )
+		  #
+#		  ilk_hints:  Null_Or  { res_ilk:  String, res_name:  String }
+	    };
+
+	fun make_window_manager_hints a
+            =
+            a;
+
+	Plea_Mail = START | DESTROY | MAP  Bool | HINTS  Window_Manager_Hints;
+
+	Topwindow
+	    =
+	    TOPWINDOW
+	      ( Mailslot( Plea_Mail ),
+		Mailslot( Void )
+              );
+
+	fun set_size_hints
+            {
+              col_preference  as  w::INT_PREFERENCE  xdim,
+              row_preference  as  w::INT_PREFERENCE  ydim
+            }
+	    =
+	    do_inc() @ do_max() @ do_min()
+	    where
+		fun min_size ()
+                    =
+                    {   minx =  w::minimum_length  col_preference;
+			miny =  w::minimum_length  row_preference;
+
+			xg::SIZE { wide => int::max (1, minx),
+                                   high => int::max (1, miny)
+                                 };
+		    };
+
+		fun max_size ()
+		    =
+		    ( w::maximum_length  col_preference,
+                      w::maximum_length  row_preference
+                    );
+
+		fun inc_size ()
+		    =
+		    ( xdim.step_by,
+                      ydim.step_by
+                    );
+
+		maxx = 65535;
+
+		fun do_inc ()
+		    =
+		    case (inc_size ())   
+			#
+			(1, 1) => [];
+		        (x, 1) => [xs::HINT_PRESIZE_INC (xg::SIZE { wide=>x, high=>1 } )];
+		        (1, y) => [xs::HINT_PRESIZE_INC (xg::SIZE { wide=>1, high=>y } )];
+		        (x, y) => [xs::HINT_PRESIZE_INC (xg::SIZE { wide=>x, high=>y } )];
+		    esac;
+
+		fun do_min ()
+                    =
+                    {   minsz = min_size ();
+
+			[ xs::HINT_PMIN_SIZE   minsz,
+                          xs::HINT_PBASE_SIZE  minsz
+                        ];
+		    };
+
+		fun do_max ()
+		    =
+		    case (max_size ())
+
+			(NULL,  NULL ) =>  [];
+			(THE x, NULL ) =>  [ xs::HINT_PMAX_SIZE (xg::SIZE { wide=>x,    high => maxx } )];
+			(NULL,  THE y) =>  [ xs::HINT_PMAX_SIZE (xg::SIZE { wide=>maxx, high => y    } )];
+			(THE x, THE y) =>  [ xs::HINT_PMAX_SIZE (xg::SIZE { wide=>x,    high => y    } )];
+		    esac;
+
+	    end;
+
+    /* DEBUG
+	setSizeHints = fn arg => let
+	      pr = Xtracing::pr1
+	      arglist = setSizeHints arg
+	      fun pritem (xs::HINT_PRESIZE_INC size) = pr("inc = "$(Db::sztos size)$"\n")
+		| pritem (xs::HINT_PMAX_SIZE size) = pr("max = "$(Db::sztos size)$"\n")
+		| pritem (xs::HINT_PMIN_SIZE size) = pr("min = "$(Db::sztos size)$"\n")
+		| pritem _ = ()
+	      in
+		apply pritem arglist;
+		arglist
+	      end
+    */
+
+	Window_And_Icon_Names
+	    =
+            { window_name:   Null_Or( String ),
+	      icon_name:     Null_Or( String )
+	    };
+
+
+	fun placement (NULL, size)
+		=>
+		(xg::point_00, size);
+
+	    placement (THE (xg::BOX { col, row, wide, high } ), xg::SIZE { wide=>dfltwid, high=>dfltht } )
+		=>
+		( xg::POINT { col, row },
+
+	          xg::SIZE { wide => if (wide > 0)  wide;  else dfltwid; fi,
+		             high => if (high > 0)  high;  else dfltht;  fi
+                           }
+                );
+	end;
+
+
+	fun make_topwindow'
+                make_window_fn		# window creation fn, one of either 'simple' or 'transient' (see below).
+                rectopt
+                ( widget,
+                  color_opt,
+                  wm_args:  Window_And_Icon_Names
+                )
+	    =
+	    {   root_window =  w::root_window_of  widget;
+
+		plea_slot = make_mailslot ();
+
+		screen =  w::screen_of  root_window;
+
+		color = case color_opt    
+			    #
+			    THE color =>  color;
+			    NULL      =>  xc::white_of_screen  screen;
+			esac;
+
+		delete_slot = make_mailslot ();
+
+		fun set_protocols window
+		    = 
+		    xw::set_window_manager_protocols
+			#
+                        window
+			#
+                        [ (xs::make_atom (w::xsession_of root_window) "WM_DELETE_WINDOW") ];
+
+		fun start (hintlist, mapped)
+		    =
+		    {   (w::size_preference_of  widget)
+			    ->
+			    bounds as { col_preference, row_preference };
+
+			dfltsize
+			    =
+			    xg::SIZE { wide =>  w::preferred_length  col_preference,
+                                       high =>  w::preferred_length  row_preference
+                                     };
+
+			my (upperleft, size)
+			    =
+			    placement (rectopt, dfltsize);
+
+			my (twin, in_kidplug, in_delete_slot_opt)
+			    =
+                            make_window_fn  widget
+                              {
+                                geometry   =>  xg::WINDOW_FOOTPRINT { upperleft, size, border_width=>0 },
+			        background =>  color,
+			        border     =>  color   #  not used 
+			      };
+
+			fun give_hint { size_hints, nonsize_hints }
+                            =
+			    xw::set_window_manager_properties  twin
+			      {
+				size_hints,
+				nonsize_hints,
+				#
+				argv        =>  [],
+				window_name =>  NULL,
+				icon_name   =>  NULL,
+				ilk_hints   =>  NULL
+			      };
+
+			xw::set_window_manager_properties  twin
+                          {
+			    argv          =>  commandline::get_arguments(),
+			    #
+			    window_name   =>  wm_args.window_name,
+			    icon_name     =>  wm_args.icon_name,
+			    #
+			    size_hints    =>  set_size_hints bounds,
+			    #
+			    nonsize_hints =>  [],
+			    ilk_hints     =>  NULL
+			  };
+
+			apply give_hint (reverse hintlist);
+
+			set_protocols twin;
+
+			my { kidplug => my_kidplug, momplug => my_momplug }
+			    =
+			    xi::make_widget_cable ();
+
+			cwin =  w::make_child_window
+                                  ( twin,
+                                    xg::make_box (xg::point_00, size),
+                                    w::args_of  widget
+                                  );
+
+                        (xi::make_widget_cable ())
+			    ->
+			    { kidplug => ckidplug, momplug => cmomplug as xi::MOMPLUG { from_kid', ... } };
+
+			childco =  w::wrap_queue  from_kid';
+
+			my  xi::KIDPLUG { from_other', ... }
+                            =
+                            xi::ignore_mouse_and_keyboard  my_kidplug;
+
+			fun zombie ()
+                            =
+			    zombie (
+                                select [
+				    from_other'       ==>  (fn _ = ()),
+				    take'  plea_slot  ==>  (fn _ = ()),
+				    childco           ==>  (fn _ = ())
+				]
+                            );
+
+			fun handle_co  xi::REQ_RESIZE
+				=>
+				{   (w::size_preference_of  widget)
+					->
+					bounds as { col_preference,
+                                                    row_preference
+                                                  };
+
+				    xw::set_window_manager_properties twin
+				      {
+					argv          =>  [],
+					#
+					window_name   =>  NULL,
+					icon_name     =>  NULL,
+					ilk_hints     =>  NULL,
+					#
+					size_hints    =>  set_size_hints bounds,
+					nonsize_hints =>  []
+				      };                
+
+				      xw::resize_window
+                                        twin
+                                        (xg::SIZE { wide =>  w::preferred_length  col_preference,
+                                                    high =>  w::preferred_length  row_preference
+                                                  }
+                                        );
+				};
+
+			   handle_co  xi::REQ_DESTRUCTION
+			       =>
+			       {    xw::destroy_window twin;
+				    zombie();
+			       };
+			end;
+
+
+			fun do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
+                                => 
+			        xw::resize_window cwin (xg::SIZE { wide, high } );
+
+			    do_mom xi::ETC_OWN_DEATH => zombie ();
+			    do_mom (xi::ETC_CHILD_DEATH _) => zombie ();
+			    do_mom (xi::ETC_REDRAW _) => ();
+			    do_mom _ => ();
+			end;
+
+			fun map_top_window (FALSE, TRUE) => { xw::show_window twin; TRUE;};
+			    map_top_window (TRUE, FALSE) => { xw::withdraw_window twin; FALSE;};
+			    map_top_window (_, b) => b;
+			end;
+
+			fun do_plea mapped
+			    =
+			    fn START      => mapped;
+			       DESTROY    => { xw::destroy_window twin; zombie ();};
+			       HINTS hint => { give_hint hint; mapped;};
+			       MAP arg    => map_top_window (mapped, arg);
+			    end;
+
+			fun loop mapped
+			    =
+			    for (;;) {
+				#
+			        select [
+				    #
+				    from_other'
+					 ==>
+					 do_mom  o  xi::envelope_contents,
+
+				    case in_delete_slot_opt   
+
+					THE in_delete_slot
+					    =>
+					    take'  in_delete_slot
+						==>
+						.{  give (delete_slot, ());  };
+
+					NULL => never;
+				    esac, 
+
+
+				    take'  plea_slot
+					==>
+					loop o (do_plea mapped),
+
+				    childco
+					==>
+					handle_co
+				]; 
+			    };
+
+			mr::route_pair (in_kidplug, my_momplug, cmomplug);
+
+			w::realize_fn
+			     widget
+			     {
+			       kidplug => ckidplug, 
+			       window  => cwin,
+			       size
+			     };
+
+			xw::show_window cwin;
+
+			loop (map_top_window (FALSE, mapped));
+		    };						# fun start
+
+		fun start_loop (arg as (hintlist, mapped))
+		    =
+		    case (take  plea_slot)
+			#
+			START       => start arg;
+			DESTROY     => start_loop arg;
+			HINTS hint  => start_loop (hint ! hintlist, mapped);
+			MAP mapped' => start_loop (hintlist, mapped');
+		    esac;
+
+
+		xtracing::xspawn ("topwindow",  .{ start_loop ([], TRUE); });
+
+		TOPWINDOW (plea_slot, delete_slot);
+
+	    };					# fun make_topwindow'
+
+	stipulate
+
+	    fun simple widget g
+		= 
+		{   my (window, in_kidplug, delete_slot)
+			=
+			xw::make_simple_top_window
+			    (w::screen_of  (w::root_window_of  widget))
+			    g;
+
+		    (window, in_kidplug, THE delete_slot);
+		};
+
+	    fun transient w _ g
+		= 
+		{   my (window, in_kidplug)
+                        =
+                        xw::make_transient_window w g;
+
+		    (window, in_kidplug, NULL);
+		};
+	herein
+
+	    fun make_topwindow_at r
+		=
+		make_topwindow' simple (THE r);
+
+	    make_topwindow = make_topwindow' simple NULL;
+
+	    fun make_transient_topwindow_at r w =  make_topwindow' (transient w) (THE r);
+	    fun make_transient_topwindow w      =  make_topwindow' (transient w) NULL;
+
+	    attributes
+                =
+                [ (wa::title,        wa::STRING,    wa::NO_VAL),
+		  (wa::icon_name,    wa::STRING,    wa::NO_VAL),
+		  (wa::background,   wa::COLOR,     wa::NO_VAL)
+		];
+
+	    fun topwindow (root_window, view, args) widget
+		=
+		{   attributes = w::find_attribute (w::attributes (view, attributes, args));
+
+		    window_name = wa::get_string_opt (attributes wa::title);
+		    icon_name   = wa::get_string_opt (attributes wa::icon_name);
+		    color       = wa::get_color_opt  (attributes wa::background);
+
+		    pos = NULL;			# Fix to look up geometry.  XXX BUGGO FIXME
+
+		    args = { window_name, icon_name };
+		    make_topwindow' simple pos (widget, color, args);
+		}; 
+
+	end;
+
+	fun start        (TOPWINDOW (slot, dslot))     =  give (slot, START);
+	fun destroy      (TOPWINDOW (slot, dslot))     =  give (slot, DESTROY);
+	fun unmap        (TOPWINDOW (slot, dslot))     =  give (slot, MAP FALSE);
+	fun map          (TOPWINDOW (slot, dslot))     =  give (slot, MAP TRUE);
+
+	fun set_window_manager_hints
+                (TOPWINDOW (slot, dslot))
+                arg
+	    =
+	    give (slot, HINTS arg);
+
+	fun delete_mailop (TOPWINDOW (slot, d_slot))
+	    =
+	    take'  d_slot;
+    };			# package topwindow 
+end;			# stipulate
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,45 @@
+## colorbox.api
+#
+# An elemental widget which simply fills its
+# window with a single color.  It consists
+# in essence of just a size preference and
+# a color.
+#
+# The color defaults to black if not explicitly
+# specified.
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/widget/leaf/colorbox.pkg
+
+stipulate
+    package w  = widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc = xcore;				# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+herein
+
+    api Colorbox {
+
+	colorbox
+	    :
+	    (w::Root_Window, w::View, List(w::Arg))
+	    -> 
+	    (Void -> w::Widget_Size_Preference)
+	    ->
+	    w::Widget;
+
+	make_colorbox
+	    :
+	    w::Root_Window
+	    -> 
+	    ( Null_Or(xc::Color),
+	      Void -> w::Widget_Size_Preference
+	    )
+	    ->
+	    w::Widget;
+    };
+
+end;

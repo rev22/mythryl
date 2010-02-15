@@ -1,0 +1,30 @@
+## xgeometry.pkg
+#
+# This is the client-visible version of xgeometry.
+#
+# The library-internal version is in:
+#
+#     src/lib/x-kit/xclient/src/window/geometry.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/src/xclient.make6
+
+
+
+###                      "Much learning does not teach understanding."
+###
+###                                               -- Heraclitus  (540BC-480BC, On the Universe)
+
+
+
+
+							# xclient_sharing	is from   src/lib/x-kit/xclient/xclient-sharing.pkg
+
+package xgeometry
+    =
+    xclient_sharing::xgeometry;
+
+
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

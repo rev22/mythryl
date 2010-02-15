@@ -1,0 +1,24 @@
+## importtree.pkg
+## (C) 2001 Lucent Technologies, Bell Labs
+
+# Compiled by:
+#     src/lib/compiler/execution/execute.make6
+
+
+
+# References from .o7 files to functions
+# &tc in other .o7 files and libraries.
+# See comments at top of  src/lib/compiler/execution/o7-file/oh7-file.pkg
+
+
+package import_tree {
+
+    Import_Tree
+        =
+        IMPORT_TREE_NODE   List ((Int, Import_Tree));
+
+    Import
+        =
+        (picklehash::Picklehash, Import_Tree);
+
+};

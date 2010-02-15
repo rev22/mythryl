@@ -1,0 +1,46 @@
+## brickview.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/bricks/bricks.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/bricks/brickview.pkg
+
+stipulate
+    include threadkit;			# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package w  =  widget;		# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    #
+    package bu =  brick_util;		# brick_util		is from   src/lib/x-kit/tut/bricks/brick-util.pkg
+herein
+
+    api Brick_View {
+
+	Brick_View;
+
+	make_brick_view
+	    :
+	    w::Root_Window
+	    ->
+	    (bu::Position, Mailslot( bu::Mse_Evt ), bu::Palette)
+	    ->
+	    Brick_View;
+
+	as_widget:  Brick_View -> w::Widget;
+
+	show_view:  Brick_View -> String -> Void;
+	end_view:   Brick_View -> String -> Void;
+
+	mark_view:  Brick_View -> Void;
+	norm_view:  Brick_View -> Void;
+
+	set_text:   Brick_View -> String -> Void;
+
+	highlight_on:   Brick_View -> Void;
+	highlight_off:  Brick_View -> Void;
+    };
+
+end;
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

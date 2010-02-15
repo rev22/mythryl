@@ -1,0 +1,66 @@
+## thread.pkg
+
+# Compiled by:
+#     src/lib/std/stdlib.make6
+
+
+api Thread {
+
+    Thread_Id;
+
+    get_thread_id:    Void -> Thread_Id;
+    get_thread_name:  Void -> String;
+
+    same_thread_id:     (Thread_Id, Thread_Id) -> Bool;
+    compare_thread_id:  (Thread_Id, Thread_Id) -> Order;
+    hash_thread_id:      Thread_Id -> Unt;
+
+    thread_id_to_string:  Thread_Id -> String;		# "003141" or such.
+    thread_id_to_name:    Thread_Id -> String;
+
+    #              Name      Thread body            Result
+    #              ------    ------------------     ---------
+    make_thread:   String -> (Void -> Void)      -> Thread_Id;
+    make_thread':  String -> (X    -> Void) -> X -> Thread_Id;
+
+    thread_done:  Void -> X;
+
+    thread_death_mailop:  Thread_Id -> mailop::Mailop( Void );
+
+    yield:  Void -> Void;	#  mostly for benchmarking 
+
+
+    # Thread-local data support:
+
+    make_per_thread_property
+	:
+        (Void -> X)
+        ->
+        { clear:  Void -> Void,			# Clear current thread's property. 
+
+	  get:    Void -> X,			# Get current thread's property;
+						# If the property is not defined
+						# then set it using the initialization 
+						# function. 
+
+	  peek:  Void -> Null_Or( X ),	# Return the property's value, if any. 
+
+	  set:   X -> Void			# Set the property's value for the current thread. 
+	};
+
+    make_boolean_per_thread_property
+	:
+	Void
+	->
+	{ get:  Void -> Bool,
+	  set:  Bool -> Void
+        };
+
+};
+
+
+
+## COPYRIGHT (c) 1989-1991 John H. Reppy
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

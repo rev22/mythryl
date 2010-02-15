@@ -1,0 +1,230 @@
+## calc.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/calc/calc.make6
+
+
+# The calculator interface.
+
+
+stipulate
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa  =  widget_attribute;			# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package lbl =  label;				# label				is from   src/lib/x-kit/widget/leaf/label.pkg
+    package low =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
+    package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    package pb  =  pushbuttons;				# pushbuttons			is from   src/lib/x-kit/widget/leaf/pushbuttons.pkg
+    package ts  =  toggleswitches;			# toggleswitches		is from   src/lib/x-kit/widget/leaf/toggleswitches.pkg
+    package wt  =  widget_types;			# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
+    #
+    package acc =  accumulator;				# accumulator			is from   src/lib/x-kit/tut/calc/accumulator.pkg
+herein
+
+    package calc:  Calc {					# Calc				is from   src/lib/x-kit/tut/calc/calc.api
+
+	fun make_display_line  w
+	    =
+	    low::HZ_CENTER
+	      [
+		low::SPACER { min_size=>0,  ideal_size=>5, max_size=>NULL },
+		low::WIDGET ( sz::make_tight_size_preference_wrapper  w),
+		low::SPACER { min_size=>0,  ideal_size=>5, max_size=>NULL }
+	      ];
+
+	fun make_switch_line sw
+	    =
+	    low::HZ_CENTER
+	      [
+		low::SPACER { min_size=>0,  ideal_size=>5, max_size=>NULL },
+		low::WIDGET sw,
+		low::SPACER { min_size=>5,  ideal_size=>5, max_size=>THE 5 }
+	      ];
+
+	fname = "-Adobe-Helvetica-Bold-R-Normal--*-120-*";
+
+	fun make_line (root_window, view, args) itemlist
+	    =
+	    {   hglue = low::SPACER { min_size=>5,  ideal_size=>5, max_size=>THE 5 };
+
+		fun add_box ((name, act), l)
+		    =
+		    {   args = [ (wa::label, wa::STRING_VAL name),
+				 (wa::font,  wa::STRING_VAL fname)
+			       ];
+
+			fw =  pb::make_text_pushbutton_with_click_callback'
+				  #
+				  (root_window, view, args)
+				  #
+				  act;
+
+			hglue ! (low::WIDGET (pb::as_widget fw)) ! l;
+		    };
+
+		boxlist
+		    =
+		    list::fold_right
+			#
+			add_box
+			#
+			[ hglue ]
+			#
+			itemlist;
+
+		low::HZ_CENTER boxlist;
+	    };
+
+	fun make_calc (root_window, view, args)
+	    =
+	    {   disp_args = [ (wa::label,  wa::STRING_VAL "          0"),
+			      (wa::relief, wa::RELIEF_VAL  w::SUNKEN),
+			      (wa::halign, wa::HALIGN_VAL  wt::HRIGHT)
+			    ];
+
+		display
+		    =
+		    lbl::make_label' (root_window, view, disp_args);
+
+		display_line
+		    =
+		    make_display_line  (lbl::as_widget  display);
+
+		fun quit _
+		    =
+		    {   pause = time::from_milliseconds 500;
+
+			fun cleanup ()
+			    =
+			    {   do_mailop (timeout_in' pause); 
+				w::delete_root_window root_window; 
+				shut_down_thread_scheduler  winix::process::success;
+				threadkit::make_thread  "calc cleanup"  cleanup;
+				();
+			    };
+		    };
+
+		sw = ts::as_widget (ts::make_rocker_toggleswitch' (root_window, view, args) quit);
+
+		switch_line = make_switch_line sw;
+
+		acc = acc::make_accumulator ();
+
+		send_acc = acc::send_acc acc;
+
+		fun printer ()
+		    =
+		    loop ()
+		    where
+			acc_mailop = acc::mailop_of acc;
+
+			fun set l
+			    =
+			    lbl::set_label display (lbl::TEXT l);
+
+			fun loop ()
+			    =
+			    for (;;) {
+				#
+				case (do_mailop  acc_mailop)
+				    #
+				    acc::OVAL v    =>  set (int::to_string v);
+				    acc::OINFINITY =>  set "Infinity";
+				    acc::OOVERFLOW =>  set "OVERFLOW";
+				esac;
+			    };
+		    end;
+
+		fun opfn msg ()
+		    =
+		    send_acc msg;
+
+		line1 = make_line
+			  (root_window, view, args)
+			  [
+			    ("7", opfn (acc::VAL 7)),
+			    ("8", opfn (acc::VAL 8)),
+			    ("9", opfn (acc::VAL 9)),
+			    ("+", opfn (acc::OP acc::PLUS))
+			  ];
+
+		line2 = make_line
+			  (root_window, view, args)
+			  [
+			    ("4", opfn (acc::VAL 4)),
+			    ("5", opfn (acc::VAL 5)),
+			    ("6", opfn (acc::VAL 6)),
+			    ("-", opfn (acc::OP acc::MINUS))
+			  ];
+
+		line3 = make_line
+			  (root_window, view, args)
+			  [
+			    ("1", opfn (acc::VAL 1)),
+			    ("2", opfn (acc::VAL 2)),
+			    ("3", opfn (acc::VAL 3)),
+			    ("*", opfn (acc::OP acc::TIMES))
+			  ];
+
+		line4 = make_line
+			  (root_window, view, args)
+			  [
+			    ("C", opfn (acc::CLEAR)),
+			    ("0", opfn (acc::VAL 0)),
+			    ("=", opfn (acc::EQUAL)),
+			    ("/", opfn (acc::OP acc::DIVIDE))
+			  ];
+
+		vglue = low::SPACER { min_size=>1, ideal_size=>5, max_size=>NULL };
+
+		make_thread "calc printer" printer;
+
+		low::as_widget
+		    (low::line_of_widgets
+			(root_window, view, args)
+			(low::VT_CENTER
+			  [
+			    vglue,
+			    display_line,
+			    vglue,
+			    switch_line,
+			    vglue,
+			    line1,
+			    vglue,
+			    line2,
+			    vglue,
+			    line3,
+			    vglue,
+			    line4,
+			    vglue
+			  ]
+		    )   );
+	    };				# fun make_calc 
+
+    };					# package calc 
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1991 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

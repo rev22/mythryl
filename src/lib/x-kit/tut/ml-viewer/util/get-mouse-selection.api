@@ -1,0 +1,57 @@
+## get-mouse-selection.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# Various geometric utility routines.
+# This assumes a mechanism for allowing only
+# one thread at a time to grab the server.
+
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
+
+				
+stipulate
+    include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc = xcore;							# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+#   package xd = xdraw;							# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg = xgeometry;						# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi = xinput;						# xinput		is from   src/lib/x-kit/xclient/xinput.pkg;
+herein
+
+    api Get_Mouse_Selection {
+
+
+	get_pt
+	    :
+	    (xc::Window, Mailop( xi::Envelope( xi::Mouse_Mail )))
+	    ->
+	    (xi::Mousebutton, xi::Mousebutton_State)
+	    ->
+	    Mailop( Null_Or( xg::Point ) );
+
+	get_click_pt
+	    :
+	    (xc::Window, Mailop (xi::Envelope( xi::Mouse_Mail )))
+	    ->
+	    (xi::Mousebutton, xi::Mousebutton_State)
+	    ->
+	    Mailop(  Null_Or( xg::Point ) );
+
+	get_box
+	    :
+	    (xc::Window,  Mailop (xi::Envelope( xi::Mouse_Mail )))
+	    ->
+	    xi::Mousebutton
+	    ->
+	    Mailop( Null_Or( xg::Box ) );
+
+    # my move_box:  (xc::Window, Mailop( i::Envelope(i::Mouse_Mail)))
+    #  -> (i::Mousebutton, i::Mousebutton_state, xg::Box)
+    #  -> Mailop( Null_Or (xg::Box ));
+
+    };				# api Get_Mouse_Selection
+
+end;

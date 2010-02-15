@@ -1,0 +1,166 @@
+## draw-types.api
+#
+# Types of chunks that can be drawn on (or are pixel sources).
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/xclient/src/window/draw-types.pkg
+
+stipulate
+    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xt =  xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package sn =  xsession;				# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
+    package di =  draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+herein
+
+    api Draw_Types {
+
+	# An on-screen rectangular array of pixels on the X server:
+	#
+	Window
+	    =
+	    WINDOW
+	      {
+		id:	          xt::Window_Id,
+		screen:       sn::Screen,
+		screen_depth: sn::Screen_Depth_Imps,
+		draw_fn:      di::Draw_Mail -> Void
+	      };
+
+	# An off-screen rectangular array of pixels on the X server:
+	#
+	Rw_Pixmap
+	    =
+	    RW_PIXMAP
+	      { id:           xt::Pixmap_Id,
+		screen:       sn::Screen,
+		size:         g::Size,
+		screen_depth: sn::Screen_Depth_Imps
+	      };
+
+	# An off-screen read-only rectangular array of pixels on the X server: 
+	#
+	Ro_Pixmap
+	    =
+	    RO_PIXMAP  Rw_Pixmap;
+
+	same_window:    (Window,    Window   ) -> Bool;
+	same_rw_pixmap: (Rw_Pixmap, Rw_Pixmap) -> Bool;
+	same_ro_pixmap:	(Ro_Pixmap, Ro_Pixmap) -> Bool;
+
+	# Sources for bitblt operations 
+	#
+	Draw_From
+	  = FROM_WINDOW     Window
+	  | FROM_RW_PIXMAP  Rw_Pixmap
+	  | FROM_RO_PIXMAP  Ro_Pixmap
+	  ;
+
+	depth_of_window:    Window -> Int;
+	depth_of_rw_pixmap: Rw_Pixmap -> Int;
+	depth_of_ro_pixmap: Ro_Pixmap -> Int;
+	depth_of_draw_src:  Draw_From -> Int;
+
+	shape_of_window
+	    :
+	    Window
+	    ->
+	    { upperleft:     g::Point,		# Pixel location of window upper-left corner relative to parent.
+	      size:          g::Size,		# Pixel size of window.	
+	      #
+	      depth:         Int,				# Pixel depth in bits.
+	      border_width:  Int				# Window border in pixels.
+	    };
+
+	shape_of_rw_pixmap
+	    :
+	    Rw_Pixmap
+	    ->
+	    { upperleft:     g::Point,		# Present only for uniformity;  these have no actual position.  Always (0,0).
+	      size:          g::Size,
+	      #
+	      depth:         Int,
+	      border_width:  Int				# Present only for uniformity;  these have no actual border.    Always 0.
+	    };
+
+	shape_of_ro_pixmap
+	    :
+	    Ro_Pixmap
+	    ->
+	    { upperleft:     g::Point,		# Present only for uniformity;  these have no actual position.  Always (0,0).
+	      size:          g::Size,
+	      #
+	      depth:         Int,
+	      border_width:  Int				# Present only for uniformity;  these have no actual border.    Always 0.
+	    };
+
+	shape_of_draw_src
+	    :
+	    Draw_From
+	    ->
+	    { upperleft:     g::Point,
+	      size:          g::Size,
+	      #
+	      depth:         Int,
+	      border_width:  Int
+	    };
+
+	size_of_window:	        Window -> g::Size;
+	size_of_rw_pixmap:   Rw_Pixmap -> g::Size;
+	size_of_ro_pixmap:   Ro_Pixmap -> g::Size;
+
+	Draw_Root = DWIN  Window
+		  | DPM   Rw_Pixmap
+		  ;
+
+	Drawable_Window
+	    =
+	    DRAWABLE_WINDOW
+	      {
+		root:      Draw_Root,
+		draw_fn:  di::Draw_Mail -> Void
+	      };
+
+	drawable_of_window:        Window -> Drawable_Window;
+	drawable_of_rw_pixmap:  Rw_Pixmap -> Drawable_Window;
+
+	depth_of_drawable:  Drawable_Window -> Int;
+
+	make_unbuffered_drawable:  Drawable_Window -> Drawable_Window;
+	    #
+	    # An unbuffered drawable is used to provide immediate
+	    # graphical response to user interaction.  (Currently
+	    # this is implemented by transparently adding a flush
+	    # command after each draw command.)
+	    #
+	    # This call is used in many of the src/lib/x-kit/tut
+	    # programs, for an example in:
+	    #
+	    #     src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
+
+	make_locked_window:  Window -> { drawable:  Drawable_Window, release:  Void -> Void };
+	    #
+	    # Create a locked version of the given window.
+	    # This provides exclusive access to its drawing
+	    # surface (and that of its descendents) during
+	    # OP_XOR rubber-banding.  Usually used in conjunction
+	    # with unbuffered drawing (below).	
+	    # 
+	    # The first result is the locked window on which to draw,
+	    # the second is the unlock operation for the drawable.
+	    # By convention, the overlay drawable is unbuffered.
+	    #
+	    # This call appears to be unused at present, but see
+	    # much related-looking "overlay" code in
+	    #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
+	    # this may be a half-implemented idea.
+    };
+
+end;
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

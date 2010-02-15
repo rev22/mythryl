@@ -1,0 +1,26 @@
+package tokens =
+pkg
+enum TOKEN (Y,X) =
+    EOF of X * X
+  | AT of X * X
+  | DOT of X * X
+  | EQUAL of X * X
+  | RPAREN of X * X
+  | RBRACKET of X * X
+  | RBRACE of X * X
+  | LPAREN of X * X
+  | LBRACKET of X * X
+  | LBRACE of X * X
+  | COMMA of X * X
+  | SEMICOLON of X * X
+  | COLON of X * X
+  | SYMBOL of String * X * X
+  | EDGEOP of X * X
+  | EDGE of X * X
+  | NODE of X * X
+  | STRICT of X * X
+  | SUBGRAPH of X * X
+  | DIGRAPH of X * X
+  | GRAPH of X * X
+type Semantic_Value = Void
+end

@@ -1,0 +1,25 @@
+## pixmap-widget.pkg
+#
+
+# Compiled by:
+#     src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/bitmap-editor/pixmap-widget.pkg
+
+api Pixmap_Widget {
+
+    exception BAD_PARAMETER;
+
+    make_pixmap_widget
+	:
+	widget::Root
+	->
+	{ horz_cells:  Int,
+          vert_cells:  Int,
+          cell_size:   Int
+        }
+        ->
+	widget::Widget;
+};
+

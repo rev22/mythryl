@@ -1,0 +1,255 @@
+## dotgraph-to-planargraph.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# Dotgraphs are the raw abstract graphs as read in from disk.
+# Vgraphs are the same graphs embedded in a plane for drawing.
+# (See ../GRAPHS.OVERVIEW.)
+
+stipulate
+    package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package gf  =  xgeometry_float;			# xgeometry_float		is from   src/lib/x-kit/tut/ml-viewer/graph-view/geometry-2d-float.pkg
+    package da  =  dot_subgraph_tree_attributes;	# dot_subgraph_tree_attributes	is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg
+    package dg  =  dot_subgraph_tree;			# dot_subgraph_tree		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+    package pg  =  planar_subgraph_tree;		# planar_subgraph_tree		is from   src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
+herein
+
+    package dotgraph_to_planargraph:  Dotgraph_To_Planargraph {
+
+	fun divscale (n, xg::SIZE { wide, high } )
+	    =
+	    xg::POINT { col => wide / n,
+		        row => high / n
+		      };
+
+
+	fun bind_view_node (ppf, prf, vg) n
+	    =
+	    {   name = dg::node_name n;
+
+		case (pg::find_node (vg, name))
+
+		    NULL =>
+			{   my  { center, size, label, shape, ... }
+				=
+				*(dg::info_of_node  n);
+
+			    bbox = xg::make_box
+				     ( xg::sub_pt (center, divscale (2, size)),
+				       size
+				     );
+
+			    attribute
+				=
+				{ pos   =>  ppf center,
+				  bbox  =>  prf bbox,
+				  shape =>  shape,
+				  base  =>  n,
+				  label =>  label
+				};
+
+			    pg::add_node (vg, name, THE attribute);
+			};
+
+		    THE nn => nn;
+
+		esac;
+
+	    };
+
+
+	stipulate
+
+	    arrowl = 10;				# "arrow length" ?
+	    arroww = 7;				# "arrow width"  ?
+
+    #	pi_2   =  1.57079632679489661923;
+    #	pi     =  3.14159265358979323846;
+    #
+    #	fun atan2 (y, 0.0)
+    #		=>
+    #		if   (y == 0.0)   0.0;
+    #                elif (y  > 0.0)   pi_2;
+    #                else             -pi_2;
+    #                fi;
+    #
+    #	    atan2 (y, x)
+    #		=>
+    #		if   (x >  0.0)  arctan (y/x);
+    #		elif (y >= 0.0)  arctan (y/x) + pi;
+    #		else             arctan (y/x) - pi;
+    #		fi;
+    #	end;  
+
+	herein
+
+	    fun make_arrow (gf::POINT { x=>x', y=>y'}, p as gf::POINT { x, y }, arrowl, arroww)
+		    =
+		    {   delx = x'-x;
+			dely = y'-y;
+								    # math		is from   src/lib/std/src/math64-x86.pkg
+			theta = math::atan2 (dely, delx);
+			costh = math::cos theta;
+			sinth = math::sin theta;
+
+			sp = gf::POINT { x => x + (arrowl*costh + arroww*sinth),
+					 y => y + (arrowl*sinth - arroww*costh)
+				       };
+
+			ep = gf::POINT { x => x + (arrowl*costh - arroww*sinth),
+					 y => y + (arrowl*sinth + arroww*costh)
+				       };
+
+			[sp, p, ep];
+		    };
+
+	    fun make_view_node (scf, ppf, prf, g, vg) 
+		=
+		{
+		    bind_v_node = bind_view_node (ppf, prf, vg);
+
+		    fun last [a]     =>  a;
+			last (_ ! t) =>  last t;
+			last []      =>  raise exception lib_base::IMPOSSIBLE "dotgraph_to_vgraph::make_view_node";
+		    end;
+
+		    arrowl = scf arrowl;
+		    arroww = (scf arroww) // 2.0;
+
+		    fun make_edge tnode e
+			=
+			{   hnode = bind_v_node (dg::head e);
+
+			    my { pts, arrow }
+				=
+				*(dg::info_of_edge e);
+
+			    info_pts = map ppf (pts @ [arrow]);
+
+			    arrows = make_arrow (ppf (last pts), ppf arrow, arrowl, arroww);
+
+			    info = { bbox =>  gf::bound_box (arrows @ info_pts),
+				     pts  =>  info_pts,
+				     arrows
+				   };
+
+			    pg::add_edge { graph=>vg, tl=>tnode, hd=>hnode, info=>THE info };
+
+			    ();
+			};
+
+		    fn n = dg::apply_out_edges (make_edge( bind_v_node n)) (g, n);
+		};
+	end;
+
+	fun convert_dotgraph_to_planargraph  g
+	    =
+	    {   my { bbox => xg::SIZE { wide=>gwid, high=>ght }, scale, ... }
+		    =
+		    *(dg::info_of_graph  g);
+
+		fun sc x
+		    =
+		    scale * (float::from_int x);
+
+		fun proj_pt (xg::POINT { col=>x, row=>y } )
+		    =
+		    gf::POINT { x=>sc x, y=>sc (ght-y) };
+
+		fun proj_rt (xg::BOX { col=>x, row=>y, wide, high } )
+		    =
+		    gf::BOX
+		      { x =>  sc x,
+			y =>  sc (ght-(y+high)),
+			#
+			wide =>  sc wide,
+			high =>  sc high
+		      };
+
+		fun pick_node g
+		      =
+		      {   exception DONE;
+
+			  my nl:  Ref( List( dg::Node ) )
+			      =
+			      REF [];
+
+			  fun pick n
+			      =
+			      {   nl := [n];
+				  raise exception DONE;
+			      };
+
+			  dg::apply_nodes pick g
+			  except
+			      DONE = ();
+
+			  list::head *nl;
+		      };
+
+		info = { graph    =>  g,
+
+			 fontsize =>  float::truncate (sc view_font::default_font_size),
+
+			 bbox     =>  gf::BOX { x => 0.0,
+						y => 0.0,
+						#
+						wide => sc gwid,
+						high => sc ght
+					      }
+		       };
+
+		picknode = pick_node  g;
+
+		default_node_info
+		    =
+		    { pos   =>  gf::point_00,
+		      bbox  =>  gf::BOX { x=>0.0, y=>0.0, wide=>0.0, high=>0.0 },
+		      shape =>  da::BOX,
+		      base  =>  picknode,
+		      label =>  ""
+		    };
+
+		default_edge_info
+		    =
+		    { bbox   =>  gf::BOX { x=>0.0, y=>0.0, wide=>sc gwid, high=>sc ght },
+		      pts    =>  [],
+		      arrows =>  []
+		    };
+
+		vg = pg::make_graph
+		       {
+			 name =>  dg::graph_name  g, 
+			 info =>  THE info,
+			 #
+			 graph_info =>  .{ info;              },
+			 node_info  =>  .{ default_node_info; },
+			 edge_info  =>  .{ default_edge_info; }
+		       };
+
+		dg::apply_nodes (make_view_node (sc, proj_pt, proj_rt, g, vg)) g;
+
+		vg;
+	    };
+
+    };				# package vgraph_aux 
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################

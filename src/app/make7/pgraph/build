@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Install-time build script for pgraph-util.make6.
+#
+# We will normally be run as a result of a toplevel "make rest".
+#
+# Our main result is the freezefile src/app/make7/pgraph-util.make6.a7.
+
+bin/mythryld <<EOF
+    make7::freeze "src/app/make7/pgraph/pgraph-util.make6";
+EOF
+
+if   [ -f "src/app/make7/pgraph/pgraph-util.make6.a7" ]
+then
+     echo "              src/app/make7/pgraph/build:   Successfully created src/app/make7/pgraph/pgraph-util.make6.a7:"
+     echo "              src/app/make7/pgraph/build:   `ls -l src/app/make7/pgraph/pgraph-util.make6.a7`"
+else
+     echo "              src/app/make7/pgraph/build:   Failed to create src/app/make7/pgraph/pgraph-util.make6.a7"
+     exit 1
+fi
+
+exit 0;

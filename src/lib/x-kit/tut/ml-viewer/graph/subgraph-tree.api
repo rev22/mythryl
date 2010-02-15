@@ -1,0 +1,98 @@
+## subgraph-tree.api
+#
+# This defines the base-level graph interface for ml-viewer.
+#
+# The functionality supported includes nodes,
+# directed edges between pairs of nodes, and
+# a tree of subgraphs where each graph contains
+# all the nodes and edges of all its subgraphs.
+#
+# We build on this to define attributed_subgraph_tree in
+#
+#     src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree-g.pkg
+#
+# which is in turn used to define our two concrete graph types in
+#
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+#     src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This api is implemented by:
+#     src/lib/x-kit/tut/ml-viewer/graph/subgraph-tree-g.pkg
+
+api Subgraph_Tree {
+
+    Graph;
+    Edge;
+    Node;
+
+    Graph_Info;			# Arbitrary per-graph user information.	(Supplied as arg to subgraph_tree_g generic.)
+    Edge_Info;			# Arbitrary per-edge  user information.	(Supplied as arg to subgraph_tree_g generic.)
+    Node_Info;			# Arbitrary per-node  user information.	(Supplied as arg to subgraph_tree_g generic.)
+
+    exception SUBGRAPH_TREE_ERROR String;
+
+    make_graph:             Graph_Info  -> Graph;
+    make_subgraph:  (Graph, Graph_Info) -> Graph;
+
+    num_nodes:  Graph -> Int;
+    num_edges:  Graph -> Int;
+
+    add_node:     (Graph, Node_Info) -> Node;
+    insert_node:  (Graph, Node) -> Void;
+    del_node:     (Graph, Node) -> Void;
+    nodes:         Graph -> List( Node );
+    apply_nodes:  (Node -> Void) -> Graph -> Void;
+    fold_nodes:  ((Node, X) -> X) -> Graph -> X -> X;
+
+    add_edge:  { graph:  Graph, hd: Node, info: Edge_Info, tl: Node } -> Edge;
+    del_edge:  (Graph, Edge) -> Void;
+
+    edges:  Graph -> List( Edge );
+
+    in_edges:  (Graph, Node) -> List( Edge );
+    out_edges: (Graph, Node) -> List( Edge );
+
+    apply_in_edges:   (Edge -> Void) -> (Graph, Node) -> Void;
+    apply_out_edges:  (Edge -> Void) -> (Graph, Node) -> Void;
+
+    head:  Edge -> Node;
+    tail:  Edge -> Node;
+
+    nodes_of:  Edge -> { hd:  Node, tl:  Node };
+
+    root_of_node:  Node -> Graph;
+    root_of_edge:  Edge -> Graph;
+    root_of_graph: Graph -> Graph;
+    is_root:       Graph -> Bool;
+
+    has_node:  (Graph, Node) -> Bool;
+    has_edge:  (Graph, Edge) -> Bool;
+
+    eq_graph:  (Graph, Graph) -> Bool;
+    eq_node:   (Node, Node)   -> Bool;
+    eq_edge:   (Edge, Edge)   -> Bool;
+
+    info_of_edge:   Edge  ->  Edge_Info;
+    info_of_graph:  Graph -> Graph_Info;
+    info_of_node:   Node  ->  Node_Info;
+
+};			# api Subgraph_Tree
+
+
+# This file was
+#
+#     src/lib/x-kit/tut/ml-viewer/graph/graph.api
+#
+# I renamed it to graphx.api to avoid name conflict with existing
+#
+#     src/lib/graph/graph.api
+#
+# I don't know if the two should be merged or this version just
+# dropped or what.   2009-12-13 CRT
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

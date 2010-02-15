@@ -1,0 +1,254 @@
+## bitmap-widget.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6
+
+stipulate
+    include threadkit;					# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+#    include geometry;	# xgeometry?
+
+#    include xcore;					# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
+    include xdraw;					# xdraw		is from   src/lib/x-kit/xclient/xdraww.pkg
+    include xinput;					# xinput	is from   src/lib/x-kit/xclient/xinput.pkg
+    include xwindow;					# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+
+    include widget;
+
+
+    package w  =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+
+    package xc =  xcore;				# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd =  xdraw;				# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg =  xgeometry;				# xcore		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi =  xinput;				# xinput	is from   src/lib/x-kit/xclient/xinput.pkg
+    package xw =  xwindow;				# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+herein
+
+    package bitmap_widget:  Bitmap_Widget {			# Bitmap_Widget		is from   src/lib/x-kit/tut/bitmap-editor/bitmap-widget.api
+
+
+	exception BAD_PARAMETER;
+
+	Pixel_Change = (Bool, Point);
+
+	Plea_Mail
+	  = SET_PIXEL     Pixel_Change
+	  | IMAGE_OF      Oneshot_Mailslot( Image )
+	  | DO_REALIZE
+	      { kidplug:  xi::Kidplug,
+		window:   w::Window,
+		size:     Size
+	      }
+	  ;
+
+	Bitmap_Widget
+	    =
+	   BITMAP_WIDGET
+	      { widget:     w::Widget,
+		plea_slot:  Mailslot( Plea_Mail )
+	      };
+
+	fun set_color screen (THE color, _)  =>  color;
+	    set_color screen (NULL, default) =>  default;
+	end;
+
+	fun make_bitmap_widget root { horz_cells, vert_cells, foreground, background }
+	    =
+	    {   screen = screen_of root;
+
+		plea_slot = make_mailslot ();
+
+		psize = SIZE { wide => horz_cells,
+			       high => vert_cells
+			     };
+
+		pixmap =  make_rw_pixmap screen (psize, 1);
+
+		pm     =  drawable_of_pixmap pixmap;
+
+		prect  =  make_box (origin_point, psize);
+
+		clear_drawable pm;
+
+		size = make_tight_size_preference (horz_cells, vert_cells);
+
+		max_x = horz_cells - 1;
+		max_y = vert_cells - 1;
+
+
+		forec = set_color screen (foreground, black_of_screen screen);
+		backc = set_color screen (background, white_of_screen screen);
+
+
+		on_pen   =  make_pen [PV_FOREGROUND color1];
+		off_pen  =  make_pen [PV_FOREGROUND color0];
+		copy_pen =  make_pen [PV_FOREGROUND forec, PV_BACKGROUND backc];
+
+
+		fun set_pixel (TRUE,  pt) =>  draw_point pm on_pen  pt;
+		    set_pixel (FALSE, pt) =>  draw_point pm off_pen pt;
+		end;
+
+
+		fun blt dw r
+		    =
+		    bitblt dw copy_pen
+		      {
+			from     => FROM_PIXMAP  pixmap,
+			from_box => r,
+			to_pos  => origin_of_box r
+		      };
+
+
+		fun redraw (dw, rlist)
+		    =
+		    apply (blt dw) rlist;
+
+
+		fun send_image  reply_1shot
+		    =
+		    set ( reply_1shot,
+			  make_cs_pixmap_from_rw_pixmap  pixmap
+			);
+
+
+		#
+		fun realize { kidplug, window, size }
+		    =
+		    loop ()
+		    where
+
+			my KIDPLUG { ci, ... }
+			    =
+			    ignore_mouse_and_keyboard  kidplug;
+
+			m_slot = make_mailslot ();
+
+			dw = drawable_of_window  window;
+
+
+			fun do_mom (ETC_RESIZE (BOX { x, y, wide, high } ))
+				=>
+				();
+
+			    do_mom (ETC_REDRAW rlist)
+				=>
+				{   redraw (dw, rlist);
+				    ();
+				};
+
+			    do_mom ETC_OWN_DEATH
+				=>
+				();
+
+			    do_mom _
+				=>
+				();
+			end;
+
+
+			fun handle_set (DO_REALIZE _)
+				=>
+				();
+
+			    handle_set (IMAGE_OF reply_1shot)
+				=>
+				{   send_image  reply_1shot;
+				    ();
+				};
+
+			    handle_set (SET_PIXEL  pixel_change)
+				=>
+				{   set_pixel  pixel_change;
+
+				    redraw (dw, [prect]);
+
+				    ();
+				};
+			end;
+
+			fun loop ()
+			    =
+			    for (;;) {
+
+				select [
+				    ci  ==>
+					(fn mailop = (do_mom  (envelope_contents  mailop))),
+
+				    take' plea_slot
+					==>
+					.{  handle_set #mailop;  }
+				];
+			    };
+
+		    end;
+
+		fun init_loop ()
+		    =
+		    case (take plea_slot)
+			#
+			DO_REALIZE arg          =>    realize arg;
+			SET_PIXEL  pixel_change => {  set_pixel   pixel_change;  init_loop ();  };
+			IMAGE_OF   reply_1shot  => {  send_image  reply_1shot;   init_loop ();  };
+		    esac;
+
+		make_thread "bitmap widget" init_loop;
+
+		BITMAP_WIDGET
+		  {
+		    plea_slot,
+
+		    widget =>   make_widget
+				  {
+				    root,
+				    size_preference_thunk_of =>   fn ()  =  size, 
+				    realize   =>   fn arg =  give (plea_slot, DO_REALIZE arg)
+				  }
+		  };
+	    };
+
+	fun as_widget (BITMAP_WIDGET { widget, ... } )
+	    =
+	    widget;
+
+	fun set_pixel
+		(BITMAP_WIDGET { plea_slot, ... } )
+		pixel_change
+	    =
+	    give (plea_slot, SET_PIXEL pixel_change);
+
+	fun image_of (BITMAP_WIDGET { plea_slot, ... } )
+	    =
+	    {   reply_1shot = make_oneshot_mailslot ();
+
+		give (plea_slot, IMAGE_OF reply_1shot);
+
+		get  reply_1shot;
+	    };
+    };						# package bitmap_widget
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

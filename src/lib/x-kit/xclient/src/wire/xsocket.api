@@ -1,0 +1,94 @@
+## xsocket.api
+#
+# Manage binary socket I/O to an X server for an X client.
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+
+
+###        "To be on the wire is life.
+###         The rest is waiting."
+###
+###           -- Karl Wallenda, highwire walker
+
+
+									# Socket		is from   src/lib/std/src/socket/socket.api
+									# socket		is from   src/lib/std/socket.pkg
+									# socket_guts		is from   src/lib/std/src/socket/socket-guts.pkg
+									# xerrors		is from   src/lib/x-kit/xclient/src/wire/xerrors.pkg
+# This API is implemented by:
+#     src/lib/x-kit/xclient/src/wire/xsocket.pkg
+
+stipulate
+    include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package g = geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+herein
+
+    api Xsocket {
+
+	exception LOST_REPLAY;
+	exception ERROR_REPLY  xerrors::Xerror;
+
+	Xsocket;
+
+	make_xsocket:       socket::Socket( X, socket::Stream( socket::Active ) ) -> Xsocket;
+	close_xsocket:      Xsocket -> Void;
+
+	same_xsocket:      (Xsocket, Xsocket) -> Bool;
+
+	request:            Xsocket -> unt8_vector::Vector -> Void;
+	request_and_check:  Xsocket -> unt8_vector::Vector -> Mailop( Void );
+	request_reply:      Xsocket -> unt8_vector::Vector -> Mailop( unt8_vector::Vector );
+
+	request_replies
+	    :
+	    Xsocket
+	    ->
+	    (unt8_vector::Vector, (unt8_vector::Vector -> Int))
+	    ->
+	    Mailop( unt8_vector::Vector );
+
+	request_with_exposures
+	    :
+	    Xsocket
+	    ->
+	    (unt8_vector::Vector,  oneshot_maildrop::Oneshot_Maildrop( Void -> List( g::Box )))
+	    ->
+	    Void;
+
+	flush:  Xsocket -> Void;
+
+	wait_for_xevent:  Xsocket -> Mailop( event_types::Xevent );
+
+	read_xerror:  Xsocket -> (Unt, unt8_vector::Vector);
+    };
+
+end;
+
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

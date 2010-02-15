@@ -1,0 +1,23 @@
+LIBRARY_EXPORTS
+
+	pkg bad_bricks
+
+LIBRARY_COMPONENTS
+
+	$ROOT/src/lib/std/stdlib.make6
+	$ROOT/src/lib/x-kit/xkit.make6
+
+	brick-util.api
+	brick-util.pkg
+
+	brickview.api
+	brickview.pkg
+
+	brick.api
+	brick.pkg
+
+	wall.api
+	wall.pkg
+
+	badbricks.pkg
+	export.pkg

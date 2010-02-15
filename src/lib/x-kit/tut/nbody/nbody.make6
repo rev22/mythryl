@@ -1,0 +1,13 @@
+LIBRARY_EXPORTS
+
+	pkg nbody
+
+LIBRARY_COMPONENTS
+
+	$ROOT/src/lib/std/stdlib.make6
+	$ROOT/src/lib/x-kit/xkit.make6
+
+	sim.api
+	sim.pkg
+	animate-sim-g.pkg
+	nbody.pkg

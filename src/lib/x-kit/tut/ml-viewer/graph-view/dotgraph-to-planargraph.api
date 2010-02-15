@@ -1,0 +1,24 @@
+## dotgraph-to-planargraph.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# Dotgraphs are the raw abstract graphs as read in from disk.
+# Vgraphs are the same graphs embedded in a plane for drawing.
+# (See ../GRAPHS.OVERVIEW.)
+
+stipulate
+    package dg  =  dot_subgraph_tree;		# dot_subgraph_tree	is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+    package pg  =  planar_subgraph_tree;	# planar_subgraph_tree	is from   src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
+herein
+
+    api Dotgraph_To_Planargraph {
+
+	convert_dotgraph_to_planargraph
+	    :
+	    dg::Attributed_Graph
+	    ->
+	    pg::Attributed_Graph;
+    };
+
+end;

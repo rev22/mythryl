@@ -1,0 +1,68 @@
+## background.pkg
+#
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+stipulate
+    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa =  widget_attribute;			# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+herein
+
+    package background: (weak)  Background {		# Background		is from   src/lib/x-kit/widget/composite/background.api
+
+	Background = w::Widget;
+
+	attributes
+	    =
+	    [ (wa::background,     wa::COLOR,    wa::STRING_VAL "white") ];
+
+	fun make_back (root_window, color, widget)
+	    =
+	    w::make_widget
+              {
+		root_window,
+
+		args      =>  fn () = { background => THE color }, 
+		realize   =>  w::realize_fn widget,
+
+		size_preference_thunk_of
+		    =>
+		    w::size_preference_thunk_of  widget
+	      };
+
+	fun background (root_window, view, args) widget
+	    =
+	    {   attributes = w::find_attribute (w::attributes (view, attributes, args));
+
+		color = wa::get_color (attributes wa::background);
+
+		make_back (root_window, color, widget);
+	    };
+
+	fun make_background { color, widget }
+	    =
+	    {   root_window = w::root_window_of widget;
+
+		color = case color
+			    THE color =>  color;
+			    NULL      =>  xc::white_of_screen (w::screen_of root_window);
+			esac;
+
+		make_back (root_window, color, widget);
+	    };
+
+	fun as_widget w
+	    =
+	    w;
+
+    };		# package background 
+
+end;
+
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

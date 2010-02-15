@@ -1,0 +1,150 @@
+## button-base.pkg
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+
+# Base types and values for buttons, etc.
+
+
+
+###              "I have traveled the length and breadth of
+###               this country and talked with the best people,
+###               and I can assure you that data processing is
+###               a fad that won't last out the year."
+###
+###                         -- Editor of business books
+###                            for Prentice Hall, 1954
+
+
+stipulate
+    include threadkit;						# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package w  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wt =  widget_types;					# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
+    package xc =  xcore;					# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg =  xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi =  xinput;					# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
+herein
+
+    package button_base {
+
+	Mouse_Event
+	  = MSE_DOWN  xi::Mousebutton 
+	  | MSE_UP    xi::Mousebutton
+	  | MSE_IN    Bool
+	  ;
+
+	Button_State						# Button_State		def in    src/lib/x-kit/widget/basic/widget-base.api
+	    =
+	    (wt::Button_State, Bool, Bool);
+
+	fun make_widget_state (TRUE,  v) =>  wt::ACTIVE   v;
+	    make_widget_state (FALSE, v) =>  wt::INACTIVE v;
+	end;
+
+	fun flip (wt::ACTIVE   s) => wt::ACTIVE   (not s);
+	    flip (wt::INACTIVE s) => wt::INACTIVE (not s);
+	end;
+
+	fun get_state (wt::ACTIVE   set, _, _) => set;
+	    get_state (wt::INACTIVE set, _, _) => set;
+	end;
+
+	fun set_state (TRUE,  (wt::INACTIVE _, r, d)) =>   (wt::INACTIVE TRUE,  r, d);
+	    set_state (TRUE,  (wt::ACTIVE _,   r, d)) =>   (wt::ACTIVE   TRUE,  r, d);
+	    set_state (FALSE, (wt::INACTIVE _, r, d)) =>   (wt::INACTIVE FALSE, r, d);
+	    set_state (FALSE, (wt::ACTIVE _,   r, d)) =>   (wt::ACTIVE   FALSE, r, d);
+	end;
+
+	fun get_button_active_flag (wt::ACTIVE _, _, _) =>  TRUE;
+	    get_button_active_flag _                    =>  FALSE;
+	end;
+
+	fun set_button_active_flag (TRUE,  (wt::INACTIVE v, r, d)) => (wt::ACTIVE   v, r, d);
+	    set_button_active_flag (FALSE, (wt::ACTIVE   v, r, d)) => (wt::INACTIVE v, r, d);
+	    set_button_active_flag (_, s)                          => s;
+	end;
+
+	Plea_Mail
+          #
+	  = GET_BUTTON_ACTIVE_FLAG  Oneshot_Maildrop( Bool )
+	  | SET_BUTTON_ACTIVE_FLAG  Bool
+          #
+	  | GET_STATE               Oneshot_Maildrop( Bool )
+	  | SET_STATE               Bool
+          #
+	  | GET_SIZE_CONSTRAINT     Oneshot_Maildrop( w::Widget_Size_Preference   )
+	  | GET_ARGS                Oneshot_Maildrop( w::Window_Args )
+	  #
+	  | DO_REALIZE  {
+	      kidplug:  xi::Kidplug,
+	      window:   xc::Window,
+	      size:     xg::Size
+	    }
+	  ;
+
+	fun mse_p (m, m_slot)
+	    =
+	    loop ()
+	    where
+		include xinput;
+
+		fun down_loop button
+		    = 
+		    case (envelope_contents (do_mailop m))
+			#
+			MOUSE_LAST_UP _ =>   give  (m_slot, MSE_UP button);
+			MOUSE_LEAVE   _ => { give  (m_slot, MSE_IN FALSE );   down_loop  button; };
+			MOUSE_ENTER   _ => { give  (m_slot, MSE_IN TRUE  );   down_loop  button; };
+			_               =>                                         down_loop  button;
+		    esac; 
+
+		fun loop ()
+		    =
+		    loop ()
+		    where 
+
+			case (envelope_contents (do_mailop m))
+			    #                       
+			    MOUSE_FIRST_DOWN { button, ... }
+				=>
+				{   give  (m_slot,  MSE_DOWN button);
+				    down_loop  button;
+				};
+
+			    MOUSE_ENTER _ =>  give  (m_slot,  MSE_IN  TRUE );
+			    MOUSE_LEAVE _ =>  give  (m_slot,  MSE_IN  FALSE);
+			    _             =>  ();
+			esac;
+		    end;
+	    end;
+
+
+    };		#  button_base 
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

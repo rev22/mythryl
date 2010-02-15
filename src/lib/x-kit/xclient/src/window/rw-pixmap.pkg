@@ -1,0 +1,91 @@
+## rw-pixmap.pkg
+#
+#   The three kinds of X server rectangular arrays of pixels
+#   supported by x-kit are window, rw_pixmap and ro_pixmap.
+#
+#      o 'window': are on-screen  and on the X-server.
+#      o 'rw_pixmap': are off-screen and on the X-server.
+#      o 'ro_pixmap': offscreeen, immutable and on the X-server.
+#
+#   These all have 'depth' (bits per pixel) and
+#   'size' (in pixel rows and cols) information.
+#   Windows have in addition 'upperleft' position
+#   (relative to parent window) and border width in pixels.
+#
+#   (A fourth kind of rectangular array of pixels is the
+#   client-side 'cs_pixmap'.  These are not 'drawable', but
+#   pixels can be bitblt-ed between them and server-side
+#   windows and pixmaps.)
+#
+# See also:
+#     src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
+#     src/lib/x-kit/xclient/src/window/window.pkg
+#     src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+stipulate
+    package di  =  draw_imp;					# draw_imp	is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package dt  =  draw_types;					# draw_types	is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
+    package dy  =  display;					# display	is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package g   =  geometry;					# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package sn  =  xsession;					# xsession	is from   src/lib/x-kit/xclient/src/window/xsession.pkg
+    package xok =  xsocket;					# xsocket	is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+herein
+
+    package rw_pixmap {
+
+	exception BAD_PIXMAP_PARAMETER;
+
+        # Create uninitialized pixel array:
+	#
+	fun make_rw_pixmap  screen  (size, depth)
+            =
+            {   screen -> sn::SCREEN
+                            {
+			      screen   => sn::SCREEN_INFO { xscreen  => dy::XSCREEN { root, ... }, ... },
+			      xsession => sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }
+		            };
+
+		screen_depth = sn::servers_of_screen_depth (screen, depth)
+		except
+                    xgripe::XERROR _   = raise exception BAD_PIXMAP_PARAMETER;
+
+		id =  next_xid ();
+
+		if (not (g::valid_size  size))
+		    #
+                    raise exception BAD_PIXMAP_PARAMETER;
+                fi;
+
+		xok::request  xsocket
+		  ( value_to_wire::encode_create_pixmap
+		      {
+		        pixmap => id,
+                        drawable => root,
+                        size,
+                        depth
+		      }
+                  );
+
+		dt::RW_PIXMAP { id, screen, size, screen_depth };
+	    };
+
+	# Destroy an offscreen window.
+	# We do this via draw_imp to avoid a race with
+	# any pending draw requests on the window.
+	#
+	fun destroy_rw_pixmap  (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { draw_fn, ... }, ... } )
+            =
+	    draw_fn (di::DMSG_DESTROY (di::DESTROY_PIXMAP id));
+
+    };						# package pixmap 
+end;
+
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

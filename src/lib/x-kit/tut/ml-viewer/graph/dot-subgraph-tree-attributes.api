@@ -1,0 +1,35 @@
+## dot-subgraph-tree-attributes.api
+#
+# Define the per-graph, per-node and per-edge
+# information maintained by the dot-subgraph-tree
+# graphs used to hold raw graphs read from foo.dot
+# files, before planar layout is done.
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This api is implemented by:
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg
+
+api Dot_Subgraph_Tree_Attributes {
+
+    Shape = ELLIPSE | BOX | DIAMOND;
+
+    Graph_Info;
+    Node_Info;
+    Edge_Info;
+
+    default_graph_info:  Graph_Info;
+    default_node_info:   Node_Info;
+    default_edge_info:   Edge_Info;
+};
+
+# This file was
+#
+#     src/lib/x-kit/tut/ml-viewer/graph/attribute.api
+#
+# I renamed it to graph_attribute.api to avoid name conflict with existing
+#
+#     src/lib/x-kit/widget/util/attribute.api
+#
+# or such.     2009-12-13 CRT

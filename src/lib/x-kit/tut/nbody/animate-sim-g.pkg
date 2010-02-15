@@ -1,0 +1,522 @@
+## animate-sim-g.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/nbody/nbody.make6
+
+# This generic is invoked once, in nbody:
+#     src/lib/x-kit/tut/nbody/nbody.pkg
+
+							# sim				is from   src/lib/x-kit/tut/nbody/sim.pkg
+stipulate
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package v   =  sim::v;
+    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    #
+    package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd  =  xdraw;				# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;				# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+    package rx  =  run_xkit;				# run_xkit			is from   src/lib/x-kit/widget/lib/run-xkit.pkg
+    #
+    package low =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
+    package pb  =  pushbuttons;				# pushbuttons			is from   src/lib/x-kit/widget/leaf/pushbuttons.pkg
+    package rw  =  root_window;				# root_window			is from   src/lib/x-kit/widget/basic/root-window.pkg
+    package s   =  widget_style;			# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
+    package sld =  slider;				# slider			is from   src/lib/x-kit/widget/leaf/slider.pkg
+    package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    package top =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
+    package wa  =  widget_attribute;			# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+herein
+
+    generic package  animate_sim_g
+	(
+          package sim: Sim;
+	  body_data:   List( (sim::Vect, sim::Vect, Float, Int, Null_Or( String ) ));
+	)
+    {
+
+	contr_size = 12;
+
+	g = 6.67e-8;
+	dt = 500.0;			#  2000.0 
+	max = 7.80e13 * 2.1;
+
+	n = 30;			#  15 
+
+	fun spacer n = low::SPACER { min_size => n, ideal_size => n, max_size => THE n };
+	fun rubber n = low::SPACER { min_size => 1, ideal_size => n, max_size => NULL  };
+
+	sp5 = spacer 5;
+
+	fun make_sim_display (root_window, view)
+	    =
+	    {   fun quit ()
+		    =
+		    {
+			fun q ()
+			    =
+			    {   do_mailop (timeout_in' (time::from_milliseconds 20));
+				rw::delete_root_window root_window;
+				shut_down_thread_scheduler  winix::process::success;
+			    };
+
+			make_thread "sim" q;
+
+			();
+		    };
+
+		screen   = w::screen_of    root_window;
+		xsession = w::xsession_of  root_window;
+
+		black = xc::black_of_screen  screen;
+		white = xc::white_of_screen  screen;
+
+		color_by_name
+		    =
+		    (xc::color_of_screen screen) o xc::CMS_NAME;
+
+		stipulate
+		    recal_slot = make_mailslot ();
+		herein
+		    recal_mailop = take' recal_slot;
+
+		    fun recal ()
+			=
+			give (recal_slot, ());
+		end;
+
+		s_args = [ (wa::is_vertical, wa::BOOL_VAL    FALSE),
+			   (wa::background,  wa::STRING_VAL "gray"),
+			   (wa::width,       wa::INT_VAL     contr_size),
+			   #
+			   (wa::from_value,  wa::INT_VAL    0),
+			   (wa::to_value,    wa::INT_VAL  100)
+			 ];
+
+		q_args = [ (wa::label, wa::STRING_VAL "Q") ];
+		r_args = [ (wa::label, wa::STRING_VAL "R") ];
+
+		slider = sld::make_slider (root_window, view, s_args);
+
+		fun center_slider ()
+		    =
+		    sld::set_slider_value  slider  50;
+
+		my (qbutton_w, rbutton_w)
+		    =
+		    {   s = 2 * contr_size;
+
+			qb =  pb::make_text_pushbutton_with_click_callback'  (root_window, view, q_args)  quit;
+			rb =  pb::make_text_pushbutton_with_click_callback'  (root_window, view, r_args)  recal;
+
+			( sz::make_tight_sized_preference_wrapper (pb::as_widget qb, xg::SIZE { wide => s, high => s } ),
+			  sz::make_tight_sized_preference_wrapper (pb::as_widget rb, xg::SIZE { wide => s, high => s } )
+			);
+		    };
+
+		controls_line
+		    =
+		    low::HZ_CENTER
+		      [ sp5, low::WIDGET rbutton_w,
+			sp5, low::WIDGET (sld::as_widget slider),
+			sp5, low::WIDGET qbutton_w, sp5
+		      ];
+
+		stipulate
+
+		    slider_motion' = sld::slider_motion'_of  slider;
+		    zoom_slot     = make_mailslot ();
+
+		herein
+
+		    zoom_mailop = take' zoom_slot;
+
+		    fun slider_thread base
+			=
+			{   center_slider ();
+			    loop (base, base);
+			}
+			where
+			    fun loop (base, cur)
+				=
+				select [
+
+				    slider_motion'
+					==>
+					(fn slider_position = do_slider_motion (base, slider_position)),
+
+				    recal_mailop
+					==>
+				       .{ handle_recal cur; }
+				]
+
+			    also
+			    fun do_slider_motion (base, slider_position)
+				=
+				{   fact = math::pow (2.0, float::from_int (slider_position - 50) // 50.0);
+				    cur = base * fact;
+
+				    give (zoom_slot, cur);
+				    loop (base, cur);
+				}
+
+			    also
+			    fun handle_recal  cur
+				=
+				{   center_slider ();
+				    loop (cur, cur);
+				};
+			end;
+		end;
+
+		draw_pen  =  xd::make_pen  [xd::FOREGROUND  white];
+		erase_pen =  xd::make_pen  [xd::FOREGROUND  black];
+
+		timer     =  timeout_in' (time::from_milliseconds 20);
+
+		fun make_body (p, v, m, radius, cs)
+		    =
+		    {   color = the_else (null_or::map color_by_name cs, white);
+
+			pen = xd::make_pen [xd::FOREGROUND color];
+
+			{ p, v, m, data => { pen, radius } };
+		    };
+
+		bodies =  map  make_body  body_data;
+
+		plea_slot = make_mailslot ();
+
+		sim_t = sim::run { g, bodies, dt, msg_slot => plea_slot, n };
+
+		sim_death_mailop
+		    =
+		    thread_death_mailop  sim_t;
+
+		fun realize { window, size => xg::SIZE { wide, high }, kidplug }
+		    =
+		    {	#  make_thread "sim gc" gc_thread; 
+
+			make_thread "sim mouse" mouse_thread;
+			make_thread "sim body"  thread_body;
+
+			();
+		    }
+		    where
+
+			depth =  xc::depth_of_window  window;
+
+			drawwin =  xd::drawable_of_window  window;
+
+			drawwin =  xd::make_unbuffered_drawable  drawwin;
+
+			draw_circle = xd::fill_circle drawwin;
+
+			my xi::KIDPLUG { from_other', from_mouse', ... }
+			    =
+			    xi::ignore_keyboard  kidplug;
+
+			Pan_Cmd
+			    =
+			    PAN
+			      { horiz: Int,
+				vert:  Int
+			      };
+
+			pan_slot = make_mailslot ();
+			pan_mailop = take' pan_slot;
+
+			fun mouse_thread ()
+			    =
+			    idle ()
+			    where
+				fun idle ()
+				    =
+				    case (xi::envelope_contents (do_mailop from_mouse'))
+					#
+					xi::MOUSE_FIRST_DOWN { button => xi::MOUSEBUTTON 1, window_point, ... }
+					    =>
+					    pan window_point;
+
+					xi::MOUSE_FIRST_DOWN { button => xi::MOUSEBUTTON 3, ... }
+					    => 
+					    {   quit ();
+						idle ();
+					    };
+
+					_ => idle ();
+				    esac
+
+				also
+				fun pan (pt' as xg::POINT { col => x', row => y' } )
+				    =
+				    case (xi::envelope_contents (do_mailop from_mouse'))
+					#
+					xi::MOUSE_MOTION { window_point => pt as xg::POINT { col=>x, row=>y }, ... }
+					    =>
+					    {   give (pan_slot, PAN { horiz => x - x', vert => y - y' } );
+						pan pt;
+					    };
+
+					xi::MOUSE_UP { button => xi::MOUSEBUTTON 1, ... }
+					    =>
+					    idle ();
+
+					xi::MOUSE_LAST_UP _
+					    =>
+					    idle ();
+
+					_   => pan pt';
+				    esac;
+			    end;
+
+
+			fun new_translation { ocl, wid, ht, w_zx, w_zy, zoom }
+			    =
+			    loop ocl
+			    where
+
+				fun win_circle { p, v, m, data => { pen, radius } }
+				    =
+				    {   my { x, y } = v::proj2d p;
+
+					scrx = float::round ((x - w_zx) * zoom)    except _ = 0;
+					scry = float::round ((y - w_zy) * zoom)    except _ = 0;
+
+					{ center => xg::POINT { col => scrx, row => scry },
+					  rad    => radius
+					};
+				    };
+
+
+				fun draw_body (new as { data => { pen, ... }, ... } )
+				    =
+				    {   nc = win_circle new;
+
+					draw_circle pen nc;
+
+					nc;
+				    };
+
+
+				fun move_body (oc, new)
+				    =
+				    {   draw_circle  erase_pen  oc;
+
+					draw_body new;
+				    };
+
+
+				fun update ol
+				    =
+				    {   slot = make_mailslot ();
+
+					give (plea_slot, sim::QUERY slot);
+
+					nl = take slot;
+
+					THE  case ol
+						 #
+						 THE ol =>  paired_lists::map  move_body  (ol, nl);
+						 #
+						 NULL   =>  list::map  draw_body  nl;
+					     esac;
+				    };
+
+
+				fun death cl
+				    =
+				    {   print "Simulation has died!\n";
+					quit ();
+					loop cl;
+				    }
+
+
+				also
+				fun loop cl
+				    =
+				    select [
+					#
+					sim_death_mailop   ==>   .{ death cl; },
+					timer              ==>   .{ loop (update cl); },
+					#
+					from_other'        ==>    ( fn x =  do_mom (cl, xi::envelope_contents x)),
+					pan_mailop         ==>    ( fn p =  handle_pan (cl, p)),
+					zoom_mailop        ==>    ( fn z =  handle_zoom (cl, z))
+				    ]
+
+
+				also
+				fun do_mom (cl, xi::ETC_RESIZE (xg::BOX r))
+					=>
+					{   r ->  { wide =>  nw,
+						    high =>  nh,
+						    ...
+						  };
+
+					    f = 0.5 // zoom;
+
+					    xd::clear_drawable  drawwin;
+
+					    new_translation
+					      { ocl  => cl,
+						wid  => nw,
+						ht   => nh,
+						w_zx => w_zx - float::from_int (nw - wid) * f,
+						w_zy => w_zy - float::from_int (nh - ht ) * f,
+						zoom
+					      };
+					};
+
+				    do_mom (cl, _)
+					=>
+					loop cl;
+				end
+
+
+				also
+				fun handle_pan (cl, PAN { horiz, vert } )
+				    =
+				    new_translation
+				      { ocl =>  cl,
+					wid =>  wid,
+					ht,
+					zoom,
+					w_zx =>  w_zx - float::from_int horiz // zoom,
+					w_zy =>  w_zy - float::from_int vert  // zoom
+				      }
+
+
+				also
+				fun handle_zoom (cl, z)
+				    =
+				    {    f = 0.5 * (1.0 // zoom - 1.0 // z);
+
+					new_translation
+					  { ocl => cl,
+					    wid,
+					    ht,
+					    zoom => z,
+					    w_zx => w_zx + float::from_int wid * f,
+					    w_zy => w_zy + float::from_int ht  * f
+					  };
+				    };
+			    end;
+
+			fun thread_body ()
+			    =
+			    {   zoom = float::from_int wide // max;
+
+				f = -0.5 // zoom;
+
+				w_zx = float::from_int wide * f;
+				w_zy = float::from_int high  * f;
+
+				make_thread "sim zoom" .{
+				    #
+				    slider_thread zoom;
+				};
+
+				new_translation
+				  { ocl => NULL,
+				    wid => wide,
+				    ht  => high,
+				    w_zx,
+				    w_zy,
+				    zoom
+				  };
+			    };
+
+			/* garbageCollectionTimeOut = threadkit::timeOutEvt (time::from_seconds 10)
+			   fun garbageCollectionThread ()
+			       =
+			       (   do_mailop garbageCollectionTimeOut; runtime_internals::gc::collectGarbage 5;		# runtime_internals	is from   src/lib/std/src/nj/runtime-internals.pkg
+				   garbageCollectionThread ()
+			       )
+			*/
+		    end;			# fun realize
+
+		size = w::make_tight_size_preference (500, 500);
+
+		disp_w
+		    =
+		    sz::make_loose_size_preference_wrapper
+			(w::make_widget
+			   { size_preference_thunk_of =>   fn () = size,
+			     args      =>   fn () = { background => THE black },
+			     root_window,
+			     realize
+			   }
+			);
+
+		low::as_widget
+		    (low::make_line_of_widgets  root_window
+			(low::VT_CENTER
+			  [ sp5,
+			    controls_line,
+			    sp5,
+			    low::WIDGET  disp_w,
+			    sp5
+			  ]
+			)
+		    );
+	    };					# fun make_sim_display
+
+
+	fun simdisplay root_window
+	    =
+	    {
+		style = w::style_from_strings (root_window, []);
+
+		name = s::make_view
+			 { name    =>    s::style_name [],
+			   aliases =>  [ s::style_name [] ]
+			 };
+
+		view = (name, style);
+
+		sd = make_sim_display (root_window, view);
+
+		args = [ (wa::title,     wa::STRING_VAL "N-Body"),
+			 (wa::icon_name, wa::STRING_VAL "n-body")
+		       ];
+
+		topwindow = top::topwindow (root_window, view, args)  sd;
+
+		top::start  topwindow;
+	    };
+
+
+	fun do_it' (debug_flags, server)
+	    =
+	    {   xtracing::init debug_flags;
+
+		rx::run_xkit'
+		    #
+		    simdisplay
+		    #
+		    { display => THE server,
+		      time_quantum_in_milliseconds =>  THE 20
+		    };
+	    };
+
+
+	fun do_it ()
+	    =
+	    rx::run_xkit  simdisplay;
+
+
+	fun main (_: String, program ! server ! _)
+		=>
+		do_it' ([], server);
+
+	    main _
+		=>
+		do_it ();
+	end;
+
+	main = (fn () = winix::process::success) o main;
+
+    };						# generic package animate_sim_g
+end;

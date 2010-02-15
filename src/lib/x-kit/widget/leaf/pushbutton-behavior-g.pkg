@@ -1,0 +1,396 @@
+## pushbutton-behavior-g.pkg
+#
+# Protocol for buttons.
+#
+# TODO: Allow disabling of highlighting   XXX BUGGO FIXME
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+
+# This generic is compile-invoked in:
+#
+#     src/lib/x-kit/widget/leaf/pushbuttons.pkg
+
+stipulate
+    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+
+    include xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+
+    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wb =  widget_base;				# widget_base		is from   src/lib/x-kit/widget/basic/widget-base.pkg
+    package bb =  button_base;				# button_base		is from   src/lib/x-kit/widget/leaf/button-base.pkg
+    package bt =  button_type;				# button_type		is from   src/lib/x-kit/widget/leaf/button-type.pkg
+    package wa =  widget_attribute;			# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+herein
+
+    generic package   pushbutton_behavior_g (
+
+	bv:  Button_Appearance				# Button_Appearance	is from   src/lib/x-kit/widget/leaf/button-appearance.api
+
+    ): (weak) Pushbutton_Factory			# Pushbutton_Factory	is from   src/lib/x-kit/widget/leaf/pushbutton-factory.api
+
+    {
+
+
+	attributes = [
+	    (wa::repeat_delay,      wa::INT,   wa::NO_VAL  ),
+	    (wa::repeat_interval,   wa::INT,   wa::INT_VAL 100   ),
+	    (wa::is_active,         wa::BOOL,  wa::BOOL_VAL TRUE ),
+	    (wa::is_set,            wa::BOOL,  wa::BOOL_VAL FALSE)
+	];
+
+	fun timer_p (bttn, out_slot, in_slot, delay, interval) ()
+	    =
+	    wait (timeout_in'  delay)
+	    where 
+
+		fun signal ()
+		    =
+		    select [
+			give' (out_slot, bt::BUTTON_DOWN bttn)  ==>  .{  wait (timeout_in' interval);  },
+			take'  in_slot                          ==>  thread_done
+		    ]
+
+		also
+		fun wait  timeout'
+		    =
+		    select [
+			timeout'        ==>  signal,
+			take'  in_slot  ==>  thread_done
+		    ];
+
+	    end;
+
+	fun realize
+	    { kidplug, window, size }
+	    ( state,
+	      ( quanta,
+		plea_slot,
+		event_slot:     Mailslot( bt::Button_Transition ),
+		bv
+	      )
+	    )
+	    =
+	    {   include xinput;
+
+		my KIDPLUG { from_mouse', from_other', ... }
+		    =
+		    ignore_keyboard  kidplug;
+
+		mslot     =  make_mailslot ();
+		time_slot =  make_mailslot ();
+
+		rcvm  =  take'  mslot;
+
+		drawf =  bv::config (bv, window, size);
+
+		q = case quanta
+			#                   
+			THE (d, i) =>  THE (d, i, make_mailslot ());
+			NULL       =>  NULL;
+		    esac;
+
+
+		fun do_plea (bb::GET_BUTTON_ACTIVE_FLAG reply_1shot, state)
+			=> 
+			{   set (reply_1shot,  bb::get_button_active_flag  state);
+			    state;
+			};
+
+		    do_plea (bb::SET_BUTTON_ACTIVE_FLAG arg, state)
+			=>
+			bb::set_button_active_flag (arg, state);
+
+		    do_plea (bb::GET_SIZE_CONSTRAINT reply_1shot, state)
+			=> 
+			{   set (reply_1shot, bv::bounds bv);
+			    state;
+			};
+
+		    do_plea (bb::GET_ARGS reply_1shot, state)
+			=> 
+			{   set (reply_1shot, bv::window_args bv);
+			    state;
+			};
+
+		    do_plea (_, state) => state;
+		end;
+
+
+		fun do_mom (ETC_REDRAW _, me as (state, drawf))
+			=> 
+			{ drawf state; me;};
+
+		    do_mom (ETC_RESIZE (BOX { wide, high, ... } ), (state, _))
+			=> 
+			(state, bv::config (bv, window, SIZE { wide, high } ));
+
+		    do_mom (_, me)
+			=>
+			me;
+		end;
+
+
+		fun do_mouse (bb::MSE_IN v, me as ((s, r, FALSE), drawf))
+			=> 
+			if (v == r)
+			    #
+			    me;
+			else
+			    state' = (s, v, FALSE);
+
+			    drawf state';
+
+			    give (event_slot,   v ?? bt::BUTTON_READY :: bt::BUTTON_NORMAL);
+
+			    (state', drawf);
+			 fi;
+
+		    do_mouse (bb::MSE_IN v, ((s, r, TRUE), drawf))
+			=>
+			{   state' = (s, v, TRUE);
+
+			    drawf state';
+			    (state', drawf);
+			};
+
+		    do_mouse (bb::MSE_DOWN bttn, ((s, r, isdown), drawf))
+			=>
+			{   state' = (s, TRUE, TRUE);
+
+			    drawf state';
+
+			    give  (event_slot,  bt::BUTTON_DOWN  bttn);
+
+			    case q					# 'q' is for 'quantum'
+				#
+				THE (d, i, tc)
+				    => 
+				    {   make_thread  "button_control mse_down"  (timer_p (bttn, time_slot, tc, d, i));
+					();
+				    };
+
+				NULL => ();
+			    esac;
+
+			    (state', drawf);
+		       };
+
+		    do_mouse (bb::MSE_UP bttn, ((s, isin, isdown), drawf))
+			=>
+			{   state' = (s, isin, FALSE);
+
+			    drawf state';
+
+			    give
+			      (
+				event_slot,
+				#
+				isin  ??  bt::BUTTON_UP bttn
+				      ::  bt::BUTTON_NORMAL
+			      );
+
+			    case q
+				#                          
+				NULL => ();
+				THE (_, _, tc) =>  give (tc, ());
+			    esac;
+
+			    (state', drawf);
+		       };
+		end;
+
+		fun active_cmd_p (me as (state, drawf))
+		    =
+		    select [
+			take'  plea_slot
+			    ==>
+			    (fn mailop
+				=
+				{   state' = do_plea (mailop, state); 
+
+				    if (state' == state)
+					#
+					active_cmd_p me;
+				    else
+					drawf state';
+
+					if (#2 state' or #3 state')
+					    #
+					    give  (event_slot,  bt::BUTTON_NORMAL);
+					fi;
+
+					inactive_cmd_p (state', drawf);
+				    fi;
+				}),
+
+			rcvm              ==>  (fn m      =    active_cmd_p (do_mouse (m, me))),
+			take'  time_slot  ==>  (fn m      = {  give (event_slot, m);  active_cmd_p me;  }),
+			from_other'       ==>  (fn mailop =    active_cmd_p (do_mom (envelope_contents mailop, me)))
+		    ]
+
+		also
+		fun inactive_cmd_p (me as (state, drawf))
+		    =
+		    select [
+			take'  plea_slot
+			    ==>
+			    (fn mailop
+				=
+				{   state' = do_plea (mailop, state); 
+
+				    if (state' == state)
+					#
+					inactive_cmd_p me;
+				    else
+					drawf state';
+
+					if (#2 state')
+					    #
+					    give  (event_slot,  bt::BUTTON_READY);
+					fi;
+
+					active_cmd_p (state', drawf);
+				    fi;
+				}),
+
+			rcvm
+			    ==>
+			    fn (bb::MSE_IN v) =>  inactive_cmd_p ((#1 state, v,#3 state), drawf);
+				_             =>  inactive_cmd_p me;
+			    end,
+
+			from_other' ==>
+			    (fn mailop
+				=
+				inactive_cmd_p (do_mom (envelope_contents mailop, me)))
+		    ];
+
+		    make_thread  "button_control from_mouse"  .{
+			#
+			bb::mse_p (from_mouse', mslot);
+		    };
+
+		    if (bb::get_button_active_flag  state)   active_cmd_p (state, drawf);
+		    else                                   inactive_cmd_p (state, drawf);
+		    fi;
+	      };
+
+	fun init (dictionary as (quanta, plea_slot, event_slot, bv)) state
+	    =
+	    loop state
+	    where 
+		fun loop state
+		    =
+		    case (take  plea_slot)
+			#
+			bb::GET_SIZE_CONSTRAINT    reply_1shot =>   { set (reply_1shot, bv::bounds bv);                    loop state; };
+			bb::GET_ARGS               reply_1shot =>   { set (reply_1shot, bv::window_args bv);               loop state; };
+			bb::GET_BUTTON_ACTIVE_FLAG reply_1shot =>   { set (reply_1shot, bb::get_button_active_flag state); loop state; };
+			#
+			bb::SET_BUTTON_ACTIVE_FLAG arg         =>   loop (bb::set_button_active_flag (arg, state));
+			bb::DO_REALIZE arg                     =>   realize arg (state, dictionary);
+			_                                      =>   loop state;
+		    esac;
+	    end;
+
+	fun make_pushbutton (root_window, view, args)
+	    =
+	    {   attributes
+		    =
+		    w::find_attribute (w::attributes (view, attributes, args));
+
+		event_slot   =  make_mailslot ();
+		plea_slot =  make_mailslot ();
+
+		quanta =  case (wa::get_int_opt (attributes  wa::repeat_delay))
+			      #
+			      THE d =>
+				  {   i         = wa::get_int (attributes wa::repeat_interval);
+				      millisecs = time::from_milliseconds o int::to_large;
+
+				      THE (millisecs d, millisecs i);
+				  };
+
+			      NULL => NULL;
+			  esac;
+
+		state = bb::make_widget_state
+                          ( wa::get_bool (attributes wa::is_active),
+			    wa::get_bool (attributes wa::is_set)
+                          );
+
+		bv = bv::make_button_appearance (root_window, view, args);
+
+		fun getval msg ()
+		    =
+		    {   reply_1shot = make_oneshot_maildrop ();
+
+			give  (plea_slot,  msg reply_1shot);
+
+			get  reply_1shot;
+		    };
+
+		make_thread  "button_control init"  .{
+		    #
+		    init (quanta, plea_slot, event_slot, bv) (state, FALSE, FALSE);
+		};
+
+		bt::BUTTON {
+		    #
+		    plea_slot,
+		    #
+		    button_transition'
+			=>
+			wb::wrap_queue  (take'  event_slot),
+		    #
+		    widget => w::make_widget
+				{
+				  root_window,
+				  #
+				  args                     =>  getval  bb::GET_ARGS,
+				  size_preference_thunk_of =>  getval  bb::GET_SIZE_CONSTRAINT,
+				  #
+				  realize   =>  (fn arg =  give  (plea_slot,  bb::DO_REALIZE arg))
+				}
+		  };
+	      };
+
+	fun make_pushbutton_with_click_callback  args  callback
+	    =
+	    {   my bt::BUTTON { widget, plea_slot, button_transition' }
+		    =
+		    make_pushbutton  args;
+
+
+		fun listener ()
+		    =
+		    listener
+			case (do_mailop  button_transition')
+			    #
+			    bt::BUTTON_UP button => callback ();
+			    _ => ();
+			esac;
+
+
+		make_thread  "button_control command"  listener;
+
+		bt::BUTTON {
+		    widget,
+		    plea_slot,
+		    #
+		    button_transition'
+			=>
+			get' (make_oneshot_maildrop ())
+		};
+	    };
+
+    };							# generic package pushbutton_behavior_g 
+
+end;
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

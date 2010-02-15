@@ -1,0 +1,19 @@
+LIBRARY_EXPORTS
+
+	pkg add
+
+LIBRARY_COMPONENTS
+
+	$ROOT/src/lib/std/stdlib.make6
+	$ROOT/src/lib/x-kit/xkit.make6
+
+	images.pkg
+	splash.pkg
+	scene.api
+	scene.pkg
+	answer.api
+	answer.pkg
+	calc.api
+	calc.pkg
+	add.pkg
+

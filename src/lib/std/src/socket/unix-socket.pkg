@@ -1,0 +1,55 @@
+## unix-socket.pkg
+
+# Compiled by:
+#     src/lib/std/src/Base-imp.make6
+
+
+package unix_socket: (weak)  Unix_Socket {	# Unix_Socket	is from   src/lib/std/src/socket/unix-socket.api
+
+    package socket= socket_guts::socket;	# socket_guts	is from   src/lib/std/src/socket/socket-guts.pkg
+
+    fun socket_fn x
+        =
+        c_interface::c_function "Lib7-Sockets" x;
+
+    Unix = UNIX;
+
+    Socket( X ) = pre_socket::Socket( Unix, X ); 
+    Stream_Socket( X ) = Socket( socket_guts::Stream( X ) );
+    Datagram_Socket = Socket( socket_guts::Datagram );
+
+    Socket_Address = pre_socket::Socket_Address( Unix );
+
+    unix_address_family = null_or::the (socket_guts::af::from_string "UNIX");
+
+    # * We should probably do some error checking on the length of the string XXX BUGGO FIXME
+    #
+    stipulate
+	my to_unix_address:  String -> pre_socket::Internet_Address = socket_fn "toUnixAddr";
+	my from_unix_address:  pre_socket::Internet_Address -> String = socket_fn "fromUnixAddr";
+    herein
+	fun to_address s = pre_socket::ADDRESS (to_unix_address s);
+	fun from_address (pre_socket::ADDRESS address) = from_unix_address address;
+    end;
+
+    package stream {
+
+	fun socket ()          =  generic_socket::socket       (unix_address_family, socket::stream);
+	fun socket' proto      =  generic_socket::socket'      (unix_address_family, socket::stream, proto);
+	fun socket_pair ()     =  generic_socket::socket_pair  (unix_address_family, socket::stream);
+	fun socket_pair' proto =  generic_socket::socket_pair' (unix_address_family, socket::stream, proto);
+    };
+
+    package datagram {
+
+	fun socket ()          =  generic_socket::socket       (unix_address_family, socket::datagram);
+	fun socket' proto      =  generic_socket::socket'      (unix_address_family, socket::datagram, proto);
+	fun socket_pair ()     =  generic_socket::socket_pair  (unix_address_family, socket::datagram);
+	fun socket_pair' proto =  generic_socket::socket_pair' (unix_address_family, socket::datagram, proto);
+    };
+};
+
+
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

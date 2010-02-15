@@ -1,0 +1,419 @@
+## widgettree-root-xevent-router.pkg
+#
+# At the root of each widget hierarchy we need
+# a thread which accepts xevents from xsession
+# xbuf-to-topwindow-xevent-router and then passes
+# them on down the widgettree.  That's our job here.
+#
+# For the big picture see the diagram in
+#     src/lib/x-kit/xclient/src/window/xsession.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+stipulate
+    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package dy =  display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package di =  draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package dt =  draw_types;				# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
+    package et =  event_types;				# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
+    package kb =  keys_and_buttons;			# keys_and_buttons	is from   src/lib/x-kit/xclient/src/wire/keys-and-buttons.pkg
+    package ki =  keymap_imp;				# keymap_imp		is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+    package sn =  xsession;				# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
+    package wc =  widget_cable;				# widget_cable		is from   src/lib/x-kit/xclient/src/window/widget-cable.pkg
+herein
+
+    package widgettree_root_xevent_router: (weak)  Widgettree_Root_Xevent_Router {	# Widgettree_Root_Xevent_Router	is from   src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.api
+
+	# The top-level window (usually a shell widget)
+	# should never pass on CO message 
+	#
+	fun make_cothread  co_event
+	    =
+	    make_thread "widget-cable root-end CO eater" .{
+
+		do_mailop co_event;
+
+		xgripe::impossible("[widgetcable-rootend: unexpected CO message]");
+	    };
+
+	fun make_router (sn::XSESSION { keymap_imp, ... }, xevent_mailop, dm_config_slot, top_window)
+	    =
+	    {   make_descendant_window
+		    =
+		    {   top_window ->  dt::WINDOW { screen, screen_depth, draw_fn, ... };
+
+			fn id
+			    =
+                            dt::WINDOW { id, screen, screen_depth, draw_fn };
+		    };
+
+		my { kidplug, momplug }
+		    =
+		    widget_cable::make_widget_cable ();
+
+		my (route_ci, route_k, route_m)
+		    =
+		    {   momplug ->  wc::MOMPLUG { other_sink, keyboard_sink, mouse_sink, from_kid' };
+
+			make_cothread from_kid';
+
+			(other_sink, keyboard_sink, mouse_sink);
+		    };
+
+		lookup_key =  ki::look_up_keysym  keymap_imp;
+
+		stipulate
+
+		    seqn = REF 0;
+
+		herein
+
+		    fun wrap_mail (route, contents)
+			=
+			{   n = *seqn;
+
+			    seqn := n+1;
+
+			    wc::ENVELOPE { route, seqn=>n, contents };
+			};
+		end;
+
+		# Create mailslot to pass client message
+		# mailops to the application.
+		#
+		delete_slot =   make_mailslot ();
+
+
+		fun do_key (make_msg, key_event)
+		    =
+		    route_k (make_msg (lookup_key key_event));
+
+
+		fun do_button_press (path, info:  et::Button_Xevtinfo)
+		    =
+		    {   info ->  { button, event_pt, root_pt, timestamp, mbut_state, ... };
+
+			mail =  if (kb::no_mousebuttons_set  mbut_state)
+				    #
+				    wc::MOUSE_FIRST_DOWN
+				      {
+					button,
+					window_point => event_pt,
+					screen_point => root_pt,
+					timestamp
+				      };
+				else
+				    wc::MOUSE_DOWN
+				      {
+					button,
+					window_point => event_pt,
+					screen_point => root_pt,
+					  #  invert button so that the state is post-transition 
+					state => kb::invert_button_in_mousebutton_state (mbut_state, button),
+					timestamp
+				      };
+				fi;
+
+			  route_m (wrap_mail (path, mail));
+		    };
+
+		fun do_button_release (path, info:  et::Button_Xevtinfo)
+		    =
+		    route_m (wrap_mail (path, msg))
+		    where 
+			info ->   { button, event_pt, root_pt, timestamp, mbut_state, ... };
+
+			state =  kb::invert_button_in_mousebutton_state (mbut_state, button);
+
+			msg = if (kb::no_mousebuttons_set  state)
+				  #
+				  wc::MOUSE_LAST_UP
+				      {
+					button,
+					window_point => event_pt,
+					screen_point => root_pt,
+					timestamp
+				      };
+			      else
+				  wc::MOUSE_UP
+				      {
+					button,
+					window_point => event_pt,
+					screen_point => root_pt,
+					state,
+					timestamp
+				      };
+			      fi;
+		    end;
+
+
+		always_void
+		    =
+		    always_mailop ();
+
+
+		fun do_config_sync (path, config_msg)
+		    =
+		    always_void
+			==>
+		       .{   do_mailop (route_m  (wrap_mail (path, wc::MOUSE_CONFIG_SYNC)));
+			    do_mailop (route_k  (wrap_mail (path, wc::KEY_CONFIG_SYNC)));
+			    do_mailop (route_ci (wrap_mail (path, config_msg)));
+			};
+
+		fun route_xevent (path, et::KEY_PRESS_XEVENT arg)
+			=>
+			do_key (fn x = wrap_mail (path, wc::KEY_PRESS x), arg);
+
+		    route_xevent (path, et::KEY_RELEASE_XEVENT arg)
+			=>
+			do_key (fn x = wrap_mail (path, wc::KEY_RELEASE x), arg);
+
+		    route_xevent (path, et::BUTTON_PRESS_XEVENT   arg) =>   do_button_press    (path, arg);
+		    route_xevent (path, et::BUTTON_RELEASE_XEVENT arg) =>   do_button_release  (path, arg);
+
+		    route_xevent (path, et::MOTION_NOTIFY_XEVENT { event_pt, root_pt, timestamp, ... } )
+			=>
+			route_m (wrap_mail (path, wc::MOUSE_MOTION { window_point=>event_pt, screen_point=>root_pt, timestamp } ));
+
+		    route_xevent (path, et::ENTER_NOTIFY_XEVENT { event_pt, root_pt, timestamp, ... } )
+			=>
+			route_m (wrap_mail (path, wc::MOUSE_ENTER { window_point=>event_pt, screen_point=>root_pt, timestamp } ));
+
+		    route_xevent (path, et::LEAVE_NOTIFY_XEVENT { event_pt, root_pt, timestamp, ... } )
+			=>
+			route_m (wrap_mail (path, wc::MOUSE_LEAVE { window_point=>event_pt, screen_point=>root_pt, timestamp } ));
+
+	  /*******
+		  | routeXEvt (_, et::FOCUS_IN_XEVENT {... } ) = ()
+		  | routeXEvt (_, et::FOCUS_OUT_XEVENT {... } ) = ()
+		  | routeXEvt (_, et::KEYMAP_NOTIFY_XEVENT {... } ) = ()
+	  ******/
+
+		   route_xevent (path, et::EXPOSE_XEVENT { boxes, ... } )
+                       =>
+		      route_ci (wrap_mail (path, wc::ETC_REDRAW boxes));
+
+	  /*******
+		  | routeXEvt (_, GRAPHICS_EXPOSE_XEVENT {... } ) = ()
+		  | routeXEvt (_, NO_EXPOSE_XEVENT {... } ) = ()
+		  | routeXEvt (_, VISIBILITY_NOTIFY_XEVENT _) = ()
+	  ******/
+
+		    route_xevent (path, et::CREATE_NOTIFY_XEVENT { parent, window, ... } )
+			=>
+			do_config_sync (path, wc::ETC_CHILD_BIRTH (make_descendant_window window));
+
+		    route_xevent (path, et::DESTROY_NOTIFY_XEVENT { window, event, ... } )
+			=>
+			window == event   ??   route_ci (wrap_mail (path, wc::ETC_OWN_DEATH))
+					  ::   do_config_sync (path, wc::ETC_CHILD_DEATH (make_descendant_window window));
+
+		    route_xevent (xbuf_to_widgettree_xevent_router::ENVELOPE_ROUTE_END _, et::UNMAP_NOTIFY_XEVENT _)
+			=>
+			always_void
+			    ==> 
+			    .{  give (dm_config_slot, di::DM_UNMAP);  };
+
+		    route_xevent (_, et::UNMAP_NOTIFY_XEVENT _)
+			=>
+			always_void;
+
+		    route_xevent (xbuf_to_widgettree_xevent_router::ENVELOPE_ROUTE_END _, et::MAP_NOTIFY_XEVENT _)
+			=>
+			always_void
+			    ==>
+			    .{   give  (dm_config_slot,  di::DM_MAP);   };
+
+		   route_xevent (_, et::MAP_NOTIFY_XEVENT _)
+		       =>
+		       always_void;
+
+	  /*******
+		  | routeXEvt (_, et::MAP_REQUEST_XEVENT {... } ) = ()
+		  | routeXEvt (_, et::REPARENT_NOTIFY_XEVENT {... } ) = ()
+	  ******/
+
+		  route_xevent (path, et::CONFIGURE_NOTIFY_XEVENT { box, ... } )
+		      =>
+		      route_ci (wrap_mail (path, wc::ETC_RESIZE box));
+
+	  /*******
+		  | routeXEvt (_, ConfigureRequestXEvt {... } ) = ()
+		  | routeXEvt (_, GravityNotifyXEvt {... } ) = ()
+		  | routeXEvt (_, ResizeRequestXEvt {... } ) = ()
+		  | routeXEvt (_, CirculateNotifyXEvt {... } ) = ()
+		  | routeXEvt (_, CirculateRequestXEvt {... } ) = ()
+		  | routeXEvt (_, PropertyNotifyXEvt {... } ) = ()
+		  | routeXEvt (_, SelectionClearXEvt {... } ) = ()
+		  | routeXEvt (_, SelectionRequestXEvt {... } ) = ()
+		  | routeXEvt (_, SelectionNotifyXEvt {... } ) = ()
+		  | routeXEvt (_, ColormapNotifyXEvt {... } ) = ()
+	  ******/
+	  /****** modification, ddeboer, Jul 2004: route this event when delete. 
+	  from ..protocol/event-types.pkg:
+	  ... CLIENT_MESSAGE_XEVENT of {
+		  window:  window_id,        
+		  type:  atom,         the type of the message
+		  value:  raw_data        the message value
+		}
+	  */
+
+		   route_xevent (_, et::CLIENT_MESSAGE_XEVENT { window, type, ... } )
+		       => 
+		       always_void
+			   ==>
+			  .{   give (delete_slot, ());   };
+
+	  # * end mod ***
+
+		   route_xevent (_, event)
+		       =>
+		       always_void
+			   ==>	
+			  .{   xtracing::print_if xtracing::toplevel_tracing
+				   .{ cat [ "[widgettree_root_xevent_router::route_xevent: unexpected event ", xevent_to_string::xevent_name event, "]" ];  };
+			   };
+
+		end;			# fun route_xevent
+
+	  #  +DEBUG 
+		fun debug_router (result as (_, xevent))
+		    = 
+		    {   xtracing::print_if xtracing::toplevel_tracing
+			    .{ cat [ "TopLevelWin::router: get ", xevent_to_string::xevent_name xevent ];  };
+
+			result;
+		    };
+	  #  -DEBUG 
+		fun router ([], [])
+			=>
+			router ([debug_router (do_mailop xevent_mailop)], []);
+
+		    router ([], l)
+			=>
+			router (reverse l, []);
+
+		    router (front as (msg_out ! r), rear)
+			=>
+			select [
+			    xevent_mailop
+				==>
+				(fn result
+				    =
+				    router (front, (debug_router result) ! rear)),
+
+			    route_xevent msg_out
+				==>
+			       .{  router (r, rear);  }
+			];
+		end;
+
+    #	       modified ddeboer; Jul 2004: original: *
+    #	      (inDict, fn pending => router (pending, []))
+
+		  ( kidplug,
+		    (fn pending = router (pending, [])),
+		    delete_slot
+		  );
+	  };			# make_router 
+
+
+	# Create the X-event-router imp and draw_imp
+	# for a top-level window, returning the
+	# input dictionary and top-level window.
+	#
+	fun make_widgettree_root_xevent_router
+	    ( screen       as sn::SCREEN { xsession, ... },
+	      screen_depth as sn::SCREEN_DEPTH_IMPS  { gc_imp, ... },
+	      window_id
+	    )
+	    =
+	    {   xsession ->  sn::XSESSION { xdisplay as dy::XDISPLAY { xsocket, ... }, xbuf_to_widgettree_xevent_router, ... };
+
+		dm_config_slot
+		    =
+		    make_mailslot ();
+
+		dm = di::make_draw_imp
+			  (
+			    take'  dm_config_slot,
+			    gc_imp,
+			    xbuf_to_widgettree_xevent_router,
+			    xsocket
+			  );
+
+		xevent_mailop
+		    =
+		    xbuf_to_widgettree_xevent_router::note_toplevel_window
+		      ( xbuf_to_widgettree_xevent_router,
+			window_id
+		      );
+
+		top_window
+		    =
+		    dt::WINDOW { id=>window_id, screen, screen_depth, draw_fn=>dm };
+
+		my (kidplug, router, del_slot)
+		    =
+		    make_router (xsession, xevent_mailop, dm_config_slot, top_window);
+
+		fun init_router ()
+		    =
+		    {
+			fun loop buf
+			    =
+			    case (do_mailop xevent_mailop)
+				#
+				arg as (_, et::EXPOSE_XEVENT _)
+				    =>
+				    {
+											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: ExposeEvt"; };
+					give  (dm_config_slot,  di::DM_FIRST_EXPOSE);
+											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: DM_FirstExpose sent"; };
+					(arg ! buf);
+				    };
+
+				arg => loop (arg ! buf);
+			    esac;
+
+											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ cat ["initRouter: winId = ", xtype_to_string::xid_to_string window_id]; };
+			  router (reverse (loop []));
+											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: go"; };
+		  };
+
+		  xtracing::xspawn("TopLevelWin::router", init_router);
+
+
+		  (kidplug, top_window, del_slot);
+	    };										# fun make_toplevel_window_dictionary 
+
+    };											# package toplevel_window
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,367 @@
+## dot-graph-io-g.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# I/O of graphs using the "dot" syntax.
+#
+# NOTE: the make*info functions should take a "String -> String" dictionary
+# and build the node info from that, but this will require wholesale changes.	XXX BUGGO FIXME
+
+# This generic is compiletime expanded by:
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+
+							# Text_Io			is from   src/lib/std/src/io/text-io.api
+							# Dot_Graph_Io			is from   src/lib/x-kit/tut/ml-viewer/graph/dot-graph-io.api
+							# dot_subgraph_tree_attributes	is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg
+
+generic package  dot_graph_io_g  (
+
+    package io:  Text_Io where Input_Stream  == file::Input_Stream
+                          also Output_Stream == file::Output_Stream;
+
+    package g:   Attributed_Subgraph_Tree;
+
+    # Functions to make the default graph info:
+    #
+    make_graph_info:  Void -> g::Graph_Info;		# Currently   .{ REF dot_subgraph_tree_attributes::::default_graph_info; }
+    make_node_info:   Void -> g::Node_Info;		# Currently   .{ REF dot_subgraph_tree_attributes::::default_node_info;  }
+    make_edge_info:   Void -> g::Edge_Info;		# Currently   .{ REF dot_subgraph_tree_attributes::::default_edge_info;  }
+)
+: (weak) Dot_Graph_Io
+{
+
+    package io = io;
+    package g = g;
+							# dotgraph_lr_vals_g		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-graph.grammar
+							# dotgraph_lr_vals_g		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-graph.grammar.sml
+							# lr_parser			is from   src/app/yacc/lib/parser2.pkg
+    package graph_lr_vals
+	= 
+        dotgraph_lr_vals_g (
+
+            package token = lr_parser::token;
+            package g = g;
+
+            graph_info = make_graph_info;
+            node_info  = make_node_info;
+            edge_info  = make_edge_info;
+	);
+							# dotgraph_lex_g		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-graph.lex
+							# dotgraph_lex_g		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-graph.lex.sml
+    package graph_lex
+	=
+	dotgraph_lex_g (
+	    #
+	    package tokens = graph_lr_vals::tokens;
+	);
+							# join_with_arg_g		is from   src/app/yacc/lib/join.pkg
+    package graph_parser
+	= 
+        join_with_arg_g (
+	    #
+	    package parser_data = graph_lr_vals::parser_data;
+            package lex = graph_lex;
+            package lr_parser = lr_parser;
+	);
+
+    fun read_graph  input_stream
+	=
+	{   fun complain msg
+		=
+		file::write (file::stderr, string::cat ["lexer: ", msg, "\n"]);
+
+	    my lexstate:  graph_lex::user_declarations::Lexstate
+		=
+		{
+		  line_num      =>  REF 1,
+		  stringstart   =>  REF 0,
+		  comment_state =>  REF NULL,
+		  #
+		  charlist => REF [],
+		  complain
+		};
+
+	    lexer = graph_parser::make_lexer
+                        (fn max_chars_to_read =   file::read_n (input_stream, max_chars_to_read))
+                        lexstate;
+
+	    lookahead = 30;
+
+	    fun errfn (msg, _, _)
+		= 
+		file::write (file::stderr, "Error (line " + (int::to_string *lexstate.line_num) + ": " + msg + ")\n");
+
+            case (#1 (graph_parser::parse (lookahead, lexer, errfn, ())))
+		#
+                THE g =>  g;
+                NULL  =>  {   errfn("Empty graph", 1, 1);
+                              raise exception g::SUBGRAPH_TREE_ERROR "Empty graph";
+			  };
+	    esac;
+	};
+
+    stipulate
+
+	# This is basically just a curried strcmp:
+	#
+	#    recognize "foo" "foo" ->  TRUE;
+	#    recognize "foo" "bar" ->  FALSE;
+	#
+	fun recognize s
+	    =
+	    {   size_s = size s;
+
+                cl = explode s;			# "cl" may be "char_list"
+
+		fn (s, i)
+		    =
+		    {   size_s == (size s)-i
+                        and
+                        mk (i, cl)
+
+			where
+			    fun mk (i,       []) =>  TRUE;
+				mk (i, c ! rest) =>  string::get (s, i) == c and mk (i+1, rest);
+			    end;
+			end;
+		    };
+	    };
+
+	rec_edge = recognize "dge";
+	rec_node = recognize "ode";
+	rec_strict = recognize "rict";
+	rec_digraph = recognize "igraph";
+	rec_graph = recognize "raph";
+	rec_subgraph = recognize "bgraph";
+
+	minlen = 4;
+
+    herein
+
+	# Return TRUE iff 's' is one of these keywords:
+	#     edge, node, strict, digraph, graph, subgraph.
+        #
+	fun is_keyword s
+	    =
+            if (size s < minlen)
+		#
+	        FALSE;
+	    else
+		case (string::get (s, 0))
+		    #
+		    'd' =>  rec_digraph (s, 1);
+		    'e' =>  rec_edge    (s, 1);
+		    'g' =>  rec_graph   (s, 1);
+		    'n' =>  rec_node    (s, 1);
+		    #
+		    's' =>  case (string::get (s, 1))
+				#
+		                't' =>  rec_strict   (s, 2);
+			        'u' =>  rec_subgraph (s, 2);
+			         _  =>  FALSE;
+                            esac;
+
+		     _  => FALSE;
+		esac;
+	    fi;	
+    end;
+
+
+    # Convert a string into canonical surface form for use
+    # as a value in a foo.dot file "key = value" attribute.
+    #
+    # This typically involves putting a doublequote before
+    # and after and backslashing any internal quotes.
+    #
+    # If the string is a simple identifier ([A-Za-z0-9_]+) or
+    # a number ([0-9.]+) it needs no quotes so we return
+    # it unchanged, except that if it is string-equal to any
+    # of the keywords
+    #     edge, node, strict, digraph, graph, subgraph
+    # then we still need to wrap the value in quotes to 
+    # prevent the lexer from classifying it as a keyword
+    # rather than a string:
+    #
+    #
+    fun canon ""
+	    =>
+	    "\"\"";
+
+        canon str
+	    =>
+	    {   maybe_num
+		    =
+		    {   c = string::get (str, 0);
+		        char::is_digit c or (c == '.');
+		    };
+
+
+		# We return the new string plus a boolean flag recording
+		# whether the string needs to be wrapped in quotes due
+		# to not being a syntactically valid identifier or number:
+		#
+		fun run ([], l, must_quote)
+			=>
+			('"' ! l, must_quote);
+
+		    run ('"' ! rest, l, must_quote)
+			=>
+			run (rest, '"' ! '\\' ! l, TRUE);
+
+		    run (c ! rest, l, must_quote)
+			=>
+		        if (not (char::is_alphanumeric c) and (c != '_'))
+			    #
+			    run (rest, c ! l, TRUE);
+
+			elif (maybe_num and not (char::is_digit c) and (c != '.'))
+
+			    run (rest, c ! l, TRUE);
+			else
+			    run (rest, c ! l, must_quote);
+			fi;
+		end;
+
+		# Return the input string unchanged if practical,
+		# otherwise wrapped in double-quotes and with
+		# internal double-quotes backslashed:
+		#
+		case (run (explode str, ['"'], FALSE))
+		    #
+		    (cl, TRUE ) =>  implode (reverse cl);				# Must quote it because it contains a blank or such.
+		    (cl, FALSE) =>  if (is_keyword str)   implode (reverse cl);		# Must quote it to distinguish it from a keyword.
+                                    else                  str;				# No need to wrap quotes, so return it unchanged.
+				    fi;
+		esac;
+	    };
+    end;
+
+    # Given ("foo", "bar") return "foo = bar".
+    # Given ("foo", "x y") return "foo = \"x y\""
+    #
+    fun make_attribute (n, v)
+	=
+	cat [n, " = ", canon v];
+
+    attribute_list_to_string
+	=
+	list_to_string::list_to_string' { first=>" [", between=>", ", last=>"]", to_string=>make_attribute };
+
+
+    fun write_graph (outs, graph)
+	=
+	{   write_strings = apply (fn s = file::write (outs,s));
+
+	    fun tab () = write_strings ["  "];
+	    fun nl  () = write_strings [";\n"];
+
+	    my (graph_type, edge_op)
+		= 
+		case (g::get_attr (g::GRAPH_PART graph) "graph_type")
+
+		    NULL =>
+                        ("digraph", " -> ");
+
+		    THE gt =>
+			{   g::del_attr (g::GRAPH_PART graph) "graph_type";
+
+			    case gt
+				#
+			        "g"   => ("graph",          " -- ");
+			        "sg"  => ("strict graph",   " -- ");
+			        "dg"  => ("digraph",        " -> ");
+			        "sdg" => ("strict digraph", " -> ");
+			         _    => ("digraph",        " -> ");
+			    esac;
+			};
+		esac;
+
+	    get_proto_node = g::get_attr (g::PROTONODE_PART graph);
+	    get_proto_edge = g::get_attr (g::PROTOEDGE_PART graph);
+
+	    fun get_diff_attr (chunk, lookup)
+		=
+		{   l =  REF ([]:  List( (String, String) ));
+
+		    fun check (nv as (n, v))
+			=
+			case (lookup n)
+			    #
+			    NULL   =>                l :=  nv ! *l;
+			    THE v' =>  if (v' != v)  l :=  nv ! *l;  fi;
+			esac;
+
+		    if (g::cnt_attr chunk == 0)
+			#
+			[ ];
+		    else
+			g::apply_attr chunk check;
+			*l;
+		    fi;
+		};
+
+	    fun get_and_del (chunk, name)
+		=
+		case (g::get_attr chunk name)
+		    #
+		    NULL  =>  "";
+		    THE v =>  { g::del_attr chunk name; v; };
+		esac;
+
+	    fun write_attributes [ ] =>  ();
+	        write_attributes al  =>  write_strings [ attribute_list_to_string al ];
+	    end;
+
+	    fun write_edge e
+		  =
+		  {   my { hd, tl } = g::nodes_of e;
+
+		      tp = get_and_del (g::EDGE_PART e, "tailport");
+		      hp = get_and_del (g::EDGE_PART e, "headport");
+
+		      tab();
+
+		      write_strings [canon (g::node_name tl), tp, edge_op, canon (g::node_name hd), hp];
+
+		      write_attributes (get_diff_attr (g::EDGE_PART e, get_proto_edge));
+
+		      nl();
+		  };
+
+	    fun write_node n
+		=
+		{   tab();
+		    write_strings [canon (g::node_name n)];
+		    write_attributes (get_diff_attr (g::NODE_PART n, get_proto_node));
+		    nl();
+		};
+
+	    fun write_dictionary (label, chunk)
+		=
+		if (g::cnt_attr chunk != 0)
+		    #
+		    tab();
+		    write_strings [ label ];
+		    write_attributes (get_diff_attr (chunk, fn _ = NULL));
+		    nl();
+		fi;
+
+	    write_strings [graph_type, " ", canon (g::graph_name graph), "{\n"];
+
+            write_dictionary ("graph", g::GRAPH_PART     graph);
+            write_dictionary ("node",  g::PROTONODE_PART graph);
+            write_dictionary ("edge",  g::PROTOEDGE_PART graph);
+
+            g::apply_nodes write_node graph;
+            g::apply_nodes (fn n = apply write_edge (reverse (g::out_edges (graph, n)))) graph;
+
+            write_strings ["}\n"];
+	};
+
+};					# generic package  dot_graph_io_g
+
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

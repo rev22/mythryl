@@ -1,0 +1,17 @@
+## stringmap.pkg
+## (C) 1999 Lucent Technologies, Bell Laboratories
+## Author: Matthias Blume (blume@kurims.kyoto-u.ac.jp)
+
+# Compiled by:
+#     src/app/make7/util/Make7_Utilities.make6
+
+package string_map
+=
+map_g (
+
+    package {
+	 Key = String;
+
+	compare = string::compare;
+    }
+);

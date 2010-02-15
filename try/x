@@ -1,0 +1,8 @@
+#!/usr/bin/mythryl
+
+my burp = a
+          where {
+              a = "aaa ";
+          };
+
+print burp;

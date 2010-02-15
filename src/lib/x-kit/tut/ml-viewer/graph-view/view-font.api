@@ -1,0 +1,25 @@
+## view-font.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/ml-viewer/graph-view/view-font.pkg
+
+stipulate
+    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+herein
+
+    api View_Font {
+
+	default_font_size:  Int;
+
+	Font_Imp;
+
+	make_font_server:  w::Root_Window -> Font_Imp;
+	find_font:         Font_Imp -> Int -> Null_Or( xc::Font );
+    };
+
+end;
+

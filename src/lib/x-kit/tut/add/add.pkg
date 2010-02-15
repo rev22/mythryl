@@ -1,0 +1,569 @@
+## add.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/add/add.make6
+
+stipulate
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;				# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+    #
+    package dv  =  divider;				# divider			is from   src/lib/x-kit/widget/leaf/divider.pkg
+    package lbl =  label;				# label				is from   src/lib/x-kit/widget/leaf/label.pkg
+    package lw  =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
+    package pb  =  pushbuttons;				# pushbuttons			is from   src/lib/x-kit/widget/leaf/pushbuttons.pkg
+    package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    package tl  =  textlist;				# textlist			is from   src/lib/x-kit/widget/leaf/textlist.pkg
+    package tw  =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
+    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wt  =  widget_types;			# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
+    package wy  =  widget_style;			# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
+    #
+    package ca  =  calc;				# calc				is from   src/lib/x-kit/tut/add/calc.pkg
+    package sc  =  scene;				# scene				is from   src/lib/x-kit/tut/add/scene.pkg
+herein
+
+    package add:  api {	add:  (String, Null_Or(xc::Authentication)) -> Int; }{
+
+
+	# Added this because it was coming up undefined.
+	# Adapted the code from src/ml-yacc/src/utils.sml in 110.58 dist.
+	#  -- 2009-11-30 CrT
+	#
+	fun revfold f lst init
+	    =
+	    fold_right  f  init lst;
+
+	Command
+	    #
+	    = NEW_GAME ca::Difficulty
+	    | NEW_OP   ca::Function
+	    ;
+
+	fun counter (slot, set_label)
+	    =
+	    loop 1
+	    where
+		fun loop count
+		    =
+		    {   take slot;
+			set_label (lbl::TEXT (sprintf "%d" count));
+			loop (count+1);
+		    };
+	    end;
+
+							    # make_root_window	def in    src/lib/x-kit/widget/basic/root-window.pkg
+							    # screen_of		def in    src/lib/x-kit/widget/basic/root-window.pkg
+	fun main server
+	    = 
+	    {   root_window =  w::make_root_window  server;
+
+		screen      =  w::screen_of  root_window;
+
+		fun collect_garbage ()
+		    =
+		    runtime_internals::garbage_collection::collect_garbage 7;
+
+		calc_box   =  ca::make_calc  root_window;
+		box_mailop =  ca::mailop_of  calc_box;
+
+		rounds = 3;
+
+		scene = sc::make_scene  root_window  rounds;
+
+		fun quit_game ()
+		    =
+		    {   w::delete_root_window  root_window;
+
+			shut_down_thread_scheduler 0;
+		    };
+
+		quit_button
+		    =
+		    pb::make_text_pushbutton_with_click_callback
+			root_window
+			{ click_callback =>  quit_game,
+			  rounded        =>  FALSE,
+			  label          =>  "Quit",
+			  #	
+			  foreground     =>  NULL,
+			  background     =>  NULL
+			};
+
+		won_slot = make_mailslot ();
+
+		fun game_won ()
+		    =
+		    give (won_slot, ());
+
+		new_slot  =  make_mailslot ();
+		new_game' =  take' new_slot;
+
+		games_won_label
+		    =
+		    lbl::make_label  root_window
+		      {
+			label => "Games won :",
+			font  => NULL,
+			#	
+			foreground => NULL,
+			background => NULL,
+			#	
+			align      => wt::HRIGHT
+		      };
+
+		games_won_cnt
+		    =
+		    lbl::make_label  root_window
+		      {
+			label => "    0",
+			font  => NULL,
+			align => wt::HRIGHT,
+			#
+			foreground => NULL,
+			background => NULL
+		      };
+
+		single_button
+		    =
+		    pb::make_text_pushbutton_with_click_callback  root_window
+		      {
+			click_callback =>  fn () = give (new_slot, NEW_GAME ca::SINGLE),
+			rounded        =>  FALSE,
+			label          =>  "Single",
+			#
+			foreground     =>  NULL,
+			background     =>  NULL
+		      };
+
+		easy_button
+		    =
+		    pb::make_text_pushbutton_with_click_callback  root_window
+		      {
+			click_callback =>  fn () = give (new_slot, NEW_GAME ca::EASY),
+			rounded        =>  FALSE,
+			label          => "Easy",
+			#
+			foreground     =>  NULL,
+			background     =>  NULL
+		      };
+
+		medium_button
+		    =
+		    pb::make_text_pushbutton_with_click_callback  root_window
+		      {
+			click_callback =>  fn () = give (new_slot, NEW_GAME ca::MEDIUM),
+			rounded        =>  FALSE,
+			label          => "Medium",
+			#
+			foreground     =>  NULL,
+			background     =>  NULL
+		      };
+
+		hard_button
+		    =
+		    pb::make_text_pushbutton_with_click_callback  root_window
+		      {
+			click_callback =>  fn () = give (new_slot, NEW_GAME ca::HARD),
+			rounded        =>  FALSE,
+			label          =>  "Hard",
+			#
+			foreground     =>  NULL,
+			background     =>  NULL
+		      };
+
+										    # ACTIVE	 def in    src/lib/x-kit/widget/basic/widget-base.pkg
+										    # ACTIVE is of type Button_State.
+		my  op_items:   List( tl::Textlist_Item( ca::Function ))
+		    = 
+		    map (fn (f, ison)
+			    =
+			    tl::make_textlist_item
+				(ca::func_string f, f, wt::ACTIVE ison)		# fn generates Textlist_Item(Function).
+			)
+			ca::function_list;
+
+										    # text_list		is from   src/lib/x-kit/widget/leaf/textlist.pkg
+										    # widget_style_g	is from   src/lib/x-kit/style/widget-style-g.pkg
+										    # styles		is from   src/lib/x-kit/style/styles.pkg
+										    # attribute		is from   src/lib/x-kit/widget/util/attribute.pkg
+										    # root_window	is from   src/lib/x-kit/widget/basic/root-window.pkg
+										    # style_of		def in    src/lib/x-kit/widget/basic/root-window.pkg
+		op_list
+		    =
+		    tl::make_textlist
+		      ( root_window,
+
+			# Invented this to make code compile.
+			# Apparently text_list was rewritten without
+			# updating this example. (And no other code
+			# seems to use it...)
+			# test-list.pkg documents this arg as
+			# needing to be of type
+			#     widget::View
+			# which is defined in
+			#     src/lib/x-kit/widget/basic/widget-attributes.pkg
+			# as
+			#     View  = (wy::Style_View, wy::Style);
+			#     Style =  STYLE
+			#		     { context:          av::Context,
+			#		       plea_slot:  Mailslot( Request_Message )
+			#		     };
+			#
+			#  2009-11-30 CrT
+			#	
+			( wy::make_view { name => wy::style_name ["text_list"],
+                                          aliases => []
+                                        },
+			  #
+			  w::style_of  root_window
+			),	
+
+			# Invented this to make code compile.
+			# It is supposed to be of type  
+			#     List (widget::Arg)
+			# where Arg is defined in
+			#     src/lib/x-kit/widget/basic/widget-attributes.pkg
+			# as
+			#     Arg            = (attribute::Name, attribute::Value);
+			# 2009-11-30 CrT
+			#	
+			[ ]
+		      )
+		      op_items;
+
+		fun op_listen ()
+		    =
+		    loop ()
+		    where
+
+			textlist_change'
+			    =
+			    tl::textlist_change'_of  op_list;
+
+			fun loop ()
+			    =
+			    loop    case (do_mailop  textlist_change')
+					#
+					tl::SET f =>  give (new_slot, NEW_OP f);
+					_         =>  ();
+				    esac;
+		    end;
+
+		buttons
+		    =
+		    lw::as_widget
+			(lw::make_line_of_widgets  root_window
+			    (lw::VT_CENTER
+			      [
+				lw::SPACER { min_size => 5, ideal_size => 5, max_size => THE 5 },
+
+				(lw::HZ_CENTER
+				  [
+														    lw::SPACER { min_size=>5, ideal_size=>10, max_size=>THE 20 },
+
+				    lw::WIDGET (sz::make_tight_size_preference_wrapper (pb::as_widget quit_button)),	lw::SPACER { min_size=>5, ideal_size=>10, max_size=>THE 10 },
+				    lw::WIDGET (sz::make_tight_size_preference_wrapper (pb::as_widget single_button)),	lw::SPACER { min_size=>5, ideal_size=>10, max_size=>THE 10 },
+				    lw::WIDGET (sz::make_tight_size_preference_wrapper (pb::as_widget easy_button)),	lw::SPACER { min_size=>5, ideal_size=>10, max_size=>THE 10 },
+				    lw::WIDGET (sz::make_tight_size_preference_wrapper (pb::as_widget medium_button)),	lw::SPACER { min_size=>5, ideal_size=>10, max_size=>THE 10 },
+				    lw::WIDGET (sz::make_tight_size_preference_wrapper (pb::as_widget hard_button)),	lw::SPACER { min_size=>5, ideal_size=>10, max_size=>THE 10 },
+
+				    lw::WIDGET
+					(sz::make_tight_size_preference_wrapper
+					    (border::as_widget
+						(border::make_border
+						  {
+						    color =>  THE (xcore::black_of_screen  screen),
+						    width =>  1,
+						    child =>  tl::as_widget  op_list
+						  }
+					)   )   ),									lw::SPACER { min_size=>5, ideal_size=>10, max_size=>THE 10 },
+
+				    lw::WIDGET (sz::make_tight_size_preference_wrapper (lbl::as_widget games_won_label)),
+				    lw::WIDGET (sz::make_tight_size_preference_wrapper (lbl::as_widget games_won_cnt)),	lw::SPACER { min_size=>5, ideal_size=>10, max_size=>NULL }
+				  ]
+				),
+
+				lw::SPACER { min_size => 5, ideal_size => 5, max_size => THE 5 }
+			      ]
+			    )
+			);
+
+		my (calc_widget, calc_kbd)
+		    = 
+		    w::filter_keyboard (sz::make_tight_sized_preference_wrapper (ca::as_widget calc_box, xg::SIZE { wide=>300, high=>400 } ));
+
+		layout
+		    =
+		    lw::as_widget
+			(lw::make_line_of_widgets  root_window
+			    (lw::VT_CENTER
+			      [
+				lw::HZ_CENTER
+				  [
+				    lw::WIDGET  calc_widget,
+				    lw::WIDGET (dv::make_vertical_divider root_window { color=>NULL, width=>1 } ),
+				    lw::WIDGET (sc::as_widget scene)
+				  ],
+
+				lw::WIDGET (dv::make_horizontal_divider root_window { color=>NULL, width=>1 } ),
+				lw::WIDGET buttons
+			      ]
+			    )
+			);
+
+		my (layout, kbd)
+		    =
+		    w::filter_keyboard layout;
+
+		topwindow
+		    =
+		    tw::make_topwindow
+		      ( layout,
+			NULL,
+			{ window_name => THE "Arith",
+			  icon_name   => THE "Arith"
+			}
+		      );
+
+		fun main opfn
+		    =
+		    start_game (ca::EASY, opfn)
+		    where
+			fun start_game (d, opfn)
+			    =
+			    {   ca::start_game calc_box (d, opfn);
+				sc::start scene;
+				loop (rounds, opfn, d);
+			    }
+
+			also
+			fun loop (0, opfn, d)
+				=>
+				{   game_won ();
+				    ca::reset calc_box;
+				    sc::wave;
+				    idle opfn;
+				};
+
+			    loop (i, opfn, d)
+				=>
+				{   fun handle_box  ca::RIGHT
+					    =>
+					    {   sc::up scene;
+						loop (i - 1, opfn, d);
+					    };
+
+					handle_box  ca::WRONG
+					    =>
+					    {   sc::dive  scene;
+						ca::reset calc_box;
+						idle opfn;
+					    };
+				    end;
+
+				    fun handle_game (NEW_GAME d')  =>  start_game (d', opfn);
+					handle_game (NEW_OP opfn') =>  start_game (d, opfn');
+				    end;
+
+				    select [
+					box_mailop  ==>  handle_box,
+					new_game'   ==>  handle_game
+				    ];
+				};
+			end
+
+			also
+			fun idle opfn
+			    = 
+			    case (do_mailop  new_game')
+				#
+				NEW_GAME d   => start_game (d, opfn);
+				NEW_OP opfn' => idle opfn';
+			    esac;
+		    end;
+
+		fun wait_evts []
+			=>
+			[];
+
+		    wait_evts evtl
+			=>
+			wait_all
+			    (reverse
+				(#1 (revfold
+					(fn (e, (l, i)) = (mk (e, i) ! l, i+1))
+					evtl
+					([], 0)
+				    )
+				)
+			    )
+			where
+			    fun mk (e, i)
+				=
+				(i, NULL, wrap (e, fn v = (v, i)));
+
+			    fun update ([], _)
+				    =>
+				    [];
+
+				update ((item as (j, _, e)) ! r, (v, i))
+				    =>
+				    if (i == j)   (j, THE v, e) ! r;
+				    else          item ! (update (r, (v, i)));
+				    fi;
+			    end;
+
+			    fun get_vals ([], l)                =>  l;
+				get_vals ((_, THE v, _) ! r, l) =>  get_vals (r, v ! l);
+				get_vals (_ ! r, l)             =>  get_vals (r, l);
+			    end;
+
+			    fun get_left ([], l)               =>  l;
+				get_left ((_, NULL, e) ! r, l) =>  get_left (r, e ! l);
+				get_left (_ ! r, l)            =>  get_left (r, l);
+			    end;
+
+			    fun wait_all l
+				=
+				case (get_left (l,[]))
+				    #
+				    [] =>  reverse (get_vals (l,[]));
+				    l' =>  wait_all (update (l, do_mailop (choose l')));
+				esac;
+			end;
+		end;					# fun wait_evts
+
+
+		fun key_listen (kbd, calc_kbd)
+		    =
+		    {   make_thread "add" sink;
+			loop ();
+		    }
+		    where
+			evtl = wait_evts [kbd, calc_kbd];
+
+			my (keyevt, _)
+			    =
+			    head evtl;
+
+			my (ckeyevt, keyslot)
+			    =
+			    head (tail evtl);
+
+			fun sink ()
+			    =
+			    for (;;) {
+				#
+				do_mailop  ckeyevt;
+			    };
+
+			stipulate
+			    to_ascii
+				=
+				xi::map_keysym_to_ascii
+				    xi::default_keysym_to_ascii_mapping;
+			herein
+			    fun trans_key (xi::KEY_PRESS key) =>  THE (to_ascii key)  except _ = NULL;
+				trans_key _                   =>  NULL;
+			    end;
+			end;
+
+			fun handled c
+			    =
+			    case (string::to_lower c)
+				#
+				"s" =>  { give (new_slot, NEW_GAME ca::SINGLE);          TRUE; };
+				"e" =>  { give (new_slot, NEW_GAME ca::EASY  );          TRUE; };
+				"m" =>  { give (new_slot, NEW_GAME ca::MEDIUM);          TRUE; };
+				"h" =>  { give (new_slot, NEW_GAME ca::HARD  );          TRUE; };
+				"q" =>  { quit_game();                                     TRUE; };
+				"+" =>  { tl::set_textlist_selections op_list [(0, TRUE)]; TRUE; };
+				"-" =>  { tl::set_textlist_selections op_list [(1, TRUE)]; TRUE; };
+				"*" =>  { tl::set_textlist_selections op_list [(2, TRUE)]; TRUE; };
+				"x" =>  { tl::set_textlist_selections op_list [(2, TRUE)]; TRUE; };
+				 _  =>  FALSE;
+			    esac;
+
+			fun loop ()
+			    =
+			    for (;;) {
+
+				keymsg = do_mailop  keyevt;
+
+				case (trans_key (xi::envelope_contents  keymsg))
+				    #
+				    THE c
+					=>
+					if (not (handled c))
+					    give (keyslot, keymsg);
+					fi;
+
+				    NULL => ();
+				esac;
+
+			    };
+
+		    end;
+
+
+		make_thread "add II"  .{
+		    #
+		    counter
+		      ( won_slot,
+			lbl::set_label  games_won_cnt
+		      );
+		};
+
+		make_thread "add III" .{
+		    #
+		    key_listen (kbd, calc_kbd);
+		};
+
+		tw::start  topwindow;
+
+		make_thread "add IV" op_listen;
+
+		main  ca::ADD; 
+	    };
+
+	fun add server
+	    =
+	    start_up_thread_scheduler'
+		(time::from_milliseconds  20)
+		.{ main server; };
+    };
+
+    fun do_it s
+	=
+	add::add (s, NULL);
+
+    fun main (program ! server ! _, _) =>  do_it server;
+	main _                         =>  do_it "";
+    end;
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

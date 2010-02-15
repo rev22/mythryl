@@ -1,0 +1,134 @@
+## attributed-graph.api
+#
+# This defines the generic graph implementation used by ml-viewer
+# for both the raw dot_graphs read in from .dot files and also
+# the laid-out planar_graphs derived from them.
+#
+# We build on subgraph_tree from:
+#     src/lib/x-kit/tut/ml-viewer/graph/subgraph-tree.api
+# -- see comments there for shared functionality.
+#
+#
+# We support application-specific customization in two ways:
+#
+#   o Graph_Info, Node_Info and Edge_Info may be customized
+#     per-application to associate arbitrary information with
+#     each graph, node and edge.
+#
+#   o We associate string-keyed dictionaries with each element,
+#     allowing additional annotations to be dynamically associated
+#     with each graph part. 
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree-g.pkg
+
+# This file gets 'include'-ed by:
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-graph.api
+
+api Attributed_Subgraph_Tree {
+
+    Attributed_Graph;
+    Node;
+    Edge;
+
+    Graph_Info;
+    Node_Info;
+    Edge_Info;
+
+    exception SUBGRAPH_TREE_ERROR String;
+
+    Graph_Part
+      #
+      = GRAPH_PART      Attributed_Graph
+      | EDGE_PART       Edge
+      | NODE_PART       Node
+      | PROTONODE_PART  Attributed_Graph
+      | PROTOEDGE_PART  Attributed_Graph
+      ;
+
+    make_graph
+	:
+	{ name:  String, 
+	  #
+	  info:  Null_Or( Graph_Info ), 
+	  #
+	  graph_info:  Void -> Graph_Info,
+	  node_info:   Void -> Node_Info,
+	  edge_info:   Void -> Edge_Info
+	}
+	->
+	Attributed_Graph;
+
+    graph_name:  Attributed_Graph -> String;
+    node_name:   Node  -> String;
+    num_nodes:   Attributed_Graph -> Int;
+    num_edges:   Attributed_Graph -> Int;
+
+    has_node:  (Attributed_Graph, Node) -> Bool;
+    has_edge:  (Attributed_Graph, Edge) -> Bool;
+    del_node:  (Attributed_Graph, Node) -> Void;
+    del_edge:  (Attributed_Graph, Edge) -> Void;
+
+    add_node:  (Attributed_Graph, String, Null_Or( Node_Info ) ) -> Node;
+    get_node:  (Attributed_Graph, String, Null_Or( Node_Info ) ) -> Node;
+
+    find_node: (Attributed_Graph, String) -> Null_Or( Node );
+
+    nodes:  Attributed_Graph -> List( Node );
+
+    apply_nodes:  (Node -> Void) -> Attributed_Graph -> Void;
+
+    fold_nodes:   ((Node, X) -> X) -> Attributed_Graph -> X -> X;
+
+    add_edge
+	:
+	{ graph:  Attributed_Graph, 
+          hd:     Node, 			# "hd" == "head"
+          tl:     Node, 			# "tl" == "tail"
+          info:   Null_Or( Edge_Info )
+        }
+        ->
+        Edge;
+
+    edges:  Attributed_Graph -> List( Edge );
+
+    in_edges:   (Attributed_Graph, Node) -> List( Edge );
+    out_edges:  (Attributed_Graph, Node) -> List( Edge );
+
+    apply_in_edges:   (Edge -> Void) -> (Attributed_Graph, Node) -> Void;
+    apply_out_edges:  (Edge -> Void) -> (Attributed_Graph, Node) -> Void;
+
+    head:  Edge -> Node;
+    tail:  Edge -> Node;
+
+    nodes_of:  Edge -> { hd:  Node,
+                         tl:  Node
+                       };
+    
+    add_subgraph:   (Attributed_Graph, String, Null_Or( Graph_Info ) ) -> Attributed_Graph;
+    find_subgraph:  (Attributed_Graph, String) -> Null_Or( Attributed_Graph );
+
+    get_attr:   Graph_Part -> String -> Null_Or( String );
+    set_attr:   Graph_Part -> (String, String) -> Void;
+    del_attr:   Graph_Part -> String -> Void;
+    apply_attr: Graph_Part -> ((String, String) -> Void) -> Void;
+    cnt_attr:   Graph_Part -> Int;
+
+    info_of_edge:   Edge             -> Edge_Info;
+    info_of_graph:  Attributed_Graph -> Graph_Info;
+    info_of_node:   Node             -> Node_Info;
+
+    eq_graph:  (Attributed_Graph, Attributed_Graph) -> Bool;
+    eq_node:   (Node,             Node            ) -> Bool;
+    eq_edge:   (Edge,             Edge            ) -> Bool;
+
+};				# Attributed_Graph
+
+
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

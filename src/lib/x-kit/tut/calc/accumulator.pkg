@@ -1,0 +1,162 @@
+## accumulator.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/calc/calc.make6
+
+
+# The accumulator of the calculator.
+
+stipulate
+    include threadkit;					# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+herein
+
+    package accumulator:  Accumulator {			# Accumulator	is from   src/lib/x-kit/tut/calc/accumulator.api
+
+	Op_T = PLUS | MINUS | DIVIDE | TIMES;
+	Acc_Msg = OP Op_T | CLEAR | EQUAL | VAL Int;
+	Out_Val = OVAL Int | OINFINITY | OOVERFLOW;
+
+	Accumulator = ACCUMULATOR (Mailslot( Acc_Msg ), Mailslot( Out_Val ) );
+
+	fun rator_of PLUS   => int::(+);
+	    rator_of MINUS  => int::(-);
+	    rator_of TIMES  => int::(*);
+	    rator_of DIVIDE => int::(/);
+	end;
+
+	fun make_accumulator ()
+	    =
+	    {
+		msg_slot = make_mailslot ();
+		val_slot = make_mailslot ();
+
+		fun get_msg ()  =  take  msg_slot;
+
+		fun put_val v   =  give (val_slot, OVAL v);
+		fun put_inf ()  =  give (val_slot, OINFINITY);
+		fun put_ovfl () =  give (val_slot, OOVERFLOW);
+
+		fun update (v, v')
+		    =
+		    {   newval = 10*v + v';
+
+			put_val newval;
+			newval;
+		    }
+		    except OVERFLOW = v;
+
+		fun do_err DIVIDE_BY_ZERO =>  put_inf  ();
+		    do_err OVERFLOW       =>  put_ovfl ();
+		    do_err a              =>  raise exception a;
+		end;
+
+
+		fun init_state ()
+		    =
+		    case (get_msg ())
+			#
+			OP _  =>   init_state ();
+			CLEAR =>   do_clear   ();
+			EQUAL =>   init_state ();
+			VAL v => { put_val v;   read_num (THE v, NULL);  };
+		    esac
+
+		also
+		fun read_num arg
+		    =
+		    case (get_msg ())
+			#
+			OP operator'
+			    =>
+			    case arg
+				#
+				(NULL, NULL)               =>  init_state ();				# Impossible.
+				(NULL, THE (st, operator)) =>  read_num (NULL, THE (st, operator'));
+				(THE v, NULL)              =>  read_num (NULL, THE (v,  operator'));
+
+				(THE v, THE (st, operator))
+				    =>
+				    {   newval = (rator_of operator) (st, v);
+
+					put_val newval;
+					read_num (NULL, THE (newval, operator'));
+				    }
+				    except
+					err = {   do_err err;
+						  init_state ();
+					      };
+			    esac;
+
+			CLEAR  => do_clear ();
+			EQUAL  => do_equal arg;
+
+			VAL v'
+			    =>
+			    case arg
+				#
+				(NULL,  st) =>  { put_val v';   read_num (THE v', st);  };
+				(THE v, st) =>    read_num (THE (update (v, v')), st);
+			    esac;
+		     esac
+
+		also
+		fun do_clear ()
+		    =
+		    {   put_val 0;
+			init_state();
+		    }
+
+		also
+		fun do_equal (THE v, THE (st, operator))
+			=>
+			{   put_val ((rator_of operator) (st, v))
+			    except
+				err = do_err err;
+
+			    init_state ();
+			};
+
+		    do_equal _
+			=>
+			init_state ();
+		end;
+
+
+		make_thread "accumulator"  init_state;
+
+		ACCUMULATOR (msg_slot, val_slot);
+	    };
+
+	fun send_acc  (ACCUMULATOR (msg_slot, _))  msg
+	    =
+	    give (msg_slot, msg);
+
+	fun mailop_of (ACCUMULATOR(_, val_slot))
+	    =
+	    take' val_slot;
+
+    };					# package accumulator 
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1991 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

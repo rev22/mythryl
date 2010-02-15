@@ -1,0 +1,49 @@
+## xclient-unit-test.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+# NB: We must compile this locally via
+#         xclient-internals.make6
+#     instead of globally via
+#         src/lib/test/unit-tests.make6
+#     like most unit tests, in order to have
+#     access to required library internals.
+
+# Run by:
+#     src/lib/test/all-unit-tests.pkg
+
+stipulate
+    package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
+herein
+
+    package xclient_unit_test {
+
+	include unit_test;
+	include make7::scripting_globals;
+
+
+	my name = "src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg";
+
+
+	default_time_quantum			# Copied from src/lib/x-kit/widget/lib/run-xkit.pkg
+	    =
+	    time::from_milliseconds 20;
+
+	fun run ()
+	    =
+	    {   printf "\nDoing %s:\n" name;   
+
+#   	        ctl::start_up_thread_scheduler'
+#   		    default_time_quantum
+#   		   .{
+#   #                        do_it (make_root_window NULL);
+#                       };
+
+		assert TRUE;
+
+		summarize_unit_tests  name;
+	    };
+    };
+
+end;

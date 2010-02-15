@@ -1,0 +1,35 @@
+## slider-appearance.api
+# Slider views.
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+stipulate
+    package xc = xcore;					# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg = xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    #
+    package wa = widget_attribute;			# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package w  = widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+herein
+
+    api Slider_Appearance {
+
+	Result;
+
+	State = (Int, Bool, Bool, Bool);
+
+	attributes:   List( (wa::Name, wa::Type, wa::Value) );
+	get_resources:  (w::Root_Window, (wa::Name -> wa::Value)) -> Result;
+
+	drawf:      (xc::Window, xg::Size, Result) -> (State, Bool) -> Void;
+
+	pt_to_val:  (xg::Size, Result) -> xg::Point -> Int;
+
+	size_preference_thunk_of:  Result -> Void -> w::Widget_Size_Preference;
+    };
+end;
+
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

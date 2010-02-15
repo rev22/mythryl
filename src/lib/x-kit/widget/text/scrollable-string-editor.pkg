@@ -1,0 +1,353 @@
+## scrollable-string-editor.pkg
+#
+# String edit widget with arrow buttons for scrolling.
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+
+
+
+
+###                  "You are what you read."
+###
+###                           -- Bert Schoenfeld
+
+
+stipulate
+    include threadkit;							# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package mr =  xevent_mail_router;					# xevent_mail_router		is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
+    package pb =  pushbuttons;						# pushbuttons			is from   src/lib/x-kit/widget/leaf/pushbuttons.pkg
+    package se =  string_editor;					# string_editor			is from   src/lib/x-kit/widget/text/string-editor.pkg
+    package w  =  widget;						# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xg =  xgeometry;						# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi =  xinput;						# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+    package xw =  xwindow;						# xwindow			is from   src/lib/x-kit/xclient/xwindow.pkg
+herein
+
+    package scrollable_string_editor: (weak)  Scrollable_String_Editor {	# Scrollable_String_Editor	is from   src/lib/x-kit/widget/text/scrollable-string-editor.api
+
+
+	Scrollable_String_Editor
+	    = 
+	    SCROLLABLE_STRING_EDITOR
+              ( w::Widget,
+                (Void -> String),
+                (String -> Void)
+              );
+
+	fun make_scrollable_string_editor  root_window  (arg as { foreground, background, initial_string, min_length } )
+	    =
+	    {   screen =  w::screen_of  root_window;
+
+		stredit =  se::make_string_editor  root_window  arg;
+		cwidget =  se::as_widget  stredit;
+
+		cbnds     =  w::size_preference_thunk_of  cwidget;
+		c_realize =  w::realize_fn                cwidget;
+
+		my { row_preference, ... } = cbnds ();
+		naty = w::preferred_length  row_preference;
+		shift =  se::shift_window stredit;
+
+		lefta = pb::make_arrow_pushbutton root_window { direction=>pb::ARROW_LEFT, size=>naty, foreground, background };
+		leftw = pb::as_widget lefta;
+
+		lbnds     =  w::size_preference_thunk_of  leftw;
+		l_realize =  w::realize_fn                leftw;
+
+		leftevt = pb::button_transition'_of lefta;
+
+		righta = pb::make_arrow_pushbutton root_window { direction=>pb::ARROW_RIGHT, size=>naty, foreground, background };
+		rightw = pb::as_widget righta;
+
+		rbnds     =  w::size_preference_thunk_of  rightw;
+		r_realize =  w::realize_fn                rightw;
+
+		rightevt = pb::button_transition'_of righta;
+
+		fun sizer ()
+		    =
+		    {   (cbnds ()) ->  { col_preference, row_preference };
+
+			w::make_tight_size_preference
+			  ( (w::preferred_length  col_preference) + 4,
+			    (w::preferred_length  row_preference)
+			  );
+		    };
+
+		fun wont_fit (xg::SIZE { wide, ... } )
+		    =
+		    {    my { col_preference, ... } = cbnds ();
+
+			 w::preferred_length col_preference   >  wide;
+		    };
+
+		fun layout (size as xg::SIZE { wide, high } )
+		    =
+		    {   my { col_preference,       ... } = cbnds ();
+			my { col_preference=>ldim, ... } = lbnds ();
+			my { col_preference=>rdim, ... } = rbnds ();
+
+			lx = w::preferred_length  ldim;
+			rx = w::preferred_length  rdim;
+
+			if (w::preferred_length  col_preference  <=  wide)
+			    #
+			    (
+			      FALSE,
+			      xg::BOX { col=>0,       row=>0, wide=>lx, high },
+			      xg::BOX { col=>0,       row=>0, wide,     high },
+			      xg::BOX { col=>wide-rx, row=>0, wide=>rx, high }
+			    );
+			else
+			    ( TRUE,
+			      xg::BOX { col=>0,       row=>0, wide=>lx,                       high },
+			      xg::BOX { col=>lx,      row=>0, wide=>int::max (1, wide-lx-rx), high },
+			      xg::BOX { col=>wide-rx, row=>0, wide=>rx,                       high }
+			    );
+			fi;
+		    };
+
+		fun listener mailop action
+		    =
+		    {   timeout' =  timeout_in' (time::from_float 0.05);
+
+			fun down_loop ()
+			    =
+			    {   do_mailop  timeout';
+
+				case (do_mailop mailop)
+
+				     pb::BUTTON_DOWN _
+					 =>
+					 {   action ();
+					     down_loop ();
+					 };
+
+				     _ => ();
+				esac;
+			    };
+
+			fun loop ()
+			    =
+			    loop { do_mailop mailop;
+				   action    ();
+				   down_loop ();
+				 };
+
+			loop ();
+		    };
+
+		pr =   fn _ = ();
+
+
+		fun realize_scrollable_string_editor { kidplug, window, size }
+		    =
+		    {   my lo as (active, lrect, crect, rrect)
+			    =
+			    layout size;
+
+			lwin =  w::make_child_window (window, lrect, w::args_of leftw);	
+			cwin =  w::make_child_window (window, crect, w::args_of cwidget);
+			rwin =  w::make_child_window (window, rrect, w::args_of rightw);
+
+			my { kidplug => lkidplug, momplug => lmomplug as xi::MOMPLUG { from_kid'=>lco, ... } } =  xi::make_widget_cable ();
+			my { kidplug => ckidplug, momplug => cmomplug as xi::MOMPLUG { from_kid'=>cco, ... } } =  xi::make_widget_cable ();
+			my { kidplug => rkidplug, momplug => rmomplug as xi::MOMPLUG { from_kid'=>rco, ... } } =  xi::make_widget_cable ();
+
+			(xi::make_widget_cable ())
+			    ->
+			    { kidplug =>  my_kidplug,
+			      momplug =>  my_momplug
+			    };
+
+			my_kidplug
+                            ->
+                            xi::KIDPLUG { from_other'    => myci,
+				          from_mouse'    => mym,
+					  from_keyboard' => myk,
+					  ...
+					};
+
+			router = mr::make_xevent_mail_router (kidplug, my_momplug, []);
+
+			childco =  w::wrap_queue  cco;
+
+			fun do_layout ((a, lr, cr, rr), (a', lr', cr', rr'))
+			    =
+			    {   if (a' != a)
+				    #			        
+				    if a'
+					xw::show_window  lwin;
+					xw::show_window  rwin;
+				    else
+					xw::hide_window  lwin;
+					xw::hide_window  rwin;
+				    fi;
+				fi;
+
+				if (lr' != lr)                           xw::move_and_resize_window lwin lr';  fi;
+				if (cr' != cr)  pr "resize stredit\n";   xw::move_and_resize_window cwin cr';  fi;
+				if (rr' != rr)                           xw::move_and_resize_window rwin rr';  fi;
+			    };
+
+			fun main size lo
+			    =
+			    loop lo
+			    where
+				fun loop lo
+				    =
+				    loop (
+					select [
+					    myci    ==>  .{  do_mom       (xi::envelope_contents #mailop, lo);  },
+					    myk     ==>  .{  do_keyboard  (xi::envelope_contents #mailop, lo);  },
+					    mym     ==>  .{  do_mouse     (xi::envelope_contents #mailop, lo);  },
+
+					    childco ==>  .{  handle_c (#mailop, lo);  },
+
+					    lco     ==>  (fn _ = lo),
+					    rco     ==>  (fn _ = lo)
+					]
+				    )
+				where
+
+				    fun do_mom (xi::ETC_RESIZE (xg::BOX { col, row, wide, high } ), lo)
+					    =>
+					    {   size' = xg::SIZE { wide, high };
+						lo'   = layout size';
+
+						do_layout (lo, lo');
+						main size' lo';
+					    };
+
+					do_mom (_, lo)
+					    =>
+					    lo;
+				    end;
+
+
+				    fun handle_c (xi::REQ_RESIZE, lo as (a, _, _, _))
+					    =>
+					    {   pr "resize plea\n";
+						a' = wont_fit size;
+
+						if (a == a' ) 
+						    #
+						    lo;
+						else
+						    lo' = layout size;
+						    pr "newlayout\n";
+
+						    do_layout (lo, lo');
+						    lo';
+						fi;
+					    };
+
+					handle_c (xi::REQ_DESTRUCTION, lo)
+					    =>
+					    lo;
+				    end;
+
+
+				    fun do_keyboard ((xi::KEY_PRESS _), lo)
+					    => 
+					    { (file::print " [field-edit received KEY_PRESS]\n"); lo; };
+
+					do_keyboard ((_), lo)
+					    =>
+					    lo;
+				    end;
+
+
+				    fun do_mouse ((xi::MOUSE_ENTER _), lo)
+					    =>
+					    {   a =  xw::grab_keyboard  cwin;
+
+						#  (file::print (" [field-edit received xi::MOUSE_ENTER: "$(int::to_string (a))$"]\n")) 
+
+						lo;
+					    };
+
+					do_mouse ((_), lo)
+					    =>
+					    lo;
+				    end;
+				end;
+			    end;
+
+
+			mr::add_child router (lwin, lmomplug);
+			mr::add_child router (cwin, cmomplug);
+			mr::add_child router (rwin, rmomplug);
+
+			make_thread  "scrollable_string_editor left"   .{   listener leftevt   .{ shift -1; };   };
+			make_thread  "scrollable_string_editor right"  .{   listener rightevt  .{ shift  1; };   };
+
+			make_thread  "scrollable_string_editor"  .{
+			    #
+			    main size (active, lrect, crect, rrect);
+			    ();
+			};
+
+			l_realize { kidplug=>lkidplug, window=>lwin, size=>xg::size_of_box lrect };
+			c_realize { kidplug=>ckidplug, window=>cwin, size=>xg::size_of_box crect };
+			r_realize { kidplug=>rkidplug, window=>rwin, size=>xg::size_of_box rrect };
+
+			if active
+			    #
+			    xw::show_window  lwin;
+			    xw::show_window  rwin;
+			fi;
+
+			xw::show_window  cwin;
+		};
+
+		SCROLLABLE_STRING_EDITOR
+		  (
+		    w::make_widget
+		      {
+			root_window, 
+			args=> fn () = { background => NULL }, 
+			size_preference_thunk_of => sizer, 
+			realize   => realize_scrollable_string_editor
+		      },
+
+		    fn () =  se::get_string  stredit,
+
+		    se::set_string  stredit
+		  );
+	    };
+
+	fun as_widget  (SCROLLABLE_STRING_EDITOR (w, _, _)) = w;
+	fun get_string (SCROLLABLE_STRING_EDITOR (w, g, _)) = g ();
+	fun set_string (SCROLLABLE_STRING_EDITOR (_, _, s)) = s;
+
+    };		#  scrollable_string_editor 
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1991 by AT&T Bell Laboratories
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

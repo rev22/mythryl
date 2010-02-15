@@ -1,0 +1,384 @@
+## attribute-subgraph-tree-g.pkg
+#
+# See overview comments in
+#     src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This generic package gets expanded in:
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+#     src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
+
+							# Attributed_Subgraph_Tree	is from   src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree.api
+
+generic package attributed_subgraph_tree_g (
+
+    Graph_Info;
+    Edge_Info;
+    Node_Info;
+
+): (weak) Attributed_Subgraph_Tree
+
+{
+							# string_map			is from   src/lib/src/string-map.pkg
+							# red_black_map_g		is from   src/lib/src/red-black-map-g.pkg
+    package map
+	=
+	string_map;
+
+    Kind =    GRAPH_KIND  Bool
+         |  DIGRAPH_KIND  Bool
+         ;
+
+    fun opt_info_fn (THE i, _) =>  i;
+        opt_info_fn (NULL, f)  =>  f();
+    end;
+
+    Mapref(X)
+	=
+	Ref( map::Map(X) );
+
+    fun delete (d, k)
+	=
+	{   d := #1 (map::drop (*d, k));
+	}
+	except _ = ();
+
+
+    fun peek (d, k)
+	=
+	map::get(*d, k);				# Returns Null_Or(X)
+
+
+    fun insert (d, k, v)
+	=
+	d :=  map::set(*d, k, v);
+
+
+    fun rm_node_name (d, n)
+	=
+	d :=  #1 (map::drop(*d, n));
+
+    User_Node_Info  =  Node_Info;
+    User_Edge_Info  =  Edge_Info;
+    User_Graph_Info =  Graph_Info;
+
+    Node_Info
+	=
+	{  name:        String, 
+           attributes:  Mapref( String ), 
+           info:        User_Node_Info
+        };
+
+    Edge_Info
+	=
+	{ attributes:  Mapref( String ), 
+          info:        User_Edge_Info
+        };
+
+    Graph_Info
+	=
+	{ info:  User_Graph_Info,
+          kind:  Kind,
+          name:  String,
+	  #
+          default_node_attributes:  Mapref( String ),
+          default_edge_attributes:  Mapref( String ),
+          attributes:               Mapref( String )
+        };
+
+							# subgraph_tree_g	is from   src/lib/x-kit/tut/ml-viewer/graph/subgraph-tree-g.pkg
+
+    package g						# This is -not- part of Attribute_Graph api.
+	=
+	subgraph_tree_g(
+	    #
+            Edge_Info  = Edge_Info;
+            Node_Info  = Node_Info;
+            Graph_Info = Graph_Info;
+        );
+
+    include g;
+
+    Node = Node;
+    Edge = Edge;
+
+    Attributed_Graph
+	=
+	ATTRIBUTED_GRAPH
+	  { graph:  g::Graph,
+	    univ:   Univ_Info
+	  }
+    also
+    Univ_Info
+	=
+	UNIV_INFO
+	  {
+	    graph_info:  Void -> User_Graph_Info,
+	    edge_info:   Void -> User_Edge_Info,
+	    node_info:   Void -> User_Node_Info,
+	    #
+	    nodes:   Ref(  map::Map(  Node  ) ),
+	    graphs:  Ref(  map::Map(  Attributed_Graph ) )
+          };
+
+    Graph_Part
+      #
+      = GRAPH_PART Attributed_Graph
+      | EDGE_PART  Edge
+      | NODE_PART  Node
+      #	
+      | PROTONODE_PART Attributed_Graph
+      | PROTOEDGE_PART Attributed_Graph
+      ; 
+
+
+
+    fun node_name (n: g::Node)
+	=
+	{   info = g::info_of_node  n;
+            name = info.name;
+	    name;
+	};
+
+    fun graph_name (ATTRIBUTED_GRAPH { graph, ... } ) =  .name (g::info_of_graph graph);
+    fun num_nodes  (ATTRIBUTED_GRAPH { graph, ... } ) =  g::num_nodes graph;
+    fun num_edges  (ATTRIBUTED_GRAPH { graph, ... } ) =  g::num_edges graph;
+
+    fun make_graph
+        { name:       String,
+          info:       Null_Or( User_Graph_Info ),
+	  #
+          graph_info: Void -> User_Graph_Info,
+          edge_info:  Void ->  User_Edge_Info,
+          node_info:  Void ->  User_Node_Info
+        }
+	=
+	{
+	    univ = UNIV_INFO
+                     {
+		       graph_info,
+		       edge_info,
+		       node_info,
+		       #
+		       nodes  =>  REF (map::empty),
+		       graphs =>  REF (map::empty)
+		     };
+
+	    info = { name,
+		     info => opt_info_fn (info, graph_info), 
+		     #
+		     kind       =>  GRAPH_KIND FALSE, 
+		     attributes =>  REF (map::empty),
+		     #
+		     default_node_attributes =>  REF (map::empty),
+		     default_edge_attributes =>  REF (map::empty)
+		   };
+
+	    g = ATTRIBUTED_GRAPH
+                  { graph =>  g::make_graph info,
+                    univ
+                  };
+
+	    univ ->  UNIV_INFO { graphs, ... };
+
+            insert (graphs, name, g);
+
+            g;
+	};
+
+
+    fun find_subgraph (ATTRIBUTED_GRAPH { univ=>UNIV_INFO { graphs, ... }, ... }, name)
+	=
+	peek (graphs, name);
+
+
+    fun add_subgraph (g as ATTRIBUTED_GRAPH { graph, univ }, name, opt_info)
+	=
+	case (find_subgraph (g, name))
+
+	    NULL =>
+		{   info = info_of_graph graph;
+
+		    univ ->  UNIV_INFO { graphs, graph_info, ... };
+
+		    info'
+			=
+			{
+			  name,
+			  info => opt_info_fn (opt_info, graph_info),
+			  kind => info.kind, 
+			  #
+			  attributes => REF (*info.attributes),
+			  #
+			  default_node_attributes =>  REF (*info.default_node_attributes),
+			  default_edge_attributes =>  REF (*info.default_edge_attributes)
+			};
+
+		    sg = ATTRIBUTED_GRAPH { univ, graph=>g::make_subgraph (graph, info') };
+
+		    insert (graphs, name, sg);
+
+		    sg;
+		};
+
+             _ => raise exception  SUBGRAPH_TREE_ERROR "attributed_graph::add_subgraph";
+	esac;
+
+
+    fun has_node (ATTRIBUTED_GRAPH { graph, ... }, n)
+	=
+	g::has_node (graph, n);
+
+    fun del_node (g as ATTRIBUTED_GRAPH { graph, univ }, node)
+	=
+        {    g::del_node (graph, node);
+
+	     if (g::is_root graph)
+
+	         univ ->  UNIV_INFO { nodes, ... };
+
+		 rm_node_name (nodes, .name (info_of_node node));
+	     fi;
+        };
+
+    fun add_node (g as ATTRIBUTED_GRAPH { graph, univ }, name, opt_info)
+	=
+        {   univ ->   UNIV_INFO { nodes, node_info, ... };
+
+	    attributes = *(.default_node_attributes (info_of_graph graph));
+
+	    info = { name,
+		     attributes =>  REF attributes,
+		     info       =>  opt_info_fn (opt_info, node_info)
+		   };
+
+	    node = g::add_node (graph, info);
+
+            #  print (implode[graphName g, ": addNode ", name, "\n"]); 
+
+            insert (nodes, name, node);
+
+            node;
+        };
+
+    fun get_node (arg as (g as ATTRIBUTED_GRAPH { graph, univ }, name, _))
+	=
+        {   univ ->  UNIV_INFO { nodes, ... };
+
+            case (peek (nodes, name))
+
+		THE n =>
+		    {
+		        if (not (g::has_node (graph, n)))
+
+		            #  print (implode[graph_name g, ": insert_node ", name, "\n"]); 
+
+		            insert_node (graph, n);
+		        fi;
+
+		        n;
+		    };
+
+                NULL => add_node arg;
+	    esac;
+        };
+
+    fun find_node (g as ATTRIBUTED_GRAPH { graph, univ=>UNIV_INFO { nodes, ... }}, name)
+	=
+        case (peek (nodes, name))
+	    #
+            NULL => NULL;
+
+            nn as (THE n)
+		=>
+		if   (g::is_root graph)        nn;
+                elif (g::has_node (graph, n))  nn;
+                else                           NULL;
+		fi;
+	esac;
+
+    fun has_edge (ATTRIBUTED_GRAPH { graph, ... }, e) =  g::has_edge (graph, e);
+    fun del_edge (ATTRIBUTED_GRAPH { graph, ... }, e) =  g::del_edge (graph, e);
+
+    fun add_edge { graph => g as ATTRIBUTED_GRAPH { graph, univ, ... }, info, hd, tl }
+	=
+	{   attributes = *(.default_edge_attributes (info_of_graph graph));
+
+	    univ ->  UNIV_INFO { edge_info, ... };
+
+	    info = { attributes =>  REF attributes,
+                     info       =>  opt_info_fn (info, edge_info)
+		   };
+
+            #  print (implode [ graph_name g, ": adding edge ", node_name tl, " -> ", node_name hd, "\n"]); 
+
+            g::add_edge { graph, hd, tl, info };
+        };
+    
+    fun nodes         (ATTRIBUTED_GRAPH { graph, ... } )   =  g::nodes graph;
+    fun fold_nodes  f (ATTRIBUTED_GRAPH { graph, ... } ) a =  g::fold_nodes f graph a;
+    fun apply_nodes f (ATTRIBUTED_GRAPH { graph, ... } )   =  g::apply_nodes f graph;
+
+    fun edges     (ATTRIBUTED_GRAPH { graph, ... }   ) =  g::edges graph;
+    fun in_edges  (ATTRIBUTED_GRAPH { graph, ... }, n) =  g::in_edges  (graph, n);
+    fun out_edges (ATTRIBUTED_GRAPH { graph, ... }, n) =  g::out_edges (graph, n);
+
+    fun apply_in_edges  f (ATTRIBUTED_GRAPH { graph, ... }, n) =  g::apply_in_edges  f (graph, n);
+    fun apply_out_edges f (ATTRIBUTED_GRAPH { graph, ... }, n) =  g::apply_out_edges f (graph, n);
+
+    stipulate
+
+	fun get d k =  peek   (d, k);
+	fun del d k =  delete (d, k);
+
+	fun ins d (k, v)
+	    =
+            insert (d, k, v);
+
+	fun apply d f = map::keyed_apply f *d;
+	fun count d   = map::vals_count *d;
+
+	fun do_part f (GRAPH_PART (ATTRIBUTED_GRAPH { graph, ... } )) =>  f (.attributes (info_of_graph graph));
+	    #
+	    do_part f (EDGE_PART edge) =>  f (.attributes (info_of_edge edge));
+	    do_part f (NODE_PART node) =>  f (.attributes (info_of_node node));
+	    #
+	    do_part f (PROTONODE_PART (ATTRIBUTED_GRAPH { graph, ... } )) =>  f (.default_node_attributes (info_of_graph graph));
+	    do_part f (PROTOEDGE_PART (ATTRIBUTED_GRAPH { graph, ... } )) =>  f (.default_edge_attributes (info_of_graph graph));
+	end;
+
+    herein
+
+	get_attr   =  do_part get;
+	set_attr   =  do_part ins;
+	del_attr   =  do_part del;
+	apply_attr =  do_part apply;
+	cnt_attr   =  do_part count;
+    end;
+
+    fun info_of_node n =  .info (g::info_of_node n);
+    fun info_of_edge e =  .info (g::info_of_edge e);
+
+    fun info_of_graph (ATTRIBUTED_GRAPH { graph, ... } )
+	=
+	.info (g::info_of_graph graph);
+
+    Node_Info  = User_Node_Info;
+    Edge_Info  = User_Edge_Info;
+    Graph_Info = User_Graph_Info;
+
+    fun eq_graph
+	( ATTRIBUTED_GRAPH { graph => g,  ... },
+          ATTRIBUTED_GRAPH { graph => g', ... }
+        )
+	=
+	g::eq_graph (g, g');
+
+};						# generic package attribute_graph_g
+
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

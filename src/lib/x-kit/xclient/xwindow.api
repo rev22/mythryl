@@ -1,0 +1,195 @@
+## xwindow.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+# The types and operations provided by x-kit to support windows and window
+# dictionaries.
+
+
+
+api  Xwindow {
+
+    package xc:      	Xcore;		# Xcore		is from   src/lib/x-kit/xclient/xcore.api
+    package xg:      	Xgeometry;	# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
+    package xselection: Xselection;	# Xselection	is from   src/lib/x-kit/xclient/xselection.api
+    package xinput:	Xinput;		# Xinput	is from   src/lib/x-kit/xclient/xinput.api
+
+    Window;
+
+    # User-level window attributes 
+    #
+    Window_Attribute
+      #
+      = WA_BACKGROUND_NONE
+      | WA_BACKGROUND_PARENT_RELATIVE
+      | WA_BACKGROUND_RO_PIXMAP    	 xc::Ro_Pixmap
+      | WA_BACKGROUND_COLOR              xc::Color
+      | WA_BACKGROUND_RW_PIXMAP		 xc::Rw_Pixmap
+      #
+      | WA_BORDER_COPY_FROM_PARENT
+      | WA_BORDER_RW_PIXMAP    		 xc::Rw_Pixmap
+      | WA_BORDER_RO_PIXMAP        	 xc::Ro_Pixmap
+      | WA_BORDER_COLOR                  xc::Color
+      #
+      | WA_BIT_GRAVITY                   xc::Gravity
+      | WA_WINDOW_GRAVITY                xc::Gravity
+      #
+      | WA_CURSOR                        xc::Xcursor
+      | WA_CURSOR_NONE
+      ;
+
+    # Window stacking modes:
+    #
+    Stack_Mode = ABOVE
+               | BELOW
+               | TOP_IF
+               | BOTTOM_IF
+               | OPPOSITE
+               ;
+
+    # Window configuration values 
+    #
+    Window_Config
+      = WC_ORIGIN          xg::Point
+      | WC_SIZE            xg::Size
+      #
+      | WC_BORDER_WID      Int
+      | WC_STACK_MODE      Stack_Mode
+      #
+      | WC_REL_STACK_MODE  (Window, Stack_Mode)
+      ;
+
+
+    # Window operations
+
+    exception BAD_WINDOW_FOOTPRINT;
+
+    make_simple_top_window
+	:
+	xc::Screen
+	->
+	{ geometry:    xg::Window_Footprint,
+	  border:      xc::Color,
+	  background:  xc::Color
+        }
+	->
+	(Window, xinput::Kidplug, threadkit::Mailslot(Void));
+
+    make_simple_subwindow
+	:
+	Window
+	->
+	{ geometry:    xg::Window_Footprint,
+	  border:      Null_Or( xc::Color ),
+	  background:  Null_Or( xc::Color )
+        }
+        ->
+        Window;
+
+    make_transient_window
+        :
+        xc::Window
+        ->
+        { geometry:    xg::Window_Footprint,
+	  border:      xc::Color,
+	  background:  xc::Color
+        }
+        ->
+        (Window, xinput::Kidplug);
+
+    make_simple_popup_window
+        :
+        xc::Screen
+        ->
+        { geometry:    xg::Window_Footprint,
+	  border:      xc::Color,
+	  background:  xc::Color
+        }
+        ->
+        (Window, xinput::Kidplug);
+
+    make_input_only_window
+	:
+	Window -> xg::Box -> Window;
+
+    # We raise this exception on operations
+    # such as drawing that are illegal for
+    # InputOnly windows.
+    #
+    exception INPUT_ONLY;
+
+    # Set the properties of a top-level window.
+    #
+    # This should be done before showing (mapping)
+    # the window:
+    #
+    set_window_manager_properties
+	:
+	Window
+	->
+	{
+          window_name:   Null_Or( String ),
+          icon_name:     Null_Or( String ),
+          #
+          argv:          List( String ),			# Typically from:   commandline::get_arguments (),
+          size_hints:    List( xselection::Window_Manager_Size_Hint ),
+          nonsize_hints: List( xselection::Window_Manager_Nonsize_Hint ),
+          #
+          ilk_hints:     Null_Or { res_ilk:   String,
+                                   res_name:  String
+                                 }
+        }
+	->
+	Void;
+
+    # Set the window-manager protocols
+    # for a window: 
+    #
+    set_window_manager_protocols:  Window -> List( xc::Atom ) -> Bool;
+
+    # Various routines to reconfigure window layout: 
+    #
+    configure_window:        Window -> List( Window_Config ) -> Void;
+    move_window:             Window -> xg::Point -> Void;
+    resize_window:           Window -> xg::Size  -> Void;
+    move_and_resize_window:  Window -> xg::Box   -> Void;
+
+    # Map a point in the window's coordinate
+    # system to the screen's coordinate system:
+    #
+    window_pt_to_screen_pt
+	:
+	Window -> xg::Point -> xg::Point;
+
+    set_cursor:  Window ->  Null_Or( xc::Xcursor ) -> Void;
+
+    set_background:  Window -> Null_Or( xc::Color ) -> Void;
+	#
+	# Set the background color attribute of the window.  Note that this does
+	# not have an immediate affect on the window's contents, but if it is done
+	# before the window is mapped, the window will come up with the right color.
+
+
+    change_window_attributes:  Window -> List( Window_Attribute ) -> Void;
+	#
+        # Set various window attributes.
+
+    show_window:        Window -> Void;		# Show ("map") window.  Won't actually show unless all ancestors show.
+    hide_window:        Window -> Void;		# Opposite of show.	
+    withdraw_window:    Window -> Void;
+    destroy_window:     Window -> Void;
+
+    screen_of_window:   Window -> xc::Screen;
+    xsession_of_window: Window -> xc::Xsession;
+
+    grab_keyboard:      Window -> Int;
+    ungrab_keyboard:    Window -> Int;
+};						# api Xwindow
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,40 @@
+## timer.api
+
+# Compiled by:
+#     src/lib/std/src/Base-imp.make6
+
+
+
+###           "All we have to decide
+###            is what to do with the
+###            time that is given us."
+###
+###                    -- Gandalf
+
+
+
+api Timer {
+
+    Cpu_Timer;
+    Real_Timer;
+
+    start_cpu_timer:  Void -> Cpu_Timer;
+    total_cpu_timer:  Void -> Cpu_Timer;
+
+    check_cpu_times:  Cpu_Timer
+			-> { nongc: { usr: time::Time, sys: time::Time },
+			     gc: { usr: time::Time, sys: time::Time } };
+    check_cpu_timer:  Cpu_Timer -> { usr: time::Time, sys: time::Time };
+    check_gc_time:    Cpu_Timer -> time::Time;
+
+    start_real_timer: Void -> Real_Timer;
+    total_real_timer: Void -> Real_Timer;
+
+    check_real_timer: Real_Timer -> time::Time;
+
+}; #  Timer 
+
+
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,21 @@
+
+# Compiled by:
+
+LIBRARY_EXPORTS
+
+	pkg no_where
+
+
+
+LIBRARY_COMPONENTS
+
+        $ROOT/src/lib/std/stdlib.make6
+
+	$ROOT/src/lib/compiler/lower/tools/Match-Compiler.make6
+	$ROOT/src/lib/compiler/lower/tools/parser.make6
+	$ROOT/src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6
+	$ROOT/src/lib/compiler/lower/tools/prec-parser.make6
+	$ROOT/src/lib/compiler/lower/tools/sml-ast.make6
+	$ROOT/src/lib/compiler/lower/tools/source-map.make6
+
+	nowhere.pkg

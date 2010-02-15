@@ -1,0 +1,50 @@
+## get-display.api
+
+# Compiled by:
+#     src/lib/x-kit/draw/xkit-draw.make6
+
+
+
+# Utility code for getting the display name and authentication information.
+
+
+
+###            "Adam and Eve had many advantages, but the
+###             principal one was that they escaped teething."
+###
+###                            -- Pudd'nhead Wilson's Calendar
+
+
+
+api Get_Display {
+
+
+    # Parse a string specifying an
+    # X display into its components:
+    #
+    parse_display
+        :
+        String
+        ->
+        { host:    String,
+	  display: String,
+	  screen:  String
+	};
+
+    # Given an optional display name, return the display and authentication
+    # information.  If the argument is NULL, then we use the DISPLAY dictionary
+    # variable if it is defined, and "" if it is not defined.
+    #
+    get_display
+        :
+        Null_Or( String )
+        ->
+        (String, Null_Or( xcore::Authentication ));
+
+};
+
+
+
+## COPYRIGHT (c) 1998 Bell Labs, Lucent Technologies.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,149 @@
+## sim.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/nbody/nbody.make6
+
+stipulate
+    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+herein
+
+    package sim:  Sim {					# Sim			is from   src/lib/x-kit/tut/nbody/sim.api
+
+	package v {
+
+	    Vect = (Float, Float);
+
+	    zero = (0.0, 0.0);
+
+	    fun add ((x1, y1): Vect, (x2, y2)) =  (x1 + x2, y1 + y2);
+	    fun sub ((x1, y1): Vect, (x2, y2)) =  (x1 - x2, y1 - y2);
+
+	    fun neg ((x, y): Vect) = (-x, -y);
+
+	    fun scmul (c, (x, y): Vect) =  (c * x, c * y);
+
+	    fun sqnorm ((x, y): Vect) =  x * x + y * y;
+	    fun proj2d ((x, y): Vect) = { x, y };
+	};
+
+	Vect = v::Vect;
+
+	Body(X) = { p: Vect,
+		    v: Vect,
+		    m: Float,
+		    data: X
+		  };
+
+	Msg(X)
+	  =	NEW_DT   Float
+	  | NEW_N    Int
+	  | NEW_BODY Body(X)
+	  | QUERY    Mailslot( List( Body(X) ))
+	  | STOP
+	  ;
+
+	fun run { g, bodies, dt, msg_slot, n }
+	    =
+	    {   fun accels []
+			=>
+			[];
+
+		    accels [_]
+			=>
+			[v::zero];
+
+		    accels ( { p => ph, v => vh, m => mh, data } ! tl)
+			=>
+			{
+			      fun addh (b, ab, (ah, atl))
+				  =
+				  {
+				      b ->  { p => pb, v => value_naming, m => mb, data };
+
+				      distv = v::sub (pb, ph);
+				      dist2 = v::sqnorm distv;
+
+				      dist = math::sqrt dist2;
+
+				      geometry = g // (dist2 * dist);
+
+				      ah = v::add (ah, v::scmul (geometry * mb, distv));
+				      ab = v::sub (ab, v::scmul (geometry * mh, distv));
+
+				      (ah, ab ! atl);
+				  };
+
+			      my (ah, atl)
+				  =
+				  paired_lists::fold_right
+				      addh
+				      (v::zero, [])
+				      (tl, accels tl);
+
+			      ah ! atl;
+			};
+		end;
+
+
+		fun step (bl, dt)
+		    =
+		    paired_lists::map
+			one_body
+			(bl, accels bl)
+		    where 
+			fun one_body ( { p, v, m, data }, a)
+			    =
+			    { p =>  v::add (p, v::scmul (dt, v)),
+			      v =>  v::add (v, v::scmul (dt, a)),
+			      m,
+			      data
+			    };
+		    end;
+
+
+		fun steps n (bl, dt)
+		    =
+		    loop (n, bl)
+		    where
+			fun loop (0, bl) =>  bl;
+			    loop (n, bl) =>  loop (n - 1, step (bl, dt));
+			end;
+		    end;
+
+
+		always =  always_mailop ();
+
+
+		fun loop (bl, dt, n)
+		    =
+		    select [
+			#
+			take' msg_slot
+			    ==>
+			    handle_msg (bl, dt, n),
+
+			always
+			    ==>
+			   .{  loop (steps n (bl, dt), dt, n);  }
+		    ]
+
+		also
+		fun handle_msg (bl, dt, n) m
+		    =
+		    case m
+			#
+			NEW_DT dt  => loop (bl, dt, n);
+			NEW_N n    => loop (bl, dt, n);
+			NEW_BODY b => loop (b ! bl, dt, n);
+			QUERY c    => {   give (c, bl);   loop (bl, dt, n);  };
+			STOP       => ();
+		    esac;
+
+
+		make_thread  "sim"  .{
+		    #
+		    loop (bodies, dt, n);
+		};
+	    };
+    };
+end;

@@ -1,0 +1,5 @@
+This directory contains an x-kit implementation of Luc Cardelli's
+BadBricks program (originally implemented in Modula-3).
+
+To build an spawn_to_disk heap image, use Export.export().
+

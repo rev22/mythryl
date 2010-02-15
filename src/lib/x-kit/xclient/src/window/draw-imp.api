@@ -1,0 +1,116 @@
+## draw-imp.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/xclient/src/window/draw-imp.pkg
+
+stipulate
+    include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package br  =  xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+    package g   =  geometry;				# geometry				is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package gi  =  graphics_context_imp;		# graphics_context_imp			is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package m1  =  oneshot_maildrop;			# oneshot_maildrop			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
+    package pg  =  pen_guts;				# pen_guts				is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
+    package vu8 =  unt8_vector;				# unt8_vector				is from   src/lib/std/src/unt8-vector.pkg
+    package xok =  xsocket;			 	# xsocket				is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package xt  =  xtypes;				# xtypes				is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+
+    api Draw_Imp {
+
+	 Dm_Config
+	  = DM_UNMAP
+	  | DM_MAP
+	  | DM_FIRST_EXPOSE
+	  ;
+
+	 Poly_Text
+	  = PTXT_TEXT  (Int, String)
+	  | PTXT_FONT  xt::Font_Id
+	  ;
+
+	 Draw_Op
+	  = DOP_POLY_POINT     (Bool, List( g::Point ))
+	  | DOP_POLY_LINE      (Bool, List( g::Point ))
+	  | DOP_FILL_POLY      (xt::Shape, Bool, List( g::Point ))
+	  | DOP_POLY_SEG       List( g::Line )
+	  | DOP_POLY_BOX       List( g::Box )
+	  | DOP_POLY_FILL_BOX  List( g::Box )
+	  | DOP_POLY_ARC       List( g::Arc )
+	  | DOP_POLY_FILL_ARC  List( g::Arc )
+	  | DOP_COPY_AREA
+		( g::Point,
+		  xt::Xid,
+		  g::Box,
+		  m1::Oneshot_Maildrop (Void -> List( g::Box ) )
+		)
+	  | DOP_COPY_PLANE
+		( g::Point,
+		  xt::Xid,
+		  g::Box,
+		  Int,
+		  m1::Oneshot_Maildrop (Void -> List( g::Box ) )
+		)
+	  | DOP_COPY_PMAREA   (g::Point, xt::Xid, g::Box)
+	  | DOP_COPY_PMPLANE  (g::Point, xt::Xid, g::Box, Int)
+	  | DOP_CLEAR_AREA     g::Box
+	  | DOP_PUT_IMAGE
+	      {
+		to_point:  g::Point,
+		size:      g::Size,
+		depth:        Int,
+		lpad:         Int,
+		format:    xt::Image_Format,
+		data:      vu8::Vector
+	      }
+	  | DOP_POLY_TEXT8   (xt::Font_Id, g::Point, List(Poly_Text))
+	  | DOP_IMAGE_TEXT8  (xt::Font_Id, g::Point, String)
+	  ;
+
+	 Destroy_Item
+	  = DESTROY_WINDOW  xt::Window_Id
+	  | DESTROY_PIXMAP  xt::Pixmap_Id
+	  ;
+
+	 Draw_Mail =
+	    DMSG
+	      { to:    xt::Xid,
+		pen:   pg::Pen,
+		op:        Draw_Op
+	      }
+
+	  | DMSG_FLUSH
+	  | DMSG_MAKE_LOCKED_WINDOW  {
+	      draw_slot:       Mailslot( Draw_Mail ),	# Stream of drawing commands for the overlay 
+	      release':        Mailop( Void )		# Overlay release mailop
+	    }
+	  | DMSG_DESTROY  Destroy_Item
+	  | DMSG_BATCHING_ON
+	  | DMSG_BATCHING_OFF
+	  ;
+
+	 make_draw_imp
+	    :
+	    ( Mailop( Dm_Config ),
+	      gi::Graphics_Context_Imp,
+	      br::Xbuf_To_Widgettree_Xevent_Router,
+	      xok::Xsocket
+	    )
+	    ->
+	    Draw_Mail
+	    ->
+	    Void;
+
+    };
+end;				# stipulate
+
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

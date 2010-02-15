@@ -1,0 +1,40 @@
+## color-state.pkg
+## See COPYRIGHT file for details.
+
+# Compiled by:
+#     src/lib/x-kit/tut/mixer/mixer.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/mixer/color-state.pkg
+
+stipulate
+    include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc =  xcore;			# xcore		is from   src/lib/x-kit/xclient/src/api/build.pkg
+herein
+
+    api Color_State {
+
+	Change_Color_Msg
+	  #	
+	  = CHANGE_R Unt
+	  | CHANGE_G Unt
+	  | CHANGE_B Unt
+	  | CHANGE_RGB xc::Rgb
+	  ;
+
+	Color_State;
+
+	make_color_state:       xc::Rgb -> Color_State;
+
+	send_change_color:      Color_State -> Change_Color_Msg -> Void;
+	mailop_of_color_state:  Color_State -> Mailop( xc::Rgb );
+    };
+
+end;
+
+ 
+ 
+## COPYRIGHT (c) 1991, 1995 by AT&T Bell Laboratories.  
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

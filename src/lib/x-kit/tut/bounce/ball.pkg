@@ -1,0 +1,238 @@
+## ball.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/bounce/bounce.make6
+
+stipulate
+    include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+
+    package xc =  xcore;			# xdraw		is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xw =  xwindow;			# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+    #
+    package bd =  bounce_dm;			# bounce_dm	is from   src/lib/x-kit/tut/bounce/bounce-dm.pkg
+    package hd =  heads;			# heads		is from   src/lib/x-kit/tut/bounce/heads.pkg
+herein
+
+    package ball {
+
+	Ball_Msg
+	  = KILL               xg::Point
+	  | REDRAW_BALL  (Int, xg::Size)
+	  | KILL_ALL
+	  ;
+
+	updates_per_sec = 10;
+
+	stipulate
+
+	    # Clip a point to keep a ball in the window.
+	    # If we hit a wall then we adjust the vector.
+	    #
+	    # The clipped point should be computed to lie
+	    # on the vector, but for now we assume small
+	    # vectors and just truncate the coordinates. 
+	    #
+	    fun clip (ball_radius, xg::SIZE { wide, high } )
+		=
+		{   max_x = wide - ball_radius;
+		    max_y = high - ball_radius;
+
+		    fun clip_coord (coord:  Int, delta, min_coord, max_coord)
+			= 
+			if   (coord <= min_coord)   (min_coord, -delta);
+			elif (coord >= max_coord)   (max_coord, -delta);
+			else                        (    coord,  delta);
+			fi;
+
+		    fun clip'
+			( xg::POINT { col=>x0,  row=>y0 },
+			  xg::POINT { col=>dx0, row=>dy0 }
+			)
+			=
+			{   my (x1, dx1) =  clip_coord (x0+dx0, dx0, ball_radius, max_x);
+			    my (y1, dy1) =  clip_coord (y0+dy0, dy0, ball_radius, max_y);
+
+			    ( xg::POINT { col=>x1,  row=>y1 },
+			      xg::POINT { col=>dx1, row=>dy1 }
+			    );
+			};
+
+		    clip';
+		};
+
+	    fun make_icon_fn window
+		=
+		{   ball_icons
+			=
+			map (xc::make_ro_pixmap_from_cs_pixmap (xw::screen_of_window window))
+			    hd::head_data_list;
+
+		    n    = list::length ball_icons;
+
+		    slot = make_mailslot ();
+
+		    fun loop i
+			=
+			if (i == n)
+			    #
+			    loop 0;
+			else
+			    give (slot, list::nth (ball_icons, i));
+			    loop (i+1);
+			fi;
+
+		    xtracing::xspawn("newIcon", fn () = loop 0);
+
+		    .{  take slot;  };
+		};
+
+	    delay'
+		=
+		timeout_in'
+		    (time::from_microseconds
+			(integer::from_int
+			    (1000000 / updates_per_sec)
+		    )   );
+	herein
+
+	    fun make_ball_fn (window, mailcaster, draw_slot)
+		=
+		new_ball
+		where 
+
+		  new_icon = make_icon_fn  window;
+
+		  fun new_ball (seqn, pos, vec, size)
+		      =
+		      {   ball_icon = new_icon ();
+
+			  ball_radius
+			      =
+			      {   my { size => xg::SIZE { wide, ... }, ... }
+				      =
+				      xc::shape_of_ro_pixmap
+					  ball_icon;
+
+				  wide / 2;
+			      };
+
+			  offset = xg::POINT { col => ball_radius,
+					       row => ball_radius
+					     };
+
+			  fun draw_ball (n, pos)
+			      =
+			      give (draw_slot, bd::DRAW_BALL (n, ball_icon, xg::sub_pt (pos, offset)));
+
+			  fun move_ball (n, old_pos, new_pos)
+			      =
+			      {   draw_ball (n, old_pos);
+				  draw_ball (n, new_pos);
+			      };
+
+			  clip_fn = clip (ball_radius, size);
+
+			  fun ball (in_mailop, pos, vec, clip_fn)
+			      =
+			      {   draw_ball (seqn, pos);
+
+				  loop (seqn, pos, vec, clip_fn);
+			      }
+			      where
+				  fun loop (seqn, pos, vec, clip_fn)
+				       =
+				       select [
+
+					   delay'
+					       ==>
+					      .{   my (new_pos, new_vec)
+						       =
+						       clip_fn (pos, vec);
+
+						   if (pos != new_pos)
+						       #
+						       move_ball (seqn, pos, new_pos);
+						   fi;
+
+						   loop (seqn, new_pos, new_vec, clip_fn);
+					       },
+
+
+					   in_mailop
+					       ==>
+					       fn (KILL (xg::POINT { col, row } ))
+						       =>
+						       {   death_zone
+							       =
+							       xg::BOX
+								 { col  =>  col - ball_radius,
+								   row  =>  row - ball_radius,
+								   #
+								   wide =>  2 * ball_radius,
+								   high =>  2 * ball_radius
+								 };
+
+							   if (xg::within (pos, death_zone))   draw_ball (seqn, pos);
+							   else                                loop (seqn, pos, vec, clip_fn);
+							   fi;
+						       };
+
+						  (REDRAW_BALL (seqn', new_sz))
+						      =>
+						      {   clip_fn = clip (ball_radius, new_sz);
+
+							  my (new_pos, _)
+							      =
+							      clip_fn (pos, xg::POINT { col=>0, row=>0 } );
+
+							  draw_ball (seqn', pos);
+
+							  loop (seqn', new_pos, vec, clip_fn);
+						     };
+
+						  KILL_ALL
+						      =>
+						      draw_ball (seqn, pos);
+					       end
+				      ];
+
+			      end;
+
+			    xtracing::xspawn
+			      ( "Ball",
+				fn () = ball (receive' (make_readqueue  mailcaster), pos, vec, clip_fn)
+			      );
+
+			    ();
+			};					# fun new_ball
+
+		  end;
+
+	end;				# stipulate
+    };					# package ball 
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

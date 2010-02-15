@@ -1,0 +1,16 @@
+/* sources file for bounce demo */
+
+LIBRARY_EXPORTS
+
+	pkg bounce
+
+LIBRARY_COMPONENTS
+
+	$ROOT/src/lib/std/stdlib.make6
+	$ROOT/src/lib/x-kit/xkit.make6
+
+	heads.pkg
+	bounce-dm.pkg
+	ball.pkg
+	menu.pkg
+	bounce.pkg

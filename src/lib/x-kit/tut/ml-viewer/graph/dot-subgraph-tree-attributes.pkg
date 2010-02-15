@@ -1,0 +1,77 @@
+## dot-subgraph-tree-attributes.pkg
+#
+# Define the per-graph, per-node and per-edge
+# information maintained by the dot-subgraph-tree
+# graphs used to hold raw graphs read from foo.dot
+# files, before planar layout is done.
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# Compare to:
+#     src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree-attributes.pkg
+
+						# Dot_Subgraph_Tree_Attributes	is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.api
+						# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+
+# This package is used in:
+#     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+
+package dot_subgraph_tree_attributes: (weak) Dot_Subgraph_Tree_Attributes {
+
+    package g = xgeometry;
+
+    Shape = ELLIPSE | BOX | DIAMOND;
+
+    Graph_Info
+	=
+	{ name:  String,
+          scale: Float,
+          bbox:  g::Size			# bbox may be "bounding box"
+        };
+
+    Node_Info
+	=
+	{ center:  g::Point,
+          size:    g::Size,
+          shape:   Shape,
+          label:   String
+        } ;
+
+    Edge_Info
+	=
+	{ pts:    List( g::Point ),
+          arrow:  g::Point
+        };
+
+    default_graph_info
+	=
+	{ name  =>  "",
+          scale =>  1.0,
+          bbox  =>  g::SIZE { wide=>0, high=>0 }
+        };
+
+    default_node_info
+	=
+	{ center =>  g::point_00,
+          size   =>  g::SIZE { wide=>0, high=>0 },
+          shape  =>  ELLIPSE,
+          label  =>  ""
+        };
+
+    default_edge_info
+	=
+	{ pts   =>  [],
+          arrow =>  g::point_00
+        };
+};
+
+# This file was
+#
+#     src/lib/x-kit/tut/ml-viewer/graph/attribute.pkg
+#
+# I renamed it to avoid name conflict with existing
+#
+#     src/lib/x-kit/widget/util/attribute.pkg
+#
+# or such.     2009-12-13 CRT

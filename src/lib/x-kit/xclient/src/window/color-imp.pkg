@@ -1,0 +1,332 @@
+## color-imp.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+# The color imp manages colors for a given screen.
+
+stipulate
+    include threadkit;								# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package rc  = range_check;							# range_check		is from   src/lib/x-kit/xclient/src/stuff/range-check.pkg
+    package xok = xsocket;							# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package v2w = value_to_wire;						# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package w2v = wire_to_value;						# wire_to_value		is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
+herein
+
+    package color_imp: (weak)  Color_Imp {					# Color_Imp		is from   src/lib/x-kit/xclient/src/window/color-imp.api
+
+	exception NO_COLOR_CELL;
+
+	stipulate
+	    package x
+		: (weak)
+		api {
+		     Rgb = RGB { red:    Unt,
+				 green:  Unt,
+				 blue:   Unt
+			       };
+		}
+		=
+		xtypes;								# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+	herein
+	    include x;
+	end;
+
+	# Color specifications.
+	# Eventually, this will be extended to R5
+	# device independent color specifications.
+	#
+	Color_Spec
+	  #
+	  = CMS_NAME  String
+	  #
+	  | CMS_RGB  { red:   Unt,
+		       green: Unt,
+		       blue:  Unt
+		     }
+	  ;
+
+	white_rgb = RGB { red=>0uxffff, green=>0uxffff, blue=>0uxffff };
+	black_rgb = RGB { red=>0ux0000, green=>0ux0000, blue=>0ux0000 };
+
+	Color =
+	    COLOR  {		  		#  A color in the colormap 
+		pixel:  xtypes::Pixel,		#  Its pixel value 
+		rgb:  Rgb			 	#  Its RGB value 
+	    };
+
+	# The following are used for drawing 0s or 1s on pixmaps.
+	# Note that the rgb fields are bogus.
+
+	color0 = COLOR { pixel => xtypes::PIXEL 0, rgb => black_rgb };
+	color1 = COLOR { pixel => xtypes::PIXEL 1, rgb => black_rgb };
+
+	Reply_Mail
+	  = REPLY_ERROR
+	  | REPLY_COLOR  Color
+          ;
+
+	Color_Imp
+	    =
+	    COLOR_IMP
+	      { plea_slot:     Mailslot( Color_Spec ),
+		reply_slot:    Mailslot( Reply_Mail ),
+		black:  Color,
+		white:  Color
+	      };
+
+									    # monomorphic_hash_table_g	is from   src/lib/src/monomorphic-hash-table-g.pkg
+	# Tables mapping RGB values to colors:
+	# 
+	package rgbtable
+	    =
+	    monomorphic_hash_table_g (
+
+		Hash_Key = Rgb;
+
+		fun same_key (k1:  Hash_Key, k2)
+		    =
+		    k1 == k2;
+
+		fun hash_value (RGB { red, green, blue } )
+		    =
+		    red + unt::(<<) (green, 0u1) + unt::(<<) (blue, 0u2);
+	    );
+
+	Rgb_Table
+	    =
+	    rgbtable::Hash_Table( Color );
+
+	# Tables mapping color names to colors 
+	#
+	Cname_Key = (String, Unt);
+
+	fun make_cname_key s
+	    =
+	    {   s' = string::translate
+			 (string::from_char o char::to_lower)
+			 s;
+
+		(s', hash_string::hash_string s');
+	    };
+
+	package cname_table
+	    =
+	    monomorphic_hash_table_g (
+
+		Hash_Key = Cname_Key;
+
+		fun same_key ((s1, h1)
+		    :
+		    Hash_Key, (s2, h2))
+		    =
+		    (h1 == h2) and (s1 == s2);
+
+		fun hash_value (_, h)
+		    =
+		    h;
+	    );
+
+	Cname_Table
+	    =
+	    cname_table::Hash_Table( Color );
+
+	# Create a color imp for a given screen.
+	# Currently, this manages access
+	# to the default colormap of the screen.
+	# NOTE: once colors are finalized chunks
+	# we will need to have a pixel-to-color map
+	# to guarantee that each pixel has only one color chunk.
+	#
+	fun make_color_imp (
+		display::XDISPLAY { xsocket, ... },
+		display::XSCREEN { default_colormap, black, white, ... }
+	    )
+	    =
+	    {   exception NOT_FOUND;
+
+		my rgb_table:  Rgb_Table
+			    =  rgbtable::make_table (64, NOT_FOUND);
+
+		rgb_ins  =   rgbtable::set rgb_table;
+		rgb_find =   rgbtable::find   rgb_table;
+
+		my cname_table:  Cname_Table
+			      =  cname_table::make_table (64, NOT_FOUND);
+
+		cname_ins  =   cname_table::set cname_table;
+		cname_find =   cname_table::find   cname_table;
+
+		request_reply =   xok::request_reply xsocket;
+
+		fun allocate_named_color cname
+		    =
+		    {   msg =   v2w::encode_alloc_named_color { cmap => default_colormap, name => cname };
+
+			w2v::decode_alloc_named_color_reply (do_mailop (request_reply msg));
+		    };
+
+		fun allocate_rgbcolor rgb
+		    =
+		    {   msg =   v2w::encode_alloc_color { cmap => default_colormap, color => rgb };
+
+			w2v::decode_alloc_color_reply (do_mailop (request_reply msg));
+		    };
+
+		fun find_color_by_name cname
+		    =
+		    {   key =   make_cname_key cname;
+
+			case (cname_find key)
+			    #		      
+			    THE c => c;
+			    #
+			    NULL =>
+				{   my { pixel, visual_rgb, ... }
+					=
+					allocate_named_color  cname;
+
+				    c = COLOR { pixel, rgb => visual_rgb };
+
+				    cname_ins (key, c);
+				    rgb_ins (visual_rgb, c);
+				    c;
+				};
+			esac;
+
+		    };		# fun findColorByName 
+
+		fun find_color_by_rgb rgb
+		    =
+		    case (rgb_find rgb)
+
+			THE c =>   c;
+
+			NULL =>
+			    {   my { pixel, visual_rgb }
+				    =
+				    allocate_rgbcolor rgb;
+
+				c =   COLOR { pixel, rgb=>visual_rgb };
+
+				rgb_ins (rgb, c);
+
+				if   (rgb != visual_rgb)
+
+				     rgb_ins (visual_rgb, c);
+				fi;
+
+				c;
+			    };
+
+		    esac;
+
+
+		fun do_plea (CMS_NAME cname) =>   find_color_by_name cname;
+		    do_plea (CMS_RGB rgb)    =>   find_color_by_rgb (RGB rgb);
+		end;
+
+		plea_slot = make_mailslot ();
+		reply_slot   = make_mailslot ();
+
+		fun imp_loop ()
+		    =
+		    for (;;) {
+
+			result
+			    =
+			    REPLY_COLOR  (do_plea  (take  plea_slot))
+			    except
+				_ = REPLY_ERROR;
+
+			give  (reply_slot,  result);
+		    };
+
+		black = COLOR { pixel=>black, rgb=>black_rgb };
+		white = COLOR { pixel=>white, rgb=>white_rgb };
+
+		  rgb_ins (black_rgb, black);
+		  rgb_ins (white_rgb, white);
+		  xtracing::xspawn("color_imp", imp_loop);
+		  COLOR_IMP { plea_slot, reply_slot, black, white };
+	    };								# fun make_color_imp
+
+	exception BAD_RGB;
+
+	fun valid_rgb  { red, green, blue }
+	    =
+	    rc::valid_word16  red      and
+	    rc::valid_word16  green    and
+	    rc::valid_word16  blue;
+
+	fun check_rgbval c
+	    =
+	    if   (not (valid_rgb c)   )   raise exception BAD_RGB;   fi;
+
+	fun check_rgb (rgb as (RGB v))
+	    =
+	    {   check_rgbval v;
+		rgb;
+	    };
+
+	stipulate
+
+	    fun get (COLOR_IMP { plea_slot, reply_slot, ... }, color_spec)
+		=
+		{   give  (plea_slot,  color_spec);
+
+		    case (take  reply_slot)
+			#		  
+			REPLY_COLOR c =>   c;
+			REPLY_ERROR   =>   raise exception  NO_COLOR_CELL;
+		    esac;
+		};
+	herein
+
+	    fun get_color cs (spec as (CMS_RGB rgb)) => { check_rgbval rgb; get (cs, spec);};
+		get_color cs spec => get (cs, spec);
+	    end;
+	end;
+
+	fun black_of (COLOR_IMP { black, ... } ) = black;
+	fun white_of (COLOR_IMP { white, ... } ) = white;
+
+	fun rgb_of_color (COLOR { rgb, ... } ) = rgb;
+
+	fun same_color (   COLOR { pixel=>p1, rgb=>rgb1 },
+			  COLOR { pixel=>p2, rgb=>rgb2 }
+		      )
+	    =
+	    p1   == p2    or
+	    rgb1 == rgb2;
+
+    };				# package color_imp 
+
+end;
+
+
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1992 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

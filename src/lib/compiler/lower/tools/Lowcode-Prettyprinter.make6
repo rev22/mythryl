@@ -1,0 +1,21 @@
+# Build prettyprinter.
+# This makefile is typically invoked directly from sh/build.d/build.pkg
+
+# Compiled by:
+#     src/lib/compiler/lower/tools/Match-Compiler.make6
+#     src/lib/compiler/lower/tools/nowhere/nowhere.make6
+#     src/lib/compiler/lower/tools/parser.make6
+#     src/lib/compiler/lower/tools/sml-ast.make6
+
+LIBRARY_EXPORTS
+
+	api Lowcode_Prettyprinter
+	pkg lowcode_prettyprinter
+
+
+LIBRARY_COMPONENTS
+
+        $ROOT/src/lib/std/stdlib.make6
+
+	prettyprint/lowcode-prettyprinter.api
+	prettyprint/lowcode-prettyprinter.pkg

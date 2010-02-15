@@ -1,0 +1,182 @@
+## sendevent-to-wire.pkg
+#
+# Encode X SendEvent values in wire
+# (network bytestring) format.
+#
+# Currently we implement:
+#
+#     fun encode_send_selection_notify		# Respond to a selection request.
+#     fun encode_send_unmap_notify		# Tell window manager to unmap a toplevel window.
+#
+# These get used in (respectively):
+#
+#     src/lib/x-kit/xclient/src/window/selection-imp.pkg
+#     src/lib/x-kit/xclient/src/window/window.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+stipulate
+    package g  = geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xt = xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ts = xserver_timestamp;		# xserver_timestamp	is from   src/lib/x-kit/xclient/src/wire/xserver-timestamp.pkg
+
+    package w8a =  rw_unt8_vector;		# rw_unt8_vector	is from   src/lib/std/src/rw-unt8-vector.pkg
+    package w8v =     unt8_vector;		# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
+herein
+
+    package sendevent_to_wire {
+
+	stipulate
+	    # We need to treat requests as modifiable
+	    # for initialization purposes, but we don't
+	    # want them to be modifiable afterwords:
+	    #
+	    my v2a:  unt8_vector::Vector -> rw_unt8_vector::Rw_Vector
+		=
+		unsafe::cast;
+
+	    encode_push_event
+		=
+		value_to_wire::encode_push_event;
+
+	    event_offset = 12;
+
+	    fun put8        (buf, i, w) =  w8a::set (v2a buf, i+event_offset, w);
+	    fun put_signed8 (buf, i, x) =  put8 (buf, i, unt8::from_int x);
+
+	    fun put16 (buf, i, x)
+		=
+		pack_big_endian_unt16::set (v2a buf, i / 2 + event_offset / 2, x);
+
+	    fun put_signed16 (buf, i, x)
+		=
+		put16 (buf, i, large_unt::from_int x);
+
+	    fun put32 (buf, i, x)
+		=
+		pack_big_endian_unt32::set (v2a buf, i / 4 + event_offset / 4, x);
+
+	    fun put_word32   (buf, i, x) = put32 (buf, i, unt::to_large_unt x);
+	    fun put_signed32 (buf, i, x) = put32 (buf, i, large_unt::from_int x);
+
+	    fun put_bool (buf, i, FALSE) => put8 (buf, i, 0u0);
+		put_bool (buf, i, TRUE) => put8 (buf, i, 0u1);
+	    end;
+
+	    fun put_xid (buf, i, xt::XID n)
+		=
+		put_word32 (buf, i, n);
+
+	    fun put_xid_option (buf, i, NULL)            =>  put_word32 (buf, i, 0u0);
+		put_xid_option (buf, i, THE (xt::XID n)) =>  put_word32 (buf, i, n);
+	    end;
+
+	    fun put_atom (buf, i, xt::XATOM n)
+		=
+		put_word32 (buf, i, n);
+
+	    fun put_atom_option (buf, i, NULL)              =>  put_word32 (buf, i, 0u0);
+		put_atom_option (buf, i, THE (xt::XATOM n)) =>  put_word32 (buf, i, n);
+	    end;
+
+	    fun put_timestamp (buf, i, xt::CURRENT_TIME)                         =>  put32 (buf, i, 0u0);
+		put_timestamp (buf, i, xt::TIME_STAMP (ts::XSERVER_TIMESTAMP t)) =>  put32 (buf, i, t);
+	    end;
+
+	    # Event codes:
+	    #
+	    event_key_press_xevent	= 0u2:  unt8::Unt;
+	    event_key_release_xevent	= 0u3:  unt8::Unt;
+	    event_button_press_xevent	= 0u4:  unt8::Unt;
+	    event_button_release_xevent	= 0u5:  unt8::Unt;
+	    event_motion_notify	        = 0u6:  unt8::Unt;
+	    event_enter_notify_xevent	= 0u7:  unt8::Unt;
+	    event_leave_notify_xevent	= 0u8:  unt8::Unt;
+	    event_focus_in_xevent	= 0u9:  unt8::Unt;
+	    event_focus_out_xevent	= 0u10:  unt8::Unt;
+	    event_keymap_notify	        = 0u11:  unt8::Unt;
+	    event_expose		= 0u12:  unt8::Unt;
+	    event_graphics_expose	= 0u13:  unt8::Unt;
+	    event_no_expose		= 0u14:  unt8::Unt;
+	    event_visibility_notify	= 0u15:  unt8::Unt;
+	    event_create_notify	        = 0u16:  unt8::Unt;
+	    event_destroy_notify	= 0u17:  unt8::Unt;
+	    event_unmap_notify	        = 0u18:  unt8::Unt;
+	    event_map_notify		= 0u19:  unt8::Unt;
+	    event_map_request		= 0u20:  unt8::Unt;
+	    event_reparent_notify	= 0u21:  unt8::Unt;
+	    event_configure_notify	= 0u22:  unt8::Unt;
+	    event_configure_request	= 0u23:  unt8::Unt;
+	    event_gravity_notify	= 0u24:  unt8::Unt;
+	    event_resize_request	= 0u25:  unt8::Unt;
+	    event_circulate_notify	= 0u26:  unt8::Unt;
+	    event_circulate_request	= 0u27:  unt8::Unt;
+	    event_property_notify	= 0u28:  unt8::Unt;
+	    event_selection_clear	= 0u29:  unt8::Unt;
+	    event_selection_request	= 0u30:  unt8::Unt;
+	    event_selection_notify	= 0u31:  unt8::Unt;
+	    event_colormap_notify	= 0u32:  unt8::Unt;
+	    event_client_message	= 0u33:  unt8::Unt;
+	    event_mapping_notify	= 0u34:  unt8::Unt;
+
+	    fun put_event_code (msg, code)
+		=
+		put8 (msg, 0, code);
+
+	herein
+
+	    fun encode_send_selection_notify
+		{ to, propagate, event_mask, requestor, selection, target, property, timestamp }
+		=
+		{   msg =  encode_push_event { to, propagate, event_mask };
+
+		    put_event_code  (msg, event_selection_notify);
+		    put_timestamp   (msg,  4, timestamp);
+		    put_xid         (msg,  8, requestor);
+		    put_atom        (msg, 12, selection);
+		    put_atom        (msg, 16, target   );
+		    put_atom_option (msg, 20, property );
+
+		    msg;
+		};
+
+	    fun encode_send_unmap_notify
+		{ to, propagate, event_mask, event, window, from_configure }
+		=
+		{   msg = encode_push_event { to, propagate, event_mask };
+
+		    put_event_code (msg, event_unmap_notify);
+		    put_xid        (msg,  4, event         );
+		    put_xid        (msg,  8, window        );
+		    put_bool       (msg, 12, from_configure);
+
+		    msg;
+		};
+	end;	# stipulate
+    };		# package sendevent_to_wire
+end;		# stipulate 
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1992 by AT&T.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

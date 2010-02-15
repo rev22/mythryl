@@ -1,0 +1,61 @@
+# ml-source-code-viewer.api
+#
+# This is a ML source code viewer, which is a test application for
+# the new text widget.
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/ml-viewer/text-view/ml-source-code-viewer.pkg
+
+stipulate
+    package xc =  xcore;				# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
+    package xf =  xfont;				# xfont		is from   src/lib/x-kit/xclient/xfont.pkg
+    #
+    package w  =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    #
+    package vb =  view_buffer;				# view_buffer	is from   src/lib/x-kit/tut/ml-viewer/text-view/view-buffer.pkg
+herein
+
+    api Ml_Source_Code_Viewer {
+
+	Viewer;
+
+	Face = FACE { font:   Null_Or( xf::Font ),
+		      color:  Null_Or( xc::Color_Spec )
+		    };
+
+	make_viewer
+	    :
+	    w::Root_Window
+	    ->
+	    {
+	      font:       xf::Font,
+	      comm_face:  Face,
+	      kw_face:    Face,
+	      sym_face:   Face,
+	      id_face:    Face,
+	      background: xc::Color_Spec,
+	      #	
+	      src:        List( List { space: Int,
+                                       kind:  vb::Token_Kind,
+                                       text:  String
+                                     }
+                              )
+	    }
+	    ->
+	    Viewer;
+
+	as_widget:  Viewer -> w::Widget;
+
+	view_of:    Viewer -> { view_start:  Int,
+				view_ht:     Int,
+				nlines:      Int
+			      };
+
+	scroll_view:  (Viewer, Int) -> Void;
+
+    };
+
+end;

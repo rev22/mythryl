@@ -1,0 +1,166 @@
+## three-d.api
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+
+###                 "Aim for brevity while avoiding jargon."
+###
+###                                     -- E.J. Dijkstra
+
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/widget/lib/three-d.pkg
+
+stipulate
+    package xg =  xgeometry;		# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xd =  xdraw;		# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+herein
+
+    api Three_D {
+
+	Relief = FLAT | RAISED | SUNKEN | GROOVE | RIDGE;
+
+	draw_box
+	    :
+	    xd::Drawable_Window
+	    ->
+	    { box:   xg::Box,
+	      width:  Int,
+	      relief: Relief
+	    }
+	    ->
+	    widget_base::Shades
+	    ->
+	    Void;
+
+	draw_filled_box
+	    :
+	    xd::Drawable_Window
+	    ->
+	    { box:   xg::Box,
+	      width:  Int,
+	      relief:  Relief
+	    }
+	    ->
+	    widget_base::Shades
+	    ->
+	    Void;
+
+	draw_round_box
+	    :
+	    xd::Drawable_Window
+	    ->
+	    { box:  xg::Box,
+	      width:  Int,
+	      c_wid:  Int,
+	      c_ht:   Int,
+	      relief:  Relief
+	    }
+	    ->
+	    widget_base::Shades
+	    ->
+	    Void;
+
+	draw_poly
+	    :
+	    xd::Drawable_Window
+	    ->
+	    { pts:     List( xg::Point ),
+	      width:   Int,
+	      relief:  Relief
+	    }
+	    ->
+	    widget_base::Shades
+	    ->
+	    Void;
+
+	draw3drect
+	    :
+	    xd::Drawable_Window
+	    ->
+	    (xg::Box, Int)
+	    -> 
+	    { top:     xd::Pen,
+	      bottom:  xd::Pen
+	    }
+	    ->
+	    Void;
+
+	draw3drect2
+	    :
+	    xd::Drawable_Window
+	    ->
+	    (xg::Box, Int)
+	    -> 
+	    { top:     xd::Pen,
+	      bottom:  xd::Pen
+	    }
+	    ->
+	    Void;
+
+	draw3dpoly
+	    :
+	    xd::Drawable_Window
+	    ->
+	    (List( xg::Point ), Int)
+	    -> 
+	    { top:     xd::Pen,
+	      bottom:  xd::Pen
+	    }
+	    ->
+	    Void;
+
+	draw3dpoly2
+	    :
+	    xd::Drawable_Window
+	    ->
+	    (List( xg::Point ), Int)
+	    -> 
+	    { top:     xd::Pen,
+	      bottom:  xd::Pen
+	    }
+	    ->
+	    Void;
+
+	draw3dround_box
+	    :
+	    xd::Drawable_Window
+	    ->
+	    { box:  xg::Box,
+	      width:  Int,
+	      c_wid:  Int,
+	      c_ht:   Int
+	    }
+	    ->
+	    { top:     xd::Pen,
+	      bottom:  xd::Pen
+	    }
+	    ->
+	    Void;
+
+	draw3dround_box2
+	    :
+	    xd::Drawable_Window
+	    ->
+	    { box:   xg::Box,
+	      width:  Int,
+	      c_wid:  Int,
+	      c_ht:   Int
+	    }
+	    ->
+	    { top:     xd::Pen,
+	      bottom:  xd::Pen
+	    }
+	    ->
+	    Void;
+    };
+
+end;
+
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

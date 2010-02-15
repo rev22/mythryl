@@ -1,0 +1,136 @@
+## internal-timer.pkg
+
+# Compiled by:
+#     src/lib/std/src/Base-imp.make6
+
+###               "I have never let my schooling interfere with my education."
+###
+###                                               -- Mark Twain
+
+
+
+package internal_timer: (weak)  api {
+
+    include Timer;				# Timer		is from   src/lib/std/src/timer.api
+    reset_timers:  Void -> Void;
+
+}
+{
+    package pb    = pre_basis;			# pre_basis	is from   src/lib/std/src/pre-basis.pkg
+    package int   =   int_guts;			# int_guts	is from   src/lib/std/src/bind-int-32.pkg
+    package int32 = int32_guts;			# int32_guts	is from   src/lib/std/src/int32.pkg
+    package time  =  time_guts;			# time_guts	is from   src/lib/std/src/time-guts.pkg
+
+    Time = { usr: pb::Time, sys: pb::Time };
+
+    Cpu_Timer  =  CPUT  { nongc: Time, gc: Time };
+    Real_Timer =  REAL_T  pb::Time;
+
+    stipulate
+
+	my gettime' :
+	    Void -> ((int32::Int, Int, int32::Int, Int, int32::Int, Int)) =
+	    c_interface::c_function "Lib7-Time" "gettime";
+
+	fun make_time (s, us)
+            =
+	    time::from_microseconds (1000000 * int32::to_large s + int::to_large us);
+    herein
+
+	fun get_time ()
+            =
+            {   my (ts, tu, ss, su, gs, gu) = gettime' ();
+	
+	        { nongc =>  { usr => make_time (ts, tu),
+		  sys   =>  make_time (ss, su) },
+	          gc    =>  { usr => make_time (gs, gu),
+		  sys   =>  time::zero_time }
+                };
+	    };
+
+    end;
+
+    fun start_cpu_timer  () =   CPUT (get_time());
+    fun start_real_timer () =   REAL_T (time::get_time ());
+
+    stipulate
+
+	init_cputime   =  REF (start_cpu_timer ());
+	init_real_time =  REF (start_real_timer ());
+
+    herein
+
+	fun total_cpu_timer  () = *init_cputime;
+	fun total_real_timer () = *init_real_time;
+
+	fun reset_timers ()
+            =
+	    {   init_cputime   :=  start_cpu_timer ();
+	        init_real_time :=  start_real_timer ();
+            };
+    end;
+
+    stipulate
+
+	infix val  --- +++ ;
+
+	fun usop timeop (t: Time, t': Time)
+            =
+	    { usr => timeop (t.usr, t'.usr), sys => timeop (t.sys, t'.sys) };
+
+	my (---) = usop time::(-);
+	my (+++) = usop time::(+);
+
+    herein
+
+	fun check_cpu_times (CPUT t)
+            =
+            {   t' = get_time ();
+
+		{ nongc =>  t'.nongc --- t.nongc,
+		  gc    =>  t'.gc    --- t.gc
+		};
+	    };
+
+	fun check_cpu_timer tmr
+	    =
+	    {
+		t = check_cpu_times tmr;
+
+		t.nongc +++ .gc t;
+	    };
+
+	fun check_gc_time (CPUT t)
+            =
+            time::(-) (.usr (.gc (get_time ())), t.gc.usr);
+
+    end;				# stipulate
+
+    fun check_real_timer (REAL_T t)
+        =
+        time::(-) (time::get_time(), t);
+
+};
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

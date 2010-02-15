@@ -1,0 +1,79 @@
+## xevent-to-string.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+stipulate
+    package et = event_types;		# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
+herein
+
+    api Xevent_To_String {
+	xevent_name:      et::Xevent -> String;
+    };
+
+    package xevent_to_string: (weak) Xevent_To_String {
+
+
+	fun xevent_name (et::KEY_PRESS_XEVENT _) => "KeyPress";
+	    xevent_name (et::KEY_RELEASE_XEVENT _) => "KeyRelease";
+	    xevent_name (et::BUTTON_PRESS_XEVENT _) => "ButtonPress";
+	    xevent_name (et::BUTTON_RELEASE_XEVENT _) => "ButtonRelease";
+	    xevent_name (et::MOTION_NOTIFY_XEVENT _) => "MotionNotify";
+	    xevent_name (et::ENTER_NOTIFY_XEVENT _) => "EnterNotify";
+	    xevent_name (et::LEAVE_NOTIFY_XEVENT _) => "LeaveNotify";
+	    xevent_name (et::FOCUS_IN_XEVENT _) => "FocusIn";
+	    xevent_name (et::FOCUS_OUT_XEVENT _) => "FocusOut";
+	    xevent_name (et::KEYMAP_NOTIFY_XEVENT _) => "KeymapNotify";
+	    xevent_name (et::EXPOSE_XEVENT _) => "Expose";
+	    xevent_name (et::GRAPHICS_EXPOSE_XEVENT _) => "GraphicsExpose";
+	    xevent_name (et::NO_EXPOSE_XEVENT _) => "NoExpose";
+	    xevent_name (et::VISIBILITY_NOTIFY_XEVENT _) => "VisibilityNotify";
+	    xevent_name (et::CREATE_NOTIFY_XEVENT _) => "CreateNotify";
+	    xevent_name (et::DESTROY_NOTIFY_XEVENT _) => "DestroyNotify";
+	    xevent_name (et::UNMAP_NOTIFY_XEVENT _) => "UnmapNotify";
+	    xevent_name (et::MAP_NOTIFY_XEVENT _) => "MapNotify";
+	    xevent_name (et::MAP_REQUEST_XEVENT _) => "MapRequest";
+	    xevent_name (et::REPARENT_NOTIFY_XEVENT _) => "ReparentNotify";
+	    xevent_name (et::CONFIGURE_NOTIFY_XEVENT _) => "ConfigureNotify";
+	    xevent_name (et::CONFIGURE_REQUEST_XEVENT _) => "ConfigureRequest";
+	    xevent_name (et::GRAVITY_NOTIFY_XEVENT _) => "GravityNotify";
+	    xevent_name (et::RESIZE_REQUEST_XEVENT _) => "ResizeRequest";
+	    xevent_name (et::CIRCULATE_NOTIFY_XEVENT _) => "CirculateNotify";
+	    xevent_name (et::CIRCULATE_REQUEST_XEVENT _) => "CirculateRequest";
+	    xevent_name (et::PROPERTY_NOTIFY_XEVENT _) => "PropertyNotify";
+	    xevent_name (et::SELECTION_CLEAR_XEVENT _) => "SelectionClear";
+	    xevent_name (et::SELECTION_REQUEST_XEVENT _) => "SelectionRequest";
+	    xevent_name (et::SELECTION_NOTIFY_XEVENT _) => "SelectionNotify";
+	    xevent_name (et::COLORMAP_NOTIFY_XEVENT _) => "ColormapNotify";
+	    xevent_name (et::CLIENT_MESSAGE_XEVENT _) => "ClientMessage";
+	    xevent_name (et::MODIFIER_MAPPING_NOTIFY_XEVENT ) => "ModifierMappingNotify";
+	    xevent_name (et::KEYBOARD_MAPPING_NOTIFY_XEVENT _) => "KeyboardMappingNotify";
+	    xevent_name (et::POINTER_MAPPING_NOTIFY_XEVENT ) => "PointerMappingNotify";
+	end;
+
+    };
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

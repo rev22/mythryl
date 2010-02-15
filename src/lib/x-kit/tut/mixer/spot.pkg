@@ -1,0 +1,62 @@
+## spot.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/mixer/mixer.make6
+
+stipulate
+    #
+    package lbl =  label;				# label				is from   src/lib/x-kit/widget/leaf/label.pkg
+    package rw  =  root_window;				# root_window			is from   src/lib/x-kit/widget/basic/root-window.pkg
+    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa  =  widget_attribute;			# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    #
+    package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/src/api/build.pkg
+    package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+herein
+
+    package spot:  Spot {				# Spot				is from   src/lib/x-kit/tut/mixer/spot.api
+
+	Spot = SPOT (w::Widget, (xc::Rgb -> Void));
+
+	fun spot
+	      (root_window, view)
+	      { color => xc::RGB color,
+		wide,
+		high
+	      }
+	    =
+	    {   color_of = rw::color_of  root_window;
+
+		color = xc::CMS_RGB color;
+
+		args  = [ (wa::background, wa::COLOR_VAL (color_of color)) ];
+
+		label = lbl::make_label' (root_window, view, args);
+
+		widget
+		    =
+		    sz::make_tight_sized_preference_wrapper
+		      ( lbl::as_widget  label,
+			xg::SIZE { wide, high }
+		      );
+
+		fun setc (xc::RGB rgb)
+		    = 
+		    lbl::set_background
+			label
+			(color_of (xc::CMS_RGB rgb));
+
+		SPOT (widget, setc);
+	    };
+
+	fun as_widget (SPOT (w, _)) =  w;
+	fun set_spot  (SPOT (_, f)) =  f;
+
+    };							# package spot 
+
+end;
+
+## COPYRIGHT (c) 1991, 1995 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

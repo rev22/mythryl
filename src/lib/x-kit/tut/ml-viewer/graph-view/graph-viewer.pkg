@@ -1,0 +1,1099 @@
+## graph-viewer.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This package gets used in:
+#     src/lib/x-kit/tut/ml-viewer/graph-view/graph-view.pkg
+
+stipulate
+    include threadkit;						# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+
+    package xc  =  xcore;					# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd  =  xdraw;					# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xf  =  xfont;					# xfont				is from   src/lib/x-kit/xclient/xfont.pkg
+    package xg  =  xgeometry;					# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;					# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+
+    package w   =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package gf  =  xgeometry_float;				# xgeometry_float		is from   src/lib/x-kit/tut/ml-viewer/graph-view/geometry-2d-float.pkg
+    package gm  =  get_mouse_selection;				# get_mouse_selection		is from   src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
+    package pu  =  popup_menu;					# popup_menu			is from   src/lib/x-kit/widget/menu/popup-menu.pkg
+    package pg  =  planar_subgraph_tree;
+
+#    include planar_subgraph_tree;
+herein
+
+    package graph_viewer: (weak) Graph_Viewer {			# Graph_Viewer		is from   src/lib/x-kit/tut/ml-viewer/graph-view/graph-viewer.api
+
+	exception ERROR(String);
+
+	truncate = float::truncate;
+
+	Viewdim
+	    =
+	    VIEWDIM
+	      { min:    Int,
+		size:   Int,
+		total:  Int
+	      };
+
+	Viewnode
+	    =
+	    { node:   pg::Node,
+	      bbox:   xg::Box,
+	      draw:  (xd::Drawable_Window, xd::Pen) -> xg::Box -> Void,
+	      fill:  (xd::Drawable_Window, xd::Pen) -> xg::Box -> Void,
+	      label:  String
+	    };
+
+	Uwprojfn =  gf::Point ->  xg::Point;              #  Universal -> Window 
+	Wuprojfn =  xg::Point ->  gf::Point;              #  Window -> Universal 
+
+	Request = SETV Int
+		| SETH Int
+		| DELETE
+		;
+
+	Graph_Viewer
+	    =
+	    GRAPH_VIEWER
+	      { widget:    w::Widget,
+		graph:     pg::Attributed_Graph,
+		view_slot: Mailslot { horz:  Viewdim,
+				      vert:  Viewdim
+				    },
+		plea_slot:    Mailslot( Request )
+	      };
+
+	View_Data
+	    =
+	    { utowin:  Uwprojfn,			#  Universal -> Window 
+	      wintou:  Wuprojfn,			#  Window -> Universal 
+	      visible_nodes:   List( Viewnode ),	#  List of visible nodes 
+	      font:    Null_Or( xd::Font ),		#  Font scaled to view 
+	      picked:  Null_Or( pg::Node )		#  Picked node 
+	    };
+
+	fun wuproj_box (projfn:  Wuprojfn) r
+	    =
+	    {   my gf::POINT { x=>ox, y=>oy } =  projfn (xgeometry::upperleft_of_box  r);
+		my gf::POINT { x=>cx, y=>cy } =  projfn (xgeometry::lowerright_of_box r);
+
+		gf::BOX { x=>ox, y=>oy, wide=>cx-ox, high=>cy-oy };
+	    };
+
+	fun uwproj_box (projfn:  Uwprojfn) r
+	    =
+	    {   my xg::POINT { col=>ox, row=>oy } =  projfn (xgeometry_float::upperleft_of_box r);
+		my xg::POINT { col=>cx, row=>cy } =  projfn (xgeometry_float::lowerright_of_box r);
+
+		xg::BOX { col=>ox, row=>oy, wide=>cx-ox, high=>cy-oy };
+	    };
+
+	# put_text:
+	# Write text in given window, centered in
+	# the given box, and using largest font
+	# so that text fits in the box.
+	#
+	fun put_text (_, NULL, _)
+		=>
+		(fn _ = ());
+
+	    put_text (window, THE font, drawp)
+		=>
+		{   my { ascent, descent }
+			=
+			xf::font_high  font;
+
+		    font_high = ascent + descent;
+
+		    draw_txt =  xd::draw_transparent_string
+				   (xd::drawable_of_window  window)
+				   drawp
+				   font;
+
+		    fn (txt, xg::BOX { col, row, wide, high } )
+			=
+			{   slen = xf::text_width  font  txt;
+
+			    col = col +          (wide - slen     ) / 2;
+			    row = row + ascent + (high - font_high) / 2;
+
+			    draw_txt (xg::POINT { col, row }, txt);
+			};
+		};
+	end;
+
+
+	full_angle = 360 * 64;
+
+
+	fun diamond_of_box (xg::BOX { col, row, wide, high } )
+	    = 
+	    {   midx = col + wide / 2;
+		midy = row + high / 2;
+
+		startp = xg::POINT { col, row=>midy };
+
+		[ startp,
+		  xg::POINT { col => midx,       row             },
+		  xg::POINT { col => col + wide, row => midy     },
+		  xg::POINT { col => midx,       row => row+high },
+		  startp
+		];
+	    };
+
+
+	fun do_ellipse drawfn (draww, pen) (xg::BOX { col, row, wide, high } )
+	    =
+	    drawfn draww pen (xg::ARC { col, row, wide, high, angle1=>0, angle2=>full_angle } );
+
+
+	fun draw_diamond (draww, pen) r
+	    =
+	    xd::draw_lines  draww  pen  (diamond_of_box  r);
+
+
+	fun fill_diamond (draww, pen) r
+	    =
+	    xd::fill_polygon
+		draww
+		pen
+		{ verts =>  diamond_of_box  r,
+		  shape =>  xd::CONVEX_SHAPE
+		};
+
+
+	fun do_box drawfn (draww, pen) r
+	    =
+	    drawfn draww pen r;
+
+
+	fun get_draw_fns dot_subgraph_tree_attributes::ELLIPSE =>  (do_ellipse xd::draw_arc,  do_ellipse  xd::fill_arc);
+	    get_draw_fns dot_subgraph_tree_attributes::DIAMOND =>  (draw_diamond,             fill_diamond);
+	    get_draw_fns _                                     =>  (do_box  xd::draw_box,     do_box  xd::fill_box);
+	end;
+
+
+	# Return the smallest box containing
+	# r with the same origin similar to template.
+	#
+	fun make_similar
+	      ( gf::BOX { x, y, wide=>rx, high=>ry },
+		xg::BOX { wide=>tx, high=>type, ... }
+	      )
+	    =
+	    {   tmpy = (rx * (float::from_int type)) // (float::from_int tx);
+
+		if (tmpy >= ry)    gf::BOX { x, y, wide => rx, high => tmpy };
+		else               gf::BOX { x, y, wide => (ry * (float::from_int tx)) // (float::from_int type), high => ry };
+		fi;
+	    };
+
+	fun do_resize
+	    ( bbox,
+	      gf::BOX { x,     y,     wide=>nwid, high=>nht },
+	      gf::BOX { x=>ox, y=>oy, wide=>owid, high=>oht }
+	    )
+	    =
+	    {   bbox ->  gf::BOX { x=>bbx, y=>bby, wide=>bbwid, high=>bbht };
+
+		ny = if (nht >= bbht)
+			 #
+			 bby - (nht - bbht) // 2.0;
+		     else
+			 ybot = oy+oht;
+			 ytop = ybot-nht;
+
+			 if (ytop < bby)  (ybot <= bby     )  ??  bby            ::  ytop;
+			 else             (ytop >= bby+bbht)  ??  bby+bbht-nht   ::  ytop;
+			 fi;
+		     fi;
+
+		nx = if (nwid >= bbwid)
+			 #
+			 bbx - (nwid - bbwid) // 2.0;
+		     else
+			 xl = ox;
+			 xr = ox+nwid;
+
+			 if (xl < bbx)   if (xr <= bbx      )  bbx;            else xl; fi;
+			 else            if (xl >= bbx+bbwid)  bbx+bbwid-nwid; else xl; fi;
+			 fi;
+		     fi;
+
+		gf::BOX { wide=>nwid, high=>nht, x=>nx, y=>ny };
+	    };
+
+	fun set_scroller
+		(viewc, gf::BOX { x=>minx, y=>miny, wide, high } )
+		visrect
+	    =
+	    {   fun max (a: Float, b) =  if (a > b)  a;  else  b;  fi;
+		fun min (a: Float, b) =  if (a < b)  a;  else  b;  fi;
+
+		my gf::POINT { x=>ox, y=>oy } =  xgeometry_float::upperleft_of_box  visrect;
+		my gf::POINT { x=>cx, y=>cy } =  xgeometry_float::lowerright_of_box  visrect;
+
+		startx = max (ox, minx);
+		starty = max (oy, miny);
+
+		sizex = min (cx, minx+wide) - startx;
+		sizey = min (cy, miny+high) - starty;
+
+		high = truncate high;
+		wide = truncate wide;
+
+		give ( viewc,
+		       { horz => VIEWDIM { min=>truncate (startx-minx), size=>truncate sizex, total=>wide },
+			 vert => VIEWDIM { min=>truncate (starty-miny), size=>truncate sizey, total=>high }
+		       }
+		     );
+	    };
+
+	# set_perspective:
+	# Set transformation functions between universal
+	# and window spaces. We assume the two rectangles
+	# are similar.
+	#
+	fun set_perspective (wr, ur)
+	    =
+	    {   wr ->  xg::BOX { col=>wmin_x, row=>wmin_y, wide=>wdelta_x, high=>wdelta_y };
+		ur ->  gf::BOX { x  =>umin_x, y  =>umin_y, wide=>udelta_x, high=>udelta_y };
+
+		wmin_x =  float::from_int  wmin_x;
+		wmin_y =  float::from_int  wmin_y;
+
+		wdelta_x =  float::from_int  wdelta_x;
+		wdelta_y =  float::from_int  wdelta_y;
+
+		# Function from universal to window:
+		#
+		fun pf (gf::POINT { x, y } )
+		    = 
+		    xg::POINT { col => floor((wdelta_x * (x - umin_x)) // udelta_x + wmin_x),
+			        row => floor((wdelta_y * (y - umin_y)) // udelta_y + wmin_y)
+			      };
+
+		# Function from window to universal:
+		#
+		fun rpf (xg::POINT { col, row } )
+		    =
+		    gf::POINT { x => (udelta_x*((float::from_int  col) - wmin_x)) // wdelta_x + umin_x,
+			      y => (udelta_y*((float::from_int  row) - wmin_y)) // wdelta_y + umin_y
+			    };
+
+		(pf, rpf);
+	    };
+
+	fun find_visible_nodes g (size, utowin)
+	    =
+	    pg::fold_nodes  chk_vis_node g []
+	    where
+		winr =  xg::make_box (xg::point_00, size);
+
+		projr = uwproj_box utowin;
+
+
+		fun accept n
+		    =
+		    xg::intersect (winr, projr (.bbox (pg::info_of_node n)));
+
+
+		fun make_view_node n
+		    =
+		    {   my { bbox, label, shape, ... }
+			    =
+			    pg::info_of_node n;
+
+			my (draw, fill)
+			    =
+			    get_draw_fns shape;
+
+			{ node=>n, bbox => projr bbox, label, fill, draw };
+		    };
+
+
+		fun chk_vis_node (n, l)
+		    =
+		    if (xg::intersect (winr, projr (.bbox (pg::info_of_node n))))
+			#
+			make_view_node n  !  l;
+		    else
+			l;
+		    fi;
+
+	    end;
+
+	# draw_graph:
+	# Simple drawing routine.
+	# draw edges of all visible nodes;
+	# draw visible nodes.
+	#
+	fun draw_graph
+	      (g, window, drawp, linep, pickp) 
+	      ( { utowin, visible_nodes, font, picked, ... }: View_Data)
+	    =
+	    {   draww =  xd::drawable_of_window window;
+
+		draw_p_line
+		    =
+		    (xd::draw_lines  draww  linep)
+                    o
+                    spline::b_spline;
+
+		put_text = put_text (window, font, linep);
+
+
+		fun draw_arrow pts
+		    =
+		    xd::fill_polygon
+		      draww
+		      linep
+		      { verts =>  map  utowin  pts,
+			shape =>  xd::CONVEX_SHAPE
+		      };
+
+
+		fun draw_edges ( { node, ... } : Viewnode)
+		    =
+		    {   pg::apply_out_edges draw_edge (g, node);
+			pg::apply_in_edges  draw_edge (g, node);
+		    }
+		    where
+			fun draw_edge  edge
+			    =
+			    {   my { pts, arrows, ... }
+				    =
+				    pg::info_of_edge  edge;
+
+				draw_p_line  (map  utowin  pts);
+
+				draw_arrow  arrows;
+			    };
+		    end;
+
+
+		fun draw_node ( { bbox, label, draw, fill, ... }: Viewnode)
+		    =
+		    {   # clear_area (drawable_of_window window) bbox; 
+			fill (draww, drawp) bbox;
+			put_text (label, bbox);
+			draw (draww, linep) bbox;
+		    };
+
+
+		fun draw_x_node n ( { node, bbox, label, draw, fill }: Viewnode)
+		    =
+		    {   if (pg::eq_node (node, n))   fill (draww, pickp) bbox;
+			else                         fill (draww, drawp) bbox;
+			fi;
+
+			put_text (label, bbox);
+
+			draw (draww, linep) bbox;
+		    };
+
+		xd::clear_drawable (xd::drawable_of_window  window);
+
+		apply  draw_edges  visible_nodes;
+
+		case picked
+		    #
+		    NULL  =>  apply  draw_node      visible_nodes;
+		    THE n =>  apply (draw_x_node n) visible_nodes;
+		esac;
+	    };						# fun draw_graph
+
+	fun draw_graph_r
+	      (g, window, drawp, linep, pickp) 
+	      ( { utowin, wintou, visible_nodes, font, picked, ... }: View_Data)
+	      r
+	    =
+	    {   draww = xd::drawable_of_window window;
+
+		draw_p_line = (xd::draw_lines draww linep) o spline::b_spline;
+
+		put_text    = put_text (window, font, linep);
+
+		ur          = wuproj_box wintou r;
+
+		fun draw_arrow pts
+		    =
+		    xd::fill_polygon
+		      draww
+		      linep
+		      { verts =>  map utowin pts,
+			shape =>  xd::CONVEX_SHAPE
+		      };
+
+		fun draw_edges ( { node, ... }: Viewnode)
+		    =
+		    {  pg::apply_out_edges draw_edge (g, node);
+		       pg::apply_in_edges  draw_edge (g, node);
+		    }
+		    where
+			fun draw_edge e
+			    =
+			    {   my { pts, arrows, bbox }
+				    =
+				    pg::info_of_edge  e;
+
+				if (xgeometry_float::intersect (bbox, ur))
+				    #
+				    draw_p_line (map utowin pts);
+				    draw_arrow arrows;
+				fi;
+			    };
+		    end;
+
+		fun draw_node ( { bbox, label, draw, fill, ... }: Viewnode)
+		    = 
+		    if (xg::intersect (bbox, r))
+			#
+			# clear_crea (xd::drawable_of_window window) bbox; 
+			#
+			fill (draww, drawp) bbox;
+			put_text (label, bbox);
+			draw (draww, linep) bbox;
+		    fi;
+
+		fun draw_x_node n ( { node, bbox, label, draw, fill }: Viewnode)
+		    =
+		    if (xg::intersect (bbox, r))
+			#
+			if (pg::eq_node (node, n))   fill (draww, pickp) bbox;
+			else                         fill (draww, drawp) bbox;
+			fi;
+
+			put_text (label, bbox);
+			draw (draww, linep) bbox;
+		    fi;
+
+		apply draw_edges visible_nodes;
+
+		case picked
+		    #
+		    NULL  =>  apply  draw_node      visible_nodes;
+		    THE n =>  apply (draw_x_node n) visible_nodes;
+		esac;
+	    };
+
+	fun set_select (window, linep, pickp) 
+	    ( { visible_nodes, utowin, wintou, font, ... }: View_Data, 
+	      { node, bbox, label, fill, draw    }: Viewnode
+	    )
+	    = 
+	    {   fill (xd::drawable_of_window window, pickp) bbox; 
+		put_text (window, font, linep) (label, bbox);
+		draw (xd::drawable_of_window window, linep) bbox; 
+		{ visible_nodes, utowin, wintou, font, picked => THE node };
+	    };
+
+	fun unset_select (window, linep, drawp) 
+	    ( { visible_nodes, utowin, wintou, font, ... }: View_Data, node)
+	    =
+	    {   my { bbox, label, shape, ... }
+		    =
+		    pg::info_of_node  node;
+
+		my (draw, fill)
+		    =
+		    get_draw_fns shape;
+
+		wrect = uwproj_box utowin bbox;
+
+		fill (xd::drawable_of_window window, drawp) wrect; 
+
+		put_text (window, font, linep)
+			 (label, wrect);
+
+		draw (xd::drawable_of_window  window,  linep)
+		     wrect; 
+
+		{ visible_nodes, font, utowin, wintou, picked=>NULL };
+	    };
+
+	Mitem
+	  = PICK     xg::Point
+	  | ZOOM_IN  xg::Box
+	  | ZOOM_OUT xg::Box
+	  | RESET
+	  | BLOCK
+	  | UNBLOCK
+	  | GET_PICK Oneshot_Maildrop( Null_Or( (String, String,  Null_Or( (Int, Int) ) ) ) )
+	  ;
+
+	fun mouser (root_window, window, m, mousec)
+	    =
+	    loop ()
+	    where
+
+		fun get_pick ()
+		    =
+		    {   oneshot = make_oneshot_maildrop ();
+
+			give (mousec, GET_PICK oneshot);
+
+			threadkit::get oneshot;
+		    };
+
+		mevt     =  wrap (m, xi::envelope_contents);
+		getrect  =  gm::get_box (window, m);
+		no_bttns =  xi::make_mousebutton_state [];
+
+		fun getr msg
+		    =
+		    {   give (mousec, BLOCK);
+
+			opt_box = do_mailop (getrect (xi::MOUSEBUTTON 3));
+
+			give (mousec, UNBLOCK);
+
+			case opt_box
+			    #
+			    NULL  =>  ();
+			    THE r =>  give (mousec, msg r);
+			esac;	
+		    };
+
+		fun popup menu
+		    =
+		    pu::make_lowlevel_popup_menu (root_window, menu, NULL);
+
+		fun menu2 (mname, fname, range)
+		    =
+		    {   fun open_view (loc, range) ()
+			    =
+			    ml_viewer::open_viewer  root_window
+			      {
+				loc,
+				range,
+				file   => fname,
+				module =>  mname
+			      };
+
+			case range
+			    #
+			    NULL =>
+				pu::POPUP_MENU
+				  [
+				    pu::POPUP_MENU_ITEM ("View " + mname, open_view (1, NULL))
+				  ];
+
+			    THE (first, last)
+				=>
+				pu::POPUP_MENU
+				  [
+				    pu::POPUP_MENU_ITEM ("View " + fname, open_view (first, NULL)),
+				    pu::POPUP_MENU_ITEM ("View " + mname, open_view (first, THE { first, last } ))
+				  ];
+			esac;
+		    };
+
+	       popup3
+		  =
+		  popup
+		      (pu::POPUP_MENU
+			[
+			  pu::POPUP_MENU_ITEM ("Zoom in",  fn () = getr ZOOM_IN),
+			  pu::POPUP_MENU_ITEM ("Zoom out", fn () = getr ZOOM_OUT),
+			  pu::POPUP_MENU_ITEM ("Reset",    fn () = give (mousec, RESET)),
+			  pu::POPUP_MENU_ITEM ("Quit",     fn () = {  widget::delete_root_window root_window;  shut_down_thread_scheduler winix::process::success; }  )
+			]
+		      );
+
+		fun loop ()
+		    =
+		    for (;;) {
+			#
+			case (do_mailop  mevt)
+			    #
+			    xi::MOUSE_FIRST_DOWN { button=>btn, window_point, screen_point, ... }
+				=>
+				case btn
+				    #
+				    xi::MOUSEBUTTON 1
+					=>
+					give (mousec, PICK window_point);
+
+				    xi::MOUSEBUTTON 2
+					=>
+					case (get_pick ())
+					    #
+					    NULL => ();
+
+					    THE info
+						=>
+						{   popup2 = popup (menu2 info);
+
+						    case (do_mailop (popup2 (btn, pu::PUT_POPUP_MENU_ITEM_BENEATH_MOUSE 0, screen_point, m)))
+							#
+							NULL       =>  ();
+							THE action =>  action ();
+						    esac;
+						};
+					esac;
+
+				    xi::MOUSEBUTTON 3
+					=>
+					case (do_mailop (popup3 (btn, pu::PUT_POPUP_MENU_ITEM_BENEATH_MOUSE 0, screen_point, m)))
+					    # 
+					    NULL       =>  ();
+					    THE action =>  action ();
+					esac;
+
+				    xi::MOUSEBUTTON _
+					=>
+					();
+				 esac;
+
+			    _ => ();
+
+			esac;
+		    };
+	    end;
+
+
+	lt_gray_image
+	    =
+	    xc::make_cs_pixmap_from_ascii
+	      ( 16,
+		[ [ "0x2222", "0x8888", "0x2222", "0x8888",
+		    "0x2222", "0x8888", "0x2222", "0x8888",
+		    "0x2222", "0x8888", "0x2222", "0x8888",
+		    "0x2222", "0x8888", "0x2222", "0x8888"
+		] ]
+	      );
+
+	fun make_bw_pen screen
+	    =
+	    {   graytile =  xc::make_ro_pixmap_from_cs_pixmap  screen  lt_gray_image;
+
+		xd::make_pen [ xd::FOREGROUND  (xc::black_of_screen  screen), 
+			       xd::BACKGROUND  (xc::white_of_screen  screen), 
+			       xd::FILL_STYLE_OPAQUE_STIPPLED, 
+			       xd::STIPPLE graytile
+			     ];
+	    }
+	    except
+		_ = lib_base::failure { module => "Scrollbar",
+					func   => "make_bw_pen",
+					msg    => "Could not create stipple"
+				      };
+
+	fun make_pick_pen screen
+	    =
+	    case (xc::display_class_of_screen screen)
+		#
+		xc::STATIC_GRAY =>  make_bw_pen screen;
+		xc::GRAY_SCALE  =>  make_bw_pen screen;
+		_ 
+		    =>
+		    {   red =  xc::color_of_screen screen (xc::CMS_RGB { red=>0u65535, green=>0u0, blue=>0u0 } );
+
+			xd::make_pen [ xd::FOREGROUND red ];
+		    };
+	    esac;
+
+	fun make_graph_viewer (fontserver, root_window) vg
+	    =
+	    GRAPH_VIEWER {
+		plea_slot,
+		view_slot,
+		#
+		widget => w,
+		graph  => vg
+	    }
+	    where
+
+		my { bbox, fontsize, ... }
+		    =
+		    pg::info_of_graph  vg;
+
+		screen =  w::screen_of  root_window;
+
+		# Drawing pens:
+		#
+		draw_pen =  xd::make_pen [xd::FOREGROUND (xc::white_of_screen  (w::screen_of root_window))];
+		line_pen =  xd::make_pen [xd::FOREGROUND (xc::black_of_screen  (w::screen_of root_window))];
+
+		pick_pen = make_pick_pen screen;
+
+		plea_slot =  make_mailslot ();
+		mouse_slot   =  make_mailslot ();
+		view_slot    =  make_mailslot ();
+
+		minsz = 30;
+
+		# The dimensions should be scaled
+		# to fit reasonably in the screen:
+		#
+		bbox ->  gf::BOX { wide, high, ... };
+
+		size_preferences
+		    =
+		    { col_preference =>   w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>minsz, ideal_steps=>max (minsz, floor wide), max_steps=>NULL },
+		      row_preference =>   w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>minsz, ideal_steps=>max (minsz, floor high), max_steps=>NULL }
+		    };
+
+		get_visible_nodes_list = find_visible_nodes vg;
+
+		set_scroller = set_scroller (view_slot, bbox);
+
+		pix2pts
+		    =
+		    {   my xg::SIZE { high=>htpx, ... } =  w::size_of_screen    root_window;
+			my xg::SIZE { high=>htmm, ... } =  w::size_mmof_screen  root_window;
+
+			fact = (((float::from_int htmm)//(float::from_int htpx))//25.4) * 72.0;
+
+			fn px = floor((float::from_int px)*fact);
+		    };
+
+		fun scale_font proj
+		    =
+		    {    my xg::POINT { row=>y,  ... } =  proj gf::point_00;
+			 my xg::POINT { row=>y', ... } =  proj (gf::POINT { x=>0.0, y=> float::from_int  fontsize } );
+
+			 pix2pts (y' - y);
+		    };
+
+		fun set_state (size, winrect, urect, picked)
+		    =
+		    {   my (proj, rproj)
+			    =
+			    set_perspective (winrect, urect);
+
+			{ utowin =>  proj,
+			  wintou =>  rproj,
+			  visible_nodes  =>  get_visible_nodes_list (size, proj),
+			  font   =>  view_font::find_font fontserver (scale_font proj),
+			  picked =>  picked
+			};
+		    };
+
+		fun set_view (arg as (_, _, urect, _))
+		    =
+		    {   set_scroller urect;
+			set_state arg;
+		    };
+
+		fun realize { kidplug, window, size }
+		    =
+		    {   make_thread  "graph_viewer mouse"  .{
+			    #
+			    mouser (root_window, window, from_mouse', mouse_slot);
+			};
+
+			make_thread  "graph_viewer"  .{
+			    #
+			    init_loop (size, initstate);
+			    ();
+			};
+
+			();
+		    }
+		    where
+			my  xi::KIDPLUG { from_mouse', from_other', to_mom, ... }
+			    =
+			    xi::ignore_keyboard  kidplug;
+
+			draw  = draw_graph   (vg, window, draw_pen, line_pen, pick_pen);
+			drawr = draw_graph_r (vg, window, draw_pen, line_pen, pick_pen);
+
+			set_select   =  set_select   (window, line_pen, pick_pen);
+			unset_select =  unset_select (window, line_pen, draw_pen);
+
+			winrect = xg::make_box (xg::point_00, size);
+
+			initstate
+			    =
+			    set_view (size, winrect, make_similar (bbox, winrect), NULL);
+
+			fun init_loop (size, state)
+			    =
+			    loop state
+			    where
+
+				fun scroll_mailop (horz, newst, { wintou, picked, ... }: View_Data)
+				    =
+				    {   winr = xg::make_box (xg::point_00, size);
+
+					my gf::BOX { x, y, wide, high }
+					    =
+					    wuproj_box  wintou  winr;
+
+					my (x, y)
+					    =
+					    horz  ??  (float::from_int  newst, y)
+						  ::  (x, float::from_int  newst);
+
+					new_state
+					    =
+					    set_state (size, winr, gf::BOX { x, y, wide, high }, picked);
+
+					draw  new_state;
+
+					new_state;
+				    };
+
+
+				fun do_mom (xi::ETC_REDRAW rs, state)
+					=>
+					{   xtracing::print_if xtracing::toplevel_tracing .{ "redraw"; };
+					    apply (drawr state) rs;
+					    state;
+					};
+
+				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ),{ utowin, wintou, picked, ... } )
+					=>
+					{   newsz   = xg::SIZE { wide, high };
+					    winrect = xg::make_box (xg::point_00, newsz);
+
+					    newr = wuproj_box  wintou  winrect;
+					    oldr = wuproj_box  wintou  (xg::make_box (xg::point_00, size));
+
+					    new_state = set_view (newsz, winrect, do_resize (bbox, newr, oldr), picked);
+
+					    xtracing::print_if xtracing::toplevel_tracing .{ "resize."; };
+					    xd::clear_drawable (xd::drawable_of_window window);
+					    init_loop (newsz, new_state);
+					};
+
+				    do_mom (_, state)
+					=>
+					state;
+				end;
+
+
+				fun zoom_in (r, { wintou, picked, ... }: View_Data)
+				    =
+				    {   winr  =  xg::make_box (xg::point_00, size);
+					urect =  wuproj_box wintou r;
+
+					fun check (r as gf::BOX { x, y, wide, high } )
+					    =
+					    if (wide < 30.0 or high < 30.0)   gf::BOX { x, y, wide=>30.0, high=>30.0 };
+					    else                              r;
+					    fi;
+
+					new_state = set_view (size, winr, make_similar (check urect, winr), picked);
+
+					draw new_state;
+					new_state;
+				    };
+
+
+				fun zoom_out (r, { wintou, picked, ... }: View_Data)
+				    =
+				    {   winr      =  xg::make_box (xg::point_00, size);
+					urect     =  wuproj_box wintou winr;
+					new_state =  set_state (size, gf::to_box (make_similar (gf::from_box r, winr)), urect, picked);
+
+					#  Note that the 2nd argument to set_scroller is 
+					#  not urect, as we have changed the perspective. 
+
+					set_scroller (wuproj_box new_state.wintou winr);
+					draw new_state;
+					new_state;
+				    };
+
+
+				fun do_pick (p, state as { visible_nodes, picked, ... }: View_Data)
+				    =
+				    {   fun accept ( { bbox, ... }: Viewnode)
+					    =
+					    xg::within (p, bbox);
+
+					case (list_fns::find_first accept visible_nodes)
+					    #
+					    THE (nvn as { node=>newvn, ... } )        #  New pick 
+						=>
+						case picked
+						    #
+						    THE oldvn                        #  Old pick 
+							=>
+							# If old == new, do nothing:
+							#
+							if (pg::eq_node (newvn, oldvn))
+							    #
+							    state;
+							else
+							    unset_select (state, oldvn);
+							    set_select (state, nvn);
+							fi;
+
+						    _   =>
+							set_select (state, nvn);
+						esac;
+
+					    _   =>                                     #  No new pick 
+						case picked
+						    #
+						    THE oldvn =>  unset_select (state, oldvn);      #  Old pick 
+						    _         =>  state;
+						esac;
+					esac;
+				    };
+
+
+				fun reset ( { picked, ... }: View_Data)
+				    =
+				    {   winrect   =  xg::make_box (xg::point_00, size);
+
+					new_state
+					    =
+					    set_view
+					      ( size,
+						winrect,
+						make_similar (bbox, winrect),
+						picked
+					      );
+
+					draw new_state;
+
+					new_state;
+				    };
+
+				fun block (state, ci_list)
+				    =
+				    select [
+
+					take' mouse_slot
+					    ==>
+					    (fn msg = case msg
+							  #	
+							  UNBLOCK =>  fold_right (fn (m, s) =  do_mom (m, s))	# 2009-12-28 CrT: Changed 'fold' to 'fold_right', I hope that is right!
+									   state
+									   ci_list;
+
+							  _       =>  block (state, ci_list);
+
+						      esac
+					    ),
+
+					from_other'
+					    ==>
+					    (fn envelope =  block (state, (xi::envelope_contents envelope) ! ci_list))
+				    ];
+
+
+				fun get_pick ( { picked => NULL, ... }: View_Data)
+					=>
+					NULL;
+
+				    get_pick { picked => THE node, ... }
+					=>
+					{   info =  pg::info_of_node  node;
+
+					    get_attr = dot_subgraph_tree::get_attr (dot_subgraph_tree::NODE_PART info.base);
+
+					    fun error attribute
+						=
+						{   file::print("missing " + attribute + " attribute\n");
+						    raise exception FAIL (cat [ "missing ", attribute, " attribute" ]);
+						};
+
+					    fname = case (get_attr "file")
+							NULL  => error "file";
+							THE s => s;
+						    esac;
+
+					    range = case (get_attr "range")
+
+							NULL  => NULL;
+
+							THE s => case (scanf::sscanf_by "%d:%d" s)
+								     THE [scanf::INT a, scanf::INT b] =>  THE (a, b);
+								     _                                =>  error "range";
+								 esac;
+						     esac;
+
+					    THE (info.label, fname, range);
+					};
+				end;
+
+
+				fun do_mouse (PICK pt,  state:  View_Data)
+					=>
+					do_pick (pt, state);
+
+				    do_mouse (ZOOM_IN box, state)     =>  zoom_in  (box, state);
+				    do_mouse (ZOOM_OUT box, state)    =>  zoom_out (box, state);
+
+				    do_mouse (RESET, state)            =>  reset state;
+				    do_mouse (BLOCK, state)            =>  block (state,[]);
+
+				    do_mouse (GET_PICK oneshot, state) =>  {  set (oneshot, get_pick state);   state;  };
+				    do_mouse (_, state)                =>  state;
+				end;
+
+
+				fun do_req (SETV v, state:  View_Data) =>  scroll_mailop (FALSE, v, state);
+				    do_req (SETH v, state:  View_Data) =>  scroll_mailop (TRUE,  v, state);
+				    do_req (DELETE, state:  View_Data) =>  state;
+				end;
+
+
+				fun loop state
+				    =
+				    loop (
+					#
+					select [
+					    #
+					    take' mouse_slot
+						==>
+						(fn mail =  do_mouse (mail, state)),
+
+					    from_other'
+						==>
+						(fn envelope = do_mom (xi::envelope_contents envelope, state)),
+
+					    take' plea_slot
+						==>
+						(fn msg = do_req (msg, state))
+					]
+				   );
+
+			   end;
+
+		      end;
+
+		w =  w::make_widget
+		      {
+			root_window,
+			args      =>  (fn ()  = {   background => NULL }),	# Added 2009-12-28 CrT just to get it to compile
+			size_preference_thunk_of =>  .{ size_preferences; },
+			realize
+		      };
+	    end;								# fun make_graph_viewer
+
+
+	fun as_widget     (GRAPH_VIEWER { widget,    ... } )   =  widget;
+	fun set_horz_view (GRAPH_VIEWER { plea_slot, ... } ) v =  give (plea_slot, SETH v);
+	fun set_vert_view (GRAPH_VIEWER { plea_slot, ... } ) v =  give (plea_slot, SETV v);
+	fun mailop_of     (GRAPH_VIEWER { view_slot, ... } )   =  take' view_slot;
+
+    };				# package graph_viewer 
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################

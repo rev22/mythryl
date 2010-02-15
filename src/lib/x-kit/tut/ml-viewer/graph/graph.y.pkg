@@ -1,0 +1,797 @@
+
+generic package GraphLrValsFun(
+           package token:  TOKEN
+           package g:  ATTRIBUTE_GRAPH 
+           my graph_info:  Void -> g::graph_info
+           my node_info:  Void -> g::node_info
+           my edge_info:  Void -> g::edge_info)
+         = 
+pkg
+package parser_data=
+pkg
+package header = 
+pkg
+exception ERROR
+enum vertex = 
+    Node of (String * Null_Or( String ) ) 
+  | Subgraph of (g::graph -> g::graph)
+fun ga_fn g = g::setAttr (g::GRAPH g)
+fun na_fn n = g::setAttr (g::NODE n)
+fun ea_fn e = g::setAttr (g::EDGE e)
+fun pna_fn g = g::setAttr (g::PROTONODE g)
+fun pea_fn g = g::setAttr (g::PROTOEDGE g)
+fun findSubgraph (g, name) =
+      case g::findSubgraph (g, name) of
+        THE sg => sg
+      | NULL => raise exception ERROR
+local
+  count = REF 0
+in
+fun anonymous ()
+    =
+    ("_anonymous_" + (makestring *count)) before (inc count)
+end
+local
+  fun mkPortFn (NULL, NULL) = (fn _ => ())
+    | mkPortFn (THE tp, NULL) = (fn e => ea_fn e ("tailport", tp))
+    | mkPortFn (NULL, THE hp) = (fn e => ea_fn e ("headport", hp))
+    | mkPortFn (THE tp, THE hp) = 
+        (fn e => (ea_fn e ("headport", hp); ea_fn e ("tailport", tp)))
+in
+fun mkEdges (vs, attributes) g = let
+      fun doEdge portfn (t, h) = let
+            e = g::addEdge { graph=g, hd=h, tl=t, info=NULL }
+            in
+              portfn e;
+              apply (ea_fn e) attributes
+            end
+      fun mkE (tl . (rest as hd . L)) =
+            (case (tl, hd) of
+              (Node (t, tport), Node (h, hport)) => (
+                doEdge (mkPortFn (tport, hport)) (g::get_node (g, t, NULL), g::get_node (g, h, NULL));
+                mkE rest
+              )
+            | (Node (name, port), Subgraph mkg) => let
+                edgefn = doEdge (mkPortFn (port, NULL))
+                t = g::get_node (g, name, NULL)
+                subg = mkg g
+                in
+                  g::applyNodes (fn n => edgefn (t, n)) subg;
+                  mkE((Subgraph (fn _ => subg)) . L)
+                end
+            | (Subgraph mkg, Node (name, port)) => let
+                edgefn = doEdge (mkPortFn (NULL, port))
+                h = g::get_node (g, name, NULL)
+                in
+                  g::applyNodes (fn n => edgefn (n, h)) (mkg g);
+                  mkE rest
+                end
+            | (Subgraph mkg, Subgraph mkg') => let
+                edgefn = doEdge (mkPortFn (NULL, NULL))
+                tailg = mkg g
+                headg = mkg' g
+                in
+                  g::applyNodes (fn h => g::applyNodes (fn t => edgefn (t, h)) tailg) headg;
+                  mkE((Subgraph (fn _ => headg)) . L)
+                end
+            )
+        | mkE _ = ()
+      in
+        mkE vs;
+        g
+      end
+end
+
+
+end
+package lr_table = token::lr_table
+package token = token
+local use lr_table in 
+table=let action_rows =
+"\
+\\001\000\001\000\009\000\002\000\008\000\000\000\
+\\001\000\003\000\028\000\008\000\053\000\012\000\024\000\000\000\
+\\001\000\008\000\007\000\000\000\
+\\001\000\008\000\048\000\000\000\
+\\001\000\008\000\056\000\000\000\
+\\001\000\008\000\058\000\014\000\057\000\000\000\
+\\001\000\008\000\065\000\000\000\
+\\001\000\008\000\069\000\000\000\
+\\001\000\008\000\075\000\000\000\
+\\001\000\011\000\073\000\000\000\
+\\001\000\012\000\010\000\000\000\
+\\001\000\013\000\045\000\000\000\
+\\001\000\015\000\043\000\000\000\
+\\001\000\015\000\064\000\000\000\
+\\001\000\015\000\066\000\000\000\
+\\001\000\016\000\072\000\000\000\
+\\001\000\017\000\076\000\000\000\
+\\001\000\018\000\047\000\000\000\
+\\001\000\021\000\000\000\000\000\
+\\078\000\000\000\
+\\079\000\001\000\006\000\002\000\005\000\004\000\004\000\000\000\
+\\080\000\000\000\
+\\081\000\000\000\
+\\082\000\000\000\
+\\083\000\000\000\
+\\084\000\000\000\
+\\085\000\000\000\
+\\086\000\000\000\
+\\087\000\000\000\
+\\088\000\008\000\063\000\000\000\
+\\089\000\011\000\071\000\000\000\
+\\090\000\000\000\
+\\091\000\000\000\
+\\092\000\000\000\
+\\093\000\000\000\
+\\093\000\007\000\032\000\000\000\
+\\094\000\013\000\045\000\000\000\
+\\095\000\000\000\
+\\096\000\001\000\029\000\003\000\028\000\005\000\027\000\006\000\026\000\
+\\008\000\025\000\012\000\024\000\000\000\
+\\097\000\001\000\029\000\003\000\028\000\005\000\027\000\006\000\026\000\
+\\008\000\025\000\012\000\024\000\000\000\
+\\098\000\000\000\
+\\099\000\000\000\
+\\100\000\010\000\041\000\000\000\
+\\101\000\000\000\
+\\102\000\000\000\
+\\103\000\000\000\
+\\104\000\000\000\
+\\105\000\007\000\032\000\000\000\
+\\106\000\000\000\
+\\107\000\000\000\
+\\108\000\000\000\
+\\109\000\000\000\
+\\109\000\018\000\047\000\000\000\
+\\110\000\009\000\037\000\020\000\036\000\000\000\
+\\111\000\020\000\036\000\000\000\
+\\112\000\009\000\037\000\000\000\
+\\113\000\000\000\
+\\114\000\000\000\
+\\115\000\000\000\
+\\116\000\000\000\
+\\117\000\000\000\
+\\118\000\000\000\
+\\119\000\000\000\
+\\120\000\000\000\
+\\121\000\007\000\032\000\000\000\
+\\122\000\000\000\
+\\123\000\007\000\032\000\000\000\
+\\124\000\000\000\
+\\125\000\000\000\
+\\126\000\000\000\
+\\127\000\012\000\030\000\000\000\
+\\128\000\000\000\
+\"
+action_row_numbers =
+"\020\000\002\000\000\000\023\000\
+\\021\000\010\000\024\000\022\000\
+\\039\000\070\000\047\000\045\000\
+\\044\000\053\000\035\000\046\000\
+\\042\000\040\000\038\000\012\000\
+\\049\000\011\000\039\000\052\000\
+\\027\000\026\000\003\000\025\000\
+\\039\000\034\000\001\000\055\000\
+\\054\000\050\000\004\000\005\000\
+\\034\000\061\000\036\000\043\000\
+\\041\000\019\000\048\000\029\000\
+\\013\000\006\000\071\000\014\000\
+\\063\000\066\000\064\000\051\000\
+\\056\000\057\000\060\000\007\000\
+\\058\000\062\000\033\000\030\000\
+\\015\000\017\000\069\000\037\000\
+\\068\000\067\000\065\000\009\000\
+\\029\000\031\000\032\000\008\000\
+\\028\000\016\000\059\000\018\000"
+goto_table =
+"\
+\\001\000\075\000\002\000\001\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\003\000\021\000\009\000\020\000\010\000\019\000\011\000\018\000\
+\\012\000\017\000\013\000\016\000\014\000\015\000\015\000\014\000\
+\\016\000\013\000\020\000\012\000\021\000\011\000\023\000\010\000\
+\\024\000\009\000\000\000\
+\\000\000\
+\\022\000\029\000\000\000\
+\\000\000\
+\\000\000\
+\\017\000\033\000\018\000\032\000\019\000\031\000\000\000\
+\\007\000\038\000\008\000\037\000\022\000\036\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\003\000\021\000\009\000\020\000\012\000\040\000\013\000\016\000\
+\\014\000\015\000\015\000\014\000\016\000\013\000\020\000\012\000\
+\\021\000\011\000\023\000\010\000\024\000\009\000\000\000\
+\\000\000\
+\\000\000\
+\\006\000\042\000\000\000\
+\\003\000\021\000\009\000\020\000\010\000\044\000\011\000\018\000\
+\\012\000\017\000\013\000\016\000\014\000\015\000\015\000\014\000\
+\\016\000\013\000\020\000\012\000\021\000\011\000\023\000\010\000\
+\\024\000\009\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\003\000\021\000\009\000\020\000\010\000\047\000\011\000\018\000\
+\\012\000\017\000\013\000\016\000\014\000\015\000\015\000\014\000\
+\\016\000\013\000\020\000\012\000\021\000\011\000\023\000\010\000\
+\\024\000\009\000\000\000\
+\\007\000\038\000\008\000\048\000\000\000\
+\\015\000\050\000\016\000\013\000\023\000\049\000\024\000\009\000\000\000\
+\\018\000\052\000\000\000\
+\\019\000\053\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\007\000\038\000\008\000\057\000\000\000\
+\\000\000\
+\\006\000\058\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\004\000\060\000\009\000\059\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\022\000\065\000\000\000\
+\\022\000\066\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\005\000\068\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\004\000\072\000\009\000\059\000\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\\000\000\
+\"
+numstates = 76
+numrules = 51
+s = REF "" and index = REF 0
+string_to_int = fn () => 
+let i = *index
+in index := i+2; char::to_int (string::get (*s, i)) + char::to_int (string::get (*s, i+1)) * 256
+end
+string_to_list = fn s' =>
+    let len = string::size s'
+        fun f () =
+           if *index < len then string_to_int() . f()
+           else NIL
+   in index := 0; s := s'; f ()
+   end
+string_to_pairlist = fn (conv_key, conv_entry) =>
+     let fun f () =
+         case string_to_int()
+         of 0 => EMPTY
+          | n => PAIR (conv_key (n - 1), conv_entry (string_to_int()), f())
+     in f
+     end
+string_to_pairlist_default = fn (conv_key, conv_entry) =>
+    let conv_row = string_to_pairlist (conv_key, conv_entry)
+    in fn () =>
+       let default = conv_entry (string_to_int())
+           row = conv_row()
+       in (row, default)
+       end
+   end
+string_to_table = fn (convert_row, s') =>
+    let len = string::size s'
+        fun f ()=
+           if *index < len then convert_row() . f()
+           else NIL
+     in (s := s'; index := 0; f ())
+     end
+local
+  memo = rw_vector::make_rw_vector (numstates+numrules, ERROR)
+  my _ =let fun g i=(rw_vector::set (memo, i, REDUCE (i-numstates)); g (i+1))
+       fun f i =
+            if i==numstates then g i
+            else (rw_vector::set (memo, i, SHIFT (STATE i)); f (i+1))
+          in f 0 except (SUBSCRIPT|INDEX_OUT_OF_BOUNDS) => ()
+          end
+in
+entry_to_action = fn 0 => ACCEPT | 1 => ERROR | j => rw_vector::get (memo, (j - 2))
+end
+goto_table=rw_vector::arrayoflist (string_to_table (string_to_pairlist (NT, STATE), goto_table))
+action_rows=string_to_table (string_to_pairlist_default (T, entry_to_action), action_rows)
+action_row_numbers = string_to_list action_row_numbers
+action_table = let action_row_lookup=
+let a=rw_vector::arrayoflist (action_rows) in fn i=>rw_vector::get (a, i) end
+in rw_vector::arrayoflist (map action_row_lookup action_row_numbers)
+end
+in lr_table::make_lr_table { actions=action_table, gotos=goto_table, rule_count=numrules,
+state_count=numstates, initial_state=STATE 0 }
+end
+end
+local use header in
+type Source_Position = Int
+type Arg = Void
+package mly_value = 
+pkg
+enum Semantic_Value = VOID | ntVOID of Void ->  Void
+ | SYMBOL of Void ->  (String) | SubgHdr of Void ->  (String)
+ | SubgStmt of Void ->  ( ( g::graph -> g::graph ) )
+ | EdgeRHS of Void ->  (List( vertex ))
+ | EdgeStmt of Void ->  ( ( g::graph -> g::graph ) )
+ | NodeStmt of Void ->  ( ( g::graph -> g::graph ) )
+ | PortAngle of Void ->  (String) | PortLocation of Void ->  (String)
+ | NodePort of Void ->  ( Null_Or( String ) )
+ | NodeName of Void ->  (String)
+ | NodeId of Void ->  ( ( String * Null_Or( String ) ) )
+ | AttrStmt of Void ->  ( ( g::graph -> g::graph ) )
+ | Stmt1 of Void ->  ( ( g::graph -> g::graph ) )
+ | Stmt of Void ->  ( ( g::graph -> g::graph ) )
+ | StmtList1 of Void ->  ( ( g::graph -> g::graph ) )
+ | StmtList of Void ->  ( ( g::graph -> g::graph ) )
+ | AttrSet of Void ->  ( ( String * String ) )
+ | OptAttrList of Void ->  (  List( String * String ) )
+ | RecAttrList of Void ->  (  List( String * String ) )
+ | AttrList of Void ->  (   List( String * String ))
+ | InsideAttrList of Void ->  (List ( String * String )  )
+ | AttrIlk of Void ->  ( ( ((String * String) List) -> g::graph -> g::graph ) )
+ | GraphType of Void ->  (String) | File of Void ->  (g::graph Null_Or)
+end
+type Semantic_Value = mly_value::Semantic_Value
+type Result = Null_Or( g::Graph )
+end
+package ec=
+pkg
+use lr_table
+is_keyword =
+fn _ => FALSE
+preferred_change = 
+NIL
+no_shift = 
+fn (T 20) => TRUE | _ => FALSE
+show_terminal =
+fn (T 0) => "GRAPH"
+  | (T 1) => "DIGRAPH"
+  | (T 2) => "SUBGRAPH"
+  | (T 3) => "STRICT"
+  | (T 4) => "NODE"
+  | (T 5) => "EDGE"
+  | (T 6) => "EDGEOP"
+  | (T 7) => "SYMBOL"
+  | (T 8) => "COLON"
+  | (T 9) => "SEMICOLON"
+  | (T 10) => "COMMA"
+  | (T 11) => "LBRACE"
+  | (T 12) => "LBRACKET"
+  | (T 13) => "LPAREN"
+  | (T 14) => "RBRACE"
+  | (T 15) => "RBRACKET"
+  | (T 16) => "RPAREN"
+  | (T 17) => "EQUAL"
+  | (T 18) => "DOT"
+  | (T 19) => "AT"
+  | (T 20) => "EOF"
+  | _ => "bogus-term"
+errtermvalue=
+let use header in
+fn _ => mly_value::VOID
+end
+terms = (T 0) . (T 1) . (T 2) . (T 3) . (T 4) . (T 5) . (T 6
+) . (T 8) . (T 9) . (T 10) . (T 11) . (T 12) . (T 13) . (T 14)
+ . (T 15) . (T 16) . (T 17) . (T 18) . (T 19) . (T 20) . NIL
+end
+package actions =
+pkg 
+exception MLY_ACTION of Int
+actions = 
+let use header
+in
+fn (i392, default_position, stack,
+    (()): Arg) =>
+case (i392, stack)
+of (0, (_, (_, _, RBRACE1right)) . (_, (mly_value::StmtList StmtList1, _, _)) . _
+ . (_, (mly_value::SYMBOL SYMBOL1, _, _)) . (_, (mly_value::GraphType GraphType1
+, GraphType1left, _)) . rest671) => let result=mly_value::File (fn _ => 
+let my GraphType as GraphType1=GraphType1 ()
+my SYMBOL as SYMBOL1=SYMBOL1 ()
+my StmtList as StmtList1=StmtList1 ()
+ in (
+let g = g::make_graph_fn { name=SYMBOL, graph_info=graph_info,
+                        edge_info=edge_info, node_info=node_info, info=NULL }
+                       in 
+                         g::setAttr (g::GRAPH g) ("graph_type", GraphType);
+                         THE (StmtList g) 
+                       end
+) end
+)
+ in (lr_table::NT 0, (result, GraphType1left, RBRACE1right), rest671) end
+| (1, rest671) => let result=mly_value::File (fn _ => (NULL))
+ in (lr_table::NT 0, (result, default_position, default_position), rest671) end
+| (2, (_, (_, GRAPH1left, GRAPH1right)) . rest671) => let result=
+mly_value::GraphType (fn _ => ("g"))
+ in (lr_table::NT 1, (result, GRAPH1left, GRAPH1right), rest671) end
+| (3, (_, (_, _, GRAPH1right)) . (_, (_, STRICT1left, _)) . rest671) => let 
+result=mly_value::GraphType (fn _ => ("sg"))
+ in (lr_table::NT 1, (result, STRICT1left, GRAPH1right), rest671) end
+| (4, (_, (_, DIGRAPH1left, DIGRAPH1right)) . rest671) => let result=
+mly_value::GraphType (fn _ => ("dg"))
+ in (lr_table::NT 1, (result, DIGRAPH1left, DIGRAPH1right), rest671) end
+| (5, (_, (_, _, DIGRAPH1right)) . (_, (_, STRICT1left, _)) . rest671) => let 
+result=mly_value::GraphType (fn _ => ("sdg"))
+ in (lr_table::NT 1, (result, STRICT1left, DIGRAPH1right), rest671) end
+| (6, (_, (_, GRAPH1left, GRAPH1right)) . rest671) => let result=
+mly_value::AttrIlk (fn _ => (fn al => fn g => (apply (ga_fn g) al; g)))
+ in (lr_table::NT 2, (result, GRAPH1left, GRAPH1right), rest671) end
+| (7, (_, (_, NODE1left, NODE1right)) . rest671) => let result=
+mly_value::AttrIlk (fn _ => (fn al => fn g => (apply (pna_fn g) al; g)))
+ in (lr_table::NT 2, (result, NODE1left, NODE1right), rest671) end
+| (8, (_, (_, EDGE1left, EDGE1right)) . rest671) => let result=
+mly_value::AttrIlk (fn _ => (fn al => fn g => (apply (pea_fn g) al; g)))
+ in (lr_table::NT 2, (result, EDGE1left, EDGE1right), rest671) end
+| (9, (_, (mly_value::InsideAttrList InsideAttrList1, _,
+InsideAttrList1right)) . (_, (mly_value::ntVOID Optcomma1, _, _)) . (_, (
+mly_value::AttrSet AttrSet1, AttrSet1left, _)) . rest671) => let result
+=mly_value::InsideAttrList (fn _ => let my AttrSet as AttrSet1=AttrSet1 
+()
+Optcomma1=Optcomma1 ()
+my InsideAttrList as InsideAttrList1=InsideAttrList1 ()
+ in (AttrSet . InsideAttrList) end
+)
+ in (lr_table::NT 3, (result, AttrSet1left, InsideAttrList1right), rest671)
+ end
+| (10, rest671) => let result=mly_value::InsideAttrList (fn _ => ([]))
+ in (lr_table::NT 3, (result, default_position, default_position), rest671) end
+| (11, rest671) => let result=mly_value::ntVOID (fn _ => ())
+ in (lr_table::NT 4, (result, default_position, default_position), rest671) end
+| (12, (_, (_, COMMA1left, COMMA1right)) . rest671) => let result=
+mly_value::ntVOID (fn _ => ())
+ in (lr_table::NT 4, (result, COMMA1left, COMMA1right), rest671) end
+| (13, (_, (_, _, RBRACKET1right)) . (_, (mly_value::InsideAttrList 
+InsideAttrList1, _, _)) . (_, (_, LBRACKET1left, _)) . rest671) => let my 
+result=mly_value::AttrList (fn _ => let my InsideAttrList as 
+InsideAttrList1=InsideAttrList1 ()
+ in (InsideAttrList) end
+)
+ in (lr_table::NT 5, (result, LBRACKET1left, RBRACKET1right), rest671) end
+| (14, (_, (mly_value::AttrList AttrList1, _, AttrList1right)) . (_, (
+mly_value::RecAttrList RecAttrList1, RecAttrList1left, _)) . rest671) => 
+let result=mly_value::RecAttrList (fn _ => let my RecAttrList as 
+RecAttrList1=RecAttrList1 ()
+my AttrList as AttrList1=AttrList1 ()
+ in (RecAttrList@AttrList) end
+)
+ in (lr_table::NT 6, (result, RecAttrList1left, AttrList1right), rest671)
+ end
+| (15, rest671) => let result=mly_value::RecAttrList (fn _ => ([]))
+ in (lr_table::NT 6, (result, default_position, default_position), rest671) end
+| (16, (_, (mly_value::RecAttrList RecAttrList1, RecAttrList1left,
+RecAttrList1right)) . rest671) => let result=mly_value::OptAttrList(
+fn _ => let my RecAttrList as RecAttrList1=RecAttrList1 ()
+ in (RecAttrList) end
+)
+ in (lr_table::NT 7, (result, RecAttrList1left, RecAttrList1right), rest671)
+ end
+| (17, (_, (mly_value::SYMBOL SYMBOL2, _, SYMBOL2right)) . _ . (_, (
+mly_value::SYMBOL SYMBOL1, SYMBOL1left, _)) . rest671) => let result=
+mly_value::AttrSet (fn _ => let SYMBOL1=SYMBOL1 ()
+SYMBOL2=SYMBOL2 ()
+ in ((SYMBOL1, SYMBOL2)) end
+)
+ in (lr_table::NT 8, (result, SYMBOL1left, SYMBOL2right), rest671) end
+| (18, (_, (mly_value::StmtList1 StmtList11, StmtList11left, StmtList11right
+)) . rest671) => let result=mly_value::StmtList (fn _ => let my 
+StmtList1 as StmtList11=StmtList11 ()
+ in (StmtList1) end
+)
+ in (lr_table::NT 9, (result, StmtList11left, StmtList11right), rest671) end
+| (19, rest671) => let result=mly_value::StmtList (fn _ => (fn g => g)
+)
+ in (lr_table::NT 9, (result, default_position, default_position), rest671) end
+| (20, (_, (mly_value::Stmt Stmt1, Stmt1left, Stmt1right)) . rest671) => let 
+result=mly_value::StmtList1 (fn _ => let my Stmt as Stmt1=Stmt1 ()
+ in (Stmt) end
+)
+ in (lr_table::NT 10, (result, Stmt1left, Stmt1right), rest671) end
+| (21, (_, (mly_value::Stmt Stmt1, _, Stmt1right)) . (_, (mly_value::StmtList1 
+StmtList11, StmtList11left, _)) . rest671) => let result=
+mly_value::StmtList1 (fn _ => let my StmtList1 as StmtList11=StmtList11 
+()
+my Stmt as Stmt1=Stmt1 ()
+ in (Stmt o StmtList1) end
+)
+ in (lr_table::NT 10, (result, StmtList11left, Stmt1right), rest671) end
+| (22, (_, (mly_value::Stmt1 Stmt11, Stmt11left, Stmt11right)) . rest671) => 
+let result=mly_value::Stmt (fn _ => let my Stmt1 as Stmt11=Stmt11 ()
+ in (Stmt1) end
+)
+ in (lr_table::NT 11, (result, Stmt11left, Stmt11right), rest671) end
+| (23, (_, (_, _, SEMICOLON1right)) . (_, (mly_value::Stmt1 Stmt11, Stmt11left,
+_)) . rest671) => let result=mly_value::Stmt (fn _ => let my Stmt1
+ as Stmt11=Stmt11 ()
+ in (Stmt1) end
+)
+ in (lr_table::NT 11, (result, Stmt11left, SEMICOLON1right), rest671) end
+| (24, (_, (mly_value::NodeStmt NodeStmt1, NodeStmt1left, NodeStmt1right)) .
+rest671) => let result=mly_value::Stmt1 (fn _ => let my NodeStmt as 
+NodeStmt1=NodeStmt1 ()
+ in (NodeStmt) end
+)
+ in (lr_table::NT 12, (result, NodeStmt1left, NodeStmt1right), rest671) end
+| (25, (_, (mly_value::EdgeStmt EdgeStmt1, EdgeStmt1left, EdgeStmt1right)) .
+rest671) => let result=mly_value::Stmt1 (fn _ => let my EdgeStmt as 
+EdgeStmt1=EdgeStmt1 ()
+ in (EdgeStmt) end
+)
+ in (lr_table::NT 12, (result, EdgeStmt1left, EdgeStmt1right), rest671) end
+| (26, (_, (mly_value::AttrStmt AttrStmt1, AttrStmt1left, AttrStmt1right)) .
+rest671) => let result=mly_value::Stmt1 (fn _ => let my AttrStmt as 
+AttrStmt1=AttrStmt1 ()
+ in (AttrStmt) end
+)
+ in (lr_table::NT 12, (result, AttrStmt1left, AttrStmt1right), rest671) end
+| (27, (_, (mly_value::SubgStmt SubgStmt1, SubgStmt1left, SubgStmt1right)) .
+rest671) => let result=mly_value::Stmt1 (fn _ => let my SubgStmt as 
+SubgStmt1=SubgStmt1 ()
+ in (fn g => (SubgStmt g; g)) end
+)
+ in (lr_table::NT 12, (result, SubgStmt1left, SubgStmt1right), rest671) end
+| (28, (_, (mly_value::AttrList AttrList1, _, AttrList1right)) . (_, (
+mly_value::AttrIlk AttrIlk1, AttrIlk1left, _)) . rest671) => let my 
+result=mly_value::AttrStmt (fn _ => let my AttrIlk as AttrIlk1=
+AttrIlk1 ()
+my AttrList as AttrList1=AttrList1 ()
+ in (AttrIlk AttrList) end
+)
+ in (lr_table::NT 13, (result, AttrIlk1left, AttrList1right), rest671) end
+| (29, (_, (mly_value::AttrSet AttrSet1, AttrSet1left, AttrSet1right)) .
+rest671) => let result=mly_value::AttrStmt (fn _ => let my AttrSet
+ as AttrSet1=AttrSet1 ()
+ in (fn g => (ga_fn g (#1 AttrSet,#2 AttrSet);g)) end
+)
+ in (lr_table::NT 13, (result, AttrSet1left, AttrSet1right), rest671) end
+| (30, (_, (mly_value::NodePort NodePort1, _, NodePort1right)) . (_, (
+mly_value::NodeName NodeName1, NodeName1left, _)) . rest671) => let my 
+result=mly_value::NodeId (fn _ => let my NodeName as NodeName1=NodeName1
+ ()
+my NodePort as NodePort1=NodePort1 ()
+ in (NodeName, NodePort) end
+)
+ in (lr_table::NT 14, (result, NodeName1left, NodePort1right), rest671) end
+| (31, (_, (mly_value::SYMBOL SYMBOL1, SYMBOL1left, SYMBOL1right)) . rest671)
+ => let result=mly_value::NodeName (fn _ => let my SYMBOL as SYMBOL1
+=SYMBOL1 ()
+ in (SYMBOL) end
+)
+ in (lr_table::NT 15, (result, SYMBOL1left, SYMBOL1right), rest671) end
+| (32, rest671) => let result=mly_value::NodePort (fn _ => (NULL))
+ in (lr_table::NT 16, (result, default_position, default_position), rest671) end
+| (33, (_, (mly_value::PortLocation PortLocation1, PortLocation1left,
+PortLocation1right)) . rest671) => let result=mly_value::NodePort (fn 
+_ => let my PortLocation as PortLocation1=PortLocation1 ()
+ in (THE PortLocation) end
+)
+ in (lr_table::NT 16, (result, PortLocation1left, PortLocation1right),
+rest671) end
+| (34, (_, (mly_value::PortAngle PortAngle1, PortAngle1left, PortAngle1right
+)) . rest671) => let result=mly_value::NodePort (fn _ => let my 
+PortAngle as PortAngle1=PortAngle1 ()
+ in (THE PortAngle) end
+)
+ in (lr_table::NT 16, (result, PortAngle1left, PortAngle1right), rest671)
+ end
+| (35, (_, (mly_value::PortLocation PortLocation1, _, PortLocation1right)) .
+(_, (mly_value::PortAngle PortAngle1, PortAngle1left, _)) . rest671) => let 
+result=mly_value::NodePort (fn _ => let my PortAngle as PortAngle1=
+PortAngle1 ()
+my PortLocation as PortLocation1=PortLocation1 ()
+ in (THE (PortAngle + PortLocation)) end
+)
+ in (lr_table::NT 16, (result, PortAngle1left, PortLocation1right), rest671)
+ end
+| (36, (_, (mly_value::PortAngle PortAngle1, _, PortAngle1right)) . (_, (
+mly_value::PortLocation PortLocation1, PortLocation1left, _)) . rest671)
+ => let result=mly_value::NodePort (fn _ => let my PortLocation as 
+PortLocation1=PortLocation1 ()
+my PortAngle as PortAngle1=PortAngle1 ()
+ in (THE (PortLocation + PortAngle)) end
+)
+ in (lr_table::NT 16, (result, PortLocation1left, PortAngle1right), rest671)
+ end
+| (37, (_, (mly_value::SYMBOL SYMBOL1, _, SYMBOL1right)) . (_, (_, COLON1left, _
+)) . rest671) => let result=mly_value::PortLocation (fn _ => let my 
+SYMBOL as SYMBOL1=SYMBOL1 ()
+ in (":" + SYMBOL) end
+)
+ in (lr_table::NT 17, (result, COLON1left, SYMBOL1right), rest671) end
+| (38, (_, (_, _, RPAREN1right)) . (_, (mly_value::SYMBOL SYMBOL2, _, _)) . _ . (_
+, (mly_value::SYMBOL SYMBOL1, _, _)) . _ . (_, (_, COLON1left, _)) . rest671) => 
+let result=mly_value::PortLocation (fn _ => let SYMBOL1=SYMBOL1 
+()
+SYMBOL2=SYMBOL2 ()
+ in (cat [":(", SYMBOL1, ", ", SYMBOL2, ")"]) end
+)
+ in (lr_table::NT 17, (result, COLON1left, RPAREN1right), rest671) end
+| (39, (_, (mly_value::SYMBOL SYMBOL1, _, SYMBOL1right)) . (_, (_, AT1left, _))
+ . rest671) => let result=mly_value::PortAngle (fn _ => let my SYMBOL
+ as SYMBOL1=SYMBOL1 ()
+ in ("@" + SYMBOL) end
+)
+ in (lr_table::NT 18, (result, AT1left, SYMBOL1right), rest671) end
+| (40, (_, (mly_value::OptAttrList OptAttrList1, _, OptAttrList1right)) . (_,
+(mly_value::NodeId NodeId1, NodeId1left, _)) . rest671) => let result=
+mly_value::NodeStmt (fn _ => let my NodeId as NodeId1=NodeId1 ()
+my OptAttrList as OptAttrList1=OptAttrList1 ()
+ in (fn g => (apply (na_fn (g::get_node (g, #1 NodeId, NULL))) OptAttrList; g))
+ end
+)
+ in (lr_table::NT 19, (result, NodeId1left, OptAttrList1right), rest671) end
+| (41, (_, (mly_value::OptAttrList OptAttrList1, _, OptAttrList1right)) . (_,
+(mly_value::EdgeRHS EdgeRHS1, _, _)) . (_, (mly_value::NodeId NodeId1,
+NodeId1left, _)) . rest671) => let result=mly_value::EdgeStmt (fn _ => 
+let my NodeId as NodeId1=NodeId1 ()
+my EdgeRHS as EdgeRHS1=EdgeRHS1 ()
+my OptAttrList as OptAttrList1=OptAttrList1 ()
+ in (mkEdges((Node NodeId) . EdgeRHS, OptAttrList)) end
+)
+ in (lr_table::NT 20, (result, NodeId1left, OptAttrList1right), rest671) end
+| (42, (_, (mly_value::OptAttrList OptAttrList1, _, OptAttrList1right)) . (_,
+(mly_value::EdgeRHS EdgeRHS1, _, _)) . (_, (mly_value::SubgStmt SubgStmt1,
+SubgStmt1left, _)) . rest671) => let result=mly_value::EdgeStmt (fn _
+ => let my SubgStmt as SubgStmt1=SubgStmt1 ()
+my EdgeRHS as EdgeRHS1=EdgeRHS1 ()
+my OptAttrList as OptAttrList1=OptAttrList1 ()
+ in (mkEdges((Subgraph SubgStmt) . EdgeRHS, OptAttrList)) end
+)
+ in (lr_table::NT 20, (result, SubgStmt1left, OptAttrList1right), rest671)
+ end
+| (43, (_, (mly_value::NodeId NodeId1, _, NodeId1right)) . (_, (_, EDGEOP1left,
+_)) . rest671) => let result=mly_value::EdgeRHS (fn _ => let my 
+NodeId as NodeId1=NodeId1 ()
+ in ([Node NodeId]) end
+)
+ in (lr_table::NT 21, (result, EDGEOP1left, NodeId1right), rest671) end
+| (44, (_, (mly_value::EdgeRHS EdgeRHS1, _, EdgeRHS1right)) . (_, (
+mly_value::NodeId NodeId1, _, _)) . (_, (_, EDGEOP1left, _)) . rest671) => let 
+result=mly_value::EdgeRHS (fn _ => let my NodeId as NodeId1=NodeId1 
+()
+my EdgeRHS as EdgeRHS1=EdgeRHS1 ()
+ in ((Node NodeId) . EdgeRHS) end
+)
+ in (lr_table::NT 21, (result, EDGEOP1left, EdgeRHS1right), rest671) end
+| (45, (_, (mly_value::SubgStmt SubgStmt1, _, SubgStmt1right)) . (_, (_,
+EDGEOP1left, _)) . rest671) => let result=mly_value::EdgeRHS (fn _ => 
+let my SubgStmt as SubgStmt1=SubgStmt1 ()
+ in ([Subgraph SubgStmt]) end
+)
+ in (lr_table::NT 21, (result, EDGEOP1left, SubgStmt1right), rest671) end
+| (46, (_, (mly_value::EdgeRHS EdgeRHS1, _, EdgeRHS1right)) . (_, (
+mly_value::SubgStmt SubgStmt1, _, _)) . (_, (_, EDGEOP1left, _)) . rest671) => 
+let result=mly_value::EdgeRHS (fn _ => let my SubgStmt as SubgStmt1=
+SubgStmt1 ()
+my EdgeRHS as EdgeRHS1=EdgeRHS1 ()
+ in ((Subgraph SubgStmt) . EdgeRHS) end
+)
+ in (lr_table::NT 21, (result, EDGEOP1left, EdgeRHS1right), rest671) end
+| (47, (_, (_, _, RBRACE1right)) . (_, (mly_value::StmtList StmtList1, _, _)) . _
+ . (_, (mly_value::SubgHdr SubgHdr1, SubgHdr1left, _)) . rest671) => let my 
+result=mly_value::SubgStmt (fn _ => let my SubgHdr as SubgHdr1=SubgHdr1 
+()
+my StmtList as StmtList1=StmtList1 ()
+ in (fn g => (StmtList (g::addSubgraph (g, SubgHdr, NULL)))) end
+)
+ in (lr_table::NT 22, (result, SubgHdr1left, RBRACE1right), rest671) end
+| (48, (_, (_, _, RBRACE1right)) . (_, (mly_value::StmtList StmtList1, _, _)) . (
+_, (_, LBRACE1left, _)) . rest671) => let result=mly_value::SubgStmt (fn 
+_ => let my StmtList as StmtList1=StmtList1 ()
+ in (fn g => (StmtList (g::addSubgraph (g, anonymous(), NULL)))) end
+)
+ in (lr_table::NT 22, (result, LBRACE1left, RBRACE1right), rest671) end
+| (49, (_, (mly_value::SubgHdr SubgHdr1, SubgHdr1left, SubgHdr1right)) .
+rest671) => let result=mly_value::SubgStmt (fn _ => let my SubgHdr
+ as SubgHdr1=SubgHdr1 ()
+ in (fn g => findSubgraph (g, SubgHdr)) end
+)
+ in (lr_table::NT 22, (result, SubgHdr1left, SubgHdr1right), rest671) end
+| (50, (_, (mly_value::SYMBOL SYMBOL1, _, SYMBOL1right)) . (_, (_,
+SUBGRAPH1left, _)) . rest671) => let result=mly_value::SubgHdr (fn _
+ => let my SYMBOL as SYMBOL1=SYMBOL1 ()
+ in (SYMBOL) end
+)
+ in (lr_table::NT 23, (result, SUBGRAPH1left, SYMBOL1right), rest671) end
+| _ => raise exception (MLY_ACTION i392)
+end
+void = mly_value::VOID
+extract = fn a => (fn mly_value::File x => x
+| _ => let exception PARSE_INTERNAL
+	in raise exception PARSE_INTERNAL end) a ()
+end
+end
+package Tokens:  Graph_TOKENS =
+pkg
+type Semantic_Value = parser_data::Semantic_Value
+type Token( X, Y ) = token::Token( X, Y ) 
+fun graph_fn (p1, p2) = token::TOKEN (parser_data::lr_table::T 0, (
+parser_data::mly_value::VOID, p1, p2))
+fun digraph (p1, p2) = token::TOKEN (parser_data::lr_table::T 1, (
+parser_data::mly_value::VOID, p1, p2))
+fun subgraph (p1, p2) = token::TOKEN (parser_data::lr_table::T 2, (
+parser_data::mly_value::VOID, p1, p2))
+fun strict (p1, p2) = token::TOKEN (parser_data::lr_table::T 3, (
+parser_data::mly_value::VOID, p1, p2))
+fun node (p1, p2) = token::TOKEN (parser_data::lr_table::T 4, (
+parser_data::mly_value::VOID, p1, p2))
+fun edge (p1, p2) = token::TOKEN (parser_data::lr_table::T 5, (
+parser_data::mly_value::VOID, p1, p2))
+fun edgeop (p1, p2) = token::TOKEN (parser_data::lr_table::T 6, (
+parser_data::mly_value::VOID, p1, p2))
+fun symbol (i, p1, p2) = token::TOKEN (parser_data::lr_table::T 7, (
+parser_data::mly_value::SYMBOL (fn () => i), p1, p2))
+fun colon (p1, p2) = token::TOKEN (parser_data::lr_table::T 8, (
+parser_data::mly_value::VOID, p1, p2))
+fun semicolon (p1, p2) = token::TOKEN (parser_data::lr_table::T 9, (
+parser_data::mly_value::VOID, p1, p2))
+fun comma (p1, p2) = token::TOKEN (parser_data::lr_table::T 10, (
+parser_data::mly_value::VOID, p1, p2))
+fun lbrace (p1, p2) = token::TOKEN (parser_data::lr_table::T 11, (
+parser_data::mly_value::VOID, p1, p2))
+fun lbracket (p1, p2) = token::TOKEN (parser_data::lr_table::T 12, (
+parser_data::mly_value::VOID, p1, p2))
+fun lparen (p1, p2) = token::TOKEN (parser_data::lr_table::T 13, (
+parser_data::mly_value::VOID, p1, p2))
+fun rbrace (p1, p2) = token::TOKEN (parser_data::lr_table::T 14, (
+parser_data::mly_value::VOID, p1, p2))
+fun rbracket (p1, p2) = token::TOKEN (parser_data::lr_table::T 15, (
+parser_data::mly_value::VOID, p1, p2))
+fun rparen (p1, p2) = token::TOKEN (parser_data::lr_table::T 16, (
+parser_data::mly_value::VOID, p1, p2))
+fun equal (p1, p2) = token::TOKEN (parser_data::lr_table::T 17, (
+parser_data::mly_value::VOID, p1, p2))
+fun dot (p1, p2) = token::TOKEN (parser_data::lr_table::T 18, (
+parser_data::mly_value::VOID, p1, p2))
+fun at (p1, p2) = token::TOKEN (parser_data::lr_table::T 19, (
+parser_data::mly_value::VOID, p1, p2))
+fun eof (p1, p2) = token::TOKEN (parser_data::lr_table::T 20, (
+parser_data::mly_value::VOID, p1, p2))
+end
+end
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################

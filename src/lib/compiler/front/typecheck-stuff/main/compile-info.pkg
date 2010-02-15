@@ -1,0 +1,75 @@
+## compile-info.pkg
+## (C) 2001 Lucent Technologies, Bell Labs
+
+# Compiled by:
+#     src/lib/compiler/front/typecheck-stuff/typecheckdata.make6
+
+
+package compile_info {
+
+    Compile_Info( A_deep_syntax_tree )
+        =
+        { make_stamp:              Void -> stamp::Stamp,
+	  make_highcode_variable:  Null_Or( symbol::Symbol ) -> var_home::Highcode_Variable,
+	  any_errors:              Ref( Bool ),
+	  error_fn:                error_message::Error_Function,
+	  error_match:             source_map::Source_Code_Region -> String,
+	  transform:               A_deep_syntax_tree -> A_deep_syntax_tree,
+	  source_name:             String,
+          prettyprinter_or_null:   Null_Or prettyprinter::Prettyprinter 
+        };
+
+							# stamp			is from   src/lib/compiler/front/typecheck-stuff/basics/stamp.pkg
+							# symbol		is from   src/lib/compiler/front/basics/mlcomp/symbol.pkg
+							# var_home		is from   src/lib/compiler/front/typecheck-stuff/basics/var-home.pkg
+							# error_message		is from   src/lib/compiler/front/basics/errormsg/error-message.pkg
+							# source_map		is from   src/lib/compiler/front/basics/source/source-map.pkg
+							# highcode_var		is from   src/lib/compiler/upper/highcode/highcode-var.pkg
+
+    fun make_compile_info {
+            source,
+            transform:  X -> X,
+            make_stamp_generator,
+            prettyprinter_or_null
+        }
+        =
+        {   my { error_fn, error_match, any_errors }
+                =
+                error_message::errors  source;
+	                                                             
+
+            highcode_var::clear ();
+
+
+	    stamp_generator
+                =
+                make_stamp_generator ();
+
+
+	    fun make_highcode_variable  NULL
+                    =>
+                    highcode_var::make_highcode_variable ();
+
+	        make_highcode_variable (THE symbol)
+                    =>
+                    highcode_var::make_named_highcode_variable symbol;
+            end;
+	
+
+	    {   make_stamp             =>  .{ stamp::fresh  stamp_generator; },
+		make_highcode_variable,
+		source_name            =>  source.file_opened,
+		any_errors,
+		error_fn,
+		error_match,
+		transform,
+                prettyprinter_or_null
+            }
+            : Compile_Info(  X );
+	};
+
+    fun any_errors (compile_info: Compile_Info( X ))
+        =
+        *compile_info.any_errors;
+
+}; #  package compile_info 

@@ -1,0 +1,110 @@
+## standard-x11-atoms.pkg
+#
+# Atoms are short integer representations
+# of strings maintained by the X server.
+#
+# Here we implement the standard set of
+# atoms defined by the X Inter-Client
+# Communication Convention (ICCC),
+# extracted from X11/Xatom.h.
+#
+# We use atom_primary to label standard
+# atom PRIMARY etc.
+#
+# See also:
+#
+#     src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
+#     src/lib/x-kit/xclient/src/iccc/atom.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+
+
+stipulate
+
+    package xt = xtypes;
+
+herein
+
+    package standard_x11_atoms
+	=
+	package {
+
+	    atom_primary		= xt::XATOM 0u1;
+	    atom_secondary		= xt::XATOM 0u2;
+	    atom_arc			= xt::XATOM 0u3;
+	    atom_atom			= xt::XATOM 0u4;
+	    atom_bitmap			= xt::XATOM 0u5;
+	    atom_cardinal		= xt::XATOM 0u6;
+	    atom_colormap		= xt::XATOM 0u7;
+	    atom_cursor			= xt::XATOM 0u8;
+	    atom_cut_buffer0		= xt::XATOM 0u9;
+	    atom_cut_buffer1		= xt::XATOM 0u10;
+	    atom_cut_buffer2		= xt::XATOM 0u11;
+	    atom_cut_buffer3		= xt::XATOM 0u12;
+	    atom_cut_buffer4		= xt::XATOM 0u13;
+	    atom_cut_buffer5		= xt::XATOM 0u14;
+	    atom_cut_buffer6		= xt::XATOM 0u15;
+	    atom_cut_buffer7		= xt::XATOM 0u16;
+	    atom_drawable		= xt::XATOM 0u17;
+	    atom_font			= xt::XATOM 0u18;
+	    atom_integer		= xt::XATOM 0u19;
+	    atom_pixmap			= xt::XATOM 0u20;
+	    atom_point			= xt::XATOM 0u21;
+	    atom_rectangle		= xt::XATOM 0u22;
+	    atom_resource_manager	= xt::XATOM 0u23;
+	    atom_rgb_color_map		= xt::XATOM 0u24;
+	    atom_rgb_best_map		= xt::XATOM 0u25;
+	    atom_rgb_blue_map		= xt::XATOM 0u26;
+	    atom_rgb_default_map	= xt::XATOM 0u27;
+	    atom_rgb_gray_map		= xt::XATOM 0u28;
+	    atom_rgb_green_map		= xt::XATOM 0u29;
+	    atom_rgb_red_map		= xt::XATOM 0u30;
+	    atom_string			= xt::XATOM 0u31;
+	    atom_visualid		= xt::XATOM 0u32;
+	    atom_window			= xt::XATOM 0u33;
+	    atom_wm_command		= xt::XATOM 0u34;
+	    atom_wm_hints		= xt::XATOM 0u35;
+	    atom_wm_client_machine	= xt::XATOM 0u36;
+	    atom_wm_icon_name		= xt::XATOM 0u37;
+	    atom_wm_icon_size		= xt::XATOM 0u38;
+	    atom_wm_name		= xt::XATOM 0u39;
+	    atom_wm_normal_hints	= xt::XATOM 0u40;
+	    atom_wm_size_hints		= xt::XATOM 0u41;
+	    atom_wm_zoom_hints		= xt::XATOM 0u42;
+	    atom_min_space		= xt::XATOM 0u43;
+	    atom_norm_space		= xt::XATOM 0u44;
+	    atom_max_space		= xt::XATOM 0u45;
+	    atom_end_space		= xt::XATOM 0u46;
+	    atom_superscript_x		= xt::XATOM 0u47;
+	    atom_superscript_y		= xt::XATOM 0u48;
+	    atom_subscript_x		= xt::XATOM 0u49;
+	    atom_subscript_y		= xt::XATOM 0u50;
+	    atom_underline_position	= xt::XATOM 0u51;
+	    atom_underline_thickness	= xt::XATOM 0u52;
+	    atom_strikeout_ascent	= xt::XATOM 0u53;
+	    atom_strikeout_descent	= xt::XATOM 0u54;
+	    atom_italic_angle		= xt::XATOM 0u55;
+	    atom_x_height		= xt::XATOM 0u56;
+	    atom_quad_width		= xt::XATOM 0u57;
+	    atom_weight			= xt::XATOM 0u58;
+	    atom_point_size		= xt::XATOM 0u59;
+	    atom_resolution		= xt::XATOM 0u60;
+	    atom_copyright		= xt::XATOM 0u61;
+	    atom_notice			= xt::XATOM 0u62;
+	    atom_font_name		= xt::XATOM 0u63;
+	    atom_family_name		= xt::XATOM 0u64;
+	    atom_full_name		= xt::XATOM 0u65;
+	    atom_cap_height		= xt::XATOM 0u66;
+	    atom_wm_ilk			= xt::XATOM 0u67;
+	    atom_wm_transient_for	= xt::XATOM 0u68;
+
+	}; #  StdAtoms 
+end;
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

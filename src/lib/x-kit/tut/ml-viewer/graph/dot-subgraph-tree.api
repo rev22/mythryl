@@ -1,0 +1,16 @@
+## dot-subgraph-tree.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# When we read in "foo.dot" files representing graphs,
+# Dot_Graph defines the in-memory representation of them:
+
+						# Attributed_Subgraph_Tree	is from   src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree.api
+
+api Dot_Subgraph_Tree {
+
+    include Attributed_Subgraph_Tree;
+
+    read_graph:  String -> Attributed_Graph;
+};

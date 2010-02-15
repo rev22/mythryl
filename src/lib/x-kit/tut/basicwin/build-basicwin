@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Install-time build script for basicwin.make6.
+#
+# We will normally be run as a result of a toplevel "make rest".
+#
+# Our main result is the freezefile src/lib/x-kit/tut/basicwin/basicwin.make6.a7.
+
+bin/mythryld <<EOF
+    make7::freeze "src/lib/x-kit/tut/basicwin/basicwin.make6";
+EOF
+
+if   [ -f "src/lib/x-kit/tut/basicwin/basicwin.make6.a7" ]
+then
+     echo "     .../example/basicwin/build-basicwin:   Successfully created: src/lib/x-kit/tut/basicwin/basicwin.make6.a7"
+     echo "     .../example/basicwin/build-basicwin:   `ls -l src/lib/x-kit/tut/basicwin/basicwin.make6.a7`"
+else
+     echo "     .../example/basicwin/build-basicwin:   Failed to create src/lib/x-kit/tut/basicwin/basicwin.make6.a7"
+     exit 1
+fi
+
+exit 0;

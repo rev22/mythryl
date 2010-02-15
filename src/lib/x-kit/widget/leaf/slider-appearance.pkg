@@ -1,0 +1,796 @@
+## slider-appearance.pkg
+#
+# Slider views.
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+
+
+
+
+
+###          "I am amazed, O Wall, that you have
+###           not collapsed and fallen, since you
+###           must bear the tedious stupidities
+###           of so many scrawlers."
+###
+###                   -- graffiti in Pompeii, 79AD
+
+
+stipulate#
+#    include xgeometry;						# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+
+    package xc =  xcore;					# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd =  xdraw;					# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xf =  xfont;					# xfont			is from   src/lib/x-kit/xclient/xfont.pkg
+    package xg =  xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    #
+    package d3 =  three_d;					# three_d		is from   src/lib/x-kit/widget/lib/three-d.pkg
+    package w  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa =  widget_attribute;				# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+herein
+
+    package slider_appearance: (weak)  Slider_Appearance {	# Slider_Appearance	is from   src/lib/x-kit/widget/leaf/slider-appearance.api
+
+	min = int::min;
+	max = int::max;
+
+	fun make_font_info font
+	    =
+	    {   my { ascent=>font_ascent, descent=>font_descent }
+		    =
+		    xf::font_high font;
+
+		(font, font_ascent, font_descent);
+	    };
+
+	fun make_label (NULL, _)
+		=>
+		NULL;
+
+	    make_label (THE s, font)
+		=>
+		{   my xf::CHAR_INFO { left_bearing=>lb, right_bearing=>rb, ... }
+			=
+			.overall_info (xf::text_extents font s);
+
+		    THE (s, lb, rb);
+		};
+	end;
+
+	fun int_to_string i
+	    =
+	    if   (i >= 0)
+
+		 int::to_string i;
+	    else
+		 "-" + (int::to_string (-i));
+	    fi;
+
+	fun get_tick_width (from_v, to_v, font, font_ascent)
+	    =
+	    {   fun size (i:  Int)
+		    =
+		    {   s = int_to_string i;
+
+			my xf::CHAR_INFO { left_bearing=>lb, right_bearing=>rb, ... }
+			      =
+			      .overall_info (xf::text_extents font s);
+
+			rb-lb;
+		    };
+
+		(font_ascent / 2) + max (size from_v, size to_v);
+	    };
+
+	 State = ((Int, Bool, Bool, Bool));
+
+	 Result = { bg:  xc::Color,
+		    border_width:  Int,
+		    fontinfo:  (xc::Font, Int, Int),
+		    fg:  xc::Color,
+		    is_vertical:  Bool,
+		    relief:  w::Relief,
+		    from_v:  Int,
+		    label:   Null_Or( (String, Int, Int) ),
+		    length:  Int,
+		    show_value:  Bool,
+		    shades:  w::Shades,
+		    ready_shades:  w::Shades,
+		    slide_shades:  w::Shades,
+		    thumb:  Int,
+		    tick:  Int,
+		    to_v:  Int,
+		    offset:  Int,
+		    twid:  Int,
+		    width:  Int
+		  };
+
+	fun num_ticks ( { tick=>0, ... } : Result)
+		=>
+		0;
+
+	    num_ticks ( { tick, from_v, to_v, ... } : Result)
+		=>
+		loop (from_v, 0)
+		where
+		    stop = if (from_v <= to_v)  fn v = to_v < v;
+			   else                 fn v = to_v > v;
+			   fi;
+
+		    fun loop (v, count)
+			=
+			if (stop v)   count;
+			else          loop (v+tick, count+1);
+			fi;
+
+		end;
+	 end;
+
+
+
+	attributes
+	    =
+	    [ (wa::ready_color,    wa::COLOR,      wa::NO_VAL		),
+	      (wa::background,     wa::COLOR,      wa::STRING_VAL "white"	),
+	      (wa::border_width,   wa::INT,        wa::INT_VAL 2		),
+	      (wa::font,           wa::FONT,       wa::STRING_VAL "8x13"	),
+	      (wa::foreground,     wa::COLOR,      wa::STRING_VAL "black"	),
+	      (wa::is_vertical,    wa::BOOL,       wa::BOOL_VAL TRUE	),
+	      (wa::relief,         wa::RELIEF,     wa::RELIEF_VAL w::FLAT	),
+	      (wa::from_value,     wa::INT,        wa::INT_VAL 0		),
+	      (wa::label,          wa::STRING,     wa::NO_VAL		),
+	      (wa::length,         wa::INT,        wa::INT_VAL 100		),
+	      (wa::show_value,     wa::BOOL,       wa::BOOL_VAL FALSE	),
+	      (wa::color,          wa::COLOR,      wa::NO_VAL		),
+	      (wa::thumb_length,   wa::INT,        wa::INT_VAL 30		),
+	      (wa::tick_interval,  wa::INT,        wa::INT_VAL 0		),
+	      (wa::to_value,       wa::INT,        wa::INT_VAL 100		),
+	      (wa::width,          wa::INT,        wa::INT_VAL 15		)
+	    ];
+
+
+	spacing = 2;
+
+	fun get_resources (root, attributes)
+	    =
+	    {   fg = wa::get_color (attributes wa::foreground);
+		bg = wa::get_color (attributes wa::background);
+
+		shades = w::shades root bg;
+
+		slide_shades = case (wa::get_color_opt (attributes wa::color))   
+				   #	
+				   THE c => w::shades root c;
+				   NULL => shades;
+			       esac;
+
+		ready_shades = case (wa::get_color_opt (attributes wa::ready_color))   
+				   #
+				   THE c => w::shades root c;
+				   NULL => slide_shades;
+			       esac;
+
+		to_v   = wa::get_int (attributes wa::to_value);
+		from_v = wa::get_int (attributes wa::from_value);
+
+		border_width = wa::get_int  (attributes wa::border_width);
+		font         = wa::get_font (attributes wa::font);
+
+		my fontinfo as (font, font_ascent, _)
+		    =
+		    make_font_info font;
+
+		thumb = max (6, max (3*border_width, wa::get_int (attributes wa::thumb_length)));
+
+		relief = wa::get_relief (attributes wa::relief);
+
+		fun check_tick t
+		    =
+		    if   (from_v <= to_v)   (t < 0) ?? -t :: t;
+		    else                    (t > 0) ?? -t :: t;
+		    fi;
+
+
+		{ bg,
+		  fg,
+		  border_width,
+		  fontinfo,
+		  is_vertical => wa::get_bool (attributes wa::is_vertical),
+		  relief,
+		  from_v,
+		  label => make_label (wa::get_string_opt (attributes wa::label), font),
+		  length => max (wa::get_int (attributes wa::length), thumb),
+		  show_value => wa::get_bool (attributes wa::show_value),
+		  shades,
+		  slide_shades,
+		  ready_shades,
+		  thumb,
+		  tick => check_tick (wa::get_int (attributes wa::tick_interval)),
+		  twid => get_tick_width (from_v, to_v, font, font_ascent),
+		  offset => case relief    w::FLAT => 0;  _ => border_width; esac,
+		  to_v,
+		  width => max (3*border_width, wa::get_int (attributes wa::width))
+		};
+	    };
+
+	fun hbounds_of (result:  Result)
+	    =
+	    {   result.fontinfo ->  (_, font_ascent, font_descent);
+
+		line_high = font_ascent + font_descent;
+		offset2 = 2*result.offset;
+		bw2 = 2*result.border_width;
+		x = max (result.length + offset2, (num_ticks result)*result.twid);
+
+		y = result.width
+		  + offset2
+		  + bw2
+		  + if (result.tick != 0 ) line_high; else 0;fi
+		  + if result.show_value  line_high + spacing; else 0;fi
+		  + case result.label    NULL => 0;  _ => line_high; esac
+		  ;
+
+		size_preferences
+		    =
+		    { col_preference =>  w::loose_preference (x+bw2),
+		      row_preference =>  w::tight_preference  y
+		    };
+
+		fn ()
+		    =
+		    size_preferences;
+	    };
+
+	fun vbounds_of (result:  Result)
+	    =
+	    {   result.fontinfo ->  (font, font_ascent, font_descent);
+
+		label_width = case result.label   
+				  THE(_, lb, rb) => rb - lb + font_ascent;
+				  NULL => 0;
+			      esac;
+
+		twid = result.twid;
+
+		tick_width  = if (result.tick != 0 ) twid; else 0;fi;
+		value_width = if result.show_value   twid; else 0;fi;
+
+		offset2 = 2*result.offset;
+		bw2 = 2*result.border_width;
+
+		y = result.length + offset2 + bw2;
+		x = result.width + offset2 + bw2 +
+			label_width + spacing + tick_width + value_width;
+
+		size_preferences
+		    =
+		    { col_preference =>  w::tight_preference   x,
+		      row_preference =>  w::loose_preference  y
+		    };
+
+		fn ()
+		    =
+		    size_preferences;
+	    };
+
+	fun val_to_pt (size, result:  Result)
+	    =
+	    {   result ->   { is_vertical, thumb, border_width, offset, from_v, to_v, ... };
+
+		size   ->  xg::SIZE { wide, high };
+
+		range = real (to_v - from_v);
+
+		prange = (is_vertical ?? high :: wide)
+				- thumb - 2*(offset + border_width);
+
+		rprange = real prange;
+
+		off = thumb / 2 + offset + border_width;
+
+		if  (float::(====) (range, 0.0))
+		     fn _ =  off;
+		else
+		     fn value
+			 =
+			 {   y = trunc((real (value - from_v) * rprange)//range + 0.5);
+			     y = if      (y < 0     ) 0;
+				 else if (y > prange) prange;
+				 else                 y;      fi; fi;
+			     y + off;
+			 };
+		fi;
+	      };
+
+
+	fun draw_border (0, _, _, _, _)
+		=>
+		();
+
+	    draw_border (bw, d, wide, high, result:  Result)
+		=>
+		{   r = xg::BOX { row=>0, col=>0, wide, high };
+		    rel = result.relief;
+		    shades = result.shades;
+
+		    d3::draw_box d { box=>r, relief=> rel, width=>bw } shades;
+		};
+	end;
+
+
+	fun draw_vvalue (val_to_pt, high, dr, pen, result:  Result) (value, right)
+	    =
+	    {   include xdraw;					# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+
+		result.fontinfo ->  (font, font_ascent, font_descent);
+
+		offset = result.offset;
+		s = int_to_string value;
+
+		my xf::CHAR_INFO { right_bearing, ascent, descent, ... }
+		      =
+		      .overall_info (xf::text_extents font s);
+
+		y = max((val_to_pt value) + (font_ascent / 2), offset+ascent);
+		y = min (y, high - offset - descent);
+
+		x = right - right_bearing;
+
+		draw_transparent_string dr pen font (xg::POINT { col=>x, row=>y }, s);
+	    };
+
+	fun draw_hvalue (val_to_pt, wide, dr, pen, result:  Result) (value, bottom)
+	    =
+	    {   include xdraw;					# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+
+		result.fontinfo ->  (font, _, font_descent);
+
+		s = int_to_string value;
+
+		my xf::CHAR_INFO { left_bearing=>lb, right_bearing=>rb, ... }
+		    =
+		    .overall_info (xf::text_extents font s);
+
+		y = bottom - font_descent;
+		offset = result.offset;
+
+		x = max((val_to_pt value) - (lb + rb) / 2, lb + offset);
+		x = min (x, wide - offset - rb);
+
+		draw_transparent_string dr pen font (xg::POINT { col=>x, row=>y }, s);
+	    };
+
+	fun vdrawf (window, size as xg::SIZE { wide, high }, result:  Result)
+	    =
+	    draw
+	    where 
+
+		include xdraw;					# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+
+		d = drawable_of_window window;
+		fd = make_unbuffered_drawable d;
+		offset = result.offset;
+		border_width = result.border_width;
+		val_to_pt = val_to_pt (size, result);
+		text_pen = make_pen [FOREGROUND result.fg];
+		draw_vvalue = draw_vvalue (val_to_pt, high, d, text_pen, result);
+
+		result.fontinfo ->  (font, font_ascent, font_descent);
+
+		label_wid = case result.label   
+				THE(_, lb, rb) => rb - lb + font_ascent;
+				NULL => 0;
+			    esac;
+
+		twid = result.twid;
+
+		tick_wid = if (result.tick != 0 ) twid; else 0;fi;
+		value_wid = if result.show_value  twid; else 0;fi;
+
+		total = tick_wid + value_wid + 2*(border_width+spacing)
+			      + label_wid + result.width;
+
+		tick_right = (wide - total) / 2 + tick_wid;
+		value_right = tick_right + value_wid;
+
+		scale_left = value_right + spacing;
+		label_left = scale_left + 2*border_width
+				  + result.width + (font_ascent / 2);
+
+		fun draw_ticks 0
+			=>
+			();
+
+		    draw_ticks delta
+			=>
+			loop from_v
+			where
+			    to_v   = result.to_v;
+			    from_v = result.from_v;
+
+			    stop = if (from_v <= to_v)  fn v = to_v < v;
+				   else                 fn v = to_v > v;
+				   fi;
+
+			    fun loop v
+				=
+				if (not (stop v))
+				    draw_vvalue (v, tick_right);
+				    loop (v+delta);
+				fi;
+			end;
+		end;
+
+		fun draw_label NULL
+			=>
+			();
+
+		    draw_label (THE (s, _, _))
+			=>
+			{   col = label_left;
+			    row = offset + (3*font_ascent) / 2;
+
+			    draw_transparent_string d text_pen font (xg::POINT { col, row }, s);
+			};
+		end;
+
+		fun draw_value (value, dont_erase)
+		    =
+		    {   if (not dont_erase)
+
+			    r = xg::BOX
+				  { col=> value_right - value_wid,
+				    row=> offset,
+				    wide=>value_wid,
+				    high=> high - 2*offset
+				  };
+
+			    clear_box d r; 
+			fi;
+
+			draw_vvalue (value, value_right);
+		    };
+
+		fun init_window ()
+		    =
+		    {   clear_drawable d;
+
+			draw_ticks result.tick;
+			draw_label result.label;
+		    };
+
+		fun draw_slider (value, ready, down, do_all)
+		    =
+		    {
+			include three_d;
+
+			width = result.width;
+			bw = result.border_width;
+
+			shades = result.shades;
+
+			slide_shades = if ready  result.ready_shades;
+					  else result.slide_shades;fi;
+
+			fun draw_inset (x, y, w, h, sw, rel)
+			    =
+			    {   x = x+sw;
+				y = y+sw;
+
+				h = h-sw;
+				w = w - 2*sw;
+
+				r  = xg::BOX { col=>x, row=>y,   wide=>w, high=>h };
+				r' = xg::BOX { col=>x, row=>y+h, wide=>w, high=>h };
+
+				draw_filled_box d  { box=>r,  width=>sw, relief=>rel } slide_shades;
+				draw_filled_box fd { box=>r', width=>sw, relief=>rel } slide_shades;
+			    };
+
+			fun draw_slide ()
+			    =
+			    {   sht = result.thumb / 2;
+				swid = width;
+
+				col = scale_left + bw;
+				row = (val_to_pt value) - sht;
+
+				shadow_width = max (1, bw / 2);
+
+				relief = if down  w::SUNKEN; else w::RAISED;fi;
+
+				r = xg::BOX { col, row, wide=>swid, high=>2*sht };
+
+				draw_box d { box=>r, width=>bw, relief } slide_shades;
+				draw_inset (col, row, swid, sht, shadow_width, relief);
+			    };
+
+			  if do_all
+
+			      r = xg::BOX
+				    { col=>scale_left,
+				      row=>offset,
+				      high=>high - 2*offset,
+				      wide=> width + 2*bw
+				    };
+
+			      draw_box d { box=>r, width=>bw, relief=>w::SUNKEN } shades;
+			  else
+			      r = xg::BOX
+				    { col=>scale_left+bw,
+				      row=>offset+bw,
+				      high=>high - 2*(bw+offset),
+				      wide=> width
+				    };
+
+			     clear_box d r; 
+			  fi;
+
+			  draw_slide ();
+		      };
+
+		fun draw ((value, active, ready, down), do_all)
+		    =
+		    {   if do_all  init_window(); fi;
+
+			if result.show_value  draw_value (value, do_all); fi;
+
+			draw_slider (value, ready, down, do_all);
+
+			if do_all  draw_border (offset, d, wide, high, result); fi;
+		    };
+	    end;
+
+	fun hdrawf (window, size as xg::SIZE { wide, high }, result:  Result)
+	    =
+	    {   include xdraw;					# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+
+		d = drawable_of_window window;
+		fd = make_unbuffered_drawable d;
+		offset = result.offset;
+		val_to_pt = val_to_pt (size, result);
+		text_pen = make_pen [FOREGROUND result.fg];
+		draw_hvalue = draw_hvalue (val_to_pt, wide, d, text_pen, result);
+
+		result.fontinfo ->   (font, font_ascent, font_descent);
+
+		line_high = font_ascent + font_descent;
+		tick_ht  = if (result.tick != 0) line_high; else 0;fi;
+		value_ht = if result.show_value  line_high + spacing; else 0;fi;
+
+		label_ht = case result.label
+			       NULL => 0;
+			       _    => line_high;
+			   esac;
+
+		border_width = result.border_width;
+
+		total = tick_ht + value_ht + 2*border_width + result.width
+			      + label_ht;
+
+		ticky = (high + total) / 2 - 1;
+
+		valuey = ticky - tick_ht;
+		scaley = valuey - value_ht;
+
+		labely = scaley - 2*border_width - result.width;
+
+		fun draw_ticks 0
+			=>
+			();
+
+		    draw_ticks delta
+			=>
+			loop from_v
+			where
+			    to_v = result.to_v;
+			    from_v = result.from_v;
+
+			    stop = if (from_v <= to_v)  fn v = to_v < v; 
+				   else                 fn v = to_v > v;
+				   fi;
+
+			    fun loop v
+				=
+				if (not (stop v))
+				    draw_hvalue (v, ticky);
+				    loop (v+delta);
+				fi;
+			end;
+		end;
+
+		fun draw_label NULL
+			=>
+			();
+
+		    draw_label (THE (s, lb, rb))
+			=>
+			{   col = offset + font_ascent / 2;
+			    row = labely - font_descent;
+
+			    draw_transparent_string d text_pen font (xg::POINT { col, row }, s);
+			};
+		end;
+
+		fun init_window ()
+		    =
+		    {   clear_drawable d;
+
+			draw_ticks result.tick;
+			draw_label result.label;
+		    };
+
+		fun draw_value (value, do_not_erase)
+		    =
+		    {
+			if (not do_not_erase)
+			    #
+			    r = xg::BOX
+				  { col=> offset,
+				    row=> scaley + 1,
+
+				    wide=> wide - 2*offset, 
+				    high=> valuey - scaley
+				  };
+
+			    clear_box d r; 
+			fi;
+
+			draw_hvalue (value, valuey);
+		    };
+
+		fun draw_slider (value, ready, down, do_all)
+		    =
+		    {   include three_d;
+
+			width = result.width;
+			bw = result.border_width;
+			y = scaley - 2*bw - width + 1;
+			shades = result.shades;
+
+			slide_shades = if ready  result.ready_shades;
+				       else      result.slide_shades;
+				       fi;
+
+			fun draw_inset (x, y, w, h, sw, rel)
+			    =
+			    {   x = x+sw;
+				y = y+sw;
+
+				w = w-sw;
+				h = h - 2*sw;
+
+				r  = xg::BOX { col=>x,   row=>y, wide=>w, high=>h };
+				r' = xg::BOX { col=>x+w, row=>y, wide=>w, high=>h };
+
+				draw_filled_box d  { box=>r,  width=>sw, relief=>rel } slide_shades;
+				draw_filled_box fd { box=>r', width=>sw, relief=>rel } slide_shades;
+			      };
+
+			fun draw_slide ()
+			    =
+			    {   swid = result.thumb / 2;
+				sht = width;
+				x = (val_to_pt value) - swid;
+				shadow_width = max (1, bw / 2);
+				y = y + bw;
+
+				relief =  down  ??  w::SUNKEN
+						::  w::RAISED;
+
+				r = xg::BOX { col=>x, row=>y, wide=> 2*swid, high=>sht };
+
+				draw_box d { box=>r, width=>bw, relief } slide_shades;
+				draw_inset (x, y, swid, sht, shadow_width, relief);
+			    };
+
+			  if do_all
+			      #
+			      r = xg::BOX
+				    { col=>offset,
+				      row=>y,
+				      wide=>wide - 2*offset,
+				      high=> width + 2*bw
+				    };
+
+			      draw_box d { box=>r, width=>bw, relief=>w::SUNKEN } shades;
+			  else
+			      r = xg::BOX
+				    { col=>offset+bw,
+				      row=>y+bw,
+				      wide=>wide - 2*(bw+offset),
+				      high=> width
+				    };
+
+			      clear_box d r; 
+			  fi;
+
+			  draw_slide ();
+		      };
+
+		fun draw ((value, active, ready, down), do_all)
+		    =
+		    {   if do_all   init_window ();   fi;
+
+			if result.show_value   draw_value (value, do_all);   fi;
+
+			draw_slider (value, ready, down, do_all);
+
+			if do_all  draw_border (offset, d, wide, high, result); fi;
+		    };
+
+		draw;
+	    };
+
+	exception BAD_RANGE;
+
+	fun pt_to_val (size, result:  Result)
+	    =
+	    {   result ->  { is_vertical, thumb, border_width, offset, from_v, to_v, ... };
+
+
+		size ->  xg::SIZE { wide, high };
+
+		l = if is_vertical  high; else wide;fi;
+
+		range = l - thumb - 2*(offset + border_width);
+		prange = real range;
+
+		inset = thumb / 2 + offset + border_width;
+		rrange = real (to_v-from_v);
+
+		fun make_var v
+		    =
+		    {   value = min (max (0, v - inset), range);
+			tmp = ((real value)*rrange)//prange + (real from_v);
+			trunc (if (tmp < 0.0 ) tmp - 0.5; else tmp + 0.5;fi);
+		    };
+
+		  if   (range <= 0) fn _                         =  raise exception BAD_RANGE;
+		  elif is_vertical  fn (xg::POINT { row, ... } ) =  make_var row;
+		  else              fn (xg::POINT { col, ... } ) =  make_var col;
+		  fi;
+	      };
+
+
+	fun size_preference_thunk_of (result:  Result)
+	    =
+	    if result.is_vertical  vbounds_of  result;
+	    else                   hbounds_of  result;
+	    fi;
+
+
+	fun drawf (arg as (_, _, result:  Result))
+	    =
+	    if result.is_vertical  vdrawf arg;
+	    else                   hdrawf arg;
+	    fi;
+
+    };			# package slider_appearance 
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

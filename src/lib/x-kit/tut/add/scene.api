@@ -1,0 +1,31 @@
+## scene.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/add/add.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/add/scene.pkg
+
+stipulate
+    package w = widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+herein
+
+    api Scene {
+
+	Scene;
+
+	make_scene: w::Root_Window -> Int -> Scene;
+
+	as_widget:  Scene -> w::Widget;
+	start:      Scene -> Void;
+	up:         Scene -> Void;
+	dive:       Scene -> Void;
+	wave:       Scene -> Void;
+
+    };
+
+end;
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

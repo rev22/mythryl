@@ -1,0 +1,31 @@
+
+LIBRARY_EXPORTS 
+
+	api MDL_PARSER_DRIVER
+	generic mdl_parser_driver_g
+
+
+
+LIBRARY_COMPONENTS
+
+	$ROOT/src/lib/std/stdlib.make6
+
+	$ROOT/src/app/yacc/lib/mythryl-yacc-lib.make6
+	$ROOT/src/lib/core/compiler.make6
+
+	# Pretty printer:
+	$ROOT/src/lib/compiler/lower/tools/prettyprint/Makefile.make6
+
+	# Line number mapping utility:
+	$ROOT/src/lib/compiler/lower/tools/source-map/Makefile.make6
+
+	# Precedence parsing:
+	$ROOT/src/lib/compiler/lower/tools/precedence-parser/Makefile.make6
+
+	# Abstract syntax tree:
+	$ROOT/src/lib/compiler/lower/tools/fake-sml-ast/Makefile.make6
+
+	mdl.grm			# Parser.
+	mdl.lex			# Lexer.
+	parser.pkg
+

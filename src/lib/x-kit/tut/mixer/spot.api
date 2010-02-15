@@ -1,0 +1,35 @@
+## spot.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/mixer/mixer.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/mixer/spot.pkg
+
+stipulate
+    package w  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;				# xcore				is from   src/lib/x-kit/xclient/src/api/build.pkg
+herein
+
+    api Spot {
+
+	Spot;
+
+	spot:  (w::Root_Window,  w::View)
+	       -> 
+	       { color:  xc::Rgb,
+		 wide:  Int,
+		 high:  Int
+	       }
+	       ->
+	       Spot;
+
+	as_widget:  Spot -> w::Widget;
+	set_spot:   Spot -> xc::Rgb -> Void;
+    };
+
+end;
+
+## COPYRIGHT (c) 1991, 1995 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

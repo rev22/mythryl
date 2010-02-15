@@ -1,0 +1,122 @@
+LIBRARY_EXPORTS
+
+	api Subgraph_Tree
+	generic subgraph_tree_g
+
+	api Attributed_Subgraph_Tree 
+	generic attributed_subgraph_tree_g
+
+	api Dot_Subgraph_Tree_Attributes
+	pkg dot_subgraph_tree_attributes
+
+	pkg xgeometry_float
+
+	api Dot_Subgraph_Tree
+	pkg dot_subgraph_tree
+
+	pkg planar_subgraph_tree_attributes
+	pkg planar_subgraph_tree
+
+	api View_Font
+	pkg view_font
+
+	api Dotgraph_To_Planargraph
+	pkg dotgraph_to_planargraph
+
+	api Get_Mouse_Selection
+	pkg get_mouse_selection
+
+	pkg ml_keywords
+	pkg scroll_viewer
+	pkg ml_source_code_viewer
+
+	api Text_Poolx
+	api Text_Display
+	pkg text_display
+
+	api Text_Canvas
+	pkg text_canvas
+
+	pkg view_buffer
+
+	generic load_file_g
+
+	api Ml_Viewer
+	pkg ml_viewer
+
+	api Graph_Viewer
+	pkg graph_viewer
+
+	api Graph_View
+	pkg graph_view
+
+	pkg main
+
+
+LIBRARY_COMPONENTS
+
+	$ROOT/src/lib/std/stdlib.make6
+	$ROOT/src/app/yacc/lib/Mythryl-Yacc-Library.make6
+	$ROOT/src/lib/x-kit/xkit.make6
+
+	graph/subgraph-tree.api
+	graph/subgraph-tree-g.pkg
+
+	graph/attributed-subgraph-tree.api
+	graph/attributed-subgraph-tree-g.pkg
+
+	graph/dot-subgraph-tree-attributes.api
+	graph/dot-subgraph-tree-attributes.pkg
+
+	graph-view/geometry-2d-float.pkg
+
+	graph/dot-graph-io.api				#
+	graph/dot-graph-io-g.pkg			#
+
+	graph/dot-graph.grammar				#
+	graph/dot-graph.lex				#
+
+	graph/dot-subgraph-tree.api
+	graph/dot-subgraph-tree.pkg			#
+
+	graph-view/planar-subgraph-tree-attributes.pkg
+
+	graph-view/view-font.api			#
+	graph-view/view-font.pkg			#
+
+	graph-view/planar-subgraph-tree.pkg		#
+
+	graph-view/dotgraph-to-planargraph.api		#
+	graph-view/dotgraph-to-planargraph.pkg		#
+
+	util/get-mouse-selection.api
+	util/get-mouse-selection.pkg
+
+	text-view/ml-keywords.pkg
+
+	text-view/text-pool.api
+	text-view/text-display.api
+	text-view/text-display.pkg
+
+	text-view/approximate-ml.lex
+	text-view/scroll-viewer.pkg
+
+	text-view/ml-source-code-viewer.api
+	text-view/ml-source-code-viewer.pkg
+
+	text-view/text-canvas.api
+	text-view/text-canvas.pkg
+
+	text-view/view-buffer.pkg
+
+	text-view/load-file.api
+	text-view/load-file-g.pkg
+
+	text-view/ml-viewer.pkg
+
+	graph-view/graph-viewer.api
+	graph-view/graph-viewer.pkg
+
+	graph-view/graph-view.pkg
+
+	main/main.pkg

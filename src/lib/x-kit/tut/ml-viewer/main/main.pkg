@@ -1,0 +1,147 @@
+# main.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+							# graph_view			is from   src/lib/x-kit/tut/ml-viewer/graph-view/graph-view.pkg
+							# dot_subgraph_tree		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+							# dotgraph_to_planargraph	is from   src/lib/x-kit/tut/ml-viewer/graph-view/dotgraph-to-planargraph.pkg
+# 2009-12-28 CrT:
+#   Wrapped below code in  package main { ... }
+#   just to make it more compilable -- the SML/NJ
+#   code has the functions bare:
+#
+stipulate
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    #
+    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package top =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
+    #
+    package d2p =  dotgraph_to_planargraph;		# dotgraph_to_planargraph	is from   src/lib/x-kit/tut/ml-viewer/graph-view/dotgraph-to-planargraph.pkg
+    package dg  =  dot_subgraph_tree;			# dot_subgraph_tree		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
+    package gv  =  graph_view;				# graph_view			is from   src/lib/x-kit/tut/ml-viewer/graph-view/graph-view.pkg
+    package pg  =  planar_subgraph_tree;		# planar_subgraph_tree		is from   src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
+    package vf  =  view_font;				# view_font			is from   src/lib/x-kit/tut/ml-viewer/graph-view/view-font.pkg
+herein  
+
+    package main {
+
+	stipulate
+
+
+	    fun view_graph (fs, root_window, graph)
+		=
+		{   title = "ML-View: " + (dg::graph_name graph);
+
+		    newvg = d2p::convert_dotgraph_to_planargraph  graph;
+
+		    view = gv::make_graph_view (fs, root_window) newvg;
+
+		    topwindow = top::make_topwindow
+			      ( gv::as_widget  view,
+				NULL,
+				{ window_name => THE title,
+				  icon_name   => THE title
+				}
+			      );
+
+		    top::start  topwindow;
+		};
+
+	    fun uncaught_exception_shutdown (m, s)
+		=
+		{   file::print (cat ["uncaught exception ", m, " \"", s, "\"\n"] );
+		    shut_down_thread_scheduler winix::process::success;
+		};
+
+	    # This is the toplevel application thread:
+	    #
+	    fun grapho (graphfile, server)
+		=
+		{   root_window = w::make_root_window server;
+
+		    fontserver = vf::make_font_server root_window;
+
+		    graph = dg::read_graph graphfile;
+		    view_graph = view_graph (fontserver, root_window, graph);
+
+		    fun execute (outs, cmds)
+			=
+			exe cmds
+			where
+			    fun puts s
+				=
+				file::write (outs, s);
+
+			    fun exe ["quit"] =>  shut_down_thread_scheduler  winix::process::success;
+				exe []       =>  ();
+				exe _        =>   puts "???\n";
+			    end;
+			end;
+
+		    tokenize
+			=
+			string::tokens  char::is_space;
+
+		    fun mainloop ()
+			=
+			{   file::write (file::stdout, ">> ");
+			    file::flush  file::stdout;
+			    execute (file::stdout, tokenize (the (file::read_line file::stdin)));
+			    mainloop ();
+			};
+
+		    mainloop ();
+		}
+		except (dg::SUBGRAPH_TREE_ERROR    s) =>  uncaught_exception_shutdown ("dot_subgraph_tree::SUBGRAPH_TREE_ERROR",    s);
+		       (pg::SUBGRAPH_TREE_ERROR    s) =>  uncaught_exception_shutdown ("planar_subgraph_tree::GRAPH", s);
+		       (xc::BAD_ADDRESS            s) =>  uncaught_exception_shutdown ("xcore::BAD_ADDRESS",      s);
+		       #	
+		       e                                             =>  shut_down_thread_scheduler  winix::process::failure;
+		end;
+
+	    fun main dot_file _
+		=
+		{   root_window = w::make_root_window ("", /*authentication:*/NULL);
+
+		    fontserver = vf::make_font_server  root_window;
+
+		    graph = dg::read_graph  dot_file;
+
+		    view_graph (fontserver, root_window, graph);
+
+		    0;
+		}
+		except (dg::SUBGRAPH_TREE_ERROR  s) =>  uncaught_exception_shutdown ("dot_subgraph_tree::GRAPH",    s);
+		       (pg::SUBGRAPH_TREE_ERROR  s) =>  uncaught_exception_shutdown ("planar_subgraph_tree::GRAPH", s);
+		       (xc::BAD_ADDRESS          s) =>  uncaught_exception_shutdown ("xcore::BAD_ADDRESS",      s);
+		       #
+		       e                            =>  shut_down_thread_scheduler  winix::process::failure;
+		end;
+
+	herein
+
+	    fun do_it (graphfile, server)
+		=
+		start_up_thread_scheduler .{
+		    #
+		    grapho (graphfile, server);
+		    ();
+		};
+
+	    fun demo server
+		=
+		{   winix::file::change_directory  "../data";
+
+		    do_it ("nodes::dot", server);
+		};
+
+	    fun export name
+		=
+		thread_scheduler_control::spawn_to_disk( name, main "nodes.dot", THE (time::from_milliseconds 20) );
+
+	end;                                                          #  stipulate
+    };
+end;

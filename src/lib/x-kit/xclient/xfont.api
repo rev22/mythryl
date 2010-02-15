@@ -1,0 +1,122 @@
+## xfont.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+# These are the font related types
+# and operations supported by x-kit,
+# except for text drawing.
+
+
+
+###                    "A good workman is known by his tools."
+###
+###                                         -- proverb
+
+
+# Implemented (in part at least) by:
+#
+#     src/lib/x-kit/xclient/src/window/font-base.pkg
+#
+# Main use of this api is in:
+#
+#     src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+#
+# See also:
+#
+#     src/lib/x-kit/xclient/src/window/font-imp.pkg
+
+api Xfont {
+
+    package xc:  Xcore;			# Xcore		is from   src/lib/x-kit/xclient/xcore.api
+
+    Font;
+
+    # Font drawing direction:
+    #
+    Font_Drawing_Direction
+      = DRAW_FONT_LEFT_TO_RIGHT
+      | DRAW_FONT_RIGHT_TO_LEFT
+      ;
+
+    # Font properties 
+    #
+    Font_Prop
+	=
+	FONT_PROP
+	  {
+	    name:  xc::Atom,		# Name of the property.
+	    value:  unt32::Unt		# Value of the property: interpret according to the property. 
+	  };
+
+    # Per-character font info: 
+    #
+    Char_Info
+	=
+	CHAR_INFO
+	  {
+	    left_bearing:   Int,
+	    right_bearing:  Int,
+	    char_width:     Int,
+	    ascent:         Int,
+	    descent:        Int,
+	    attributes:     Unt
+	  };
+
+    exception FONT_NOT_FOUND;
+    exception NO_CHAR_INFO;
+    exception FONT_PROPERTY_NOT_FOUND;
+
+    open_font:  xc::Xsession -> String -> Font;
+
+    font_property_of:  Font -> xc::Atom -> unt32::Unt;
+
+    font_info_of
+	:
+	Font
+	->
+	{ min_bounds:  Char_Info,
+	  max_bounds:  Char_Info,
+	  #
+	  min_char:  Int,
+	  max_char:  Int
+	};
+
+    char_info_of:  Font -> Int    -> Char_Info;
+    text_width:    Font -> String -> Int;
+    char_width:    Font -> Char   -> Int;
+
+    substr_width:  Font -> (String, Int, Int) -> Int;
+
+    char_positions:  Font -> String -> List(Int);
+
+    text_extents
+	:
+	Font
+	->
+	String
+	->
+	{ dir:          Font_Drawing_Direction,
+	  #
+	  font_ascent:  Int,
+          font_descent: Int,
+	  #
+	  overall_info: Char_Info
+	};
+
+    font_high
+	:
+	Font
+	->
+	{ ascent:   Int,
+          descent:  Int
+        };
+
+};					# api Font
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

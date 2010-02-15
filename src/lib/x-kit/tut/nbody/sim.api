@@ -1,0 +1,49 @@
+## sim.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/nbody/nbody.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/nbody/sim.pkg
+
+stipulate
+    include threadkit;							# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+herein
+
+    api Sim {
+
+	package v:  api {
+			Vect = (Float, Float);				# Was abstract, had to mak concrete to get nbody.pkg to compile. -- 2009-12-10 CrT
+			proj2d: Vect -> { x: Float, y: Float };
+		    };
+
+	Vect = v::Vect;
+
+	Body(X)
+	    =
+	    {   p: Vect,
+		v: Vect,
+		m: Float,
+		data: X
+	    };
+
+	Msg(X)
+	  =	NEW_DT   Float
+	  | NEW_N    Int
+	  | NEW_BODY Body(X)
+	  | QUERY    Mailslot( List( Body(X) ))
+	  | STOP
+	  ;
+
+	run: { g:        Float,
+	       bodies:   List( Body(X)),
+	       #
+	       dt:       Float,
+	       n:        Int,
+	       msg_slot: Mailslot(  Msg(X) )
+	     }
+	     ->
+	     Thread_Id;
+    };
+
+end;

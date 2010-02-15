@@ -1,0 +1,57 @@
+## cartouche.api
+#
+# Drawing/filling rounded rectangles on X drawables.
+
+# Compiled by:
+#     src/lib/x-kit/draw/xkit-draw.make6
+
+
+
+# This api implemented in:
+#     src/lib/x-kit/draw/cartouche.pkg
+
+stipulate
+    package xd = xdraw;				# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg = xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
+herein
+
+    api Cartouche {
+
+
+	# Draw outline of rounded rectangle:
+	#
+	draw_cartouche
+	    :
+	    xd::Drawable_Window
+	    ->
+	    xd::Pen
+	    ->
+	    { box:   xg::Box,
+	      corner_radius:    Int		# In pixels.
+	    }
+	    ->
+	    Void;
+
+	# Draw a filled rounded rectangle:
+	#
+	fill_cartouche
+	    :
+	    xd::Drawable_Window
+	    ->
+	    xd::Pen
+	    ->
+	    { box:   xg::Box,
+	      corner_radius:   Int		# In pixels.
+	    }
+	    ->
+	    Void;
+
+    };
+
+end;
+
+
+
+## COPYRIGHT (c) 1992 by AT&T Bell Laboratories
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

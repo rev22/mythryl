@@ -1,0 +1,30 @@
+# This makefile is typically invoked directly from sh/build.d/build.pkg
+
+# Compiled by:
+#     src/lib/compiler/lower/tools/nowhere/nowhere.make6
+
+LIBRARY_EXPORTS 
+
+	api            Mdl_Parser_Driver
+	generic  mdl_parser_driver_g
+
+
+
+LIBRARY_COMPONENTS
+
+	$ROOT/src/lib/std/stdlib.make6
+
+	$ROOT/src/app/yacc/lib/Mythryl-Yacc-Library.make6
+	$ROOT/src/lib/core/compiler.make6
+
+	$ROOT/src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6
+	$ROOT/src/lib/compiler/lower/tools/source-map.make6		# Line number mapping utility.
+
+	$ROOT/src/lib/compiler/lower/tools/prec-parser.make6		# Precedence parsing.
+	$ROOT/src/lib/compiler/lower/tools/sml-ast.make6
+
+	parser/mdl.grm					# Parser.
+	parser/mdl.lex					# Lexer.
+
+	parser/parser.pkg
+

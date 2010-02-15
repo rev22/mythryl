@@ -1,0 +1,39 @@
+## bitmap-editor.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6
+
+stipulate
+    include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
+herein
+
+    api Bitmap_Editor {
+
+	exception BAD_PARAMETER;
+
+	Bitmap_Editor;
+
+	make_bitmap_editor
+	    :
+	    w::Root_Window
+	    ->
+	    { horz_cells:  Int,
+	      vert_cells:  Int,
+	      cell_size:   Int
+	    }
+	    ->
+	    Bitmap_Editor;
+
+	as_widget:  Bitmap_Editor -> w::Widget;
+
+	mailop_of:  Bitmap_Editor -> Mailop( (Bool, xg::Point) );
+    };
+
+end;
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

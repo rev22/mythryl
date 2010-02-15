@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Install-time build script for ia32-peephole.make6.
+#
+# We will normally be run as a result of a toplevel "make rest".
+#
+# Our main result is the freezefile src/lib/compiler/lower/make7/ia32-peephole.make6.a7.
+
+bin/mythryld <<EOF
+    make7::freeze "src/lib/compiler/lower/make7/ia32-peephole.make6";
+EOF
+
+if   [ -f "src/lib/compiler/lower/make7/ia32-peephole.make6.a7" ]
+then
+     echo "     .../lower/make7/build-ia32-peephole:   Successfully created src/lib/compiler/lower/make7/ia32-peephole.make6.a7:"
+     echo "     .../lower/make7/build-ia32-peephole:   `ls -l src/lib/compiler/lower/make7/ia32-peephole.make6.a7`"
+else
+     echo "     .../lower/make7/build-ia32-peephole:   Failed to create src/lib/compiler/lower/make7/ia32-peephole.make6.a7"
+     exit 1
+fi
+
+exit 0;

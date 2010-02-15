@@ -1,0 +1,578 @@
+## draw.pkg
+#
+# Routines for drawing on windows and pixmaps.
+#
+# This is the library-internal version of this package;
+# the client-level version is in:
+#
+#     src/lib/x-kit/xclient/xdraw.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+
+
+
+###                 "Humanity has advanced, when it has advanced,
+###                  not because it has been sober, responsible,
+###                  and cautious, but because it has been playful,
+###                  rebellious, and immature."
+###
+###                                          -- Tom Robbins
+
+
+stipulate
+    include threadkit;					# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package sn = xsession;				# xsession	is from   src/lib/x-kit/xclient/src/window/xsession.pkg
+    package g  = geometry;				# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package fb = font_base;				# font_base	is from   src/lib/x-kit/xclient/src/window/font-base.pkg
+    package di = draw_imp;				# draw_imp	is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package dt = draw_types;				# draw_types	is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
+herein
+
+    package draw {
+
+	exception BAD_DRAW_PARAMETER;
+
+	stipulate
+
+	    # Extract the draw_fn, id
+	    # and depth of a drawable: 
+	    #
+	    fun info_of_drawable (dt::DRAWABLE_WINDOW { draw_fn, root => dt::DWIN w } )
+		    =>
+		    {   w ->   dt::WINDOW { id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
+
+			{ draw_fn, id, depth };
+		    };
+
+		info_of_drawable (dt::DRAWABLE_WINDOW { draw_fn, root => dt::DPM pm } )
+		    =>
+		    {   pm -> dt::RW_PIXMAP { id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
+
+			{ draw_fn, id, depth };
+		    };
+	    end;
+
+
+	    # Extract the xid and depth of a source drawable 
+	    #
+	    fun info_of_src (dt::FROM_WINDOW    (dt::WINDOW    { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
+		    =>
+		    (id, depth);
+
+		info_of_src (dt::FROM_RW_PIXMAP (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
+		    =>
+		    (id, depth);
+
+		info_of_src (dt::FROM_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )))
+		    =>
+		    (id, depth);
+	    end;
+
+	    # Build a drawing function from an encoding function.
+	    #
+	    # The functions have the basic type scheme
+	    #
+	    #   Drawable -> Pen -> Args -> Void
+	    #
+	    fun draw_fn f drawable pen
+		=
+		{   my { draw_fn, id, ... }
+			=
+			info_of_drawable drawable;
+
+		    fn x =  draw_fn (di::DMSG { to => id, pen, op => (f x) } );
+		};
+
+	    fun draw_fn2 f drawable pen
+		=
+		{   my { draw_fn, id, ... }
+			=
+			info_of_drawable  drawable;
+
+		    fn x =   fn x' =   draw_fn (di::DMSG { to => id, pen, op => (f x x') } );
+		};
+
+	    fun check_list chkfn l
+		=
+		{   apply
+			(fn x = {   chkfn x;
+				    ();
+				}
+			)
+			l;
+
+		    l;
+		};
+
+	    fun check_item chkfn
+		=
+		(fn v = if (chkfn v)  v;
+			else          raise exception BAD_DRAW_PARAMETER;
+			fi
+		);
+
+	    check_point =  check_item  g::valid_point;
+	    check_box   =  check_item  g::valid_box;
+	    check_line  =  check_item  g::valid_line;
+	    check_arc   =  check_item  g::valid_arc;
+
+	    check_pts   =  check_list  check_point;
+	    check_boxes =  check_list  check_box;
+	    check_lines =  check_list  check_line;
+	    check_arcs  =  check_list  check_arc;
+
+	herein
+
+	    # Points:
+	    #
+	    draw_points	    =  draw_fn  (fn pts =  di::DOP_POLY_POINT (FALSE, check_pts pts));
+	    draw_point_path =  draw_fn  (fn pts =  di::DOP_POLY_POINT (TRUE,  check_pts pts));
+	    draw_point	    =  draw_fn  (fn pt  =  di::DOP_POLY_POINT (FALSE, [check_point pt]));
+
+	    # Lines and segments:
+	    #
+	    draw_lines   =  draw_fn  (fn pts   =  di::DOP_POLY_LINE (FALSE, check_pts pts));
+	    draw_path    =  draw_fn  (fn pts   =  di::DOP_POLY_LINE (TRUE,  check_pts pts));
+	    draw_segs    =  draw_fn  (fn lines =  di::DOP_POLY_SEG  (check_lines lines));
+	    draw_seg	 =  draw_fn  (fn seg   =  di::DOP_POLY_SEG  [check_line seg]);
+
+	    # Filled polygons:
+	    #
+	    fill_polygon =  draw_fn  (fn { verts, shape } =  di::DOP_FILL_POLY (shape, FALSE, check_pts verts));
+	    fill_path    =  draw_fn  (fn { path,  shape } =  di::DOP_FILL_POLY (shape, TRUE,  check_pts path ));
+
+	    # Rectangles:
+	    #
+	    draw_boxes  =  draw_fn  (fn boxes =  di::DOP_POLY_BOX (check_boxes boxes));
+	    draw_box    =  draw_fn  (fn box   =  di::DOP_POLY_BOX [check_box box]);
+
+	    fill_boxes  =  draw_fn  (fn boxes =  di::DOP_POLY_FILL_BOX (check_boxes boxes));
+	    fill_box    =  draw_fn  (fn box   =  di::DOP_POLY_FILL_BOX [check_box box]);
+
+	    # Arcs:
+	    #
+	    draw_arcs    =  draw_fn  (fn arcs =  di::DOP_POLY_ARC      (check_arcs arcs));
+	    draw_arc     =  draw_fn  (fn arc  =  di::DOP_POLY_ARC      [check_arc arc]);
+	    fill_arcs    =  draw_fn  (fn arcs =  di::DOP_POLY_FILL_ARC (check_arcs arcs));
+	    fill_arc     =  draw_fn  (fn arc  =  di::DOP_POLY_FILL_ARC [check_arc arc]);
+
+	    # Circles:
+	    #
+	    fun circle_to_arc { center => g::POINT { col, row }, rad }
+		=
+		{   diam = rad + rad;
+
+		    g::ARC {
+			col => col-rad, row => row-rad,
+			wide => diam, high => diam,
+			angle1 => 0, angle2 => 64*360
+		    };
+		};
+
+	    draw_circle =  draw_fn  (fn arg =  di::DOP_POLY_ARC      [circle_to_arc arg]);
+	    fill_circle =  draw_fn  (fn arg =  di::DOP_POLY_FILL_ARC [circle_to_arc arg]);
+
+	    # Text drawing:
+	    #
+	    draw_transparent_string
+		=
+		draw_fn2 (
+		    fn (fb::FONT { id, ... } )
+			=
+			fn (pt, s)
+			    =
+			    di::DOP_POLY_TEXT8 (id, check_point pt, [di::PTXT_TEXT (0, s)]
+		    )
+		);
+
+	    draw_opaque_string
+		=
+		draw_fn2
+		    (fn (fb::FONT { id, ... } )
+			=
+			fn (pt, s)
+			    =
+			    di::DOP_IMAGE_TEXT8 (id, check_point pt, s)
+		    );
+
+	    # Polytext drawing:
+	    #
+	    Text
+		=
+		TEXT ( font_base::Font,
+		       List( Text_Item )
+		     )
+
+	    also
+	    Text_Item
+	      = TEXT_FONT    (font_base::Font, List( Text_Item ))
+	      | TEXT_STRING   String
+	      | TEXT_BLANK_PIXELS    Int
+	      ;
+
+	    draw_transparent_text
+		=
+		draw_fn f
+		where 
+		    include font_base;
+
+		    fun f (pt, TEXT (FONT { id=>font, ... }, items))
+			=
+			di::DOP_POLY_TEXT8
+			  ( font,
+			    check_point pt,
+			    reverse (#2 (flat (font, 0, items, [])))
+			  )
+			where
+			    fun flat (_, d, [], l)
+				    =>
+				    (d, l);
+
+				flat (font, d, (TEXT_STRING s) ! r, l)
+				    =>
+				    flat (font, 0, r, di::PTXT_TEXT (d, s) ! l);
+
+				flat (font, d, (TEXT_BLANK_PIXELS d') ! r, l)
+				    =>
+				    flat (font, d+d', r, l);
+
+				flat (_, d, [TEXT_FONT (FONT { id=>font, ... }, items)], l)
+				    =>
+				    flat (font, d, items, (di::PTXT_FONT font) ! l);
+
+				flat (font, d, (TEXT_FONT (FONT { id=>font', ... }, items)) ! r, l)
+				    =>
+				    {   my (d', l')
+					    =
+					    flat (font', d, items, (di::PTXT_FONT font') ! l);
+
+					flat (font, d', r, (di::PTXT_FONT font) ! l');
+				    };
+			    end;
+			end;
+		end;
+
+	    # TODO: imageText (what does it mean?? *		XXX BUGGO FIXME
+
+
+	    #  BLT operations 
+
+	    exception DEPTH_MISMATCH;
+	    exception BAD_PLANE;
+
+	    stipulate
+
+		# * NOTE: we should probably check that 'from' and 'to' are on the same display *	XXX BUGGO FIXME
+
+		fun copy_area_fn  msg_fn  (to, pen, to_pos, from, from_box)
+		    =
+		    {   my { id=>to_id, draw_fn, depth=>to_depth }
+			    =
+			    info_of_drawable  to;
+
+			my (from_id, from_depth)
+			    =
+			    info_of_src  from;
+
+			my (msg, result)
+			    =
+			    msg_fn (check_point to_pos, from_id, from_box);
+
+			if (from_depth != to_depth)
+			    #
+			    raise exception DEPTH_MISMATCH;
+			fi;
+
+			draw_fn (di::DMSG { to => to_id, pen, op => msg } );
+
+			result;
+		    };
+
+		fun copy_plane_fn msg_fn (to, pen, to_pos, from, from_box, plane)
+		    =
+		    {   my { id=>to_id, draw_fn, ... }
+			    =
+			    info_of_drawable  to;
+
+
+			my (from_id, from_depth)
+			    =
+			    info_of_src  from;
+
+
+			my (msg, result)
+			    =
+			    msg_fn (check_point to_pos, from_id, from_box, plane);
+
+
+			if (plane < 0  or from_depth <= plane)
+			    #
+			    raise exception BAD_PLANE;
+			fi;
+
+			draw_fn (di::DMSG { to => to_id, pen, op => msg } );
+
+			result;
+		    };
+
+		copy_area
+		    =
+		    copy_area_fn
+			(fn (to_pos, from_id, from_box)
+			    =
+			    {   sync_1shot = make_oneshot_maildrop ();
+
+				(di::DOP_COPY_AREA (to_pos, from_id, from_box, sync_1shot), sync_1shot);
+			    }
+			);
+
+		copy_plane
+		    =
+		    copy_plane_fn
+			(fn (to_pos, from_id, from_box, plane)
+			    =
+			    {   sync_1shot = make_oneshot_maildrop ();
+
+				(di::DOP_COPY_PLANE (to_pos, from_id, from_box, plane, sync_1shot), sync_1shot);
+			    }
+			);
+
+		copy_pmarea  = copy_area_fn  (fn arg = (di::DOP_COPY_PMAREA arg,  ()));
+		copy_pmplane = copy_plane_fn (fn arg = (di::DOP_COPY_PMPLANE arg, ()));
+
+								    # "They made us many promises,
+								    #  more than I can remember,
+		fun promise_event (draw_fn, sync_1shot)		#  but they never kept but one;
+		    =                                               #  they promised to take our land,
+		    {   sync_mailop                                 #  and they took it." -- Red Cloud
+			    =
+			    get'  sync_1shot;
+
+			guard .{
+
+			    case (nonblocking_get  sync_1shot)
+
+				THE boxes_fn
+				    =>
+				    always_mailop ()
+					==>
+					boxes_fn;
+
+				NULL
+				    =>
+				    {   draw_fn (di::DMSG_FLUSH);
+
+					sync_mailop
+					    ==>
+					    (fn boxes_fn = boxes_fn ());
+				    };
+			    esac;
+			};
+		    };
+	    herein
+
+		fun pixel_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
+			=>
+			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+
+			    sync_1shot = copy_area (to, pen, to_pos, from, from_box);
+
+			    draw_fn (di::DMSG_FLUSH);
+
+			    (get  sync_1shot) ();
+			};
+
+		    pixel_blt  to  pen  { from, from_box, to_pos }
+			=>
+			{   copy_pmarea (to, pen, to_pos, from, from_box);
+			    [];
+			};
+		end;
+
+		fun pixel_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
+			=>
+			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+
+			    sync_v = copy_area (to, pen, to_pos, from, from_box);
+
+			    promise_event (draw_fn, sync_v);
+			};
+
+		    pixel_blt_mailop to pen { from, from_box, to_pos }
+			=>
+			{   copy_pmarea (to, pen, to_pos, from, from_box);
+
+			    always_mailop [];
+			};
+		end;
+
+		fun plane_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
+			=>
+			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+
+			    sync_1shot = copy_plane (to, pen, to_pos, from, from_box, plane);
+
+			    draw_fn (di::DMSG_FLUSH);
+
+			    (get  sync_1shot) ();
+			};
+
+		    plane_blt to pen { from, from_box, to_pos, plane }
+			=>
+			{   copy_pmplane (to, pen, to_pos, from, from_box, plane);
+			    [];
+			};
+		end;
+
+		fun plane_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
+			=>
+			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+
+			    sync_v = copy_plane (to, pen, to_pos, from, from_box, plane);
+
+			    promise_event (draw_fn, sync_v);
+			};	    
+
+		    plane_blt_mailop to pen { from, from_box, to_pos, plane }
+			=>
+			{   copy_pmplane (to, pen, to_pos, from, from_box, plane);
+
+			    always_mailop [];
+			};
+		end;
+
+
+		fun bitblt to pen { from, from_box, to_pos }
+		    =
+		    plane_blt to pen { from, from_box, to_pos, plane=>0 };
+
+
+		fun bitblt_mailop to pen { from, from_box, to_pos }
+		    =
+		    plane_blt_mailop to pen { from, from_box, to_pos, plane=>0 };
+
+
+		fun texture_blt to pen { from, to_pos }
+		    =
+		    {   my g::SIZE { wide, high }
+			    =
+			    dt::size_of_ro_pixmap  from;
+
+			box = g::BOX { col=>0, row=>0, wide, high };
+
+			plane_blt  to pen { from=>dt::FROM_RO_PIXMAP from, from_box=>box, to_pos, plane=>0 };
+
+			();
+		    };
+
+		fun tile_blt to pen { from, to_pos }
+		    =
+		    {   my g::SIZE { wide, high }
+			    =
+			    dt::size_of_ro_pixmap  from;
+
+			box = g::BOX { col=>0, row=>0, wide, high };
+
+			pixel_blt  to pen { from=>dt::FROM_RO_PIXMAP from, from_box=>box, to_pos };
+
+			();
+		    };
+
+		fun copy_blt drawable pen { to_pos, from_box }
+		    =
+		    {   from = case drawable
+				  #		        
+				  dt::DRAWABLE_WINDOW { root => dt::DWIN w, ... } =>  dt::FROM_WINDOW     w;
+				  dt::DRAWABLE_WINDOW { root => dt::DPM pm, ... } =>  dt::FROM_RW_PIXMAP pm;
+			      esac;
+
+
+			pixel_blt
+			    drawable
+			    pen
+			    { from, to_pos, from_box };
+		    };
+
+		fun copy_blt_mailop  drawable  pen  { to_pos, from_box }
+		    =
+		    {   from = case drawable
+				  #		        
+				  dt::DRAWABLE_WINDOW { root => dt::DWIN w, ... } =>  dt::FROM_WINDOW     w;
+				  dt::DRAWABLE_WINDOW { root => dt::DPM pm, ... } =>  dt::FROM_RW_PIXMAP pm;
+			      esac;
+
+			pixel_blt_mailop
+			    drawable
+			    pen
+			    { from, to_pos, from_box };
+		    };
+
+	    end; # stipulate
+
+	    # Clear part of a destination drawable.
+	    # For windows, this fills in thebackground color;
+	    # for pixmaps, this fills in all 0's (which is actually
+	    # the default foreground pixel value).
+	    #
+	    stipulate
+
+		clear_pen
+		    =
+		    pen::make_pen [pen::FOREGROUND color_imp::color0];
+
+	    herein
+		fun clear_box drawable
+		    =
+		    {   my { draw_fn, id, ... }
+			    =
+			    info_of_drawable  drawable;
+
+			fn box
+			    =
+			    draw_fn (
+				di::DMSG
+                                   { to  => id,
+				     pen => clear_pen,
+				     op  => (di::DOP_CLEAR_AREA (check_box box))
+				   }
+			    );
+		    };
+	    end;
+
+	    # Clear the whole area of a drawable:
+	    #
+	    fun clear_drawable  to
+		=
+		clear_box  to  (g::BOX { col=>0, row=>0, wide=>0, high=>0 } );
+
+	end;		# stipulate
+    };			# package draw 
+end;			# stipulate
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

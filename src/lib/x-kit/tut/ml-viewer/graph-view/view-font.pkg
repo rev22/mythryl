@@ -1,0 +1,110 @@
+## view-font.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+stipulate
+    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xf =  xfont;				# xfont			is from   src/lib/x-kit/xclient/xfont.pkg
+    #
+    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+herein
+
+    package view_font:  View_Font {			# View_Font		is from   src/lib/x-kit/tut/ml-viewer/graph-view/view-font.api
+
+	default_font_size = 14;   #  points 
+
+	font_type
+	    =
+	    "-adobe-times-medium-r-normal--%d-*-*-*-p-*-iso8859-1";
+
+	Font_Imp
+	    = 
+	    FONT_IMP
+	      {
+		plea_slot:   Mailslot( Int ),
+		reply_slot:  Mailslot(  Null_Or(  xc::Font ) )
+	      };
+
+	fun make_font_server root_window
+	    =
+	    {
+		plea_slot  =  make_mailslot ();
+		reply_slot =  make_mailslot ();
+
+		open_font
+		    =
+		    xf::open_font  (w::xsession_of  root_window);
+								    # Sfprintf	is from   src/lib/src/sfprintf.api
+								    # sfprintf	is from   src/lib/src/sfprintf.pkg
+		fmt_font_name
+		    =
+		    sfprintf::sprintf' font_type;
+
+
+		fun load_font 0
+			=>
+			NULL;
+
+		    load_font size
+			=>
+			(THE (open_font (fmt_font_name [sfprintf::INT size])))
+			except
+			    xf::FONT_NOT_FOUND
+				=
+				{   print ("Font size" + (int::to_string size) + " : not found\n");
+				    load_font (size - 1);
+				};
+		end;
+
+
+		fun do_plea (fonts, reqsz)
+		    =
+		    {   size = float::truncate ((float::from_int reqsz)*1.4);
+
+			case (list_fns::find_first (fn (s, _) =  s == size) fonts)
+			    #
+			    THE (_, f)
+				=>
+				{   give (reply_slot, THE f);
+				    fonts;
+				};
+
+			    NULL => 
+				case (load_font size)
+				    #
+				    NULL  =>  {  give (reply_slot, NULL );  fonts;  };
+				    THE f =>  {  give (reply_slot, THE f);  (reqsz, f) ! fonts;  };
+				esac;
+			esac;
+		    };
+
+		fun loop flist
+		    =
+		    for (;;) {
+			#
+			do_plea (flist, take plea_slot);
+		    };
+
+		make_thread  "view_font"  .{
+		    #
+		    loop [];
+		};
+
+		FONT_IMP { plea_slot, reply_slot };
+	    };
+
+	fun find_font (FONT_IMP { plea_slot, reply_slot } ) size
+	    =
+	    # XXX BUGGO FIXME Isn't this the approach that
+	    # suffers from race conditions?  Shouldn't we
+	    # be passing in a oneshot for the reply?
+	    #
+	    {   give (plea_slot, size);
+		take reply_slot;
+	    };
+    };
+
+end;

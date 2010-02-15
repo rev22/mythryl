@@ -1,0 +1,393 @@
+## dot-subgraph-tree.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# Implement the per-graph, per-node and per-edge
+# information maintained by the dot-subgraph-tree
+# graphs used to hold raw graphs read from foo.dot
+# files, before planar layout is done.
+
+# This file gets referenced in:
+#     src/lib/x-kit/tut/ml-viewer/graph-view/vattr.pkg
+
+							# Dot_Subgraph_Tree		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.api
+
+package dot_subgraph_tree: (weak) Dot_Subgraph_Tree {
+
+							# dot_subgraph_tree_attributes	is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg
+							# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+
+    package ga = dot_subgraph_tree_attributes;
+    package g = xgeometry;
+
+							# attributed_graph_g		is from   src/lib/x-kit/tut/ml-viewer/graph/attributed-graph-g.pkg
+    package ag
+	=
+	attributed_subgraph_tree_g (
+	    #
+	    Graph_Info = Ref( ga::Graph_Info );
+            Edge_Info  = Ref( ga::Edge_Info  );
+            Node_Info  = Ref (ga::Node_Info  );
+	);
+
+							# dot_graph_io_g		is from   src/lib/x-kit/tut/ml-viewer/graph/dot-graph-io-g.pkg
+    package gio
+	=
+	dot_graph_io_g(
+
+	    package io = file;
+	    package g = ag;
+
+            make_graph_info =  .{ REF ga::default_graph_info; };
+            make_node_info  =  .{ REF ga::default_node_info;  };
+            make_edge_info  =  .{ REF ga::default_edge_info;  };
+	);
+
+    include ag;
+    include scanf;
+
+    # Define scan functions to extract point
+    # values &tc out of ascii attribute-value
+    # strings:
+    #
+    stipulate 
+
+	# We need our scan_functions to be
+	# 
+        #     scan_foo: (String, stringoffset: Int) -> ([results], newstringoffset: Int)
+	# 
+	# We have them raise SUBGRAPH_TREE_ERROR
+        # if string does not match given format.
+	# 
+	# Notes, resources:
+	# 
+	# Package scanf gives us:			# scanf				is from   src/lib/src/scanf.pkg
+	#	    # "fnsscanf" == "scanf over functional streams":
+	#	    fnsscanf
+	#		:  (X -> Null_Or( (Char, X) ) )				# E.g., 'get' function fetching i-th char from input string.
+	#		-> X							# E.g., next 'i' to read from input string.
+	#		-> String						# Format string.
+	#		-> Null_Or( (List( Printf_Arg ), X) );			# List of items extracted from input stream, plus any remaining input stream.
+	# 
+	# The fetch-ith-char fn for strings is:
+	#       string::get:   (String, Int) -> Char;
+	#                      raises SUBSCRIPT if out of range.
+	#
+	fun scan
+	    format_string				# E.g. "%d, %d"
+	    (string, offset)				# E.g. ("12, 13", 0)
+	    =
+	    {   nextchar = make_nextchar string;
+
+		case (scanf::fnsscanf nextchar offset format_string)
+		    #
+		    NULL =>
+			raise exception SUBGRAPH_TREE_ERROR
+			    (sprintf "Couldn't match format '%s' at offset %d in string '%s'"
+				format_string  offset  string
+			    );
+
+		    THE result			# (values, newoffset)
+			=>
+			result;
+		esac;
+	    }
+	    where
+		fun make_nextchar string
+		    =
+		    fn i =
+			{   char = string::get (string, i);
+			    THE (char, i+1);
+			}
+			except SUBSCRIPT = NULL;
+	    end;
+    herein
+
+	# (String, string_offset: Int) -> (i, j, new_string_offset: Int) 
+	#
+	fun scan_pt  (s, i)
+	    =
+	    case (scan "%d,%d"  (s, i))
+		#
+		([ INT i, INT j], new_offset) =>  (i, j, new_offset);
+		_			      =>  raise exception SUBGRAPH_TREE_ERROR (sprintf "Invalid point value at %d in %s" i s);	
+	    esac;
+
+	# (String, string_offset: Int) -> (i, j, new_string_offset: Int) 
+	#
+	# This is identical to scan_pt above except that
+	# the format is "e,%d,%d" in stead of "%d,%d":
+	#
+	fun scan_arrow  (s, i)
+	    =
+	    case (scan "e,%d,%d"  (s, i))
+		#
+		([ INT i, INT j], new_offset) =>  (i, j, new_offset);
+		_			      =>  raise exception SUBGRAPH_TREE_ERROR (sprintf "Invalid arrow value at %d in %s" i s);	
+	    esac;
+
+
+	# (String, string_offset: Int) -> (f: Float, g: Float, new_string_offset: Int) 
+	#
+	# This is identical to scan_pt above except that
+	# the format is "%f,%f" in stead of "%d,%d":
+	#
+	fun scan_size  (s, i)
+	    =
+	    case (scan "%f,%f"  (s, i))
+		#
+		([ FLOAT f, FLOAT g], new_offset) =>  (f, g, new_offset);
+		_			          =>  raise exception SUBGRAPH_TREE_ERROR (sprintf "Invalid size value at %d in %s" i s);	
+	    esac;
+
+	# (String, string_offset: Int) -> (i, j, wide, high, new_string_offset: Int) 
+	#
+	# This is identical to scan_pt above except that
+	# the format is "%d,%d,%d,%d" in stead of "%d,%d":
+	#
+	fun scan_bbox  (s, i)				# "bbox" == "bounding box"
+	    =
+	    case (scan "%d,%d,%d,%d"  (s, i))
+		#
+		([ INT i, INT j, INT k, INT l], new_offset) =>  (i, j, k, l , new_offset);
+		_			                    =>  raise exception SUBGRAPH_TREE_ERROR (sprintf "Invalid bounding box value at %d in %s" i s);	
+	    esac;
+    end;
+
+    fun scan_float string
+	=
+	case (float::from_string string)
+	    #
+	    THE f =>    f;
+	    #
+	    NULL  =>    raise exception SUBGRAPH_TREE_ERROR
+			    (sprintf "Not a valid float value: '%s'" string );
+	esac;
+
+    offset = 18;				# In pixels.
+
+    fun shift (g::POINT { col, row } )
+	=
+	g::POINT { col => col + offset,
+                   row => row + offset
+                 };
+
+    # Parse a possibly missing attribute, substituting
+    # a default value if it is absent.
+    #
+    # Here 'parse_fn: String -> Foo' is some function
+    # from input strings to attribute values:
+    #
+    fun parse_opt  parse_fn  (THE s,       _) =>  parse_fn s;		# Use explicitly provided attribute value.
+        parse_opt  parse_fn  (NULL,  default) =>  parse_fn default;	# Use default             attribute value.
+    end;
+
+
+    fun set_attrs g
+	=
+	{
+	    fun min (r:  Float, r')
+		=
+		r <= r'  ??   r
+                         ::   r';
+
+	    fun update (r, v)
+		=
+		r := v;
+
+
+	    fun inch2ps r			# "inches to pixels" ?  (72 pixels/inch is common.)
+		=
+		float::truncate (72.0*r);
+
+
+	    fun ps2inch i
+		=
+		(float::from_int i) // 72.0;
+
+
+	    fun parse_label n "\\N" =>  n;
+	        parse_label n s     =>  s;
+	    end;
+
+
+	    fun parse_point (s, i)
+		=
+		{   my (x, y, i')
+			=
+			scan_pt (s, i);
+
+		    (g::POINT { col=>x, row=>y }, i');
+		};
+
+
+	    fun parse_edge NULL
+		    =>
+		    raise exception SUBGRAPH_TREE_ERROR "set_attrs: no points on edge";
+
+	        parse_edge (THE e)
+		    =>
+		    {   my  ( x: Int,
+                              y: Int,
+                              i: Int
+                            )
+			    =
+			    scan_arrow (e, 0);
+
+			fun rd_pts (l, i)
+			    =
+			    {   my (x, y, i') =   scan_pt (e, i);
+
+				rd_pts (g::POINT { col=>x, row=>y } ! l, i');
+                            }
+			    except
+				_ = reverse l;
+
+			(g::POINT { col=>x, row=>y }, rd_pts([], i));
+		    };
+	    end;
+
+
+	    fun parse_shape "ellipse" =>  ga::ELLIPSE;
+	        parse_shape "diamond" =>  ga::DIAMOND;
+	        parse_shape _         =>  ga::BOX;
+	    end;
+
+
+	    fun parse_bbox NULL
+		    =>
+		    raise exception  SUBGRAPH_TREE_ERROR "set_attrs: no bounding box";
+
+	        parse_bbox (THE r)
+		    =>
+		    {   my  (_, _, wide, high, _)
+			    =
+			    scan_bbox (r, 0);
+
+		        g::SIZE { wide => wide + 2*offset,
+                                  high => high + 2*offset
+                                };
+		    };
+	    end;
+
+
+	    fun parse_size (THE w, THE h)
+		    =>
+		    g::SIZE { wide =>  inch2ps (scan_float  w),
+                              high =>  inch2ps (scan_float  h)
+                            };
+
+	        parse_size _
+		    =>
+		    raise exception  SUBGRAPH_TREE_ERROR "set_attrs: no node width/height";
+	    end;
+
+
+	    fun parse_scale (NULL, _)
+		    =>
+		    1.0;
+
+	        parse_scale (THE s, g::SIZE { wide, high } )
+		    =>
+		    {   my  ( rw: Float,		# "w" will be "wide" -- what is "r"? "rectangle"?
+                              rh: Float,		# "h" will be "high" -- what is "r"? "rectangle"?
+			      _:  Int
+			    )
+			    =
+			    scan_size (s,0);
+
+			rwid = ps2inch wide;
+			rht  = ps2inch high;
+
+		        if (rwid <= rw and rht <= rh)   1.0;
+		        else                            min  (rw // rwid,  rh // rht);
+			fi;
+		    };
+	    end;
+
+
+	    fun set_graph g
+		=
+		{   get  = get_attr (GRAPH_PART g);
+
+		    bbox = parse_bbox (get "bb");
+
+		    info = { name => graph_name g,
+			     bbox,
+			     scale => parse_scale (get "size", bbox)
+			   };
+
+		    update (info_of_graph g, info);
+		};
+
+
+	    fun set_node n
+		=
+		{   get = get_attr (NODE_PART n);
+
+		    name = node_name n;
+
+		    info = { center =>  shift (#1  (parse_opt (fn s = parse_point (s, 0)) (get "pos", "0, 0"))),
+			     shape  =>  parse_opt   parse_shape                           (get "shape", "box"),
+			     label  =>  parse_opt  (parse_label name)                     (get "label", name),
+			     size   =>  parse_size (get "width", get "height")
+			   };
+
+		    update (info_of_node n, info);
+		};
+
+	    fun set_edge e
+		=
+		{   get = get_attr (EDGE_PART e);
+
+		    my (arrow, pts)
+			=
+			parse_edge (get "pos");
+
+		    info = { pts   =>  map shift pts,
+			     arrow =>  shift arrow
+			   };
+
+		    update (info_of_edge e, info);
+		};
+
+            set_graph g;
+            apply_nodes set_node g;
+            apply_nodes (fn n = apply_out_edges set_edge (g, n)) g;
+        };
+
+    fun read_graph  name
+	=
+        {   ins = file::open_for_read  name;
+
+	    g = (gio::read_graph ins)
+		except
+                    (e as SUBGRAPH_TREE_ERROR msg)
+                        =>
+		        {   file::write (file::stderr, "Exception Graph " + msg + "\n");
+                            raise exception e;
+			};
+
+		    e   => 
+		        {   file::write (file::stderr, "Exception " + (exceptions::exception_name e) + "\n");
+                            raise exception e;
+			};
+		end;
+
+            file::close_input  ins;
+
+            set_attrs  g;
+
+            g;
+        }
+	except
+	    (x as io_exceptions::IO _)
+		=
+                {   msg = exceptions::exception_name x;
+
+		    file::write (file::stderr, "dot_graph::read_graph: " + msg + "\n");
+
+                    raise exception x;
+		};
+};

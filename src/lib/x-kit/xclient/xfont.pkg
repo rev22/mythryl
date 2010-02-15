@@ -1,0 +1,20 @@
+## xfont.pkg
+#
+# One of the eight packages forming the xkit-lib client interface.
+
+# Compiled by:
+#     src/lib/x-kit/xclient/src/xclient.make6
+
+
+
+							# xclient_sharing	is from   src/lib/x-kit/xclient/xclient-sharing.pkg
+
+package xfont
+    =
+    xclient_sharing::xfont;
+
+
+
+## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,89 @@
+## color-imp.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+# The color imp manages colors for a given screen.
+
+stipulate
+    package xt = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package dy = display;				# display	is from   src/lib/x-kit/xclient/src/wire/display.pkg
+herein
+
+    api Color_Imp {
+
+	# Color specifications.
+	#
+	# Eventually, these will be extended to R5
+	# device independent color specifications.
+	#
+	Color_Spec
+	  #
+	  = CMS_NAME String
+	  #
+	  | CMS_RGB  { red:    Unt,
+		       green:  Unt,
+		       blue:   Unt
+		     }
+	  ;
+
+	# A color.
+	# This type is opaque at the user level: 
+	#
+	Color
+	    =
+	    COLOR			  # A color in the colormap. 
+	      {
+		pixel:  xt::Pixel,	  # Its pixel value.
+		rgb:    xt::Rgb		  # Its RGB value. 
+	      };
+
+	Color_Imp;
+
+	make_color_imp
+	    :
+	    (dy::Xdisplay, dy::Xscreen)
+	    ->
+	    Color_Imp;
+
+	exception BAD_RGB;
+	exception NO_COLOR_CELL;
+
+	get_color:  Color_Imp -> Color_Spec -> Color;
+	    #
+	    # Get the specified color.
+	    # Raise NO_COLOR_CELL if the color
+	    # map is already full.
+
+
+	black_of:  Color_Imp -> Color;
+	white_of:  Color_Imp -> Color;
+
+	same_color:  (Color, Color) -> Bool;
+
+	# The following are used for
+	# drawing 0s or 1s on pixmaps:
+	#
+	color0:  Color;
+	color1:  Color;
+
+	# RGB values (these are needed for
+	# coloring cursors, but will probably go away) 
+	#
+	Rgb = RGB  { red:  Unt, green:  Unt, blue:  Unt };
+
+	rgb_of_color:  Color -> Rgb;
+
+	check_rgb:  Rgb -> Rgb;
+
+	white_rgb:  Rgb;
+	black_rgb:  Rgb;
+    };
+
+end;
+
+## COPYRIGHT (c) 1992 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

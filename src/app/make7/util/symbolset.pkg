@@ -1,0 +1,13 @@
+## symbolset.pkg
+## (C) 1999 Lucent Technologies, Bell Laboratories
+## Author: Matthias Blume (blume@kurims.kyoto-u.ac.jp)
+
+# Compiled by:
+#     src/app/make7/util/Make7_Utilities.make6
+
+
+						# set_g		is from   src/app/make7/util/set-g.pkg
+package symbol_set
+    =
+    set_g( symbol_ord_key );
+

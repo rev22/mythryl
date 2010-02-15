@@ -1,0 +1,520 @@
+## calc.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/add/add.make6
+
+stipulate
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;				# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+    #
+    package dv  =  divider;				# divider			is from   src/lib/x-kit/widget/leaf/divider.pkg
+    package lbl =  label;				# label				is from   src/lib/x-kit/widget/leaf/label.pkg
+    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wt  =  widget_types;			# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
+    package lw  =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/composite/line-of-widgets.pkg
+    package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    #
+    package an  =  answer;				# answer			is from   src/lib/x-kit/tut/add/answer.pkg
+herein
+
+    package calc:  Calc {				# Calc				is from   src/lib/x-kit/tut/add/calc.api	
+
+	fun window_of w
+	    =
+	    (w', winv)	# "inv" is "i-var" or "incremental var" through here, I think. Need to rename.
+	    where
+
+		winv = make_oneshot_maildrop ();
+
+		rf = w::realize_fn  w;
+
+		fun realize (arg as { window, ... } )
+		    =
+		    {   set (winv, window);
+			rf arg;
+		    };
+
+		w' =  w::make_widget
+			{
+			  root_window      =>  w::root_window_of  w,
+			  realize,
+
+			  size_preference_thunk_of
+			      =>
+			      w::size_preference_thunk_of  w,
+
+			  # I added the following line, cribbed randomly
+			  # from the other examples, to get this to
+			  # compile.  Apparently the 'args' element was
+			  # added after this example was written and it
+			  # was never updated (I checked the raw SML/NJ 110.58 source.)
+			  #     -- 2009-11-30 CrT
+			  #
+			  args         => fn () = { background => NULL }
+			};
+
+	    end;
+
+	fontname =  "-b&h-lucidatypewriter-bold-r-normal-sans-24-240-75-75-m-140-iso8859-1";
+		    #
+		    #  "-sony-fixed-medium-r-normal--24-170-100-100-c-120-iso8859-1" 
+
+	Answer = RIGHT | WRONG;
+
+	Difficulty = SINGLE | EASY | MEDIUM | HARD;
+
+	fun diff_string EASY   =>  "Easy";
+	    diff_string MEDIUM =>  "Medium";
+	    diff_string HARD   =>  "Hard";
+	    diff_string SINGLE =>  "Single";
+	end;
+
+	Function = ADD | SUBTRACT | MULTIPLY;
+
+	fun func_string ADD      =>  " +";
+	    func_string SUBTRACT =>  " -";
+	    func_string MULTIPLY =>  " x";
+	end;
+
+	fun func_op ADD      =>  integer::(+);
+	    func_op SUBTRACT =>  integer::(-);
+	    func_op MULTIPLY =>  integer::(*);
+	end;
+
+	function_list
+	    =
+	    [ (ADD,      TRUE ),
+	      (SUBTRACT, FALSE),
+	      (MULTIPLY, FALSE)
+	    ];
+
+	Request = START (Difficulty, Function)
+		| RESET
+		;
+
+	Calc = CALC { widget:         w::Widget,
+		      plea_slot:      Mailslot( Request ),
+		      answer_mailop:  Mailop(   Answer  )
+		    };
+
+	fun fix_vert  widget
+	    =
+	    {   my  xg::SIZE { high, ... }
+		    =
+		    w::preferred_size  widget;
+
+		ydim = w::tight_preference  high;
+
+
+		fun size_preference_fn  size_preference_thunk_of
+		    =
+		    size_preference_thunk_of ();
+
+
+		sz::make_size_preference_wrapper
+		  {
+		    child     =>  widget,
+		    resize_fn =>  fn _ = TRUE,
+		    size_preference_fn
+		  };
+	    };
+
+	fun get_seed ()
+	    =
+	    {    include time;
+		 unt31::from_large_int (to_seconds (get_time()));
+	    };
+
+	fun gen_vals (random, d)
+	    =
+	    gen
+	    where
+		fun gen ()
+		    =
+		    {   v1 =  rand::range  (1, maxrange)   (random());
+			v2 =  rand::range  (1, maxrange)   (random());
+
+			v1 < v2   ??   (v2, v1)
+				  ::   (v1, v2);
+		    }
+		    where
+			maxrange
+			    = 
+			    case d
+				#
+				SINGLE =>     9;
+				EASY   =>    99;
+				MEDIUM =>   999;
+				HARD   =>  9999;
+			    esac;
+		    end;
+	    end;
+
+	fun do_input (kbd, label, reply_slot)
+	    =
+	    {   to_ascii
+		    =
+		    xi::map_keysym_to_ascii
+			xi::default_keysym_to_ascii_mapping;
+
+		fun is_erase c
+		    =
+		    c == '\^H';
+
+
+		fun is_newline c
+		    =
+		    c == '\^M'   or
+		    c == '\^J';
+
+
+		fun add_digit (c, s)
+		    =
+		    {   s' = string::from_char c  +  s;
+
+			lbl::set_label label (lbl::TEXT s');
+
+			s';
+		    };
+
+
+		fun erase ""
+			=>
+			"";
+
+		    erase s
+			=>
+			{   s' = substring (s, 1, size s - 1);
+
+			    lbl::set_label label (lbl::TEXT s');
+
+			    s';
+			};
+		end;
+
+
+		my (kbdevt, _)
+		    =
+		    do_mailop  kbd;
+
+
+		fun restart cv
+		    =
+		    {   lbl::set_label label (lbl::TEXT "");
+			loop "";
+		    }
+		    where
+			fun loop s
+			    = 
+			    select [
+
+				take' reply_slot
+				    ==>
+				    restart,
+
+				kbdevt
+				    ==>
+				    (fn k = loop (handle_kbd (xi::envelope_contents k, s)))
+			    ]
+			    where
+
+				fun handle_kbd (xi::KEY_PRESS key, s)
+					=>
+					{   c = string::get (to_ascii key, 0);
+
+					    if (is_erase c)
+
+						erase s;
+
+					    elif (is_newline c  and  size s > 0)
+
+						set (cv, the (int::from_string s))
+						except
+						    _ = set (cv, 0);
+
+						init_loop ();
+
+					    elif (char::is_digit c)
+
+						add_digit (c, s);
+					    else
+						s;
+					    fi;
+					}
+					except
+					    _ = s;
+
+				    handle_kbd (_, s)
+					=>
+					s;
+				end;
+			    end;
+
+
+
+		    end				# fun restart
+
+		also
+		fun init_loop ()
+		    = 
+		    select [
+
+			take' reply_slot
+			    ==>
+			    restart,
+
+			kbdevt
+			    ==>
+			    (fn _ = init_loop ())
+		    ];
+
+		init_loop ();
+
+		();
+
+	    };					# fun do_input
+
+
+	fun make_calc (root_window: w::Root_Window)
+	    =
+	    {
+		plea_slot =  make_mailslot ();
+		reply_slot   =  make_mailslot ();
+		answer_slot  =  make_mailslot ();
+
+		seed = get_seed ();
+
+		random = rand::make_random seed;
+
+		ansbox = an::make_answer (root_window, fontname);
+
+		val1 =  lbl::make_label  root_window
+			  {
+			    align =>  wt::HRIGHT,
+			    font  =>  THE fontname,
+			    label =>  "",
+			    #
+			    foreground => NULL,
+			    background => NULL
+			  };
+
+		val2 =  lbl::make_label  root_window
+			  {
+			    align =>  wt::HRIGHT,
+			    font  =>  THE fontname,
+			    label =>  "",
+			    #
+			    foreground =>  NULL,
+			    background =>  NULL
+			  };
+
+		an_api =    lbl::make_label  root_window
+			      {
+				align =>  wt::HRIGHT,
+				font  =>  THE fontname,
+				label =>  "  ",
+				#
+				foreground =>  NULL,
+				background =>  NULL
+			      };
+
+		answer =    lbl::make_label  root_window
+			      {
+				align =>  wt::HRIGHT,
+				font  =>  THE fontname,
+				label =>  "",
+				#
+				foreground =>  NULL,
+				background =>  NULL
+			      };
+
+		layout =    lw::make_line_of_widgets  root_window
+				(lw::HZ_CENTER
+				  [
+				    lw::SPACER { min_size=>10, ideal_size=>10, max_size=>THE 20 },
+
+				    lw::VT_CENTER
+				      [
+					lw::WIDGET (fix_vert (lbl::as_widget val1)),
+
+					lw::HZ_CENTER
+					  [
+					    lw::WIDGET (sz::make_tight_size_preference_wrapper (lbl::as_widget an_api)),
+					    lw::WIDGET (fix_vert (lbl::as_widget val2))
+					  ],
+
+					lw::WIDGET (dv::make_horizontal_divider root_window { color=>NULL, width=>2 } ),
+
+					lw::WIDGET (fix_vert (lbl::as_widget answer))
+				      ],
+
+				    lw::SPACER { min_size=>10, ideal_size=>10, max_size=>THE 20 }
+				  ]
+				);
+
+		my (layout, kbd)    =  w::filter_keyboard (lw::as_widget layout);
+		my (layout, window) =  window_of  layout;
+
+		fun reset_ans  ans_1shot
+		    =
+		    give (answer_slot, ans_1shot);
+
+
+		fun fire (THE cv) =>  set (cv, ());
+		    fire  NULL    =>  ();
+		end;
+
+
+		debug_tracing = an::debug_tracing;
+
+		print_if = tracing::print_if;
+
+		fun start_game (d, f)
+		    =
+		    {
+			get_vals = gen_vals (random, d);
+
+			evaluate_fn = func_op f;
+
+			sign_string = func_string f;
+
+			fun do_req (START d) =>  start_game d;
+			    do_req  RESET    =>  calc NULL;
+			end;
+
+			fun round ()
+			    =
+			    {   my (v1, v2) =  get_vals ();
+
+				ans_1shot = make_oneshot_maildrop ();
+
+				ans = integer::to_int (evaluate_fn (integer::from_int v1, integer::from_int v2));
+
+				fun check v
+				    =
+				    if (ans == v)
+					give (reply_slot, RIGHT);
+					round ();
+				    else
+					w = get window;
+
+					print_if debug_tracing .{ "calc show answer"; };
+
+					av = an::show_answer (ansbox, w, v1, v2, sign_string, ans);
+
+					print_if debug_tracing .{ "answer up"; };
+
+					give (reply_slot, WRONG); 
+					calc (THE av);
+				    fi;
+
+				lbl::set_label val1 (lbl::TEXT (int::to_string v1));
+				lbl::set_label val2 (lbl::TEXT (int::to_string v2));
+
+				reset_ans  ans_1shot;
+
+				select [
+				    take' plea_slot  ==>  do_req,
+				    get'  ans_1shot     ==>  check
+				];
+			    };
+
+
+			lbl::set_label an_api (lbl::TEXT sign_string);
+
+			round ();
+		    }				# fun start_game
+
+		also
+		fun calc cvo
+		    =
+		    {   fun loop ()
+			    = 
+			    case (take plea_slot)
+				#
+				START d
+				    =>
+				    {    print_if debug_tracing .{ "fire cv"; };
+					 fire cvo;
+					 start_game d;
+				    };
+
+				RESET
+				    =>
+				    loop ();
+			    esac; 	
+
+			lbl::set_label val1   (lbl::TEXT "");
+			lbl::set_label val2   (lbl::TEXT "");
+			lbl::set_label answer (lbl::TEXT "");
+
+			loop ();
+		    };
+
+			  #  tracing::enable an::debug_tracing; 
+
+		  make_thread "calc" .{
+		      #
+		      do_input (kbd, answer, answer_slot);
+		  };
+
+		  make_thread "calc II" .{
+		      #
+		      calc NULL;
+		  };
+
+		  CALC
+		    {
+		      plea_slot,
+		      widget        =>  layout,
+		      answer_mailop =>  take' reply_slot
+		    };
+	    };					# fun make_calc
+
+
+	fun start_game  (CALC { plea_slot, ... })  d
+	    =
+	    give (plea_slot, START d);
+
+
+	fun reset     (CALC { plea_slot, ... } )
+	    =
+	    give (plea_slot, RESET);
+
+
+	fun as_widget (CALC { widget, ... } )
+	    =
+	    widget;
+
+	fun mailop_of (CALC { answer_mailop, ... } )
+	    =
+	    answer_mailop;
+
+    };				# package calc
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

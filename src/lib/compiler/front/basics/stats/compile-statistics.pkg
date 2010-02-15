@@ -1,0 +1,449 @@
+## compile-statistics.pkg
+
+# Compiled by:
+#     src/lib/compiler/front/basics/basics.make6
+
+
+
+###             "We are all in the gutter, but
+###              some of us are looking at the stars."
+###
+###                        -- Oscar Wilde
+
+
+
+package compile_statistics : Compile_Statistics {	# Compile_Statistics	is from   src/lib/compiler/front/basics/stats/compile-statistics.api
+
+
+    package t = time;				# time	is from   src/lib/std/time.pkg
+
+    time_to_string
+	=
+	t::format 2;
+
+    Counter
+	=
+	COUNTER
+	  { c:   Ref( Int ),
+            cs:  List( Counter )
+          };
+
+    Stat = STAT  {   name: String,
+                     tot: List( Counter )
+                 };
+
+    all_stats = REF (NIL:  List( Stat ));
+
+
+
+    fun get_st (name, NIL)
+            =>
+            NULL;
+
+        get_st (name, (p as STAT { name=>n, ... } ) ! rest)
+	    => 
+	    if   (name==n   )   THE p;
+			   else   get_st (name, rest);   fi;
+    end;
+
+
+    fun insert (p as STAT { name=>pn, ... }, (q as STAT { name=>qn, ... } ) ! rest)
+	    =>
+	    if   (pn < qn   )   p ! q ! rest;
+			   else   q ! insert (p, rest);   fi;
+
+        insert (p, NIL) => p ! NIL;
+    end;
+
+
+    fun new_counter cs
+        =
+        COUNTER { c=>REF 0, cs };
+
+    fun add_counter (COUNTER { c, cs } ) n
+        =
+        {   c := *c + n;
+            apply  (fn c =  add_counter c n)  cs;
+        };
+
+    fun get_counter (COUNTER { c=>REF c, ... } )
+        =
+        c;
+
+    fun new_stat (name, cs)
+        =
+        STAT { name, tot=>cs };
+
+    fun register_stat (p as STAT { name, tot } )
+        = 
+	case (get_st (name,*all_stats))
+	  
+	     THE p =>  ();
+	     NULL  =>  all_stats := insert (p,*all_stats);
+	esac;
+
+    fun make_stat name
+        =
+	case (get_st (name,*all_stats))
+	  
+	    THE p =>  p;
+
+	    NULL  =>  {   p =  new_stat (name, [new_counter []]);
+
+		          all_stats :=  insert (p,*all_stats); p;
+	              };
+        esac;
+
+    fun add_stat (STAT { tot => (c ! _), ... } ) n => add_counter c n;
+        add_stat (STAT { tot => [], ... } ) _ => ();
+    end;
+
+    say   =  control_print::say;
+    flush =  control_print::flush;
+
+    # NOTE: we should be able to rewrite this using the timer package   XXX BUGGO FIXME
+
+    Times = {   usr: t::Time,
+		sys: t::Time,
+		gc: t::Time
+	    };
+
+    zeros = {   usr =>  t::zero_time,
+		sys =>  t::zero_time,
+		gc  =>  t::zero_time
+	    };
+
+    Phase = PHASE  {   name:   String,
+                       accum:  Ref( Times ),
+                       this:   Ref( Times )
+                   };
+
+
+    fun get_ph (name, NIL)
+	    =>
+	    NULL;
+
+        get_ph (name, (p as PHASE { name=>n, ... } ) ! rest)
+	    => 
+	    if   (name == n)   THE p;
+	    else               get_ph (name, rest);
+            fi;
+    end;
+
+
+    fun insert (p as PHASE { name=>pn, ... }, (q as PHASE { name=>qn, ... } ) ! rest)
+	    =>
+	    if   (pn < qn)
+	         p ! q ! rest;
+	    else q ! insert (p, rest);
+            fi;
+
+        insert (p, NIL) => p ! NIL;
+    end;
+
+
+    all_phases =  REF (NIL:  List( Phase ));
+
+    fun make_phase name
+        =
+	case (get_ph (name,*all_phases))
+	  
+	     THE p =>  p;
+
+	     NULL  =>  p
+		       where
+			   p = PHASE {   name,
+					 accum => REF zeros,
+					 this  => REF zeros
+				     };
+
+			   all_phases :=  insert (p, *all_phases);
+		       end;
+        esac;
+        
+ 
+    current     =  REF (make_phase "Other");
+
+    keep_time   =  REF TRUE;
+    approx_time =  REF TRUE;
+    say_begin   =  REF FALSE;
+    say_end     =  REF FALSE;
+
+    infix val 70 +++ ;   my (+++) = time::(+) ;
+    infix val 70 --- ;   my (---) = time::(-) ;
+
+    infix val 70  ++++ ;
+
+    fun { usr, sys, gc }++++{ usr=>u, sys=>s, gc=>g }
+        =
+        { usr =>  usr+++u,
+          sys =>  sys+++s,
+          gc  =>  gc+++g
+        };
+
+    infix val 70  ---- ;
+
+    fun { usr, sys, gc }----{ usr=>u, sys=>s, gc=>g }
+        = 
+	if   (time::(<) (usr, u))
+	    
+             zeros; 
+	else
+             { usr =>  usr---u,
+               sys =>  sys---s,
+               gc  =>  gc---g
+             };
+        fi;
+
+    stipulate
+	fun gettime ()
+            =
+            {   my { nongc, gc }
+                    =
+		    timer::check_cpu_times (timer::total_cpu_timer());
+
+		# This is a hack.
+		# (This module deserves a complete rewrite!!) XXX BUGGO FIXME
+
+		{ usr =>  nongc.usr,
+                  sys =>  time::(+) (nongc.sys, gc.sys),
+		  gc  =>  gc.usr
+                };
+	    };
+
+	last   = REF (gettime());
+    herein 
+	fun reset ()
+	    =
+	    {   last := gettime();
+
+		apply
+                    (fn PHASE { this, accum, ... } =  { this := zeros;   accum := zeros; }) 
+		    *all_phases;
+
+		apply
+                    (fn STAT { tot, ... } =  apply  (fn COUNTER { c, ... } =  c:=0)  tot)
+                    *all_stats;
+	    };
+
+	package at
+            =
+            runtime_internals::at;		# runtime_internals	is from   src/lib/std/src/nj/runtime-internals.pkg
+
+										my _ = 
+        at::schedule
+            (
+              "CompilerStats",				# Arbitrary label
+
+	      [ at::FORK_TO_DISK,			# When to run the function
+                at::SPAWN_TO_DISK,
+                at::STARTUP
+              ],
+
+	      fn at::STARTUP =>  reset();		# Function to run.
+		 _              =>  last := zeros;
+	      end 
+	    );
+
+	fun since()
+	    =
+	    {
+  #	         x = if *approxTime
+  #			then let
+  #			  t1 = *lastcollect
+  #			  u1 = *System::Runtime::minorcollections
+  #			  in lastcollect := u1; u1!=t1 end
+  #			else TRUE;
+
+		x = TRUE;
+
+		if x
+                     t =  *last;
+		     u =  gettime();
+
+		     last := u;
+		     (u ---- t);
+		else
+		     zeros;
+                fi;
+	    };
+
+    end; #  local 
+
+    fun repeat 0 f x
+	    =>
+	    ();
+
+       repeat n f x
+	    =>
+	    {   f x;
+		repeat (n - 1) f x;
+	    };
+    end;
+
+    fun sayfield (n, s)
+        =
+        {    say s;
+             repeat (int::max (0, n-size s)) say " ";
+        };
+
+    fun do_phase (p as PHASE { name, this, accum } ) f x
+        =
+        {   my prev as PHASE { this=>t', ... }
+                =
+                *current;
+
+	    fun end_time()
+                =
+                {   my x as { usr, sys, gc } = since() ++++ *this;
+
+		    this := zeros;
+		    accum := *accum ++++ x;
+		    usr +++ sys +++ gc;
+		};
+
+	    fun finish()
+                =
+                {   current := prev;
+
+		    if *say_end
+
+			 say "End   ";
+			 sayfield (40, name);
+
+			 if *keep_time
+			      apply say ["    ", time_to_string (end_time()), " sec\n"];
+			 else  say "\n";fi;
+
+			 flush();
+		    else
+                         end_time();
+                         ();
+                    fi;
+                };
+
+	      if *keep_time
+                  t' := since() ++++ *t';
+	      fi;
+
+	      current := p;
+
+	      if *say_begin
+                   apply say ["Begin ", name, "\n"];
+                   flush();
+              fi;
+
+	      (   (f x)
+                  except
+                      e =  {   finish ();
+                               raise exception e;
+                           }
+              )
+	      before
+                  finish ();
+	};
+
+    fun get_stat (STAT { tot, ... } )
+        =
+        fold_left
+            (fn (c, s) =  get_counter c + s)
+            0
+            tot;
+
+    fun show_stat (s as STAT { name, tot } )
+        =
+        {   sayfield (40, name);
+	    say (int::to_string (get_stat s));
+	    say "\n";
+        };
+
+    fun show_phase (PHASE { name, this, accum } )
+        =
+        {   my { usr, sys, gc }
+                =
+                *this ++++ *accum;
+
+            sayfield (40, name); 
+	    say (time_to_string usr); say "u  ";
+	    say (time_to_string sys); say "s  ";
+	    say (time_to_string gc); say "g  ";
+            say "\n";
+        };
+
+    fun summary ()
+        =
+        {   sum = fold_right
+                      (fn (PHASE { accum, ... }, t) = *accum ++++ t)
+                      zeros
+                      *all_phases;
+
+	    apply  show_stat  *all_stats; 
+
+	    apply
+                show_phase
+	        (*all_phases @ [PHASE { name=>"TOTAL", this=>REF zeros, accum=>REF sum } ]);
+	};
+
+    fun show_phase_sp (PHASE { name, this, accum } )
+        =
+        {   my { usr, sys, gc }
+                =
+                *this ++++ *accum;
+
+            case (t::compare (usr+++sys+++gc, t::zero_time))
+	      
+	         EQUAL => ();
+
+	         _     => {   sayfield (40, name); 
+			      say (time_to_string (usr+++sys));  say "u  ";
+#	  	              say (timeToString sys);           say "s  "; 
+			      say (time_to_string gc);          say "g  ";
+			      say "\n";
+			  };
+            esac;
+        };
+
+    fun summary_sp()
+        =
+        {   sum = fold_right
+                      (fn (PHASE { accum, ... }, t)=> *accum++++t; end )
+                      zeros
+                      *all_phases;
+
+	    apply show_stat *all_stats; 
+
+	    apply show_phase_sp
+	      (   *all_phases
+                  @
+                  [ PHASE {   name  => "TOTAL",
+                              this  => REF zeros,
+                              accum => REF sum
+                          }
+                  ]
+              );
+	};
+
+}; #  package compile_statistics 
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

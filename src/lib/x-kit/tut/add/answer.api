@@ -1,0 +1,35 @@
+## answer.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/add/add.make6
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/tut/add/answer.pkg
+
+stipulate
+    package s1 =  oneshot_maildrop;			# oneshot_maildrop	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg
+    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
+herein
+
+    api Answer {
+
+	Answerbox;
+
+	my debug_tracing:  tracing::Trace_Tree_Node;
+
+	my make_answer:  (w::Root_Window, String) -> Answerbox;
+
+	my show_answer
+	    :
+	    (Answerbox, xc::Window, Int, Int, String, Int)
+	    ->
+	    s1::Oneshot_Maildrop( Void );
+
+    };
+end;
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

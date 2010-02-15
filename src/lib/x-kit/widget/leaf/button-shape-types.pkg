@@ -1,0 +1,34 @@
+## button-shape-types.pkg
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+# This package gets referenced in:
+#
+#     src/lib/x-kit/widget/leaf/button-appearance-from-shape-g.pkg
+#     src/lib/x-kit/widget/leaf/button-shape.api
+
+stipulate
+    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xd =  xdraw;			# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
+herein
+
+    package button_shape_types {
+
+	Sizefn
+	    =
+	    (Int, Null_Or(Int))
+            ->
+	    w::Widget_Size_Preference;
+
+	Drawfn
+	    =
+	    (xd::Drawable_Window, xg::Size, Int)
+	    ->          
+	    (xd::Pen, xd::Pen, xd::Pen)
+	    ->
+	    Void;
+    };
+
+end;

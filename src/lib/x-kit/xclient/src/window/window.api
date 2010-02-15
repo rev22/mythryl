@@ -1,0 +1,226 @@
+## window.api
+#
+#   The three kinds of X server rectangular arrays of pixels
+#   supported by x-kit are window, rw_pixmap and ro_pixmap.
+#
+#      o 'window': are on-screen  and on the X-server.
+#      o 'rw_pixmap': are off-screen and on the X-server.
+#      o 'ro_pixmap': offscreeen, immutable and on the X-server.
+#
+#   These all have 'depth' (bits per pixel) and
+#   'size' (in pixel rows and cols) information.
+#   Windows have in addition 'upperleft' position
+#   (relative to parent window) and border width in pixels.
+#
+#   (A fourth kind of rectangular array of pixels is the
+#   client-side 'cs_pixmap'.  These are not 'drawable', but
+#   pixels can be bitblt-ed between them and server-side
+#   windows and pixmaps.)
+#
+# See also:
+#     src/lib/x-kit/xclient/src/window/ro-pixmap.api
+#     src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+#     src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+stipulate
+    include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package dt =  draw_types;			# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
+    package xt =  xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package g  =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xr =  cursors;			# cursors		is from   src/lib/x-kit/xclient/src/window/cursors.pkg
+    package ci =  color_imp;			# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
+    package sn =  xsession;			# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
+    package ip =  iccc_property;		# iccc_property		is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
+    package wc =  widget_cable;			# widget_cable		is from   src/lib/x-kit/xclient/src/window/widget-cable.pkg
+    package wh =  window_manager_hint;		# window_manager_hint	is from   src/lib/x-kit/xclient/src/iccc/window-manager-hint.pkg
+herein
+
+    api Window {
+
+	#  x-kit windows 
+	Window = dt::Window;
+
+	#  user-level window attributes 
+	Window_Attribute
+	  = WA_BACKGROUND_NONE
+	  | WA_BACKGROUND_PARENT_RELATIVE
+	  | WA_BACKGROUND_RW_PIXMAP          dt::Rw_Pixmap
+	  | WA_BACKGROUND_RO_PIXMAP    	     dt::Ro_Pixmap
+	  | WA_BACKGROUND_COLOR              ci::Color
+	  #
+	  | WA_BORDER_COPY_FROM_PARENT
+	  | WA_BORDER_RW_PIXMAP      	     dt::Rw_Pixmap
+	  | WA_BORDER_RO_PIXMAP        	     dt::Ro_Pixmap
+	  | WA_BORDER_COLOR                  ci::Color
+	  #
+	  | WA_BIT_GRAVITY                   xt::Gravity
+	  | WA_WINDOW_GRAVITY                xt::Gravity
+	  #
+	  | WA_CURSOR_NONE
+	  | WA_CURSOR                        xr::Xcursor
+	  ;
+
+	#  window configuration values 
+	Window_Config
+	  = WC_ORIGIN      g::Point
+	  | WC_SIZE        g::Size
+	  | WC_BORDER_WID  Int
+	  | WC_STACK_MODE               xt::Stack_Mode
+	  | WC_REL_STACK_MODE  (Window, xt::Stack_Mode)
+	  ;
+
+	exception BAD_WINDOW_FOOTPRINT;
+
+    # **** OBSOLETE ****
+    #     my allocSimpleTopWin:  sn::screen
+    #       -> (window * WindowDict::in_env * ( {
+    #           geometry:  g::window_shape,
+    #           border:    ci::color,
+    #           background:  ci::color
+    #         } -> window))
+    #     my allocSimpleSubwin:  window
+    #       -> (window * ( {
+    #           geometry:  g::window_shape,
+    #           border:  Null_Or( ci::color ),
+    #           background:  Null_Or( ci::color )
+    #         } -> window))
+    #
+
+	# Window location is relative to parent and
+	# does not take border width into account.
+	#
+	make_simple_top_window
+	    :
+	    sn::Screen
+	    ->
+	    { geometry:   g::Window_Footprint,
+	      border:     ci::Color,
+	      background: ci::Color
+	    }
+	    ->
+	    ( Window,
+	      wc::Kidplug,
+	      Mailslot( Void )
+	    );
+
+	make_simple_subwindow
+	    :
+	    Window
+	    ->
+	    { geometry:   g::Window_Footprint,
+	      border:     Null_Or( ci::Color ),
+	      background: Null_Or( ci::Color )
+	    }
+	    ->
+	    Window;
+
+	make_transient_window
+	    :
+	    Window
+	    ->
+	    { geometry:    g::Window_Footprint,
+	      border:      ci::Color,
+	      background:  ci::Color
+	    }
+	    ->
+	    (Window, wc::Kidplug);
+
+	make_simple_popup_window
+	    :
+	    sn::Screen
+	    ->
+	    { geometry:    g::Window_Footprint,
+	      border:      ci::Color,
+	      background:  ci::Color
+	    }
+	    ->
+	    (Window, wc::Kidplug);
+
+	make_input_only_window
+	    :
+	    Window -> g::Box -> Window;
+
+	# raise this exception on operations, such as drawing, that are illegal for
+	# InputOnly windows.
+	exception INPUT_ONLY;
+
+							    # iccc_property		is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
+	# Set the properties of a top-level window.
+	#
+	# This should be done before showing (mapping)
+	# the window:
+	#
+	set_window_manager_properties
+	    :
+	    Window
+	    ->
+	    {
+	      window_name:   Null_Or( String ),
+	      icon_name:     Null_Or( String ),
+	      #
+	      argv:          List( String ),						# Typically from:   commandline::get_arguments ().
+	      size_hints:    List( wh::Window_Manager_Size_Hint ),
+	      nonsize_hints: List( wh::Window_Manager_Nonsize_Hint ),
+	      #
+	      ilk_hints:     Null_Or { res_ilk:   String,
+                                       res_name:  String
+                                     }
+	    }
+	    ->
+	    Void;
+
+	# Set window's window-manager protocols:
+	#
+	set_window_manager_protocols:  Window -> List( xt::Atom ) -> Bool;
+
+	# Various routines to reconfigure window layout 
+	#
+	configure_window:        Window -> List( Window_Config )  -> Void;
+	#
+	move_window:             Window -> g::Point     -> Void;
+	resize_window:           Window -> g::Size      -> Void;
+	move_and_resize_window:  Window -> g::Box -> Void;
+
+	# Map a point in the window's coordinate system
+	# to the screen's coordinate system
+	#
+	window_pt_to_screen_pt:  Window -> g::Point -> g::Point;
+
+	set_cursor:  Window ->  Null_Or( xr::Xcursor ) -> Void;
+
+	set_background:  Window ->  Null_Or( ci::Color ) -> Void;
+	    #
+	    # Set the background color attribute of the window.
+	    # This does not have an immediate effect on the
+	    # window's contents but if it is done before the
+	    # window is shown (mapped) the window will come up
+	    # with the right color.
+
+
+	change_window_attributes:  Window -> List( Window_Attribute ) -> Void;
+	    #
+	    # Set various window attributes.
+
+	show_window:        Window -> Void;		# Show ("map") window. Won't actually show unless all ancestors show.
+	hide_window:        Window -> Void;		# Opposide of show.
+	withdraw_window:    Window -> Void;
+	destroy_window:     Window -> Void;		# In X, destroying a window destroys all its subwindows also, recursively.
+
+	screen_of_window:   Window -> sn::Screen;
+	xsession_of_window: Window -> sn::Xsession;
+
+	grab_keyboard:      Window -> Int;
+	ungrab_keyboard:    Window -> Int;
+    };
+
+end;
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

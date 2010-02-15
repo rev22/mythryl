@@ -1,0 +1,88 @@
+## color-state.pkg
+## See COPYRIGHT file for details.
+
+# Compiled by:
+#     src/lib/x-kit/tut/mixer/mixer.make6
+
+stipulate
+    include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc  =  xcore;			# xcore		is from   src/lib/x-kit/xclient/src/api/build.pkg
+herein
+ 
+    package color_state:  Color_State {		# Color_State	is from   src/lib/x-kit/tut/mixer/color-state.api
+
+	Rgb = xc::Rgb;
+
+	Change_Color_Msg
+	  #
+	  = CHANGE_R    Unt
+	  | CHANGE_G    Unt
+	  | CHANGE_B    Unt
+	  | CHANGE_RGB  Rgb
+	  ;
+
+	Color_State
+	    = 
+	    COLOR_STATE (Mailslot( Change_Color_Msg ), Mailslot( Rgb ) );
+
+	fun make_color_state  initial_color
+	    =
+	    {   in_slot  =  make_mailslot ();
+		out_slot =  make_mailslot ();
+
+		fun get_msg ()   =  take in_slot;
+		fun send_color c =  give (out_slot, c);
+
+		fun change_color (xc::RGB { red=>r, green=>g, blue=>b }, msg)
+		    =
+		    {   new_color
+			    =
+			    case msg
+				#
+				CHANGE_R   n =>  xc::RGB { red=>n, green=>g, blue=>b };
+				CHANGE_G   n =>  xc::RGB { red=>r, green=>n, blue=>b };
+				CHANGE_B   n =>  xc::RGB { red=>r, green=>g, blue=>n };
+				#
+				CHANGE_RGB r =>  r;
+			    esac;
+
+			send_color  new_color;
+
+			new_color;
+		    };
+
+		fun loop color
+		    =
+		    for (;;) {
+			#
+			change_color (color, get_msg ());
+		    };
+
+
+		make_thread "color state"  .{
+
+		    loop initial_color;
+		};
+
+
+		COLOR_STATE (in_slot, out_slot);
+	    };
+
+
+	fun send_change_color  (COLOR_STATE (in_slot, _))  msg
+	    =
+	    give (in_slot, msg);
+
+
+	fun mailop_of_color_state  (COLOR_STATE(_, out_slot))
+	    =
+	    take' out_slot;
+
+    };				# package color_state;
+
+end; 
+ 
+## COPYRIGHT (c) 1991, 1995 by AT&T Bell Laboratories.  
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

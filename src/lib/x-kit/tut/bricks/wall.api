@@ -1,0 +1,30 @@
+## wall.api
+
+# Compiled by:
+#     src/lib/x-kit/tut/bricks/bricks.make6
+
+# This api is implemented in:
+#     src/lib/x-kit/tut/bricks/wall.pkg
+
+stipulate
+    package w   =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package bu  =  brick_util;			# brick_util	is from   src/lib/x-kit/tut/bricks/brick-util.pkg
+herein
+
+    api Wall {
+
+	Wall;
+
+	make_wall:     w::Root_Window -> (Int, Int) -> Wall;
+
+	as_widget:      Wall -> w::Widget;
+	start_game:    (Wall,   bu::Difficulty) -> Void;
+	difficulty_of:  Wall -> bu::Difficulty;
+	set_range:     (Wall,   bu::Range) -> Void;
+    };
+
+end;
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

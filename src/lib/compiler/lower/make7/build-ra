@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Install-time build script for ra.make6.
+#
+# We will normally be run as a result of a toplevel "make rest".
+#
+# Our main result is the freezefile src/lib/compiler/lower/make7/ra.make6.a7.
+
+bin/mythryld <<EOF
+    make7::freeze "src/lib/compiler/lower/make7/ra.make6";
+EOF
+
+if   [ -f "src/lib/compiler/lower/make7/ra.make6.a7" ]
+then
+     echo "   src/lib/compiler/lower/make7/build-ra:   Successfully created src/lib/compiler/lower/make7/ra.make6.a7:"
+     echo "   src/lib/compiler/lower/make7/build-ra:   `ls -l src/lib/compiler/lower/make7/ra.make6.a7`"
+else
+     echo "   src/lib/compiler/lower/make7/build-ra:   Failed to create src/lib/compiler/lower/make7/ra.make6.a7"
+     exit 1
+fi
+
+exit 0;

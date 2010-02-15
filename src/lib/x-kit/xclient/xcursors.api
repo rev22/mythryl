@@ -1,0 +1,105 @@
+## xcursors.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+###                      "This ink of the scholar is more sacred than the blood of the martyr."
+###
+###                                                            -- Mohammed
+
+
+
+# The "names" of the standard cursors supplied by the X server.
+#
+# Currently these are the only cursors supported by x-kit.
+
+api Xcursors {
+
+    package xc:  Xcore;		# Xcore	is from   src/lib/x-kit/xclient/xcore.api
+
+    x_cursor:		 xc::Standard_Xcursor;
+    arrow:		 xc::Standard_Xcursor;
+    based_arrow_down:	 xc::Standard_Xcursor;
+    based_arrow_up:	 xc::Standard_Xcursor;
+    boat:		 xc::Standard_Xcursor;
+    bogosity:		 xc::Standard_Xcursor;
+    bottom_left_corner:	 xc::Standard_Xcursor;
+    bottom_right_corner: xc::Standard_Xcursor;
+    bottom_side:	 xc::Standard_Xcursor;
+    bottom_tee:		 xc::Standard_Xcursor;
+    box_spiral:		 xc::Standard_Xcursor;
+    center_ptr:		 xc::Standard_Xcursor;
+    circle:		 xc::Standard_Xcursor;
+    clock:		 xc::Standard_Xcursor;
+    coffee_mug:		 xc::Standard_Xcursor;
+    cross:		 xc::Standard_Xcursor;
+    cross_reverse:	 xc::Standard_Xcursor;
+    crosshair:		 xc::Standard_Xcursor;
+    diamond_cross:	 xc::Standard_Xcursor;
+    dot:		 xc::Standard_Xcursor;
+    dotbox:		 xc::Standard_Xcursor;
+    double_arrow:	 xc::Standard_Xcursor;
+    draft_large:	 xc::Standard_Xcursor;
+    draft_small:	 xc::Standard_Xcursor;
+    draped_box:		 xc::Standard_Xcursor;
+    exchange:		 xc::Standard_Xcursor;
+    fleur:		 xc::Standard_Xcursor;
+    gobbler:		 xc::Standard_Xcursor;
+    gumby:		 xc::Standard_Xcursor;
+    hand1:		 xc::Standard_Xcursor;
+    hand2:		 xc::Standard_Xcursor;
+    heart:		 xc::Standard_Xcursor;
+    icon:		 xc::Standard_Xcursor;
+    iron_cross:		 xc::Standard_Xcursor;
+    left_ptr:		 xc::Standard_Xcursor;
+    left_side:		 xc::Standard_Xcursor;
+    left_tee:		 xc::Standard_Xcursor;
+    leftbutton:		 xc::Standard_Xcursor;
+    ll_angle:		 xc::Standard_Xcursor;
+    lr_angle:		 xc::Standard_Xcursor;
+    man:		 xc::Standard_Xcursor;
+    middlebutton:	 xc::Standard_Xcursor;
+    mouse:		 xc::Standard_Xcursor;
+    pencil:		 xc::Standard_Xcursor;
+    pirate:		 xc::Standard_Xcursor;
+    plus:		 xc::Standard_Xcursor;
+    question_arrow:	 xc::Standard_Xcursor;
+    right_ptr:		 xc::Standard_Xcursor;
+    right_side:		 xc::Standard_Xcursor;
+    right_tee:		 xc::Standard_Xcursor;
+    rightbutton:	 xc::Standard_Xcursor;
+    rtl_logo:		 xc::Standard_Xcursor;
+    sailboat:		 xc::Standard_Xcursor;
+    sb_down_arrow:	 xc::Standard_Xcursor;
+    sb_h_double_arrow:	 xc::Standard_Xcursor;
+    sb_left_arrow:	 xc::Standard_Xcursor;
+    sb_right_arrow:	 xc::Standard_Xcursor;
+    sb_up_arrow:	 xc::Standard_Xcursor;
+    sb_v_double_arrow:	 xc::Standard_Xcursor;
+    shuttle:		 xc::Standard_Xcursor;
+    sizing:		 xc::Standard_Xcursor;
+    spider:		 xc::Standard_Xcursor;
+    spraycan:		 xc::Standard_Xcursor;
+    star:		 xc::Standard_Xcursor;
+    target:		 xc::Standard_Xcursor;
+    tcross:		 xc::Standard_Xcursor;
+    top_left_arrow:	 xc::Standard_Xcursor;
+    top_left_corner:	 xc::Standard_Xcursor;
+    top_right_corner:	 xc::Standard_Xcursor;
+    top_side:		 xc::Standard_Xcursor;
+    top_tee:		 xc::Standard_Xcursor;
+    trek:		 xc::Standard_Xcursor;
+    ul_angle:		 xc::Standard_Xcursor;
+    umbrella:		 xc::Standard_Xcursor;
+    ur_angle:		 xc::Standard_Xcursor;
+    watch:		 xc::Standard_Xcursor;
+    xterm:		 xc::Standard_Xcursor;
+
+}; #  Standard_Xcursor
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

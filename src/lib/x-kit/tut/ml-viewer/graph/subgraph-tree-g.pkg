@@ -1,0 +1,528 @@
+## subgraph-tree-g.pkg
+#
+# See overview comments in
+#     src/lib/x-kit/tut/ml-viewer/graph/base-graph.api
+#
+# Nodes are identified by unique integer ids.
+# Edges are identified by the ordered pair of nodes they connect.
+# 
+# We maintain three balanced trees, each indexed by node number:
+#    o node_id -> node
+#    o node_id -> in-edges for node.
+#    o node_id -> out-edges for node.
+# 
+# We support subgraphs and supergraphs where
+# every node and edge in a graph must also
+# be in all of its supergraphs.  We (only)
+# support explicit creation of a subgraph of
+# given graph, so the graphs form a tree with
+# the original graph as root.
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This generic package gets compile-time expanded in:
+#     src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree-g.pkg
+
+						# Subgraph_Tree	is from   src/lib/x-kit/tut/ml-viewer/graph/subgraph-tree.api
+
+generic package subgraph_tree_g (
+    Graph_Info;
+    Edge_Info;
+    Node_Info;
+)
+: (weak) Subgraph_Tree
+{
+
+    exception SUBGRAPH_TREE_ERROR String;
+
+    Graph_Info =  Graph_Info;
+    Edge_Info  =   Edge_Info;
+    Node_Info  =   Node_Info;
+
+						# Key			is from   src/lib/src/key.api
+    package int_key {
+
+        Key = Int;
+
+        fun compare (i:  Int, j)
+	    =
+	    if   (i <  j)  LESS;
+	    elif (i == j)  EQUAL;
+	    else           GREATER;
+	    fi;
+    };
+						# Map			is from   src/lib/src/map.api
+						# red_black_map_g	is from   src/lib/src/red-black-map-g.pkg
+
+    package map
+	=
+	red_black_map_g( int_key );
+
+
+    fun insert (d, k, v)			# d, k, v may be "dictionary", "key", "value", respectively.
+        =
+        d := map::set (*d, k, v);
+
+
+    Univ_Data
+	=
+	{ id_nodes:  Ref( Int ),
+	  id_edges:  Ref( Int )
+	};
+
+
+    Graph
+	=
+	GRAPH
+	  {
+	    root:  Null_Or( Graph ),
+	    univ:  Univ_Data,
+	    #
+	    subgraphs:  Ref(  List(  Graph ) ),
+	    supgraphs:  Ref(  List(  Graph ) ),
+	    #
+	    nodes:     Ref( map::Map(  Node ) ),
+	    inedges:   Ref( map::Map( List( Edge ) ) ),
+	    outedges:  Ref( map::Map( List( Edge ) ) ),
+	    #
+	    info:      Graph_Info
+	  }
+
+    also
+    Edge
+	=
+	EDGE
+	  {
+	    id:    Int,
+	    hd:    Node,
+	    tl:    Node,
+	    info:  Edge_Info
+	  }
+    also
+    Node
+	=
+	NODE
+	  {
+	    graph:  Graph,
+	    id:     Int,
+	    info:   Node_Info
+	  };
+    
+    fun eq_graph
+	( GRAPH { nodes => n,  ... },
+	  GRAPH { nodes => n', ... }
+	)
+	=
+	n == n';
+
+    fun eq_node
+	( NODE { graph=>g,  id=>id,  ... },
+	  NODE { graph=>g', id=>id', ... }
+	)
+	= 
+        id == id'    and
+        eq_graph (g, g');
+
+    fun eq_edge
+	( EDGE { hd=>NODE { graph=>g,  ... }, id=>id,  ... },
+          EDGE { hd=>NODE { graph=>g', ... }, id=>id', ... }
+        )
+        = 
+       id == id'    and
+       eq_graph (g, g');
+
+
+    fun root_of_node (NODE { graph, ... } )
+	=
+	graph;
+
+    fun root_of_edge (EDGE { hd=>NODE { graph, ... }, ... } )
+	=
+	graph;
+
+
+    fun root_of_graph (g as GRAPH { root=>NULL,  ... } ) =>  g;
+        root_of_graph (     GRAPH { root=>THE g, ... } ) =>  g;
+    end;
+
+
+    fun is_root (GRAPH { root=>NULL, ... } ) =>  TRUE;
+        is_root _                            =>  FALSE;
+    end;
+
+
+    fun info_of_graph (GRAPH { info, ... } ) =  info;
+    fun info_of_node  (NODE  { info, ... } ) =  info;
+    fun info_of_edge  (EDGE  { info, ... } ) =  info;
+
+    fun make_graph  info
+	= 
+        GRAPH
+	  {
+            root => NULL,
+            univ => { id_nodes => REF 0,
+                      id_edges => REF 0
+                    },
+            info,
+	    #
+            subgraphs => REF [],
+            supgraphs => REF [],
+	    #
+            nodes     => REF (map::empty),
+            inedges   => REF (map::empty),
+            outedges  => REF (map::empty)
+          };
+
+    fun make_subgraph (g as GRAPH { univ, subgraphs, ... }, info)
+	=
+	subgraph
+	where
+	    subgraph
+		=
+		GRAPH
+		  {
+		    root => THE (root_of_graph g),
+		    univ,
+		    info,
+		    #
+		    subgraphs => REF [],
+		    supgraphs => REF [g],
+		    #
+		    nodes     => REF (map::empty),
+		    inedges   => REF (map::empty),
+		    outedges  => REF (map::empty)
+		  };
+
+            subgraphs :=  subgraph ! *subgraphs;
+	end;
+
+
+    fun num_nodes (GRAPH { nodes, ... } )
+	=
+	map::vals_count *nodes;
+
+
+    fun num_edges (GRAPH { inedges, ... } )
+	= 
+        map::fold_right
+	    (fn (l, a) = a+(length l))
+	    0
+            *inedges;
+
+
+    fun insert_node' (i as (id, n)) (GRAPH { nodes, supgraphs, ... } )
+	= 
+        {   insert (nodes, id, n);
+
+	    apply (insert_node' i) *supgraphs;
+	};
+
+
+    fun insert_node (g, n as NODE { id, graph, ... } )
+	=
+	{   fun ins (g as GRAPH { nodes, supgraphs, ... } )
+		=
+		case (map::get (*nodes, id))
+		    #
+		    NULL => {  insert (nodes, id, n);
+                               apply ins *supgraphs;
+                            };
+		    _    => ();
+		esac;
+
+             eq_graph (root_of_graph g, graph)
+		##
+		??   ins g
+                ::   (raise exception SUBGRAPH_TREE_ERROR "base_graph::set_node");
+	};
+
+
+    fun add_node (g as GRAPH { univ => { id_nodes, ... }, nodes, ... }, info)
+	=
+        {   id = *id_nodes;
+
+            n = NODE { graph => root_of_graph g, info, id };
+
+            insert_node' (id, n) g;
+
+            id_nodes := *id_nodes + 1;
+
+            n;
+        };
+
+								# list_fns	is from   src/lib/src/list-fns.pkg
+    fun del_node (g, NODE { graph, id, ... } )
+	=
+	{
+	    include list_fns;
+
+
+	    fun eq_predicate id (EDGE { id=>eid, ... } )
+		=
+		eid == id;
+
+
+	    fun foldout (EDGE { hd=>NODE { id=>hid, ... }, tl=>NODE { id=>tid, ... }, id, ... }, d)
+		=
+		hid == tid   ??  d
+		             ::  map::set (d, hid, remove_first (eq_predicate id) (the (map::get (d, hid))));
+
+
+	    fun foldin (EDGE { hd=>NODE { id=>hid, ... }, tl=>NODE { id=>tid, ... }, id, ... }, d)
+		=
+		hid == tid   ??  d
+		             ::  map::set (d, tid, remove_first (eq_predicate id) (the (map::get (d, tid))));
+
+
+	    fun rm_edges (el1, el2, foldfn)
+		=
+		{   my (el1', elist)
+			=
+			map::drop (el1, id);
+
+		    (el1',  list::fold_right foldfn el2 elist);
+		}
+		except
+		    NOT_FOUND = (el1, el2);
+
+
+	    fun rm_node (g as GRAPH { nodes, inedges, outedges, ... } )
+		=
+		{   nodes' = #1 (map::drop (*nodes, id));
+
+		    my (oe, ie) = rm_edges (*outedges, *inedges, foldout);
+		    my (ie, oe) = rm_edges (ie, oe, foldin);
+
+		    inedges  := ie;
+		    outedges := oe;
+
+		    nodes    := nodes';
+
+		    TRUE;
+		}
+		except
+		    NOT_FOUND = FALSE;
+
+
+	    fun rec_rm_node (g as GRAPH { subgraphs, ... } )
+		=
+		if (rm_node g)
+		    #
+		    apply rec_rm_node (*subgraphs);
+		fi;
+
+
+            eq_graph (root_of_graph g, graph)
+		##
+		??   rec_rm_node g
+                ::   (raise exception SUBGRAPH_TREE_ERROR "base_graph::del_node");
+        };
+
+
+    fun nodes (GRAPH { nodes, ... } )
+	=
+	map::fold_right
+	    (fn (n, l) =  n ! l)
+	    []
+	    *nodes;
+
+
+    fun fold_nodes fldf (GRAPH { nodes, ... } ) seed
+	=
+        map::fold_right
+	    (fn (n, b) = fldf (n, b))
+	    seed
+	    *nodes;
+
+
+    fun apply_nodes f (GRAPH { nodes, ... } )
+	=
+	map::apply
+	    (fn n = f n)
+	    *nodes;
+
+
+
+    fun insert_edge (i as (e, hid, tid)) (GRAPH { inedges, outedges, supgraphs, ... } )
+	=
+        {   il =  the (map::get (*inedges,  hid)) except _ = [];
+            ol =  the (map::get (*outedges, tid)) except _ = [];
+
+            inedges  :=  map::set (*inedges,  hid, e ! il);
+            outedges :=  map::set (*outedges, tid, e ! ol);
+
+            apply  (insert_edge i)  *supgraphs;
+	};
+
+
+    fun add_edge
+        { graph,
+          info,
+	  #
+          tl => tl as NODE { graph=>tg, id=>tid, ... },
+          hd => hd as NODE { graph=>hg, id=>hid, ... }
+	}
+	=
+        if  (eq_graph (root_of_graph graph, hg)
+        and  eq_graph (hg, tg))
+
+	    graph ->  GRAPH { univ => { id_edges, ... }, ... };
+
+	    id = *id_edges;
+
+	    e = EDGE { info, id, hd, tl };
+
+	    insert_edge (e, hid, tid) graph;
+
+	    id_edges := *id_edges + 1;
+
+	    e;
+
+        else
+            raise exception  SUBGRAPH_TREE_ERROR "base_graph::add_edge";
+	fi;
+
+    exception NOT_FOUND;
+
+    fun del_edge (g, EDGE { hd=>NODE { graph, id=>hid, ... }, tl=>NODE { id=>tid, ... }, id, ... } )
+        =
+	{
+	    fun remove []
+		    =>
+		    raise exception  NOT_FOUND;
+
+	        remove ((e as EDGE { id=>eid, ... } ) ! rest)
+		    =>
+		    eid == id   ??   rest
+                                ::   e ! (remove rest);
+	    end;
+
+	    fun update (edge_dict, id)
+		= 
+		case (map::get (*edge_dict, id))
+		    #
+		    NULL => FALSE;
+
+		    THE l =>
+			{   edge_dict :=  map::set( *edge_dict, id, remove l);
+		            TRUE;
+			}
+			except
+			    NOT_FOUND = FALSE;
+		esac;
+
+
+	    fun rm_edge (GRAPH { outedges, inedges, ... } )
+		=
+		update (inedges,  hid)   and
+                update (outedges, tid);
+
+	    fun rec_rm_edge (g as GRAPH { subgraphs, ... } )		# "rec" may be "recursive" here.
+		=
+		if (rm_edge g)
+		    #
+		    apply rec_rm_edge  *subgraphs;
+		fi;
+
+	    eq_graph (root_of_graph g, graph)
+		##
+		??   rec_rm_edge  g 
+                ::  (raise exception  SUBGRAPH_TREE_ERROR "base_graph::del_edge");
+	};
+
+
+    fun in_edges (g as GRAPH { inedges, ... }, NODE { graph, id, ... } )
+	= 
+        eq_graph (root_of_graph g, graph) 
+	    ##
+	    ??  (the (map::get (*inedges, id))  except _ = [])
+            ::   (raise exception  SUBGRAPH_TREE_ERROR "base_graph::in_edges");
+
+    fun out_edges (g as GRAPH { outedges, ... }, NODE { graph, id, ... } )
+	= 
+        eq_graph (root_of_graph g, graph) 
+	    ##
+            ??  (the (map::get (*outedges, id)) except _ = [])
+            ::  (raise exception  SUBGRAPH_TREE_ERROR "base_graph::out_edges");
+
+    fun apply_in_edges f (g as GRAPH { inedges, ... }, NODE { graph, id, ... } )
+	= 
+        eq_graph (root_of_graph g, graph) 
+	    ##
+            ??   apply f (the (map::get (*inedges, id)) except _ = [])
+            ::   (raise exception  SUBGRAPH_TREE_ERROR "base_graph::apply_in_edges");
+
+    fun apply_out_edges f (g as GRAPH { outedges, ... }, NODE { graph, id, ... } )
+	= 
+        eq_graph (root_of_graph g, graph) 
+	    ##
+            ??   apply f (the (map::get (*outedges, id)) except _ = [])
+            ::  (raise exception SUBGRAPH_TREE_ERROR "base_graph::apply_out_edges");
+
+    fun edges g
+	=
+	fold_nodes
+	    (fn (n, l) = (out_edges (g, n))@l)
+	    g
+	    [];
+
+    fun head (EDGE { hd, ... } ) =  hd;
+    fun tail (EDGE { tl, ... } ) =  tl;
+
+    fun nodes_of (EDGE { tl, hd, ... } )
+	=
+	{ hd, tl };
+
+    fun has_node (g as GRAPH { nodes, ... }, NODE { graph, id, ... } )
+	=
+        eq_graph (root_of_graph g, graph)
+	and
+        case (map::get (*nodes, id))
+	    #
+	    NULL => FALSE;
+	    _    => TRUE;
+	esac;
+
+								# list_fns	is from   src/lib/src/list-fns.pkg
+    fun has_edge
+	(g as GRAPH { nodes, inedges, ... },
+              EDGE  { id, hd => NODE { graph, id=>hid, ... }, tl, ... }
+	)
+	=
+	{   fun eq_predicate (EDGE { id=>eid, ... } )
+		=
+		eid == id;
+
+            eq_graph (root_of_graph g, graph)
+	    and
+            case (map::get (*inedges, hid))
+		#
+                NULL   =>   FALSE ;
+                THE el =>   case (list_fns::find_first eq_predicate el)
+				#
+                                NULL =>  FALSE;
+                                _    =>  TRUE;
+			    esac;
+	    esac;
+        };
+
+};						# generic package base_graph_g 
+
+# This file was
+#
+#     src/lib/x-kit/tut/ml-viewer/graph/graph-g.pkg
+#
+# I renamed it to graphx-g.pkg to distinguish it from the
+# existing
+#
+#     src/lib/graph/*
+#
+# stuff.  I don't know if the two should be merged or this
+# version just dropped or what.   2009-12-13 CRT
+
+
+
+## COPYRIGHT (c) 1994 AT&T Bell Laboratories.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

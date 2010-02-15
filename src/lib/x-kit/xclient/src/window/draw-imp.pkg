@@ -1,0 +1,1008 @@
+## draw-imp.pkg
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+# TODO
+#  - optimize the case where successive DOPs use the same pen.
+#  - all window configuration operations (Resize, Move, Pop/Push, Create &
+#    Delete) should go through the draw master. XXX BUGGO FIXME
+
+
+stipulate
+    include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package br  =  xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+    package g   =  geometry;				# geometry				is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package gi  =  graphics_context_imp;		# graphics_context_imp			is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package m1  =  oneshot_maildrop;			# oneshot_maildrop			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
+    package pg  =  pen_guts;				# pen_guts				is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
+    package v2w =  value_to_wire;			# value_to_wire				is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package vu8 =  unt8_vector;				# unt8_vector				is from   src/lib/std/src/unt8-vector.pkg
+    package xok =  xsocket;			 	# xsocket				is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package xt  =  xtypes;				# xtypes				is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+
+    package draw_imp: (weak)  Draw_Imp {		# Draw_Imp				is from   src/lib/x-kit/xclient/src/window/draw-imp.api
+
+	Dm_Config
+	  = DM_UNMAP
+	  | DM_MAP
+	  | DM_FIRST_EXPOSE
+	  ;
+
+	Poly_Text
+	  = PTXT_TEXT  (Int, String)
+	  | PTXT_FONT  xt::Font_Id
+	  ;
+
+	Draw_Op
+	  = DOP_POLY_POINT     (Bool, List( g::Point ))
+	  | DOP_POLY_LINE      (Bool, List( g::Point ))
+	  | DOP_FILL_POLY      (xt::Shape, Bool, List( g::Point ))
+	  | DOP_POLY_SEG       List( g::Line )
+	  | DOP_POLY_BOX       List( g::Box )
+	  | DOP_POLY_FILL_BOX  List( g::Box )
+	  | DOP_POLY_ARC       List( g::Arc  )
+	  | DOP_POLY_FILL_ARC  List( g::Arc  )
+	  | DOP_COPY_AREA
+		( g::Point,
+		  xt::Xid,
+		  g::Box,
+		  Oneshot_Maildrop( Void -> List( g::Box ) )
+		)
+	  | DOP_COPY_PLANE
+		( g::Point,
+		  xt::Xid,
+		  g::Box,
+		  Int,
+		  Oneshot_Maildrop (Void -> List( g::Box ) )
+		)
+	  | DOP_COPY_PMAREA    (g::Point, xt::Xid, g::Box)
+	  | DOP_COPY_PMPLANE   (g::Point, xt::Xid, g::Box, Int)
+	  | DOP_CLEAR_AREA      g::Box
+	  | DOP_PUT_IMAGE  {
+		to_point: g::Point,
+		size:     g::Size,
+		depth:    Int,
+		lpad:     Int,
+		format:   xt::Image_Format,
+		data:     vu8::Vector
+	      }
+	  | DOP_POLY_TEXT8   (xt::Font_Id, g::Point, List( Poly_Text ))
+	  | DOP_IMAGE_TEXT8  (xt::Font_Id, g::Point, String)
+	  ;
+
+	Destroy_Item
+	  = DESTROY_WINDOW  xt::Window_Id
+	  | DESTROY_PIXMAP  xt::Pixmap_Id
+	  ;
+
+	Draw_Mail
+	  = DMSG  {
+	      to:    xt::Xid,
+	      pen:   pg::Pen,
+	      op:    Draw_Op
+	    }
+	  | DMSG_FLUSH
+	  | DMSG_MAKE_LOCKED_WINDOW  {
+	      draw_slot:       Mailslot( Draw_Mail ),		# Stream of drawing commands for the overlay.
+	      release':        Mailop( Void )			# Overlay release mailop.
+	    }
+	  | DMSG_DESTROY  Destroy_Item
+	  | DMSG_BATCHING_ON
+	  | DMSG_BATCHING_OFF
+	  ;
+
+
+	/* +DEBUG 
+	fun dopToString (DOP_POLY_POINT _) = "PolyPoint"
+	  | dopToString (DOP_POLY_LINE _) = "PolyLine"
+	  | dopToString (DOP_POLY_SEG _) = "PolySeg"
+	  | dopToString (DOP_FILL_POLY _) = "PolyFillPoly"
+	  | dopToString (DOP_POLY_BOX _) = "PolyRect"
+	  | dopToString (DOP_POLY_FILL_BOX _) = "PolyFillRect"
+	  | dopToString (DOP_POLY_ARC _) = "PolyArc"
+	  | dopToString (DOP_POLY_FILL_ARC _) = "PolyFillArc"
+	  | dopToString (DOP_COPY_AREA _) = "CopyArea"
+	  | dopToString (DOP_COPY_PLANE _) = "CopyPlane"
+	  | dopToString (DOP_COPY_PMAREA _) = "CopyPMArea"
+	  | dopToString (DOP_COPY_PMPLANE _) = "CopyPMPlane"
+	  | dopToString (DOP_CLEAR_AREA _) = "ClearArea"
+	  | dopToString (DOP_PUT_IMAGE _) = "PutImage"
+	  | dopToString (DOP_POLY_TEXT8 _) = "PolyText8"
+	  | dopToString (DOP_IMAGE_TEXT8 _) = "ImageText8"
+	 -DEBUG */
+
+
+	stipulate
+
+	    # Maximum number of drawing commands
+	    # to buffer before flushing.
+	    #
+	    full_buffer_size = 16;
+
+	    my (|)  =  unt::bitwise_or;
+	    my (<<) =  unt::(<<);
+
+	    infix val | <<;
+
+	    #  "eq" test on pens for efficiency hack 
+
+	    fun pen_eq (a:  pg::Pen, b:  pg::Pen)
+		=
+		((unsafe::cast a) : Int) == ((unsafe::cast b) : Int);
+
+	    # Bit masks for the various components of a pen.
+	    # These should track the slot numbers given in PenValues.
+
+	    pen_function              = (0u1 << 0u0);
+	    pen_plane_mask            = (0u1 << 0u1);
+
+	    pen_foreground            = (0u1 << 0u2);
+	    pen_background            = (0u1 << 0u3);
+
+	    pen_line_width            = (0u1 << 0u4);
+	    pen_line_style            = (0u1 << 0u5);
+
+	    pen_cap_style             = (0u1 << 0u6);
+	    pen_join_style		= (0u1 << 0u7);
+
+	    pen_fill_style		= (0u1 << 0u8);
+	    pen_fill_rule		= (0u1 << 0u9); 
+
+	    pen_tile		        = (0u1 << 0u10);
+	    pen_stipple		= (0u1 << 0u11);
+
+	    pen_tile_stip_origin	= (0u1 << 0u12);
+	    pen_subwindow_mode	= (0u1 << 0u13);
+
+	    pen_clip_origin		= (0u1 << 0u14);
+	    pen_clip_mask		= (0u1 << 0u15);
+
+	    pen_dash_offset		= (0u1 << 0u16);
+	    pen_dash_list		= (0u1 << 0u17);
+
+	    pen_arc_mode		= (0u1 << 0u18);
+	    pen_exposures		= 0u0; #  (0u1 << 0u19) 
+
+	    my std_comp		#  the standard pen components used by most ops 
+		  = pen_function
+		  | pen_plane_mask
+		  | pen_subwindow_mode
+		  | pen_clip_origin
+		  | pen_clip_mask
+		  | pen_foreground
+		  | pen_background
+		  | pen_tile
+		  | pen_stipple
+		  | pen_tile_stip_origin
+		  ;
+
+	    my std_line_comp		#  the components used by line-drawing operations 
+		  =  std_comp
+		  | pen_line_width
+		  | pen_line_style
+		  | pen_cap_style
+		  | pen_join_style
+		  | pen_fill_style
+		  | pen_dash_offset
+		  | pen_dash_list
+		  ;
+
+	    fun pen_vals_used (DOP_POLY_POINT _)	=> std_comp;
+		pen_vals_used (DOP_POLY_LINE _)	=> std_line_comp;
+		pen_vals_used (DOP_POLY_SEG _)	=> std_line_comp;
+		pen_vals_used (DOP_FILL_POLY _)	=> (std_comp|pen_fill_style);
+		pen_vals_used (DOP_POLY_BOX _)	=> std_line_comp;
+		pen_vals_used (DOP_POLY_FILL_BOX _)	=> (std_comp|pen_fill_style);
+		pen_vals_used (DOP_POLY_ARC _)	=> std_line_comp;
+		pen_vals_used (DOP_POLY_FILL_ARC _)	=> (std_comp|pen_fill_style);
+		pen_vals_used (DOP_COPY_AREA _)	=> std_comp|pen_exposures;
+		pen_vals_used (DOP_COPY_PLANE _)	=> std_comp|pen_exposures;
+		pen_vals_used (DOP_COPY_PMAREA _)	=> std_comp;
+		pen_vals_used (DOP_COPY_PMPLANE _)	=> std_comp;
+		pen_vals_used (DOP_CLEAR_AREA _)	=> 0u0;
+		pen_vals_used (DOP_PUT_IMAGE _)	=> std_comp;
+		pen_vals_used (DOP_POLY_TEXT8 _)	=> (std_comp|pen_fill_style);
+		pen_vals_used (DOP_IMAGE_TEXT8 _)	=> std_comp;
+	    end;
+
+#	    stipulate
+
+#		include value_to_wire;
+
+#	    herein
+
+		fun request_draw_op (request, request_with_exposures)
+		    =
+		    fn  (to, gc, _, DOP_POLY_POINT (rel, pts))
+			    =>
+			    request (v2w::encode_poly_point { drawable=>to, gc, items=>pts, relative=>rel } );
+
+			(to, gc, _, DOP_POLY_LINE (rel, pts))
+			    =>
+			    request (v2w::encode_poly_line { drawable=>to, gc, items=>pts, relative=>rel } );
+
+			(to, gc, _, DOP_POLY_SEG lines)
+			    =>
+			    request (v2w::encode_poly_segment { drawable=>to, gc, items=>lines } );
+
+			(to, gc, _, DOP_FILL_POLY (shape, rel, pts))
+			    =>
+			    request (v2w::encode_fill_poly {
+				drawable=>to, gc, pts, relative=>rel, shape
+			      } );
+
+			(to, gc, _, DOP_POLY_BOX boxes)
+			    =>
+			    request (v2w::encode_poly_box { drawable=>to, gc, items=>boxes } );
+
+			(to, gc, _, DOP_POLY_FILL_BOX boxes)
+			    =>
+			    request (v2w::encode_poly_fill_box { drawable=>to, gc, items=>boxes } );
+
+			(to, gc, _, DOP_POLY_ARC arcs)
+			    =>
+			    request (v2w::encode_poly_arc { drawable=>to, gc, items=>arcs } );
+
+			(to, gc, _, DOP_POLY_FILL_ARC arcs)
+			    =>
+			    request (v2w::encode_poly_fill_arc { drawable=>to, gc, items=>arcs } );
+
+			(to, gc, _, DOP_COPY_AREA (pt, from, box, sync_v))
+			    =>
+			    {   my (p, size)
+				    =
+				    g::upperleft_and_size_of_box box;
+
+				request_with_exposures (
+				  v2w::encode_copy_area {
+				      gc, from, to, from_point=>p, size, to_point=>pt
+				    },
+				  sync_v);
+			    };
+
+			(to, gc, _, DOP_COPY_PLANE (pt, from, box, plane, sync_v))
+			    =>
+			    {
+				my (p, size) = g::upperleft_and_size_of_box box;
+
+				request_with_exposures (
+				  v2w::encode_copy_plane {
+				      gc, from, to, from_point=>p, size,
+				      to_point=>pt, plane
+				    },
+				  sync_v);
+			    };
+
+			(to, gc, _, DOP_COPY_PMAREA (pt, from, box))
+			    =>
+			    {   my (p, size)
+				    =
+				    g::upperleft_and_size_of_box box;
+
+				request (v2w::encode_copy_area {
+				    gc, from, to, from_point=>p, size, to_point=>pt
+				  } );
+			    };
+
+			(to, gc, _, DOP_COPY_PMPLANE (pt, from, box, plane))
+			    =>
+			    {
+				my (p, size) = g::upperleft_and_size_of_box box;
+
+				request (v2w::encode_copy_plane {
+				      gc, from, to, from_point=>p, size, to_point=>pt, plane
+				    } );
+			    };
+
+			(to, _, _, DOP_CLEAR_AREA box)
+			    =>
+			    request (v2w::encode_clear_area { window=>to, box, exposures => FALSE } );
+
+			(to, gc, _, DOP_PUT_IMAGE im)
+			    =>
+			    request
+				(v2w::encode_put_image
+				  { drawable => to,
+                                    gc,
+                                    depth  => im.depth,
+                                    to     => im.to_point,
+			            size   => im.size,
+                                    lpad   => im.lpad,
+                                    format => im.format,
+			            data   => im.data
+			          }
+                                );
+
+			(to, gc, cur_fid, DOP_POLY_TEXT8 (fid, pt, txt_items))
+			    =>
+			    {   include xtypes;
+
+				last_fid
+				    =
+				    f (fid, txt_items)
+				    where
+					fun f (last_fid, [])                 => last_fid;
+					    f (last_fid, (PTXT_FONT id) ! r) => f (id, r);
+					    f (last_fid, _ ! r)              => f (last_fid, r);
+					end;
+				    end;
+
+				txt_items
+				    =
+				    last_fid == cur_fid
+				    ?? txt_items
+				    :: txt_items @ [PTXT_FONT cur_fid];
+
+				txt_items
+				    =
+				    fid == cur_fid
+				    ?? txt_items
+				    :: (PTXT_FONT fid) ! txt_items;
+
+				fun split_delta (0, l)
+					=>
+					l;
+
+				    split_delta (i, l)
+					=>
+					if (i < -128)
+
+					     split_delta (i+128, -128 ! l);
+					else
+					     i > 127
+					     ?? split_delta (i - 127, 127 ! l)
+					     :: i ! l;
+					fi;
+				end;
+
+				# Split a string into legal
+				# lengths for a PolyText8 command 
+				#
+				fun split_text ""
+					=>
+					[];
+
+				    split_text s
+					=>
+					{   n = string::length s;
+
+					    fun split (i, l)
+						=
+						n - i  > 254
+						??  split (i+254,  substring (s, i, 254) ! l)
+						::  list::reverse (substring (s, i, n-i) ! l);
+
+					    n > 254  ??  split (0, [])
+						     ::  [s];
+					};
+				end;
+
+				fun split_item (PTXT_FONT id)
+					=>
+					[FONT_ITEM id];
+
+				    split_item (PTXT_TEXT (delta, s))
+					=>
+					case (split_delta (delta, []), split_text s)
+
+					    ([], []) =>   [];
+					    ([], sl) =>   (map (fn s => TEXT_ITEM (0, s); end ) sl);
+					    (dl, []) =>   (map (fn n => TEXT_ITEM (n, ""); end ) dl);
+
+					    ([d], s ! sr)
+						=>
+						(TEXT_ITEM (d, s) ! (map (fn s => TEXT_ITEM (0, s); end ) sr));
+
+					    (d ! dr, s ! sr)
+						=>
+						((map (fn n => TEXT_ITEM (n, ""); end ) dr)
+						 @ (TEXT_ITEM (d, s) ! (map (fn s => TEXT_ITEM (0, s); end ) sr)));
+					esac;
+
+				end;
+
+				do_items
+				    =
+				    fold_right
+					(fn (item, l) =  (split_item item) @ l)
+					[];
+
+				request
+				    (v2w::encode_poly_text8
+					{
+					  drawable=>to,
+					  gc,
+					  pt,
+					  items=>(do_items txt_items)
+					}
+				    );
+			    };
+
+			(to, gc, _, DOP_IMAGE_TEXT8(_, pt, txt))
+			    =>
+			    request (v2w::encode_image_text8 { drawable=>to, gc, pt, str=>txt } );
+		    end;
+
+#	    end;				# stipulate
+
+	  # Flush a list of drawing commands out to the sequencer.
+	  # This requires aquiring actual server graphics contexts
+	  # for the operations from the GC-imp.
+	  #
+	  fun flush_buf (gc_imp, connection)
+	      =
+	      flush
+	      where 
+
+		   Gc_Info
+		    = NO_GC
+		    | NO_FONT
+		    | WITH_FONT xt::Font_Id
+		    | SET_FONT  xt::Font_Id;
+
+		  acq_gc =  gi::acquire_graphics_context  gc_imp;
+		  rel_gc =  gi::release_graphics_context  gc_imp;
+
+		  acq_gcwith_font    =   gi::acquire_graphics_context_with_font     gc_imp;
+		  acq_gcand_set_font =   gi::acquire_graphics_context_and_set_font  gc_imp;
+		  rel_gcand_font     =   gi::release_graphics_context_and_font      gc_imp;
+
+		  request_dop
+		      =
+		      request_draw_op
+			( xok::request                 connection,
+			  xok::request_with_exposures  connection
+			);
+
+		  # Batch the maximal sequence of operations
+		  # that can safely use the same GC.  ("graphics context")
+		  # Add the batch to the batch list.
+		  #
+		  fun batch_gc ([], batch_lst) => batch_lst;
+
+		      batch_gc (ops as (first_op ! _), batch_lst)
+			  =>
+			  {   fun gc_info_of (DOP_CLEAR_AREA _)            =>   NO_GC;
+				  gc_info_of (DOP_POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
+				  gc_info_of (DOP_IMAGE_TEXT8 (fid, _, _)) =>   SET_FONT  fid;
+				  gc_info_of op                            =>   NO_FONT;
+			      end;
+
+			      fun extend_mask (m, op)
+				  =
+				  m | (pen_vals_used op);
+
+			      fun f (arg as ([], _, _, _, _)) => arg;
+
+				  f (arg as ( { to, pen, op } ! r, info, cur_pen, used_mask, ops))
+				       =>
+				       if   (pen_eq (pen, cur_pen))
+
+					    case (info, gc_info_of op)
+
+						(_, NO_GC)
+						    =>
+						    f (r, info, cur_pen, used_mask, (to, op) ! ops);
+
+						(NO_GC, new_info)
+						    =>
+						    f (r, new_info, cur_pen, pen_vals_used op,
+							(to, op) ! ops);
+
+						(_, NO_FONT)
+						    =>
+						    f (r, info, cur_pen, extend_mask (used_mask, op),
+							(to, op) ! ops);
+
+						(SET_FONT fid, WITH_FONT _)
+						    =>
+						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),
+							(to, op) ! ops);
+
+						(_, WITH_FONT fid)
+						    =>
+						    f (r, WITH_FONT fid, cur_pen, extend_mask (used_mask, op),
+							(to, op) ! ops);
+
+						(SET_FONT fid1, SET_FONT fid2)
+						    =>
+						    if   (fid1 == fid2)
+
+							 f (r, SET_FONT fid1, cur_pen,
+							  extend_mask (used_mask, op), (to, op) ! ops);
+						    else
+							arg;
+						    fi;
+
+						(_, SET_FONT fid)
+						    =>
+						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),
+						       (to, op) ! ops);
+					    esac;
+
+				       else
+					   arg;
+				       fi;
+			      end;
+
+			      my (rest, info, pen, mask, ops)
+				     =
+				     f (ops, NO_GC, first_op.pen, 0u0, []);
+
+			      batch_gc (rest, (info, pen, mask, ops) ! batch_lst);
+			 };
+
+		  end; #  BatchGC 
+
+		  fun draw_ops (gc, initial_fid)
+		      =
+		      draw
+		      where 
+
+			  fun draw [] => ();
+
+			      draw ((to, op) ! r)
+				  =>
+				  {   request_dop (to, gc, initial_fid, op);
+				      draw r;
+				  };
+			  end;
+
+		      end;
+
+		  xid0 =   xt::XID 0u0;
+
+		  fun draw_batch (NO_GC, _, _, ops)
+			  =>
+			  draw_ops (xid0, xid0) ops;
+
+		      draw_batch (NO_FONT, pen, mask, ops)
+			  =>
+			  {   gc =   acq_gc { pen, used => mask };
+
+			      draw_ops (gc, xid0) ops;
+			      rel_gc gc;
+			  };
+
+		      draw_batch (WITH_FONT fid, pen, mask, ops)
+			  =>
+			  {   my (gc, init_fid) = acq_gcwith_font { pen, used => mask, fid };
+
+			      draw_ops (gc, init_fid) ops;
+			      rel_gcand_font gc;
+			  };
+
+		      draw_batch (SET_FONT fid, pen, mask, ops)
+			 =>
+			 {   gc =   acq_gcand_set_font { pen, used => mask, fid };
+
+			     draw_ops (gc, fid) ops;
+			     rel_gcand_font gc;
+			 };
+		  end;
+
+		  draw = apply draw_batch;
+
+		  fun flush buf
+		      =
+		      {   draw (batch_gc (buf, []));
+			  xok::flush connection;
+		      };
+
+	      end;			# fun flush_buf 
+
+	  # Insert a drawing command into the buffer,
+	  # checking for possible batching of operations.
+	  # BATCHING NOT IMPLEMENTED YET	XXX BUGGO FIXME
+	  #
+	  fun batch_cmd (count, cmd, last, rest)
+	      =
+	      (count+1, cmd ! last ! rest);
+
+	  fun destroy_window connection (DESTROY_WINDOW window_id)
+		  =>
+		  {   xok::request connection (v2w::encode_destroy_window { window => window_id } );
+		      xok::flush connection;
+		  };
+
+	      destroy_window connection (DESTROY_PIXMAP pm_id)
+		  =>
+		  {   xok::request connection (v2w::encode_free_pixmap { pixmap => pm_id } );
+		      xok::flush connection;
+		  };
+	  end;
+
+	  # Create an overlay buffer on the drawing command stream.
+	  #
+	  # This buffers operations aimed at locked windows and passes
+	  # the others onto the draw imp.  release' is enabled when
+	  # the overlay is released; this causes the buffer to flush
+	  # its buffered messages.
+	  #
+	  # A mailop is returned that signals flush-complete.
+	  #
+	  fun make_overlay_buffer (lock_imp, new_slot, old_slot', release')
+	      =
+	      {   flush_done_1shot = make_oneshot_maildrop ();
+
+		  fun release buf
+		      =
+		      {   list::apply (fn msg = give (new_slot, msg)) (list::reverse buf);
+			  give (new_slot, DMSG_FLUSH);
+			  set (flush_done_1shot, ());
+		      };
+
+		  fun loop buf
+		      =
+		      {   fun filter_msg (to, m)
+			      =
+			      if (br::window_is_locked (lock_imp, to))
+				  #
+				  loop (m ! buf);
+			      else
+				  give  (new_slot, m);
+				  loop buf;
+			      fi;
+
+			  fun filter (m as DMSG { to, ... } )
+				  =>
+				  filter_msg (to, m);
+
+			      filter (DMSG_FLUSH)
+				  =>
+				  {   give  (new_slot, DMSG_FLUSH);
+				      loop buf;
+				  };
+
+			      filter (DMSG_MAKE_LOCKED_WINDOW _)
+				  =>
+				  xgripe::impossible "[multiple overlays not supported]";
+
+			      filter (m as (DMSG_DESTROY (DESTROY_WINDOW wid)))
+				  =>
+				  filter_msg (wid, m);
+
+			      filter _
+				  =>
+				  xgripe::impossible "[unsupported message in DrawMaster::make_ovrlay_buffer]";
+			  end;
+
+			  select [
+			      old_slot' ==>  filter,
+			      release'  ==>  .{ release buf; }
+			  ];
+		      };
+
+		      xtracing::xspawn("OverlayBuffer", .{ loop []; } );
+
+		      get' flush_done_1shot;
+	      };							 #  fun make_overlay_buffer 
+
+	herein
+
+	    # We get called two places:
+	    #     src/lib/x-kit/xclient/src/window/xsession.pkg
+	    #     src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.pkg
+	    #
+	    fun make_draw_imp (configure', gc_imp, lock_imp, connection)
+		=
+		{   # Need to check state transitions to insure no deadlock *  XXX BUGGO FIXME
+
+		    plea_slot    =   make_mailslot ();
+		    plea'        =   take'  plea_slot;
+
+		    flush        =   flush_buf (gc_imp, connection);
+
+		    flush_delay' =   timeout_in' (time::from_milliseconds 40);
+
+		    destroy =   destroy_window connection;
+
+		    fun server_unmapped ()
+			=
+			{   fun do_configure DM_MAP
+				    =>
+				    server_mapped (0, []);
+
+				do_configure DM_UNMAP
+				    =>
+				    server_unmapped ();
+
+				do_configure _
+				    =>
+				    (xgripe::impossible "[DM (unmapped): bad config command]");
+			    end;
+
+
+			    fun do_plea (DMSG_DESTROY id)
+				    =>
+				    {   destroy id;
+					server_unmapped ();
+				    };
+
+				do_plea (DMSG_MAKE_LOCKED_WINDOW { draw_slot, release' } )
+				    =>
+				    overlay (FALSE, draw_slot, release');
+
+				do_plea _
+				    =>
+				    server_unmapped();
+			    end;
+
+			    # Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverUnmapped\n"]); 
+			    #
+			    select [
+				plea'         ==>  do_plea,
+				configure' ==>  do_configure
+			    ];
+			 }
+
+		    also
+		    fun server_mapped (_, [])
+			    =>
+			    {   fun do_configure DM_UNMAP
+					=>
+					server_unmapped ();
+
+				    do_configure DM_MAP
+					=>
+					server_mapped (0, []);
+
+				    do_configure _
+					=>
+					(xgripe::impossible "[DM (mapped): bad config command]");
+				end;
+
+
+				fun do_plea (DMSG m)
+					=>
+					server_mapped (1, [m]);
+
+				    do_plea (DMSG_FLUSH)
+					=>
+					server_mapped (0, []);
+
+				    do_plea (DMSG_MAKE_LOCKED_WINDOW { draw_slot, release' } )
+					=>
+					overlay (TRUE, draw_slot, release');
+
+				    do_plea (DMSG_DESTROY id)
+					=>
+					{   destroy id;
+					    server_mapped (0, []);
+					};
+
+				    do_plea _
+					=>
+					xgripe::impossible "DrawMaster: user batching not supported yet";
+				end;
+
+
+				#  Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverMapped (empty)\n"]); 
+				#
+				select [
+				    plea'    ==>  do_plea,
+				    configure' ==>  do_configure
+				];
+			    };
+
+		       server_mapped (count, buf as (last ! r))
+			   =>
+			   {   fun do_configure DM_UNMAP
+					=>
+					server_unmapped ();
+
+				   do_configure DM_MAP
+					=>
+					server_mapped (count, buf);
+
+				   do_configure _
+					=>
+					(xgripe::impossible "[DM (mapped): bad config command]");
+			       end;
+
+
+			       fun do_plea (DMSG m)
+					=>
+					server_mapped (batch_cmd (count, m, last, r));
+
+				   do_plea (DMSG_FLUSH)
+					=>
+					{   flush buf;
+					    server_mapped (0, []);
+					};
+
+				   do_plea (DMSG_MAKE_LOCKED_WINDOW { draw_slot, release' } )
+					=>
+					{   flush buf;
+					    overlay (TRUE, draw_slot, release');
+					};
+
+				   do_plea (DMSG_DESTROY id)
+					=>
+					{   flush buf;
+					    destroy id;
+					    server_mapped (0, []);
+					};
+
+				   do_plea _
+					=>
+					xgripe::impossible "draw_imp: user batching not supported yet";
+			       end;
+
+
+			       #  Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverMapped (", makestring (length buf), ")\n"]); 
+
+			       if (count > full_buffer_size)
+				   #
+				   flush buf;
+				   server_mapped (0, []);
+			       else
+				   select [
+				       flush_delay'  ==>   (fn _ = {  flush buf;  server_mapped (0, []);  }),
+				       plea'    ==>   do_plea,
+				       configure' ==>   do_configure
+				   ];
+			       fi;
+			  };
+		    end 
+
+		    also
+		    fun overlay (is_mapped, new_slot, release')
+			=
+			{   flush_done'
+				=
+				make_overlay_buffer (lock_imp, new_slot, plea', release');
+
+			    new_plea'
+				=
+				take'  new_slot;
+
+			    fun overlay_unmapped ()
+				=
+				{   fun do_configure DM_MAP   => overlay_mapped (0, []);
+					do_configure DM_UNMAP => overlay_unmapped();
+
+					do_configure _ => xgripe::impossible
+					   "[DM (unmapped-overlay): bad config command]";
+				    end;
+
+				    fun do_plea (DMSG_DESTROY id)
+					    =>
+					    {   destroy id;
+						overlay_unmapped ();
+					    };
+
+					do_plea _
+					    =>
+					    overlay_unmapped ();
+				    end;
+
+				    #  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayUnmapped\n"]); 
+
+				    select [
+					flush_done'  ==>  (fn _ = FALSE),
+					new_plea'     ==>  do_plea,
+					configure'      ==>  do_configure
+				    ];
+				}
+
+			    also
+			    fun overlay_mapped (_, [])
+				    =>
+				    {   fun do_configure DM_UNMAP => overlay_unmapped();
+					    do_configure DM_MAP   => overlay_mapped (0, []);
+					    do_configure _        => xgripe::impossible "[DM (mapped-overlay): bad config command]";
+					end;
+
+					fun do_plea (DMSG m)          => overlay_mapped (1, [m]);
+					    do_plea (DMSG_FLUSH)      => overlay_mapped (0, []);
+					    do_plea (DMSG_DESTROY id) => { destroy id; overlay_mapped (0, []);};
+					    do_plea _                 => xgripe::impossible "[DM (mapped-overlay): bad command]";
+					end;
+
+					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (empty)\n"]); 
+
+					select [
+					    flush_done'  ==>  (fn _ = TRUE),
+					    new_plea'    ==>  do_plea,
+					    configure'   ==>  do_configure
+					];
+				    };
+
+				overlay_mapped (count, buf as (last ! r))
+				    =>
+				    {   fun do_configure DM_UNMAP => overlay_unmapped();
+					    do_configure DM_MAP => overlay_mapped (count, buf);
+
+					    do_configure _
+						 =>
+						 xgripe::impossible "[DM (mapped): bad config command]";
+					end;
+
+					fun do_plea (DMSG m)
+					       =>
+					       overlay_mapped (batch_cmd (count, m, last, r));
+
+					    do_plea (DMSG_FLUSH)
+						=>
+						{   flush buf;
+						    overlay_mapped (0, []);
+						};
+
+					    do_plea (DMSG_DESTROY id)
+						=>
+						{   flush buf; destroy id;
+						    overlay_mapped (0, []);
+						};
+
+					    do_plea _
+						=>
+						xgripe::impossible "draw_imp: user batching not supported yet";
+					end;
+
+					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (", makestring (length buf), ")\n"]); 
+
+					select [
+					    flush_done'  ==>  (fn _ = {  flush buf;  TRUE;  }),
+					    flush_delay' ==>  (fn _ = {  flush buf;  overlay_mapped (0, []);  }),
+					    new_plea'    ==>  do_plea,
+					    configure'   ==>  do_configure
+					];
+				    };
+			    end;
+
+			    fun do_overlay ()
+				=
+				is_mapped  ??  overlay_mapped (0, [])
+					   ::  overlay_unmapped ();
+
+
+			    do_overlay ()  ??  server_mapped (0, [])
+					   ::  server_unmapped ();
+
+			};			# fun overlay 
+
+		    fun initialize_imp ()
+			=
+			case (do_mailop configure')
+			    #
+			    DM_FIRST_EXPOSE =>   server_mapped (0, []);
+			     _              =>   initialize_imp();
+			esac;
+
+
+		    xtracing::xspawn("draw_imp", initialize_imp);
+
+		    fn msg =   give  (plea_slot, msg);
+
+		};		# fun make_draw_imp
+	end;			# stipulate
+    };				# package draw_imp 
+end;				# stipulate
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

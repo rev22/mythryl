@@ -1,0 +1,350 @@
+## xselection.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+# Types and operations to support the X Inter-Client Communications Conventions.
+
+
+
+###               "You don't understand anything until you learn it more than one way."
+###
+###                                                      -- Marvin Minsky
+
+
+stipulate
+    include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+herein
+
+    api Xselection {
+
+	package xg:  Xgeometry;			# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
+	package xc:  Xcore;			# Xcore		is from   src/lib/x-kit/xclient/xcore.api
+
+	eqtype Atom;
+
+	Selection_Handle;
+
+	# Standard X atoms:
+	#
+	atom_primary:		    Atom;
+	atom_secondary:             Atom;
+	atom_arc:                   Atom;
+	atom_atom:                  Atom;
+	atom_bitmap:                Atom;
+	atom_cardinal:              Atom;
+	atom_colormap:              Atom;
+	atom_cursor:                Atom;
+	atom_cut_buffer0:           Atom;
+	atom_cut_buffer1:           Atom;
+	atom_cut_buffer2:           Atom;
+	atom_cut_buffer3:           Atom;
+	atom_cut_buffer4:           Atom;
+	atom_cut_buffer5:           Atom;
+	atom_cut_buffer6:           Atom;
+	atom_cut_buffer7:           Atom;
+	atom_drawable:              Atom;
+	atom_font:                  Atom;
+	atom_integer:               Atom;
+	atom_pixmap:                Atom;
+	atom_point:                 Atom;
+	atom_rectangle:             Atom;
+	atom_resource_manager:      Atom;
+	atom_rgb_color_map:         Atom;
+	atom_rgb_best_map:          Atom;
+	atom_rgb_blue_map:          Atom;
+	atom_rgb_default_map:       Atom;
+	atom_rgb_gray_map:          Atom;
+	atom_rgb_green_map:         Atom;
+	atom_rgb_red_map:           Atom;
+	atom_string:                Atom;
+	atom_visualid:              Atom;
+	atom_window:                Atom;
+	atom_wm_command:            Atom;
+	atom_wm_hints:              Atom;
+	atom_wm_client_machine:     Atom;
+	atom_wm_icon_name:          Atom;
+	atom_wm_icon_size:          Atom;
+	atom_wm_name:               Atom;
+	atom_wm_normal_hints:       Atom;
+	atom_wm_size_hints:         Atom;
+	atom_wm_zoom_hints:         Atom;
+	atom_min_space:             Atom;
+	atom_norm_space:            Atom;
+	atom_max_space:             Atom;
+	atom_end_space:             Atom;
+	atom_superscript_x:         Atom;
+	atom_superscript_y:         Atom;
+	atom_subscript_x:           Atom;
+	atom_subscript_y:           Atom;
+	atom_underline_position:    Atom;
+	atom_underline_thickness:   Atom;
+	atom_strikeout_ascent:      Atom;
+	atom_strikeout_descent:     Atom;
+	atom_italic_angle:          Atom;
+	atom_x_height:              Atom;
+	atom_quad_width:            Atom;
+	atom_weight:                Atom;
+	atom_point_size:            Atom;
+	atom_resolution:            Atom;
+	atom_copyright:             Atom;
+	atom_notice:                Atom;
+	atom_font_name:             Atom;
+	atom_family_name:           Atom;
+	atom_full_name:             Atom;
+	atom_cap_height:            Atom;
+	atom_wm_ilk:                Atom;
+	atom_wm_transient_for:      Atom;
+
+
+	# Properties.
+
+	# Raw data from server (in ClientMessage, property values, ...) 
+	#
+	Raw_Format = RAW8 | RAW16 | RAW32;
+	#
+	Raw_Data
+	    =
+	    RAW_DATA
+	      {
+		format:  Raw_Format,
+		data:    unt8_vector::Vector
+	      };
+
+	# X property values.
+	#
+	# A property value has a type,
+	# which is an atom, and a value.
+	#
+	# The value is a sequence of
+	# 8, 16 or 32-bit items, represented
+	# as a format and a string.
+	#
+	Property_Value
+	    =
+	    PROPERTY_VALUE
+	      {
+		type:  Atom,
+		value:  Raw_Data
+	      };
+
+	exception PROPERTY_ALLOCATE;
+	    #
+	    # Raised, if there is not enough space to
+	    # store a property value on the server.
+
+
+	# An abstract interface to a property on a window.
+	#
+	Property;
+
+	property:  (xc::Window, Atom) -> Property;
+	    #
+	    # Return the abstract representation of the
+	    # named property on the specified window.
+
+
+	unused_property:  xc::Window -> Property;
+	    #
+	    # Generate a property on the specified window
+	    # that is guaranteed to be unused.
+	    #
+	    # Note that once this property has
+	    # been "deleted" its name may be reused.
+	    #
+	    # NOTE: eventually, properties will be finalized,
+	    # but for the time being, programs should delete
+	    # any allocated properties they are not using.
+
+
+	make_property:  (xc::Window, Property_Value) -> Property;
+	    #
+	    #  Create a new property initialized to the given value 
+
+	name_of_property:  Property -> Atom;
+	    #
+	    # Return the atom that names the given property.
+
+	set_property:  ((Property, Property_Value)) -> Void;
+	    #
+	    # Set the value of the property.
+
+	append_to_property:  ((Property, Property_Value)) -> Void;
+	    #
+	    # Append the property value to the property.
+	    # The types and formats must match.
+
+
+	prepend_to_property:  ((Property, Property_Value)) -> Void;
+	    #
+	    # Prepend the property value to the property.
+	    # The types and formats must match.
+
+
+	delete_property:  Property -> Void;
+	    #
+	    # Delete the named property.
+
+	exception ROTATE_PROPERTIES;
+
+	rotate_properties:  ((List( Property ), Int)) -> Void;
+	    #
+	    # Rotate the list of properties.
+	    #
+	    # Raise ROTATE_PROPERTIES if the
+	    # properties do not belong to
+	    # the same window.
+
+
+	get_property:  Property -> Null_Or( Property_Value );
+	    #
+	    # Get the value of the property.
+	    # Return NULL if the property
+	    # has  not been set.
+
+
+	# xrdb_of_screen: Return the list of strings contained in the
+	# XA_RESOURCE_MANAGER property of the root screen of the
+	# specified screen. 
+	# This should properly belong some other place than in ICCC,
+	# as it has nothing to do with ICCC, except that it accesses
+	# data in the screen type, and uses the GetProperty functions
+	# of ICCC.	XXX BUGGO FIXME
+	#
+	xrdb_of_screen:     xc::Screen -> List( String );
+
+	Property_Change
+	  = NEW_VALUE
+	  | DELETED
+	  ;
+
+	watch_property:  Property -> Mailop( (Property_Change, xc::xserver_timestamp::Xserver_Timestamp) );
+	    #
+	    # Return a mailop for monitoring changes
+	    # to a property's state.
+	    #
+	    # Note that once a property has been deleted
+	    # there will be no more mailops unless
+	    # watch_property is called again.
+
+
+
+	# Hints about the window size: 
+	#
+	Window_Manager_Size_Hint
+	  = HINT_USPOSITION
+	  | HINT_PPOSITION
+	  | HINT_USSIZE
+	  | HINT_PSIZE
+	  | HINT_PMIN_SIZE     xg::Size
+	  | HINT_PMAX_SIZE     xg::Size
+	  | HINT_PRESIZE_INC   xg::Size
+	  | HINT_PBASE_SIZE    xg::Size
+	  | HINT_PWIN_GRAVITY  xc::Gravity
+	  | HINT_PASPECT  { min:  (Int, Int),
+                            max:  (Int, Int)
+                          }
+	  ;
+
+	# Window manager hints:
+	#
+	Window_Manager_Nonsize_Hint
+	  = HINT_INPUT  Bool					# Does this application rely on the window 
+								# manager to get keyboard input? 
+
+								# Initial window state (choose one) 
+	  | HINT_WITHDRAWN_STATE				#  o For windows that are not mapped.
+	  | HINT_NORMAL_STATE					#  o Most want to start this way.
+	  | HINT_ICONIC_STATE					#  o Application wants to start as an icon.
+	  | HINT_ICON_RO_PIXMAP         xc::Ro_Pixmap		# Icon specified as ro_pixmap.
+	  | HINT_ICON_PIXMAP            xc::Rw_Pixmap		# Icon specified as pixmap.
+	  | HINT_ICON_WINDOW            xc::Window		# Icon specified as plain window.
+	  | HINT_ICON_MASK              xc::Rw_Pixmap		# Icon mask bitmap.
+	  | HINT_ICON_POSITION          xg::Point		# Initial position of icon.
+	  | HINT_WINDOW_GROUP           xc::Window		# The group leader.
+	  ;
+
+	# Atom operations:
+	#
+	make_atom:      xc::Xsession -> String -> Atom;
+	find_atom:      xc::Xsession -> String -> Null_Or( Atom );
+	atom_to_string: xc::Xsession -> Atom   -> String;
+
+	# Selection owner operations:
+	#
+	acquire_selection
+	    :
+	    (xc::Window, Atom, xc::xserver_timestamp::Xserver_Timestamp)
+	    ->
+	    Null_Or( Selection_Handle );
+	    #
+	    # Acquire the named selection.
+
+	selection_of:  Selection_Handle -> Atom;
+	timestamp_of:  Selection_Handle -> xc::xserver_timestamp::Xserver_Timestamp;
+
+	selection_req_mailop
+	    :
+	    Selection_Handle
+	    ->
+	    Mailop
+	      {
+		target:       Atom,
+		timestamp:    Null_Or( xc::xserver_timestamp::Xserver_Timestamp ),
+		reply:        Null_Or( Property_Value ) -> Void
+	      };
+	    #
+	    # This mailop is enabled once for each request for the selection.
+	    #  The target field is the requested target type;
+	    #  the time field is the server-time of the gesture that caused the request, and
+	    #  the reply field is a function for sending the reply.
+	    # If the time field is NULL, this means a value of CURRENT_TIME was used.
+	    # Strictly speaking this violates the ICCC specification, but applications
+	    # may choose to accept it.
+
+
+	selection_rel_mailop
+	    :
+	    Selection_Handle -> Mailop( Void );
+	    #
+	    # This mailop becomes enabled when
+	    # the selection is lost, either by
+	    # the owner releasing it, or by
+	    # some other client acquiring ownership.
+
+
+	release_selection:  Selection_Handle -> Void;
+	    #
+	    # Release ownership of the selection.
+
+
+	# Selection requestor operations.
+
+	request_selection
+	    :
+	    { window:     xc::Window,
+	      selection:  Atom,
+	      target:     Atom,
+	      property:   Atom,
+	      timestamp:  xc::xserver_timestamp::Xserver_Timestamp
+	    }
+	    ->
+	    Mailop( Null_Or( Property_Value ) );
+		#
+		# Request the value of the selection.
+		# the window field is the requesting window,
+		# the selection field is the requested selection,
+		# the target field is the requested target type, and
+		# the time field is the server-time of the gesture causing the request.
+		#
+		# This returns a mailop that will become enabled
+		# when the reply is received.
+    };				# api iccc
+
+end;
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -1,0 +1,8 @@
+
+# Compiled by:
+#     src/lib/std/src/Base-imp.make6
+
+api Posix_Common {
+
+    Open_Mode = O_RDONLY | O_WRONLY | O_RDWR;
+};

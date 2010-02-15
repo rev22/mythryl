@@ -1,0 +1,571 @@
+## xsession.pkg
+#
+# This package has the highest-level responsibility for
+# managing all the state and operations relating to
+# communication with a given X server.
+#
+#
+# Architecture
+# ------------
+#
+# Nomenclature:  An 'imp' is a server thread.
+#               (Like a daemon, but smaller!)
+# 
+# An xsession is built of seven imps.
+#
+# Adapting from the page 8 diagram in
+#     http:://mythryl.org/pub/exene/1991-ml-workshop.pdf 
+# our dataflow network for xsession looks like:
+#
+#       ----------------------
+#       |  X server process  |
+#       ----------------------
+#            ^          |
+#            |          v 
+#   -------<network socket>------------- network and process boundary.
+#            ^          |
+#            |          v                            ---           ---
+#       ----------  ----------                        .             .
+#       | outbuf |  | inbuf  |                        .             .
+#       | imp    |  | imp    |                        .             .
+#       ----------  ----------                        .             .
+#            ^          |                             .             .
+#            |          v                             .             .
+#  ---------------------------    -----------------   .             .
+#  |   sequencer imp         |--> | error handler |   ... xsocket   .
+#  ---------------------------    -----------------   .   imps      .
+#        ^       ^      |                             .             .
+#        |       |      | xevents                     .             .
+#        |       |      v                             .             ... xsession
+#        |       |   ----------                       .             .   imps
+#        |       |   | xbuf   |                       .             .
+#        |       |   | imp    |                       .             .
+#        |       |   ----------                       .             .
+#        |       |      |                            ---            .
+#        |       |      | xevents                                   .
+#        v       |      v                                           .
+#  ----------    |   ---------------    ----------                  .
+#  | font   |    |   | xbuf to     |    | keymap |                  .
+#  | imp    |    |   | widgettree  |--> | imp    |                  .
+#  ----------    |   | root xevent |--> |        |                  .
+#        ^       |   | router imp  |    |        |                  .
+#        |       |   ---------------    ----------                  .
+#        |       |      |                  ^                        .
+#        |       |      | xevents          |                        .
+#        v       v      v                  v                       ---
+#   (..........to/from widget threads............)
+#                       |
+#                       | xevents
+#                       v
+#                    ---------------
+#                    | widgettree  |
+#                    | root xevent |
+#                    | router imp  |
+#                    ---------------
+#                       /      \
+#                      / widget \
+#                     /   tree   \
+#                    /            \ 
+#                   /     ...      \ 
+#
+# Dramatis Personae:
+#
+#  o  The sequencer imp matches replies to requests.
+#     All traffic to/from the X server goes through it.
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#
+#  o  The outbuf imp optimizes network usage by
+#     combining multiple requests per network packet.
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#
+#  o  The inbuf imp breaks the incoming bytestream
+#     into individual replies and forwards them individually
+#     to the sequencer thread.
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#
+#  o  The xbuf imp combines multiple related expose events
+#     into a single logical message for ease of downstream
+#     processing.
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#
+#  o  The xbuf_to_widgettree_xevent_router imp
+#     receives all X events (e.g. keystrokes and mouseclicks)
+#     and feeds each one to the appropriate toplevel window,
+#     or more precisely to the widgettree_root_xevent_router
+#     at the root of the widgettree for that window, there to
+#     trickle down the widgettree to its ultimate target widget.
+#
+#     To do this, the xbuf_to_widgettree_xevent_router imp
+#     tracks all toplevel windows by the application, keyed
+#     by their X-server-assigned IDs.
+#
+#         Implemented in:  src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+#         See also:        src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.pkg
+# 
+#  o  The font imp ... 
+#         Implemented in:  src/lib/x-kit/xclient/src/window/font-imp.pkg
+#
+#  o  The keymap imp ... 
+#         Implemented in:  src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+#
+#
+#
+#
+# All mouse and keyboard events flow down through the
+# inbuf, sequencer, xbuf and xbuf-to-widgettree imps
+# and thence down through the widget hierarchy
+# associated with a the relevant topwindow.
+#
+# Client xserver requests and responses are sent
+# directly to the sequencer imp, with the exception
+# of font requests and responses, whic run through
+# the font imp.
+#
+# Keysym translations are handled by the keymap imp.
+
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+###                "I have always wished that my computer
+###                 would be as easy to use as my telephone.
+###                 My wish has come true ... I no longer
+###                 know how to use my telephone."
+###
+###                               -- Bjarne Stroustrup
+
+
+
+stipulate
+    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package br  = xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+    #
+    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xok = xsocket;				# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package ai  = atom_imp;				# atom_imp		is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
+    package ci  = color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
+    package di  = draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package f_i = font_imp;				# font_imp		is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
+    package gci = graphics_context_imp;			# graphics_context_imp	is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package ki  = keymap_imp;				# keymap_imp		is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+herein
+
+    package xsession {
+
+	Xsession
+	    =
+	    XSESSION  {
+		xdisplay:          	dy::Xdisplay,          		#  
+		screens:           	List( Screen_Info ),
+
+		default_screen:    	Screen_Info,
+
+		xbuf_to_widgettree_xevent_router:   br::Xbuf_To_Widgettree_Xevent_Router,          # Feeds X events to appropriate toplevel window.
+
+		font_imp:          	f_i::Font_Imp,
+		atom_imp:          	ai::Atom_Imp,
+
+		window_property_imp:    window_property_imp::Window_Property_Imp,
+		selection_imp:     	selection_imp::Selection_Imp,
+
+		keymap_imp:             ki::Keymap_Imp
+	    }
+
+	also
+	Screen_Info
+	    =
+	    SCREEN_INFO
+	      {
+		xscreen:    dy::Xscreen,			# Xscreen	def in    src/lib/x-kit/xclient/src/wire/display.pkg
+		color_imp:  ci::Color_Imp,			# The colormap imp for this screen.
+		imps:       List( Screen_Depth_Imps ),		# The GC-imps for the allowed depths
+				  				# of this screen.
+		root_imps:  Screen_Depth_Imps
+	      }
+
+	also
+	Screen_Depth_Imps
+	    =
+	    # For each combination of visual and depth
+	    # we allocate a pair of imps, one to draw,
+	    # one to manage graphics contexts.  This
+	    # is forced because X requires that each
+	    # gc and pixmap be associated with a
+	    # particular screen, visual and depth:
+	    #
+	    SCREEN_DEPTH_IMPS  {			# The graphics context imp and draw_imp
+							# for a given  depth of a screen.
+		depth:      Int,    
+
+		gc_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
+
+		draw_fn:    di::Draw_Mail -> Void	# The draw-imp connection for
+							# the root  window of the screen. 
+	    }
+
+	also
+	Screen						# A screen handle for users.
+	    =
+	    SCREEN  {
+		xsession:   Xsession,
+		screen:     Screen_Info
+	    }; 
+
+	# Identity tests:
+	#
+	fun same_xsession
+            ( XSESSION { xdisplay=>dy::XDISPLAY { xsocket => x1, ... }, ... },
+              XSESSION { xdisplay=>dy::XDISPLAY { xsocket => x2, ... }, ... }
+            )
+	    =
+	    xok::same_xsocket (x1, x2);
+
+	fun same_screen ( SCREEN { xsession=>xsession1, screen=>SCREEN_INFO { xscreen => dy::XSCREEN { id=>id1, ... }, ... }},
+			  SCREEN { xsession=>xsession2, screen=>SCREEN_INFO { xscreen => dy::XSCREEN { id=>id2, ... }, ... }}
+			)
+	    =
+	    (id1 == id2)
+	    and
+	    same_xsession (xsession1, xsession2);
+
+
+	# fun open_xsession:  Start an X session with some X server.
+	# 
+	# Parameters:
+	# 
+	#     display_name:  "128.84.254.97:0.0" or such.
+	#    
+	#         General display_name format is:
+        #    
+        #             <host>:<display_number><screen_number>.
+	#    
+        #         display_number:
+	#         screen_number:
+	#             In practice these are almost always zero,
+        #             since most home computers have a single
+	#             display subsystem with a single logical
+        #             screen, even if using two physical monitors.
+	#    	  (My xserver box has six monitors and three
+	#    	  graphics cards, but still gets addressed
+	#             as the single screen 0.0)
+	#    
+        #         host:
+	#    	  This can be "unix" to open a unix domain
+	#             socket instead of the usual internet domain socket.
+	#    
+	#         Supported display_name abbreviations include:
+	#             ""               == "unix:0.0"
+	#             ":3"             == "unix:3.0"
+	#             ":3.4"           == "unix:3.4"
+	#             "128.84.254.97:0 == "128.84.254.97:0.0
+	#
+	#         Any failure to connect to the given display
+	#	  results in raising of the exception
+	#
+	#	      display::BAD_ADDRESS "somestring";
+	#
+	#     authentication:
+	#	  See	src/lib/x-kit/draw/xauth.api
+	#	  and   src/lib/x-kit/draw/xauth.pkg
+	#
+	fun open_xsession
+            ( display_name:    String,
+              authentication:  Null_Or( xtypes::Authentication )				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg	
+            )
+	    =
+	    {   my (display as dy::XDISPLAY { default_screen, screens, xsocket, next_xid, ... } )
+		    =
+		    dy::open_xdisplay { display_name, authentication };
+
+		keymap_imp =   ki::make_keymap_imp  display;
+		atom_imp   =   ai::make_atom_imp    display;
+
+		my (prop_slot, window_property_imp)
+                    =
+                    window_property_imp::make_window_property_imp (display, atom_imp);
+
+		my (selection_slot,  selection_imp)
+                    =
+                    selection_imp::make_selection_imp  display;
+
+		xbuf_to_widgettree_xevent_router
+		    =
+		    br::make_xbuf_to_widgettree_xevent_router
+		      { display,
+			keymap_imp,
+			#
+			prop_event_slot => prop_slot,
+			sel_event_slot  => selection_slot
+		      };
+
+		fun make_screen_info (xscreen as dy::XSCREEN { root, root_visual, visualdepths, ... } )
+		    =
+		    {   fun make_screen_depth (depth, gc_imp)
+			    =
+			    {
+				config_slot =  make_mailslot ();
+
+				make_thread  "display make_screen_info"  .{   give (config_slot, di::DM_FIRST_EXPOSE);   };
+
+				SCREEN_DEPTH_IMPS {
+				    depth,
+				    gc_imp,
+				    draw_fn
+					=>
+					di::make_draw_imp
+					  ( take'  config_slot,
+					    gc_imp,
+					    xbuf_to_widgettree_xevent_router,
+                                            xsocket
+                                          )
+				};
+			    };
+
+			fun make_gc_imps ([], l)
+				=>
+				l;
+
+			    make_gc_imps (vd ! r, l)
+				=>
+				{
+				    d = dy::depth_of_visual vd;
+
+				    fun make_server ()
+					=
+					{   xid = next_xid ();
+
+					    # Make a pixmap to serve as the
+					    # witness drawable for the GC server:
+					    #	
+					    xok::request xsocket
+					      ( value_to_wire::encode_create_pixmap
+						  { pixmap => xid,
+						    drawable => root,
+						    size => g::SIZE { wide=>1, high=>1 },
+						    depth => d
+				                  }
+                                              );
+
+					    make_screen_depth
+						(d, gci::make_graphics_context_imp (display, xid));
+				        };
+
+
+				    fun get []
+					    =>
+					    make_server() ! l;
+
+				        get (SCREEN_DEPTH_IMPS { depth, ... } ! r)
+					    =>
+					    d == depth  ??  l
+                                                        ::  get r;
+                                    end;
+
+
+				    make_gc_imps (r, get l);
+				};
+			end;
+
+			root_imps
+			    =
+			    make_screen_depth
+			      (
+				dy::depth_of_visual  root_visual,
+				gci::make_graphics_context_imp  (display, root)
+			      );
+
+			imps = make_gc_imps (visualdepths, [root_imps]);
+			imps = make_gc_imps([xtypes::DEPTH 1], imps);
+
+			SCREEN_INFO {
+			    xscreen,
+			    color_imp => ci::make_color_imp (display, xscreen),
+			    imps,
+			    root_imps
+			};
+		    };
+
+		screens
+		    =
+		    map  make_screen_info
+			 screens;
+
+		XSESSION
+		  {
+		    xdisplay => display,
+		    default_screen => list::nth (screens, default_screen),
+		    screens,
+		    xbuf_to_widgettree_xevent_router,
+		    atom_imp,
+		    font_imp =>  f_i::make_font_imp  display,
+		    window_property_imp,
+		    selection_imp,
+		    keymap_imp
+		  };
+	  };
+
+
+	# X-server I/O. 
+
+	stipulate
+
+	    fun apply_to_xsocket f (XSESSION { xdisplay=>dy::XDISPLAY { xsocket, ... }, ... } )
+                =
+                f xsocket;
+
+	herein
+
+	    request            =  apply_to_xsocket  xok::request;
+	    request_and_check  =  apply_to_xsocket  xok::request_and_check;
+
+	    request_reply      =  apply_to_xsocket  xok::request_reply;
+	    request_replies    =  apply_to_xsocket  xok::request_replies;
+
+	    flush_out          =  apply_to_xsocket  xok::flush;
+
+	end;
+
+        # Close the xsession.
+        # NOTE: there are probably other things
+        # that should go on here, such as notifying
+        # the xbuf_to_topwindow_xevent_router.           XXX BUGGO FIXME
+        #
+	fun close_xsession (XSESSION { xdisplay, ... } )
+            =
+            display::close_display  xdisplay;
+
+	# Return the maximum request size
+	# supported by the display:
+	#
+	fun max_request_length (XSESSION { xdisplay=>dy::XDISPLAY { max_request_length, ... }, ... } )
+	    =
+	    max_request_length;
+
+	# Atom operations:
+	#
+	stipulate
+
+	    fun wrap_atom_op f (XSESSION { atom_imp, ... } )
+                =
+                f atom_imp;
+
+	herein
+
+	    make_atom      =  wrap_atom_op  ai::make_atom;
+	    find_atom      =  wrap_atom_op  ai::find_atom;
+	    atom_to_string =  wrap_atom_op  ai::atom_to_string;
+
+	end;
+
+	# Font operations:
+	#
+	fun open_font (XSESSION { font_imp, ... } )
+	    =
+	    font_imp::open_font font_imp;
+
+
+	fun default_screen_of (xsession as XSESSION { default_screen, ... } )
+	    =
+	    SCREEN { xsession, screen => default_screen };
+
+
+	fun screens_of (xsession as XSESSION { screens, ... } )
+	    =
+	    map (fn s = SCREEN { xsession, screen => s })
+                screens;
+
+
+	fun ring_bell xsession percent
+	    =
+	    request  xsession
+		(value_to_wire::encode_bell { percent => int::min (100, int::max(-100, percent)) } );
+
+
+	# Screen functions:
+	#
+	fun color_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::get_color color_imp;
+	fun black_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::black_of  color_imp;
+	fun white_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::white_of  color_imp;
+
+	fun xsession_of_screen (SCREEN { xsession, ... } )
+	    =
+            xsession;
+
+	# Additions by ddeboer, May 2004. 
+	# Dusty deBoer, KSU CIS 705, Spring 2004.
+
+	# Return the root window of a screen.
+	# This is needed in obtaining strings from xrdb,
+	# as they are stored in a property of the root window:
+	#
+	fun root_window_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root, ... }, ... }, ... } )
+            =
+            root;
+
+	# End additions by ddeboer 
+
+	fun size_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_pixels, ... }, ... }, ... } )
+	    =
+	   size_in_pixels;
+
+	fun size_mmof_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_mm, ... }, ... }, ... } )
+	    =
+	    size_in_mm;
+
+	fun depth_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root_visual, ... }, ... }, ... } )
+	    =
+	    dy::depth_of_visual root_visual;
+
+	fun display_class_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root_visual, ... }, ... }, ... } )
+	    =
+	    case (dy::display_class_of_visual root_visual)
+		THE c => c;
+		_     => xgripe::impossible "[xsession::display_class_of_screen: bogus root visual]";
+	    esac;
+
+	# Extract the GC server for the given depth 
+	#
+	fun servers_of_screen_depth (SCREEN { screen=>SCREEN_INFO { imps, ... }, ... }, d)
+	    =
+	    f imps
+	    where
+		fun f []
+			=>
+			xgripe::xerror "invalid depth for screen";
+
+		    f ((sd as SCREEN_DEPTH_IMPS { depth, ... } ) ! r)
+			=>
+			if (depth == d)  sd; else (f r);fi;
+		end;
+	    end;
+
+
+    };		# package display 
+end;	# stipulate.
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.
