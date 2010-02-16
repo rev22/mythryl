@@ -2165,41 +2165,41 @@ generic package   make7_g (
 			fun carg (    opt as ("-C" | "-D"), f, _, _)
 			    =>
 			    {   bad        =   badopt opt f;
-				spec       =   substring::extract (f, 3, NULL);		# substring	is from   src/lib/std/substring.pkg
+				spec       =   substring::extract (f, 2, NULL);		# substring	is from   src/lib/std/substring.pkg
 				is_config  =   opt == "-C";
 
                                 set_control' bad is_config spec;
 			    };
 
-			   carg ("-U", f, _, _)   =>    case (string::extract (f, 3, NULL))
-							   
-							      ""  =>  badopt "-U" f ();
-							      var =>  .set (host_properties::symbol_value var) NULL;
-                                                         esac;
-
-
-			   carg ("-h", f, _, last) => { case (string::extract (f, 2, NULL))
-							  
-							     ""   =>  help (THE 0);
-							    level =>  help (int::from_string level);
+			   carg ("-U", f, _, _)   =>    case (string::extract (f, 2, NULL))
+							    #
+							    ""  =>  badopt "-U" f ();
+							    var =>  .set (host_properties::symbol_value var) NULL;
                                                         esac;
 
-							quit_if last;
+
+			   carg ("-h", f, _, last) => {   case (string::extract (f, 2, NULL))
+							      #
+							      ""    =>  help (THE 0);
+							      level =>  help (int::from_string level);
+                                                          esac;
+
+							  quit_if last;
 						      };
 
 			   carg ("-s", f, _, last) => {   case (string::extract (f, 2, NULL))
-							    
-							       ""    =>  show_control_setting  (THE 0);
-							       level =>  show_control_setting  (int::from_string  level);
+							      #
+							      ""    =>  show_control_setting  (THE 0);
+							      level =>  show_control_setting  (int::from_string  level);
                                                           esac;
 
 							  quit_if  last;
 						      };
 
 			   carg ("-p", f, _, last) => {   case (string::extract (f, 2, NULL))
-							    
-							       ""    =>  show_env_vars (THE 0);
-							       level =>  show_env_vars (int::from_string level);
+							      #
+							      ""    =>  show_env_vars (THE 0);
+							      level =>  show_env_vars (int::from_string level);
                                                           esac;
 
 							  quit_if  last;
