@@ -1,6 +1,6 @@
 # xclient.make6
 #
-# The "library" part of X-Kit, which handles
+# The 'library' part of X-Kit, which handles
 # network-level X-server interaction.
 
 # Compiled by:

@@ -605,6 +605,8 @@ somewhat-clean:	ppless
 
 clean: somewhat-clean
 	@-rm -f bin/*.old
+	@-rm -f bin/nowhere
+	@-rm -f bin/gtk-slave
 	@-rm -f ID
 	@-rm -f TAGS
 	@-rm -f v-x86-linux
