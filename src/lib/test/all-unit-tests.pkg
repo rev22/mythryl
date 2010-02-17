@@ -45,7 +45,7 @@ package all_unit_tests {
 
 	    threadkit_unit_test::run ();
 
-#	    xclient_unit_test::run ();
+	    xclient_unit_test::run ();
 
             unit_test::summarize_all_tests ();
         };

@@ -39,6 +39,7 @@ LIBRARY_COMPONENTS
 
     $ROOT/src/lib/std/stdlib.make6
     $ROOT/src/lib/core/make7/make7.make6
+    $ROOT/src/lib/x-kit/xclient/xclient.make6
 
     $ROOT/src/lib/src/scripting-unit-test.pkg
     $ROOT/src/lib/src/eval-unit-test.pkg

@@ -32,10 +32,11 @@ LIBRARY_GROUP_EXPORTS
 	pkg xtracing
 	pkg xgripe
 	pkg xclient_sharing
-#	pkg xclient_unit_test	# Purely for src/lib/test/all-unit-tests.pkg
+	pkg xclient_unit_test	# Purely for src/lib/test/all-unit-tests.pkg
 
 LIBRARY_GROUP_COMPONENTS
 
+	$ROOT/src/lib/std/stdlib.make6
 	xclient-internals.make6
 
 	xdraw.pkg

@@ -10,7 +10,7 @@ LIBRARY_GROUP_EXPORTS
 LIBRARY_GROUP_COMPONENTS
 
 	$ROOT/src/lib/std/stdlib.make6
-
+	$ROOT/src/lib/core/make7/make7.make6
 
 	src/wire/crack-xserver-address.api
 	src/wire/crack-xserver-address.pkg
@@ -51,7 +51,7 @@ LIBRARY_GROUP_COMPONENTS
 	src/stuff/xserver-info-to-string.pkg
 	src/stuff/xtracing.pkg
 	src/stuff/xtype-to-string.pkg
-#        src/stuff/xclient-unit-test.pkg
+        src/stuff/xclient-unit-test.pkg
 
 	src/window/color-imp.api
 	src/window/color-imp.pkg
