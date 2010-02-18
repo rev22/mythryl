@@ -29,7 +29,7 @@ api {
 
      std_strm_hook:  Ref (Void -> Void);
 	#
-	# This function is defined in text_io_g,
+	# This function is defined in file_g,
         # and is called after the os hook,
 	# but before the per-stream init functions.
 	#

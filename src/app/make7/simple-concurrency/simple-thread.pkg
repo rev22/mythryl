@@ -640,7 +640,7 @@ package simple_thread: Simple_Thread {
 						# lib7			is from   src/lib/std/lib7.pkg
 						# callcc		is from   src/lib/std/src/nj/callcc.pkg
 						# file			is from   src/lib/std/src/unix/file.pkg
-						# test_io::pure_io	def in    src/lib/std/src/io/text-io-g.pkg
+						# file::pure_io		def in    src/lib/std/src/io/file-g.pkg
 						# text_primitive_io	is from   src/lib/std/src/io/text-primitive-io.pkg
 						# winix			is from   src/lib/std/winix.pkg
 						# winix::io		is from   src/lib/std/src/unix/winix-io.pkg

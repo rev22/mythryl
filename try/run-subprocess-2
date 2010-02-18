@@ -16,7 +16,7 @@ herein
 							# spawn		is from   src/lib/std/src/unix/spawn.pkg
 							# string	is from   src/lib/std/string.pkg
 							# file		is from   src/lib/std/src/unix/file.pkg
-							# file-generic	is from   src/lib/std/src/io/text-io-g.pkg
+							# file_g	is from   src/lib/std/src/io/file-g.pkg
     fun run_subprocess ()
 	= 
 	{

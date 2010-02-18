@@ -6,12 +6,12 @@
 
 package file
 :>
-Text_IO
+File
     where type pure_io::Reader = text_primitive_io::Reader
     where type pure_io::Writer = text_primitive_io::Writer
     where type pure_io::pos    = text_primitive_io::pos
 =
-    text_io_g (
+    file_g (
 
         package winix_primitive_io
             =

@@ -5,7 +5,7 @@
 
 
 
-# This is the threadkit version of text_io_g:
+# This is the threadkit version of file_g:
 
 
 generic package threadkit_text_io_g (
@@ -1806,7 +1806,7 @@ generic package threadkit_text_io_g (
 	    );
 
     end;	# stipulate
-};		# text_io_g 
+};		# threadkit_text_io_g 
 
 
 ## COPYRIGHT (c) 1995 AT&T Bell Laboratories.

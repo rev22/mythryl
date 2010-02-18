@@ -45,7 +45,7 @@ api {
 
      std_stream_hook:  Ref( Void -> Void );
 	#
-	# This function is defined in text_io_g
+	# This function is defined in file_g
 	# and is called after the os_hook.
 	#
 	# It is used to rebuild the standard streams.

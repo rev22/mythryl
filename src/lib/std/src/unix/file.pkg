@@ -8,7 +8,7 @@
 
 								# File				is from   src/lib/std/src/io/file.api
 								# text_primitive_io		is from   src/lib/std/src/io/text-primitive-io.pkg
-								# text_io_g			is from   src/lib/std/src/io/text-io-g.pkg
+								# file_g			is from   src/lib/std/src/io/file-g.pkg
 								# posix_text_primitive_io	is from   src/lib/std/src/unix/posix-text-primitive-io.pkg
 package file
 :
@@ -17,7 +17,7 @@ File
     where  pure_io::Writer        == text_primitive_io::Writer
     where  pure_io::File_Position == text_primitive_io::File_Position
 =
-text_io_g (
+file_g (
 
     package winix_primitive_io
 	=

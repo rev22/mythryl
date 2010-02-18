@@ -122,11 +122,11 @@ Major Packages and Package Macros:
 	    file stack on Posix
 	    systems."
 	Defined by:
-	    text_io_g 			File    	        src/lib/std/src/io/text-io-g.pkg
+	    file_g 			File    	        src/lib/std/src/io/file-g.pkg
 	Uses:
 	    posix_text_primitive_io	Winix_Primitive_Io+	src/lib/std/src/unix/posix-text-primitive-io.pkg
 
-    text_io_g 				File    	        src/lib/std/src/io/text-io-g.pkg
+    file_g 				File    	        src/lib/std/src/io/file-g.pkg
 	Gets passed:
 	    posix_text_primitive_io	Winix_Primitive_Io+	src/lib/std/src/unix/posix-text-primitive-io.pkg
 
@@ -157,7 +157,7 @@ Major Packages and Package Macros:
 ----------System I/O Layer--------
 
     posix_text_primitive_io		Winix_Primitive_Io+	src/lib/std/src/unix/posix-text-primitive-io.pkg
-	Argument to text_io_g.
+	Argument to file_g.
 	Also used in spawn.pkg
         Uses:
 	    posix::file						src/lib/std/src/posix/posix-file.pkg
@@ -166,7 +166,7 @@ Major Packages and Package Macros:
             text_primitive_io					src/lib/std/src/io/text-primitive-io.pkg
 	Used-by:
 	    unix			Unix			
-	    text_io_g (as arg)		File    	        src/lib/std/src/io/text-io-g.pkg
+	    file_g (as arg)		File    	        src/lib/std/src/io/file-g.pkg
 
     posix_binary_primitive_io		Winix_Primitive_Io		src/lib/std/src/unix/posix-binary-primitive-io.pkg
         Uses:

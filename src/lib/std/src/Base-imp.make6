@@ -491,7 +491,7 @@ LIBRARY_GROUP_COMPONENTS
 	$ROOT/src/lib/std/src/io/file.api
 	$ROOT/src/lib/std/src/io/winix-primitive-io.api
 	$ROOT/src/lib/std/src/io/binary-io-g.pkg
-	$ROOT/src/lib/std/src/io/text-io-g.pkg
+	$ROOT/src/lib/std/src/io/file-g.pkg
 	$ROOT/src/lib/std/src/io/say.pkg
 
 	#if defined(OPSYS_UNIX) or defined(OPSYS_WIN32)
