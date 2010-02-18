@@ -17,6 +17,7 @@ stipulate
     package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
     package trc =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
     package xt  =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     tracefile   =  "xclient-unit-test-trace.log";
 herein
 
@@ -52,12 +53,26 @@ herein
 	        ctl::start_up_thread_scheduler'
 		    default_time_quantum
 		   .{
-			 assert  (ctl::thread_scheduler_is_running ());
+			assert  (ctl::thread_scheduler_is_running ());
 
-#                        do_it (make_root_window NULL);
+			case (posix::getenv "DISPLAY")
+			    #
+			    NULL =>
+				{    fprintf file::stderr "xclient-unit-test.pkg: DISPLAY environment variable not set, skipping unit tests.\n";
+				     assert FALSE;	# To alert anyone just looking at the final run statistics.
+				};
 
-			 ctl::shut_down_thread_scheduler  winix::process::success;
-                    };
+			    THE display_name
+				=>
+				{
+#                                   fprintf file::stderr "xclient-unit-test.pkg: DISPLAY variable is set to '%s'\n" display_name;
+#				    dy::open_xdisplay { display_name, authentication => NULL };
+#                                   do_it (make_root_window NULL);
+				};
+			esac;
+
+			ctl::shut_down_thread_scheduler  winix::process::success;
+		    };
 
 		assert TRUE;
 

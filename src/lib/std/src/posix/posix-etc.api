@@ -20,17 +20,16 @@ api Posix_Etc {
     eqtype User_Id;
     eqtype Group_Id;
     
-    package passwd :
-      api {
-         Passwd;
-
-         name:   Passwd -> String;
-         uid:    Passwd -> User_Id;
-         gid:    Passwd -> Group_Id;
-         home:   Passwd -> String;
-         shell:  Passwd -> String;
-
-      };
+    package passwd:   api {
+			  #
+			  Passwd;
+			  #
+			  name:   Passwd -> String;
+			  uid:    Passwd -> User_Id;
+			  gid:    Passwd -> Group_Id;
+			  home:   Passwd -> String;
+			  shell:  Passwd -> String;
+		      };
 
     package group :
       api {

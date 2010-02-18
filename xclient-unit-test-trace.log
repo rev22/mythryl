@@ -1,0 +1,11 @@
+# This is a trace log created by src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+# print_if line fields are:
+# 
+#     timestamp in seconds:   thread name:   message   (foo::tracing)
+# 
+# You can suppress such a message via:   tracing::disable foo::tracing
+# You can reenable such a message via:   tracing::enable foo::tracing
+# You can enable all the messages via:   tracing::enable tracing::all_tracing
+# See also:  Comments in src/lib/src/lib/thread-kit/src/lib/tracing.api
+
+1266470178.565558:  socket_closer_imp:  [000006] ***** shutdown *****    	(xtracing::lib_tracing)

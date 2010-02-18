@@ -12,11 +12,12 @@
 # heap image may differ from the user's environment when the exported image
 # is used.
 
-
+# This api is implemented in:
+#     src/lib/unix/unix-env.pkg
 
 api Unix_Env {
 
-    get_from_env:  ((String,  List( String )) ) -> Null_Or( String );
+    get_from_env:  (String,  List(String)) -> Null_Or( String );
 	#
 	# Return the value, if any, bound to the name. 
 
@@ -24,16 +25,16 @@ api Unix_Env {
 	#
 	# Return the value bound to the name, or a default value.
 
-    remove_from_env:  ((String, List( String )) ) -> List( String );
+    remove_from_env:  (String, List(String)) -> List(String);
 	#
 	# Remove a name-value pair from an environment.
 
-    add_to_env:  ((String, List( String )) ) -> List( String );
+    add_to_env:  (String, List(String)) -> List( String );
 	#
 	# Add a name-value pair to an environment,
 	# replacing any pre-existing pair which conflicts.
 
-    environ:  Void -> List( String );
+    environ:  Void -> List(String);
 	#
 	# Return the user's environment.
 
