@@ -226,6 +226,7 @@ api Make7 {
 	    getlogin:     Void -> String;
 	    getpgrp:      Void -> Int;
 #	    glob:         String -> List( String );	XXX BUGGO FIXME Should add this, patterned after the Python glob. There's relevant existing infrastructure in src/lib/tk/src/toolkit/regExp/globber.pkg
+            mkdir:       (String, posix::s::Mode) -> Void;
 	    setgid:       Int  -> Void;
 	    setpgid:      (Int, Int) -> Void;
 	    setsid:       Void -> Int;
@@ -240,6 +241,8 @@ api Make7 {
 	    lstat:        String -> posix::stat::Stat;
 	    now:          Void   -> Float;
 	    product:	  List(Int) -> Int;
+            rename:     { from:  String, to:  String } -> Void;
+            rmdir:        String -> Void;
 	    round:        Float  -> Int;
 	    shuffle':      random::Random_Number_Generator -> List( X ) -> List( X );
 	    shuffle:       List( X ) -> List( X );
@@ -254,6 +257,7 @@ api Make7 {
 	    strsort:      List(String) -> List(String);
 	    struniqsort:  List(String) -> List(String);
 	    sum:	  List(Int) -> Int;
+            symlink:    { old:  String,   new: String } -> Void;             #  POSIX 1003.1a 
 	    system:       String -> winix::process::Status;
 	    time:         Void   -> int32::Int;			# NB: 'now' has much more precision.
 	    tolower:      String -> String;
@@ -261,6 +265,7 @@ api Make7 {
 	    tokens:      (Char -> Bool) -> String -> List( String );
 	    trim:         String -> String;			# Drop leading and trailing whitespace.
 	    uniquesort: ((X, X) -> Order) -> List( X ) -> List( X );
+	    unlink:       String -> Void;
 	    words:        String -> List( String );
 	    dot__qquotes: String -> List( String );
 

@@ -2702,8 +2702,11 @@ fi;
 		join        =  string::join;
 		join'       =  string::join';
 		lstat       =  posix::lstat;
+		mkdir	    =  posix::mkdir;	
 		now         =  time::now;
 		product     =  int::product;
+		rename      =  posix::rename;
+		rmdir       =  posix::rmdir;
 		shuffle     =  list_shuffle::shuffle;
 		shuffle'    =  list_shuffle::shuffle';
 		sleep       =  winix::process::sleep;
@@ -2717,11 +2720,13 @@ fi;
 		strsort     =  (list_mergesort::sort string::(>));
 		struniqsort =  (list_mergesort::unique_sort string::compare);
 		sum         =  int::sum;
+		symlink     =  posix::symlink;
 		time        =  posix::time;		# NB: 'now' has much more precision.
 		tolower     =  string::to_lower;
 		toupper     =  string::to_upper;
 		tokens      =  string::tokens;
 		uniquesort  =  list_mergesort::unique_sort;
+		unlink      =  posix::unlink;
 		words       =  string::tokens char::is_space;
 
 		dot__qquotes =  words;			# So that ."a b c d e f" == ["a", "b", "c", "d", "e", "f"]

@@ -34,6 +34,11 @@ herein
 	    =
 	    {   printf "\nDoing %s:\n" name;   
 
+		if (isfile "tracing.log")
+		    #
+		    unlink "tracing.log";
+		fi;
+
 #   	        ctl::start_up_thread_scheduler'
 #   		    default_time_quantum
 #   		   .{

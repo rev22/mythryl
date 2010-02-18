@@ -72,7 +72,7 @@ api  File {
     read_n:     (Input_Stream, Int) -> Vector;
     read_all:    Input_Stream -> Vector;
 
-    can_read:     ((Input_Stream, Int)) -> Null_Or( Int );
+    can_read:      (Input_Stream, Int)  ->  Null_Or( Int );
     lookahead:      Input_Stream -> Null_Or( Element );
     close_input:    Input_Stream -> Void;
     end_of_stream:  Input_Stream -> Bool;
