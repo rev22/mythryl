@@ -14,21 +14,21 @@
 #     src/lib/test/all-unit-tests.pkg
 
 stipulate
+    include unit_test;
+    include make7::scripting_globals;
+    #
     package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
-    package trc =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
-    package xt  =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    package tr  =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+    package xtr =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     tracefile   =  "xclient-unit-test-trace.log";
 herein
 
     package xclient_unit_test {
 
-	include unit_test;
-	include make7::scripting_globals;
-
-
 	my name = "src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg";
 
+	trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 
 	default_time_quantum					# Copied from src/lib/x-kit/widget/lib/run-xkit.pkg
 	    =
@@ -38,6 +38,8 @@ herein
 	    =
 	    {   printf "\nDoing %s:\n" name;   
 
+		# Remove any old version of the tracefile:
+		#
 		if (isfile tracefile)
 		    #
 		    unlink tracefile;
@@ -46,8 +48,8 @@ herein
 		{   include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
 		    log_trace_messages  (TO_FILE tracefile);
 		    enable all_tracing;				# Gross overkill.
-#		    enable xt::xkit_tracing;			# Lesser overkill.
-#		    enable xt::io_tracing;			# Saner yet.	
+#		    enable xtr::xkit_tracing;			# Lesser overkill.
+#		    enable xtr::io_tracing;			# Saner yet.	
 		};
 
 	        ctl::start_up_thread_scheduler'
@@ -65,7 +67,7 @@ herein
 			    THE display_name
 				=>
 				{
-#                                   fprintf file::stderr "xclient-unit-test.pkg: DISPLAY variable is set to '%s'\n" display_name;
+                                    trace .{ sprintf "xclient-unit-test.pkg: DISPLAY variable is set to '%s'\n" display_name; };
 #				    dy::open_xdisplay { display_name, authentication => NULL };
 #                                   do_it (make_root_window NULL);
 				};

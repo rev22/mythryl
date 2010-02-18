@@ -596,7 +596,7 @@ api {
 		time;
 
 	    NULL =>
-		{   time =  time::get_time ();
+		{   time =  time::get ();
 
 		    cached_approximate_time
 			:=

@@ -28,8 +28,8 @@ package internal_timer: (weak)  api {
 
     stipulate
 
-	my gettime' :
-	    Void -> ((int32::Int, Int, int32::Int, Int, int32::Int, Int)) =
+	my gettime' : 	    Void -> (int32::Int, Int, int32::Int, Int, int32::Int, Int)
+	    =
 	    c_interface::c_function "Lib7-Time" "gettime";
 
 	fun make_time (s, us)
@@ -51,7 +51,7 @@ package internal_timer: (weak)  api {
     end;
 
     fun start_cpu_timer  () =   CPUT (get_time());
-    fun start_real_timer () =   REAL_T (time::get_time ());
+    fun start_real_timer () =   REAL_T (time::get ());
 
     stipulate
 
@@ -108,7 +108,7 @@ package internal_timer: (weak)  api {
 
     fun check_real_timer (REAL_T t)
         =
-        time::(-) (time::get_time(), t);
+        time::(-) (time::get(), t);
 
 };
 

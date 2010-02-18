@@ -26,34 +26,38 @@ api Time {
     to_milliseconds:    Time -> large_int::Int;    from_milliseconds:	large_int::Int -> Time;
     to_microseconds:    Time -> large_int::Int;    from_microseconds:	large_int::Int -> Time;
     to_nanoseconds:     Time -> large_int::Int;    from_nanoseconds:	large_int::Int -> Time;
-    to_string:		Time -> String;		   from_string:		String -> Null_Or( Time );
-    to_float:		Time -> Float;		   from_float:		Float -> Time;
+
+    to_string:		Time -> String;
+    to_float:		Time -> Float;
+
+    from_string:	String -> Null_Or(Time);
+    from_float:		Float  -> Time;
 
     +  : (Time, Time) -> Time;
     -  : (Time, Time) -> Time;
 
-    compare:  ((Time, Time)) -> Order;
+    compare:  (Time, Time) -> Order;
 
     <  : (Time, Time) -> Bool;
     <= : (Time, Time) -> Bool;
     >  : (Time, Time) -> Bool;
     >= : (Time, Time) -> Bool;
 
-    now:       Void -> Float;
-    get_time:  Void -> Time;
+    now:  Void -> Float;
+    get:  Void -> Time;
 
     # Format time as a string.
     # First argument is precision:
     #
-    #	eval:  time::format 0 (time::get_time ());
+    #	eval:  time::format 0 (time::get ());
     #
     #	"1258134720"
     #
-    #	eval:  time::format 4 (time::get_time ());
+    #	eval:  time::format 4 (time::get ());
     #
     #	"1258134742.5852"
     #
-    #	eval:  time::format 6 (time::get_time ());
+    #	eval:  time::format 6 (time::get ());
     #
     #	"1258134732.273621"
     #

@@ -484,8 +484,8 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 	    # if we're not going to print it (i.e., if
 	    # tracing is disabled for that call).
 
-#           time_string  =  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get_time ()));	# "2010-01-05:14:17:23" or such.
-	    time_string  =  time::format 6 (time::get_time ());							# "1262722876.273621"   or such.
+#           time_string  =  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()));	# "2010-01-05:14:17:23" or such.
+	    time_string  =  time::format 6 (time::get());						# "1262722876.273621"   or such.
 
 	    trace_string =  time_string + ":  "
                          +  (sprintf "%-20s" (thread::get_thread_name() + ": "))

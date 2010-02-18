@@ -90,13 +90,13 @@ api {
 
     stipulate
 
-	my get_time_of_day:  Void -> ((int32::Int, Int))
+	my get_time_of_day:  Void -> (int32::Int, Int)
             =
 	    c_interface::c_function "Lib7-Time" "timeofday";
 
     herein
 
-        fun get_time ()
+        fun get ()
             =
 	    {    (get_time_of_day ())
                      ->
@@ -111,7 +111,7 @@ api {
 
     fun now ()
 	=
-	to_float (get_time ());
+	to_float (get ());
 
     my rounding_vector:  Vector( lint::Int )
         =
@@ -120,15 +120,15 @@ api {
 
     # Format time as a string:
     #
-    #	eval:  time::format 0 (time::get_time ());
+    #	eval:  time::format 0 (time::get ());
     #
     #	"1258134720"
     #
-    #	eval:  time::format 4 (time::get_time ());
+    #	eval:  time::format 4 (time::get ());
     #
     #	"1258134742.5852"
     #
-    #	eval:  time::format 6 (time::get_time ());
+    #	eval:  time::format 6 (time::get ());
     #
     #	"1258134732.273621"
     #

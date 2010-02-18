@@ -21,7 +21,7 @@ package threadkit_debug: (weak)  api {
 
     fun say_debug_ts  msg
         =
-        say_debug (cat ["[", time::format 3 (time::get_time()), "] ", msg]);
+        say_debug (cat ["[", time::format 3 (time::get()), "] ", msg]);
 
     my get_current_thread:  Void -> internal_threadkit_types::Thread_Id
         =

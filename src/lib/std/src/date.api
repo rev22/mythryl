@@ -1,4 +1,7 @@
 ## date.api
+#
+# See also:
+#     src/lib/std/src/time.api
 
 # Compiled by:
 #     src/lib/std/src/Base-imp.make6
@@ -79,10 +82,23 @@ api Date {
 
 
     to_string: Date -> String;
+	#
+	# An easy way to get the current time and date as a string like
+	#     "Thu Feb 18 15:44:22 2010"
+	# is:
+	#     date::to_string (date::from_time_local (time::get()));
+
     strftime:  String -> Date -> String;
 	#
 	# This just calls the C strftime() function.
 	# See the STRFTIME(3) Linux manpage ('man strftime').
+	#
+	# To get the time and date in descending order, so that
+	# an alphabetic sort will also be chronological, try:
+	#
+	#     eval:  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()));
+	#
+	#     "2010-02-18:15:50:55"
 
     from_string:  String -> Null_Or( Date );
     scan:         string_conversion::Reader (Char, X) ->

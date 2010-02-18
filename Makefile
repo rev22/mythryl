@@ -536,6 +536,7 @@ somewhat-clean:	ppless
 	@find . -type f -name '*.EDITS' -print | xargs rm -f;
 	@find . -type f -name '*.SEEN' -print | xargs rm -f;
 	@find . -type f -name '*.skeleton' -print | xargs rm -f;
+	@find . -type f -name '*.log' -print | xargs rm -f;
 	@find . -type f -name 'tmp-make7-pid-*' -print | xargs rm -f;
 	@rm -rf sh/edit;
 	@rm -rf src/etc/build7-o7-files;

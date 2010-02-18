@@ -123,8 +123,7 @@ herein
 
 	fun get_seed ()
 	    =
-	    {    include time;
-		 unt31::from_large_int (to_seconds (get_time()));
+	    {    unt31::from_large_int (time::to_seconds (time::get()));
 	    };
 
 	fun gen_vals (random, d)
