@@ -65,7 +65,7 @@ herein
 										# null_or			is from   src/lib/std/src/null-or.pkg
 										# string			is from   src/lib/std/string.pkg
 										# char				is from   src/lib/std/char.pkg
-										# file				is from   src/lib/std/src/unix/posix-file.pkg
+										# file				is from   src/lib/std/src/unix/file.pkg
 
 		fun get_line_tokens  stream
                     =
@@ -234,7 +234,7 @@ herein
                         where
 			    fun loop ()
 				=
-				case (get_line_tokens  file::stdin)			# file	is from   src/lib/std/src/unix/posix-file.pkg
+				case (get_line_tokens  file::stdin)			# file	is from   src/lib/std/src/unix/file.pkg
 
 				     NULL
 					 =>

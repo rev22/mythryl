@@ -15,7 +15,7 @@ herein
     lines_read    = REF 0;
 							# spawn		is from   src/lib/std/src/unix/spawn.pkg
 							# string	is from   src/lib/std/string.pkg
-							# file		is from   src/lib/std/src/unix/posix-file.pkg
+							# file		is from   src/lib/std/src/unix/file.pkg
 							# file-generic	is from   src/lib/std/src/io/text-io-g.pkg
     fun run_subprocess ()
 	= 

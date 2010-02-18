@@ -19,8 +19,8 @@ api {
     input:  file::Input_Stream -> portable_graph::Graph;
 }
 {
-    package p= portable_graph;	# portable_graph	is from   src/app/make7/pgraph/pgraph.pkg
-    package s= file::pure_io;	# file	is from   src/lib/std/src/unix/posix-file.pkg
+    package p= portable_graph;		# portable_graph	is from   src/app/make7/pgraph/pgraph.pkg
+    package s= file::pure_io;		# file			is from   src/lib/std/src/unix/file.pkg
 
     exception PARSE_ERROR  String;
 

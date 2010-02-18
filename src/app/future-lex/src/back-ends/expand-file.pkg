@@ -33,7 +33,7 @@ api {
 
 }
 {
-    package tio =  file;	# file	is from   src/lib/std/src/unix/posix-file.pkg
+    package tio =  file;	# file		is from   src/lib/std/src/unix/file.pkg
     package ss  =  substring;	# substring	is from   src/lib/std/substring.pkg
 /*
     package re = regular_expression_matcher_g (

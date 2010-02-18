@@ -54,7 +54,7 @@ api Boot_Dictionary {
 };
 
 							# linking_table		is from   src/lib/compiler/execution/linking-table/linking-table.pkg
-							# file			is from   src/lib/std/src/unix/posix-file.pkg
+							# file			is from   src/lib/std/src/unix/file.pkg
 							# raw_syntax		is from   src/lib/compiler/front/parse/raw-syntax/raw-syntax.pkg
 							# symbol		is from   src/lib/compiler/front/basics/mlcomp/symbol.pkg
 							# make_compiler		is from   src/lib/core/make-compiler/select-x86-unix.pkg

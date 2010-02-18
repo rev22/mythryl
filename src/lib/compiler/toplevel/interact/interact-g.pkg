@@ -85,7 +85,7 @@ generic package   interact_g   (
                );
         };
 											# controls		is from   src/lib/compiler/toplevel/main/controls.pkg
-											# file			is from   src/lib/std/src/unix/posix-file.pkg
+											# file			is from   src/lib/std/src/unix/file.pkg
 											# io_exceptions		is from   src/lib/std/src/io/io-exceptions.pkg
     fun read_eval_print_from_stream   stream
         =

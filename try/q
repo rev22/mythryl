@@ -32,7 +32,7 @@ printf "run_subprocess / read_ready /TOP\n";
 		[   stream_is_write_ready  to_stream  .{ 
 
 print "run_subprocess / write_ready /TOP\n";
-			file::write (to_stream, "echo 'xyzzy'\n");			# file	is from   src/lib/std/src/unix/posix-file.pkg
+			file::write (to_stream, "echo 'xyzzy'\n");			# file	is from   src/lib/std/src/unix/file.pkg
 			file::flush to_stream;
 		    }
 		];

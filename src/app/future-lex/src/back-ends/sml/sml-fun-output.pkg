@@ -442,7 +442,7 @@ package smlfun_output
             file::write (stream, arg');
 	};
 
-    package tio= file;	# file	is from   src/lib/std/src/unix/posix-file.pkg
+    package tio= file;	# file	is from   src/lib/std/src/unix/file.pkg
 
     template
         =

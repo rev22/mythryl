@@ -25,7 +25,7 @@ Tools
 							# private_tools		is from   src/app/make7/tools/main/private-tools.pkg
 							# winix			is from   src/lib/std/winix.pkg
 							# string_substitution	is from   src/app/make7/util/string-substitution.pkg
-							# file			is from   src/lib/std/src/unix/posix-file.pkg
+							# file			is from   src/lib/std/src/unix/file.pkg
     package subst =   string_substitution;
     package ad    =   anchor_dictionary;
 

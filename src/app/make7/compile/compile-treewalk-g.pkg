@@ -369,7 +369,7 @@ herein
 							# Compiler_Client_Interface	is from   src/lib/compiler/toplevel/backend/compiler-client-interface.api
 							# Freezefile_Map		is from   src/app/make7/freezefile/freezefile-map-g.pkg
 							# freezefile_map_g		def in    src/app/make7/freezefile/freezefile-map-g.pkg
-							# file				is from   src/lib/std/src/unix/posix-file.pkg
+							# file				is from   src/lib/std/src/unix/file.pkg
 
     # Compile-time arguments:
     #

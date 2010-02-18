@@ -36,7 +36,7 @@ api Profile {
 					    # the timing mode is enabled by set_timing_mode.
 
     report:					# Print profiling report to stream.
-	file::Output_Stream -> Void;	# file	is from   src/lib/std/src/unix/posix-file.pkg
+	file::Output_Stream -> Void;	# file	is from   src/lib/std/src/unix/file.pkg
 
     report_all:				# Print profiling report to stream; Do NOT suppress zero entries.
 	file::Output_Stream -> Void;

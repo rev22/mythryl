@@ -91,7 +91,7 @@ package when: When {				# When		is from   src/lib/src/when.api
 	      oobd_callbacks  =>  (int_map::empty:   int_map::Map( Void -> Void ))
 	    };
 
-						# file			is from   src/lib/std/src/unix/posix-file.pkg
+						# file			is from   src/lib/std/src/unix/file.pkg
 						# text_primitive_io	is from   src/lib/std/src/io/text-primitive-io.pkg
 						# primitive_io_g	is from   src/lib/std/src/io/primitive-io-g.pkg
 	fun input_stream_to_iod  input_stream

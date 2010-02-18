@@ -460,10 +460,10 @@ herein
 	    end;					# fun list_o7files_to_load
 
 							# find_set_of_o7_files_for_executable	is from   src/app/make7/make-compiler/find-set-of-o7-files-for-executable.pkg
-							# compile_treewalk_g		def in    src/app/make7/compile/compile-treewalk-g.pkg
-							# make7file_g			def in    src/app/make7/parse/make7file-g.pkg
-							# freezefile_map_g		def in    src/app/make7/freezefile/freezefile-map-g.pkg
-							# file					is from   src/lib/std/src/unix/posix-file.pkg
+							# compile_treewalk_g			def in    src/app/make7/compile/compile-treewalk-g.pkg
+							# make7file_g				def in    src/app/make7/parse/make7file-g.pkg
+							# freezefile_map_g			def in    src/app/make7/freezefile/freezefile-map-g.pkg
+							# file					is from   src/lib/std/src/unix/file.pkg
 							# compile_client			is from   src/app/make7/simple-concurrency/unix-compile-client.pkg
 	#
 	fun reset_internal_state ()
@@ -1071,7 +1071,7 @@ herein
                                              end;
 
 												# reachable	is from   src/app/make7/depend/find-reachable-sml-nodes.pkg
-												# file	is from   src/lib/std/src/unix/posix-file.pkg
+												# file		is from   src/lib/std/src/unix/file.pkg
                                              # Generate the OH7_FILES_TO_LOAD file:
                                              # 
 					     fun write_o7files_to_load  output_stream
@@ -1194,7 +1194,7 @@ herein
 										      picklehash::to_hex  pid
 										  ];
 								     esac;
-											# file		is from   src/lib/std/src/unix/posix-file.pkg
+											# file			is from   src/lib/std/src/unix/file.pkg
 											# int			is from   src/lib/std/int.pkg
 											# picklehash		is from   src/lib/compiler/front/basics/mlcomp/picklehash.pkg
 								 };
@@ -1202,7 +1202,7 @@ herein
                                                  end;					# fun write_library_contents_file   in   fun write__o7files_to_load__and__library_contents   in   fun make_main_compile   in   fun make_compiler
 
 											# autodir		is from   src/app/make7/util/autodir.pkg
-											# file		is from   src/lib/std/src/unix/posix-file.pkg
+											# file			is from   src/lib/std/src/unix/file.pkg
 
 					     safely::do
 						 { close_it =>  file::close_output,

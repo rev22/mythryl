@@ -67,7 +67,7 @@ fun run_subprocesses ()
 
 	
 
-	file::write (outstream, "echo 'xyzzy'\n");			# file	is from   src/lib/std/src/unix/posix-file.pkg
+	file::write (outstream, "echo 'xyzzy'\n");			# file	is from   src/lib/std/src/unix/file.pkg
 	file::flush outstream;
 
 	printf "Read from subprocess: '%s'\n" (string::chomp (the (file::read_line  instream) ) );

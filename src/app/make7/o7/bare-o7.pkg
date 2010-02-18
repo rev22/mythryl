@@ -753,7 +753,7 @@ package bare_o7: Bare_O7 {				# Bare_O7		is from   src/app/make7/o7/bare-o7.pkg
 					    cleanup  =>  fn _ = ()
 					  }
 					  (THE o file::read_all)
-				      except			# file	is from   src/lib/std/src/unix/posix-file.pkg
+				      except			# file	is from   src/lib/std/src/unix/file.pkg
 					  io_exceptions::IO _ =  NULL;
 				 fi;
 			     };	

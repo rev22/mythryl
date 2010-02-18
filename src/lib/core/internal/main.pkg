@@ -45,7 +45,7 @@ package main: (weak)  api { } {
 							# winix			is from   src/lib/std/winix.pkg
 							# boot_dictionary	is from   src/lib/core/internal/boot-dictionary.pkg
 							# io_exceptions		is from   src/lib/std/src/io/io-exceptions.pkg
-							# file			is from   src/lib/std/src/unix/posix-file.pkg
+							# file			is from   src/lib/std/src/unix/file.pkg
 							# exceptions		is from   src/lib/std/exceptions.pkg
 							# unsafe		is from   src/lib/std/src/unsafe/unsafe.pkg
     #  Dictionary initializations: 

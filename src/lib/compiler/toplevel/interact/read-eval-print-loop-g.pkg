@@ -732,7 +732,7 @@ generic package   read_eval_print_loop_g   (
 		};						#  fun with_error_handling 
 
 								# source_code_source	is from   src/lib/compiler/front/basics/source/source-code-source.pkg
-								# file			is from   src/lib/std/src/unix/posix-file.pkg
+								# file			is from   src/lib/std/src/unix/file.pkg
 
 	    # Interactive loop, with error handling.
 	    #	

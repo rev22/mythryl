@@ -22,7 +22,7 @@ package {
     =
     package {
 
-        package tio= file;	# file	is from   src/lib/std/src/unix/posix-file.pkg
+        package tio= file;				# file			is from   src/lib/std/src/unix/file.pkg
         package tsio = tio::pure_io;
 	package tpio= text_primitive_io;		# text_primitive_io	is from   src/lib/std/src/io/text-primitive-io.pkg
 

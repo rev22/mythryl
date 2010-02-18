@@ -143,7 +143,7 @@ herein
 										# unt		is from   src/lib/std/unt.pkg
 										# int		is from   src/lib/std/int.pkg
 										# string	is from   src/lib/std/string.pkg
-										# file		is from   src/lib/std/src/unix/posix-file.pkg
+										# file		is from   src/lib/std/src/unix/file.pkg
 	fun eword w =   evar ("0wx" + unt::to_string w);
 	fun eint  i =   evar (int::to_string i);
 
@@ -422,7 +422,7 @@ herein
                                      =
                                      parse_to_raw_syntax_tree::file_to_raw_syntax_tree'
 
-					 file::stderr				# file		is from   src/lib/std/src/unix/posix-file.pkg
+					 file::stderr				# file		is from   src/lib/std/src/unix/file.pkg
 					 (sizes, state::INITIAL)		# state		is from   src/lib/c-kit/src/ast/state.pkg
 					 preprocessed_c_source_code_file;
 

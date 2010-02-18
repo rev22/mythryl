@@ -117,7 +117,7 @@ Major Packages and Package Macros:
 	    binary_primitive_io
 	    
 ----------Stream I/O Layer--------
-    file 				Text_Io    	        src/lib/std/src/unix/posix-file.pkg
+    file 				Text_Io    	        src/lib/std/src/unix/file.pkg
 	   "The implementation of the
 	    file stack on Posix
 	    systems."

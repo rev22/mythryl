@@ -22,7 +22,7 @@ String_Outstream					# String_Outstream	is from   src/lib/compiler/lower/library
 
 {
 
-    package file      =  file;				# file			is from   src/lib/std/src/unix/posix-file.pkg
+    package file      =  file;				# file			is from   src/lib/std/src/unix/file.pkg
     package text_primitive_io =  text_primitive_io;	# text_primitive_io	is from   src/lib/std/src/io/text-primitive-io.pkg
 
     Streambuf = Ref( List( String ) );

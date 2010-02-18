@@ -91,7 +91,7 @@ package mythryl_parser_guts: (weak)  Mythryl_Parser_Guts {
 		     };
 
 								# mythryl_parser	is from   src/lib/compiler/front/parse/main/mythryl-parser.pkg
-								# file			is from   src/lib/std/src/unix/posix-file.pkg
+								# file			is from   src/lib/std/src/unix/file.pkg
 								# control_print		is from   src/lib/compiler/front/basics/print/printcontrol.pkg
 
 	    do_prompt =   REF TRUE;

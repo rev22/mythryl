@@ -15,9 +15,9 @@ package unparse_code_segments: Unparse_Code_Segments {		# Unparse_Code_Segments	
 		->
 		{ c0, cn, data };
 
-					# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
-					# code_segments		is from   src/lib/compiler/execution/code-segments/code-segments.pkg
-					# file		is from   src/lib/std/src/unix/posix-file.pkg
+								# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
+								# code_segments		is from   src/lib/compiler/execution/code-segments/code-segments.pkg
+								# file			is from   src/lib/std/src/unix/file.pkg
 
 	    cn_len   =  list::length code_segments.cn;
 	    data_len =  unt8_vector::length code_segments.data;

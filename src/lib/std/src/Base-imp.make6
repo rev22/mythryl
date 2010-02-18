@@ -437,7 +437,7 @@ LIBRARY_GROUP_COMPONENTS
 	$ROOT/src/lib/std/src/unix/posix-binary-primitive-io.pkg
 	$ROOT/src/lib/std/src/unix/posix-text-primitive-io.pkg
 	$ROOT/src/lib/std/src/unix/posix-binary-io.pkg
-	$ROOT/src/lib/std/src/unix/posix-file.pkg
+	$ROOT/src/lib/std/src/unix/file.pkg
 	$ROOT/src/lib/std/src/unix/posix-common.api
 	$ROOT/src/lib/std/src/unix/posix-common.pkg
 	$ROOT/src/lib/std/src/unix/spawn.api

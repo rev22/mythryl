@@ -72,7 +72,7 @@ package compile_client: (weak)  Compile_Client {		# Compile_Client	is from   src
             };
 
 					# spawn		is from   src/lib/std/src/unix/spawn.pkg
-					# file		is from   src/lib/std/src/unix/posix-file.pkg
+					# file		is from   src/lib/std/src/unix/file.pkg
 
 
     Server_Handle
@@ -199,7 +199,7 @@ package compile_client: (weak)  Compile_Client {		# Compile_Client	is from   src
 	        (fn _ = work ());
 	};
 					# safely	is from   src/lib/std/safely.pkg
-					# file	is from   src/lib/std/src/unix/posix-file.pkg
+					# file		is from   src/lib/std/src/unix/file.pkg
 
 
     #  Send a message to a server. This must be sigPIPE-protected. 
@@ -454,7 +454,7 @@ package compile_client: (weak)  Compile_Client {		# Compile_Client	is from   src
 
 
 								# thread	is from   src/app/make7/simple-concurrency/thread.pkg
-								# file	is from   src/lib/std/src/unix/posix-file.pkg
+								# file		is from   src/lib/std/src/unix/file.pkg
 								# say		is from   src/lib/std/src/io/say.pkg
 								# string	is from   src/lib/std/string.pkg
 								# list		is from   src/lib/std/src/list.pkg

@@ -163,7 +163,7 @@ package make_symbol_index: Make_Symbol_Index {			# Make_Symbol_Index	is from   s
 
 
 								# autodir	is from   src/app/make7/util/autodir.pkg
-								# file	is from   src/lib/std/src/unix/posix-file.pkg
+								# file		is from   src/lib/std/src/unix/file.pkg
 								# winix		is from   src/lib/std/winix.pkg
 								# safely	is from   src/lib/std/safely.pkg
 

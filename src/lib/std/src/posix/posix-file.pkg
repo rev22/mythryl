@@ -30,7 +30,7 @@ stipulate
     package host_unt =  host_unt_guts;				# host_unt_guts		is from   src/lib/std/src/bind-sysword-32.pkg
     # At some point I think the Unts should all become Ints
     # -- having unsigneds floating around is mainly a pain:
-    #    package host_int =       int_guts;				# int_guts		is from   src/lib/std/src/bind-int-32.pkg
+    #    package host_int =       int_guts;			# int_guts		is from   src/lib/std/src/bind-int-32.pkg
     package unt32    =  unt32_guts;				# unt32_guts		is from   src/lib/std/src/unt32.pkg
     package time     =  time_guts;				# time_guts		is from   src/lib/std/src/time-guts.pkg
 herein

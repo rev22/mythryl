@@ -33,7 +33,7 @@ package source_code_source: (weak) Source_Code_Source {		# Source_Code_Source	is
 
 	  error_consumer:  prettyprint::Device,			# prettyprint	is from   src/lib/prettyprint/src/prettyprint.pkg
 	  interactive:     Bool,				# 
-	  source_stream:   file::Input_Stream			# file	is from   src/lib/std/src/unix/posix-file.pkg
+	  source_stream:   file::Input_Stream			# file		is from   src/lib/std/src/unix/file.pkg
 	};
 
     fun say (msg:  String)
@@ -74,7 +74,7 @@ package source_code_source: (weak) Source_Code_Source {		# Source_Code_Source	is
 	    =>
 	    {   # Apply say ["[closing ", (Pathnames::trim fileName), "]\n"];
 		#
-		file::close_input  source_stream		# file			is from   src/lib/std/src/unix/posix-file.pkg
+		file::close_input  source_stream		# file			is from   src/lib/std/src/unix/file.pkg
                 except
                     io_exceptions::IO _ =  ();			# io_exceptions		is from   src/lib/std/src/io/io-exceptions.pkg
 	    };

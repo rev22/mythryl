@@ -10,7 +10,7 @@ fun run_subprocess ()
 	    =
 	    spawn::spawn ("/bin/sh", []);				# spawn	is from   src/lib/std/src/unix/spawn.pkg
 
-	file::write (to_stream, "echo 'xyzzy'\n");			# file	is from   src/lib/std/src/unix/posix-file.pkg
+	file::write (to_stream, "echo 'xyzzy'\n");			# file	is from   src/lib/std/src/unix/file.pkg
 	file::flush to_stream;
 
 #	printf "Read from subprocess: '%s'\n" (string::chomp (the (file::read_line  from_stream) ) );

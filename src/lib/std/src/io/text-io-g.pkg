@@ -4,7 +4,7 @@
 #     src/lib/std/src/Base-imp.make6
 
 # Our package macro is invoked by:
-#     src/lib/std/src/unix/posix-file.pkg
+#     src/lib/std/src/unix/file.pkg
 #     src/lib/std/src/win32/win32-file.pkg
 #
 # QUESTION: what operations should raise exceptions when the stream is
