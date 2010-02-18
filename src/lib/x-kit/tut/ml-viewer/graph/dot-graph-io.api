@@ -10,11 +10,11 @@
 #     src/lib/x-kit/tut/ml-viewer/graph/dot-graph-io-g.pkg
 
 									# Attributed_Subgraph_Tree	is from   src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree.api
-									# Text_Io			is from   src/lib/std/src/io/text-io.api
+									# File				is from   src/lib/std/src/io/file.api
 api Dot_Graph_Io {
 
     package g:   Attributed_Subgraph_Tree;				# It actually makes sense to export these two packages because
-    package io:  Text_Io;						# they are parameters to dot_graph_io_g, hence otherwise unknowable.
+    package io:  File;							# they are parameters to dot_graph_io_g, hence otherwise unknowable.
 
     read_graph:    io::Input_Stream -> g::Attributed_Graph;
     write_graph:  (io::Output_Stream, g::Attributed_Graph) -> Void;

@@ -17,7 +17,7 @@ herein
 						# int_guts			is from   src/lib/std/src/bind-int-32.pkg
 						# winix_guts			is from   src/lib/std/src/unix/winix-guts.pkg
 						# Winix_Primitive_Io		is from   src/lib/std/src/io/winix-primitive-io.api
-						# Text_Io			is from   src/lib/std/src/io/text-io.api
+						# File				is from   src/lib/std/src/io/file.api
 generic package text_io_g (
 
     # On unix  below argument will be		# posix_text_primitive_io	is from   src/lib/std/src/unix/posix-text-primitive-io.pkg
@@ -38,7 +38,7 @@ generic package text_io_g (
 	    primitive_io == text_primitive_io;
 
 )
-: (weak)  Text_Io
+: (weak)  File
 {
 
 						# rw_char_vector		is from   src/lib/std/src/rw-char-vector.pkg

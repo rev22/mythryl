@@ -181,7 +181,7 @@ LIBRARY_EXPORTS
 	api Io_Exceptions
 	api Primitive_Io
 	api Pure_Io
-	api Text_Io
+	api File
 	api Text_Pure_Io
 	api Pack_Unt
 	api Pack_Float

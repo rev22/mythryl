@@ -51,7 +51,7 @@ Major APIs:
 	    Binary_Io					src/lib/std/src/io/binary-io.api
 
 ----------Stream I/O Layer--------
-    Text_Io						src/lib/std/src/io/text-io.api
+    File						src/lib/std/src/io/file.api
         Uses:
 	    Text_Pure_Io				src/lib/std/src/io/text-pure-io.api
         Defines:
@@ -117,16 +117,16 @@ Major Packages and Package Macros:
 	    binary_primitive_io
 	    
 ----------Stream I/O Layer--------
-    file 				Text_Io    	        src/lib/std/src/unix/file.pkg
+    file 				File    	        src/lib/std/src/unix/file.pkg
 	   "The implementation of the
 	    file stack on Posix
 	    systems."
 	Defined by:
-	    text_io_g 			Text_Io    	        src/lib/std/src/io/text-io-g.pkg
+	    text_io_g 			File    	        src/lib/std/src/io/text-io-g.pkg
 	Uses:
 	    posix_text_primitive_io	Winix_Primitive_Io+	src/lib/std/src/unix/posix-text-primitive-io.pkg
 
-    text_io_g 				Text_Io    	        src/lib/std/src/io/text-io-g.pkg
+    text_io_g 				File    	        src/lib/std/src/io/text-io-g.pkg
 	Gets passed:
 	    posix_text_primitive_io	Winix_Primitive_Io+	src/lib/std/src/unix/posix-text-primitive-io.pkg
 
@@ -166,7 +166,7 @@ Major Packages and Package Macros:
             text_primitive_io					src/lib/std/src/io/text-primitive-io.pkg
 	Used-by:
 	    unix			Unix			
-	    text_io_g (as arg)		Text_Io    	        src/lib/std/src/io/text-io-g.pkg
+	    text_io_g (as arg)		File    	        src/lib/std/src/io/text-io-g.pkg
 
     posix_binary_primitive_io		Winix_Primitive_Io		src/lib/std/src/unix/posix-binary-primitive-io.pkg
         Uses:

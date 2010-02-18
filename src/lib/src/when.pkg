@@ -678,7 +678,7 @@ print "src/lib/src/when.pkg: when:\n";  print_poll_results poll_results;
 # src/lib/std/src/socket/unix-generic-socket.pkg
 #    fun fd2sock file_descriptor =   s::SOCKET { file_descriptor, nonblocking => REF FALSE };
 
-# src/lib/std/src/io/text-io.api
+# src/lib/std/src/io/file.api
 #     make_instream:   pure_io::Input_Stream -> Input_Stream;
 #     get_instream:    Input_Stream -> pure_io::Input_Stream;
 

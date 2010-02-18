@@ -8,7 +8,7 @@
 
 api Latex_Print_Symbol_Table {
 
-					# Text_Io	is from   src/lib/std/src/io/text-io.api
+					# File		is from   src/lib/std/src/io/file.api
 					# file		is from   src/lib/std/src/unix/file.pkg
 
 					# Symbol_Table	is from   src/lib/compiler/front/typecheck-stuff/symbol-table/symbol-table.api

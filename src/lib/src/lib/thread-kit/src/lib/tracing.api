@@ -87,7 +87,7 @@ api Tracing {
         # in subtree rooted at given node, along with trace
 	# status (TRUE/FALSE) of each node.
 
-    ancestors: Trace_Tree_Node -> List( String );
+    ancestors: Trace_Tree_Node -> List(String);
 	#
 	# Return names of all ancestors of node.
 	#

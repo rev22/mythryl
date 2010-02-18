@@ -6,13 +6,13 @@
 
 # The implementation of the file stack on Posix systems.
 
-								# Text_Io			is from   src/lib/std/src/io/text-io.api
+								# File				is from   src/lib/std/src/io/file.api
 								# text_primitive_io		is from   src/lib/std/src/io/text-primitive-io.pkg
 								# text_io_g			is from   src/lib/std/src/io/text-io-g.pkg
 								# posix_text_primitive_io	is from   src/lib/std/src/unix/posix-text-primitive-io.pkg
 package file
 :
-Text_Io
+File
     where  pure_io::Reader        == text_primitive_io::Reader
     where  pure_io::Writer        == text_primitive_io::Writer
     where  pure_io::File_Position == text_primitive_io::File_Position

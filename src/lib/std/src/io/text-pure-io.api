@@ -8,7 +8,7 @@
 #     src/lib/std/src/Base-imp.make6
 
 # Used in:
-#     src/lib/std/src/io/text-io.api
+#     src/lib/std/src/io/file.api
 
 
 api Text_Pure_Io {

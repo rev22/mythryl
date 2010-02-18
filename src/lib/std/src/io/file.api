@@ -1,4 +1,4 @@
-## text-io.api
+## file.api
 
 # Compiled by:
 #     src/lib/std/src/Base-imp.make6
@@ -11,7 +11,7 @@
 
 
 
-api  Text_Io {
+api  File {
 
     Vector  = String;
     Element = Char;

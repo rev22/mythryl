@@ -11,14 +11,14 @@
 # This generic is compiletime expanded by:
 #     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg
 
-							# Text_Io			is from   src/lib/std/src/io/text-io.api
+							# File				is from   src/lib/std/src/io/file.api
 							# Dot_Graph_Io			is from   src/lib/x-kit/tut/ml-viewer/graph/dot-graph-io.api
 							# dot_subgraph_tree_attributes	is from   src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg
 
 generic package  dot_graph_io_g  (
 
-    package io:  Text_Io where Input_Stream  == file::Input_Stream
-                          also Output_Stream == file::Output_Stream;
+    package io:  File where Input_Stream  == file::Input_Stream
+                       also Output_Stream == file::Output_Stream;
 
     package g:   Attributed_Subgraph_Tree;
 

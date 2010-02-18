@@ -5,7 +5,7 @@
 #     src/lib/std/stdlib.make6
 
 
-# This extends the Mythryl Text_Io interface with mailop-valued operations.
+# This extends the Mythryl File interface with mailop-valued operations.
 
 
 api Threadkit_Text_Io {
