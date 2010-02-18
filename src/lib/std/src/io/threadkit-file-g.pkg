@@ -1,4 +1,4 @@
-## threadkit-text-io-g.pkg
+## threadkit-file-g.pkg
 
 # Compiled by:
 #     src/lib/std/stdlib.make6
@@ -8,7 +8,7 @@
 # This is the threadkit version of file_g:
 
 
-generic package threadkit_text_io_g (
+generic package threadkit_file_g (
 
     package winix_primitive_io
         :
@@ -1806,7 +1806,7 @@ generic package threadkit_text_io_g (
 	    );
 
     end;	# stipulate
-};		# threadkit_text_io_g 
+};		# threadkit_file_g 
 
 
 ## COPYRIGHT (c) 1995 AT&T Bell Laboratories.

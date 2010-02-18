@@ -1,3 +1,4 @@
+2010-02-17-19.46.12: src/lib/std/src/io/: For simplicity and consistency renamed threadkit-text-io.api, Threadkit_Text_Io -> threadkit-file.api, Threadkit_File.
 2010-02-17-19.29.43: src/lib/std/src/io/: For simplicity and consistency renamed text-io-g.pkg,text_io_g -> file-g.pkg,file_g.
 2010-02-17-19.04.06: src/lib/std/src/io/: Renamed text-io.api -> file.api (and Text_Io -> File) for simplicity and consistency.
 2010-02-17-18.30.46: src/lib/std/src/unix/: Renamed posix-file.pkg -> file.pkg because the package it contains is named file, to avoid confusion with src/lib/std/src/posix/posix-file.pkg, and because I want to make Mythryl posix-centric rather than primarily cross-platform.
