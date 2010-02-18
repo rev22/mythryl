@@ -49,11 +49,15 @@ herein
 #		    enable xt::io_tracing;			# Saner yet.	
 		};
 
-#   	        ctl::start_up_thread_scheduler'
-#   		    default_time_quantum
-#   		   .{
-#   #                        do_it (make_root_window NULL);
-#                       };
+	        ctl::start_up_thread_scheduler'
+		    default_time_quantum
+		   .{
+			 assert  (ctl::thread_scheduler_is_running ());
+
+#                        do_it (make_root_window NULL);
+
+			 ctl::shut_down_thread_scheduler  winix::process::success;
+                    };
 
 		assert TRUE;
 
