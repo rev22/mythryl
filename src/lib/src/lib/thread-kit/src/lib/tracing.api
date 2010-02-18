@@ -229,7 +229,7 @@ api Tracing {
 #
 #          log_trace_messages  TO_STDOUT;
 #          log_trace_messages  TO_STDERR;
-#          log_trace_messages  TO_FILE "trace.log";
+#          log_trace_messages (TO_FILE "trace.log");
 #
 #   o  At runtime, enable the desired set of print_if statements
 #      by executing one or more statements like:

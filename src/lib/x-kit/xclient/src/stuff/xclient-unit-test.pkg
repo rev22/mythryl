@@ -15,6 +15,9 @@
 
 stipulate
     package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
+    package trc =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+    package xt  =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    tracefile   =  "xclient-unit-test-trace.log";
 herein
 
     package xclient_unit_test {
@@ -26,7 +29,7 @@ herein
 	my name = "src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg";
 
 
-	default_time_quantum			# Copied from src/lib/x-kit/widget/lib/run-xkit.pkg
+	default_time_quantum					# Copied from src/lib/x-kit/widget/lib/run-xkit.pkg
 	    =
 	    time::from_milliseconds 20;
 
@@ -34,10 +37,17 @@ herein
 	    =
 	    {   printf "\nDoing %s:\n" name;   
 
-		if (isfile "tracing.log")
+		if (isfile tracefile)
 		    #
-		    unlink "tracing.log";
+		    unlink tracefile;
 		fi;
+
+		{   include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+		    log_trace_messages  (TO_FILE tracefile);
+		    enable all_tracing;				# Gross overkill.
+#		    enable xt::xkit_tracing;			# Lesser overkill.
+#		    enable xt::io_tracing;			# Saner yet.	
+		};
 
 #   	        ctl::start_up_thread_scheduler'
 #   		    default_time_quantum
