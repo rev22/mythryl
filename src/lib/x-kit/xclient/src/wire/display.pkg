@@ -20,7 +20,8 @@ stipulate
     package w2v =  wire_to_value;					# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     package sok =  socket;						# socket			is from   src/lib/std/socket.pkg
     package sox =  socket_stuff;					# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
-herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    package xtr =  xtracing;						# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+herein
 
     package display: (weak) Display {					# Display			is from   src/lib/x-kit/xclient/src/wire/display.api
 
@@ -29,6 +30,7 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 	package dns = dns_host_lookup;					# dns_host_lookup		is from   src/lib/std/src/socket/dns-host-lookup.pkg
 	package w8v = unt8_vector;					# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
 
+	trace =  xtr::print_if  xtr::io_tracing;			# Conditionally write strings to tracing.log or whatever.
 
 	Xdisplay
 	    =
@@ -114,8 +116,7 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 	    =
 	    {
 # +DEBUG
-		xtracing::print_if  xtracing::io_tracing
-		 .{  "initializing xsocket to \"" + canonical_display_name + "\"";  };
+		trace  .{  "initializing xsocket to \"" + canonical_display_name + "\"";  };
 # -DEBUG
 
 		connect_msg
@@ -129,7 +130,7 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 		sox::send_vector (socket, connect_msg);
 
 # +DEBUG
-		xtracing::print_if  xtracing::io_tracing  .{ "reading connection reply header"; };
+		trace  .{ "reading connection reply header"; };
 # -DEBUG
 		# ddeboer, fall 2004: error in ssh tunneling happens in following line 
 		# modified to retry on exception.
@@ -142,12 +143,14 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 		    retry n ts => sox::receive_vector (socket, 8) except _ = { sleep ts; (retry (n - 1) (ts*2));};
 		end;
 
+											# large_unt			is from   src/lib/std/large-unt.pkg
+											# pack_big_endian_unt16		is from   src/lib/std/src/pack-big-endian-unt16.pkg
 		header = retry 2 1;
 		#  original: header = SockUtil::recvVec (socket, 8) 
 		len = 4 * large_unt::to_int_x (pack_big_endian_unt16::get_vec (header, 3));
 
 # +DEBUG
-    my _ = xtracing::print_if xtracing::io_tracing .{ cat [ "reading connection reply body (", int::to_string len, " bytes)" ]; };
+                trace .{ sprintf "Reading connection reply body (%d bytes)..." len; };
 # -DEBUG
 
     #        /* following lines rewritten, ddeboer, Jan 2005:
@@ -198,15 +201,19 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 		case (w8v::get (header, 0))
 		    #
 		    0u0 =>
-			error ("connection refused: " + get_msg (get_reply (len)));
+			error ("connection refused: " + get_msg (get_reply len));
 
 		    0u1 =>
-			{   xserver_info = w2v::decode_connect_request_reply (header, get_reply (len));
-
-			    info_as_string	# Currently unusded; just to force it to compile.
+			{   xserver_info
 				=
-				i2s::xserver_info_to_string  xserver_info;
+				w2v::decode_connect_request_reply
+				    #
+                                    (header, get_reply len);
 
+# +DEBUG
+                            trace  .{ "Connect request reply info:"; };
+                            trace  .{ i2s::xserver_info_to_string  xserver_info; };
+# -DEBUG
 			    xsocket = xok::make_xsocket  socket;
 
 			    (xsocket, xserver_info, canonical_display_name, screen_number);
@@ -250,16 +257,15 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 
 		fun open_internet_domain_socket (address, port)
 		    =
-		    {   tracing::print_if  xtracing::io_tracing .{
+		    {   trace .{
 			    #
-			    (   "inet_connection: address = \""
-                            +   dns::to_string  address
-                            +   "\", port = "
-			    +   int::to_string  port
-                            );
-			};
-										# internet_socket	is from   src/lib/std/src/socket/internet-socket.pkg
+                            sprintf "inet_connection: address = \"%s\", port d=%d"
+			        #
+                                (dns::to_string  address)
+                                port;
+                        };
 
+										# internet_socket	is from   src/lib/std/src/socket/internet-socket.pkg
 			# Invoke the glibc socket() fn via
 			# a few layers of wrapping:
 			# 
@@ -267,7 +273,10 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 										# socket		is from   src/lib/std/socket.pkg
 										# socket_guts		is from   src/lib/std/src/socket/socket-guts.pkg
 
-			repeat (fn () = sok::connect (socket, internet_socket::to_address (address, port)));
+			repeat .{
+			    #
+                            sok::connect (socket, internet_socket::to_address (address, port));
+			};
 
 			say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
 		    };
@@ -279,7 +288,10 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 			=>
 			{   socket = unix_socket::stream::socket ();
 
-			    repeat (fn () = sok::connect (socket, unix_socket::to_address path));
+			    repeat .{
+				#
+				sok::connect (socket, unix_socket::to_address path);
+			    };
 
 			    say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
 			};
@@ -327,9 +339,9 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 			 loop (i+increment);
 		    };
 
-		#  make_thread "xdisplay" (fn () => (loop base)); 
+		#  make_thread "xdisplay"  .{ loop base; }; 
 
-		xtracing::xspawn ("xid-factory", fn () = loop base);
+		xtr::xspawn ("xid-factory", .{ loop base; } );
 
 		.{ take  result_slot; };
 	    };
@@ -472,20 +484,21 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 		    {   my (seqn, err_msg)
 			    =
 			    xok::read_xerror  xsocket;
-
-			tracing::print_if xtracing::error_tracing .{
+									# unt			is from   src/lib/std/unt.pkg
+									# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+									# xerror_to_string	is from   src/lib/x-kit/xclient/src/stuff/xerror-to-string.pkg
+			trace .{
 			    #
-			    (   "Error on request #"
-			    +   unt::fmt  string_conversion::DEC  seqn
-			    +   ": "
-			    +   xerror_to_string::xerror_to_string (w2v::decode_error err_msg)
-			    );
+			    sprintf "Error on request #%s: %s"
+				#
+			        (unt::fmt  string_conversion::DEC  seqn)
+			        (xerror_to_string::xerror_to_string (w2v::decode_error err_msg));
 			};
 
 			err_handler ();
 		    };
 
-		xtracing::xspawn ("errHandler", err_handler);
+		xtr::xspawn ("err_handler", err_handler);
 
 		display;
 	  };
@@ -496,9 +509,9 @@ herein									# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.p
 	    =
 	    {   thread_id = get_thread_id ();
 
-		tracing::print_if xtracing::io_tracing .{
+		trace  .{
 		    #
-		    cat [ thread_id_to_string  thread_id,  " ***** close_display *****" ];
+		    sprintf "%s: ***** close_display *****"   (thread_id_to_string  thread_id);
 		};
 
 

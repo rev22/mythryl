@@ -1,3 +1,4 @@
+2010-02-17-23.18.23: x-kit/xclient/src/stuff/xclient-unit-test.pkg: Fetch value of DISPLAY environment variable.
 2010-02-17-22.51.09: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Start up and shut down thread scheduler.
 2010-02-17-22.35.03: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Set up to log trace messages to xclient-unit-test-trace.log.
 2010-02-17-21.20.32: src/lib/core/internal/make7.api: Added mkdir, rename, rmdir, symlink, unlink -- all basic scripting functions posix folk expect to find readily available.
