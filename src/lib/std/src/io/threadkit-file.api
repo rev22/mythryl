@@ -1,4 +1,4 @@
-## threadkit-text-io.api
+## threadkit-file.api
 ## COPYRIGHT (c) 1991 John H. Reppy.
 
 # Compiled by:
@@ -8,9 +8,9 @@
 # This extends the Mythryl File interface with mailop-valued operations.
 
 
-api Threadkit_Text_Io {
+api Threadkit_File {
 
-    #  include Text_IO 
+    #  include File
     Vector = String;
     Element = Char;
 

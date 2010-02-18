@@ -30,7 +30,7 @@ generic package threadkit_text_io_g (
 
   )
 
-: (weak) Threadkit_Text_Io						# Threadkit_Text_Io			is from   src/lib/std/src/io/threadkit-text-io.api
+: (weak) Threadkit_File							# Threadkit_File			is from   src/lib/std/src/io/threadkit-file.api
 
 {
     include threadkit;							# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
