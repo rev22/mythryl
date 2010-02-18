@@ -1,3 +1,4 @@
+2010-02-18-16.15.14: src/lib/std/src/time.api: Got tired of the redundancy of time::get_time(), changed it to time::get(). Added some comments.  Makefile: somewhat-clean: Remove all .log files.
 2010-02-18-12.06.32: src/lib/x-kit/xclient/src/wire/display.pkg: Write to tracelog X server connection request reply. Minor cleaning.
 2010-02-17-23.18.23: x-kit/xclient/src/stuff/xclient-unit-test.pkg: Fetch value of DISPLAY environment variable.
 2010-02-17-22.51.09: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Start up and shut down thread scheduler.

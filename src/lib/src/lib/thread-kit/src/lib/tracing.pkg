@@ -319,19 +319,24 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 			 file::flush stream;
 		    };
 
+										# date		is from   src/lib/std/src/date.pkg
+										# time		is from   src/lib/std/time.pkg
 		case *trace_to
-
+		    #
 		    TO_NULL    =>   ();
-
+		    #
 		    TO_STDOUT        =>  write  file::stdout;
 		    TO_STDERR        =>  write  file::stderr;
 		    TO_STREAM stream =>  write  stream;
-
+		    #
 		    TO_FILE filename
 			=>
 			{   to  = {   stream = file::open_for_write filename;
 
-				      file::write (stream, "# This is a trace log created by src/lib/src/lib/thread-kit/src/lib/tracing.pkg\n");
+				      file::write (stream, sprintf "# This is a trace log created by %s by:\n" (date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()))));
+				      file::write (stream, "# \n");
+				      file::write (stream, "#     src/lib/src/lib/thread-kit/src/lib/tracing.pkg\n");
+				      file::write (stream, "# \n");
 				      file::write (stream, "# print_if line fields are:\n");
 				      file::write (stream, "# \n");
 				      file::write (stream, "#     timestamp in seconds:   thread name:   message   (foo::tracing)\n");
