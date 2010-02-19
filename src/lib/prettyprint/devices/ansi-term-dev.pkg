@@ -275,7 +275,7 @@ api {
 
     fun space (DEV { dst, ... }, n)			# Write some number of spaces to the device.
         =
-        file::write (dst, string_conversion::pad_left ' ' n "");
+        file::write (dst, number_string::pad_left ' ' n "");
 
 
     # Write a new-line to the device 

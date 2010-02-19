@@ -22,7 +22,7 @@ LIBRARY_GROUP_EXPORTS
 	api Cinterface
 	api String
 	api Substring
-	api String_Conversion
+	api Number_String
 	api List
 	api Monomorphic_Rw_Vector
 	api Monomorphic_Rw_Vector_Slice
@@ -84,7 +84,7 @@ LIBRARY_GROUP_EXPORTS
 	pkg vector
 	pkg vector_slice
 	pkg exceptions
-	pkg string_conversion
+	pkg number_string
 	pkg char_vector_slice
 	pkg rw_char_vector_slice
 	pkg text
@@ -296,7 +296,7 @@ LIBRARY_GROUP_COMPONENTS
 	$ROOT/src/lib/std/src/bool.api
 	$ROOT/src/lib/std/src/char.api
 	$ROOT/src/lib/std/src/string.api
-	$ROOT/src/lib/std/src/string-conversion.api
+	$ROOT/src/lib/std/src/number-string.api
 	$ROOT/src/lib/std/src/list.api
 	$ROOT/src/lib/std/src/paired-lists.api
 	$ROOT/src/lib/std/src/unt.api
@@ -314,7 +314,7 @@ LIBRARY_GROUP_COMPONENTS
 	$ROOT/src/lib/std/src/exceptions.pkg
 	$ROOT/src/lib/std/src/vector.pkg
 	$ROOT/src/lib/std/src/vector-slice.pkg
-	$ROOT/src/lib/std/src/string-conversion.pkg
+	$ROOT/src/lib/std/src/number-string.pkg
 	$ROOT/src/lib/std/src/string-guts.pkg
 	$ROOT/src/lib/std/src/char.pkg
 	$ROOT/src/lib/std/src/list.pkg

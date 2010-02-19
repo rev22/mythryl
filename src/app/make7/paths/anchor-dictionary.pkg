@@ -285,7 +285,7 @@ package anchor_dictionary: Anchor_Dictionary {				# Anchor_Dictionary		is from  
 #         where
 #             fun print_renaming { anchor, value }
 #                 =
-#                 {    say [ "    $", (string_conversion::pad_right ' ' 24 anchor), "\t= " ];
+#                 {    say [ "    $", (number_string::pad_right ' ' 24 anchor), "\t= " ];
 #                      print_basename value;
 #                      say [ "\n" ];
 #                 };
@@ -309,7 +309,7 @@ package anchor_dictionary: Anchor_Dictionary {				# Anchor_Dictionary		is from  
 
 	    fun to_octal_escape c
 		=
-		"\\" + string_conversion::pad_left '0' 3 (int::to_string (char::to_int c));
+		"\\" + number_string::pad_left '0' 3 (int::to_string (char::to_int c));
 
 	    fun translate_char c
                 =
@@ -854,7 +854,7 @@ package anchor_dictionary: Anchor_Dictionary {				# Anchor_Dictionary		is from  
                           )
                         )
                         =
-                        {   say [ "    $", (string_conversion::pad_right ' ' 24 anchor), "\t= " ];
+                        {   say [ "    $", (number_string::pad_right ' ' 24 anchor), "\t= " ];
 
                             if   (disk_volume != "")
                                 

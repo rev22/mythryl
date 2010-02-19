@@ -2439,7 +2439,7 @@ string::is_suffix  "rewrite-raw-syntax-expression.pkg"          filename    or
 
 										 file::vsay [
 										     "      .../compile/compile-treewalk-g.pkg:   Compiling source file   ",
-										     (string_conversion::pad_right ' ' 50 sourcepath),
+										     (number_string::pad_right ' ' 50 sourcepath),
 										     "\tto object file   ",
 										     oh7_file_name,
 										     "\n"

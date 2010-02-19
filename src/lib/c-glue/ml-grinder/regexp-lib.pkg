@@ -49,7 +49,7 @@ package reg_exp_lib :> Regexp_Lib {
 
    fun search regexp text
        =
-       string_conversion::scan_string (re::find (compile regexp)) text
+       number_string::scan_string (re::find (compile regexp)) text
 
    fun getArgs text children
        = 

@@ -40,7 +40,7 @@ package define_g:  Define_Gen {
    get_line   = re::grep ("^#\\s*\\d+\\s+[\"<](.*)[\">]")
    getArgs   = re::findAll "[a-zA-Z0-9_]+"
 
-   hex     = string_conversion::scan_string (integer::scan string_conversion::HEX) 
+   hex     = number_string::scan_string (integer::scan number_string::HEX) 
    signbit = integer::pow (integer::from_int 2, 31)
 
    fun convert e

@@ -1,4 +1,4 @@
-## string-conversion.pkg
+## number-string.pkg
 
 # Compiled by:
 #     src/lib/std/src/Base-imp.make6
@@ -10,7 +10,7 @@
 
 
 
-package string_conversion: (weak) String_Conversion {		# String_Conversion	is from   src/lib/std/src/string-conversion.api
+package number_string: (weak) Number_String {		# Number_String	is from   src/lib/std/src/number-string.api
 
     Radix = BINARY | OCTAL | DECIMAL | HEX;
 

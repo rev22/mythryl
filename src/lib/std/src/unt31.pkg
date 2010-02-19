@@ -65,7 +65,7 @@ package unt31_guts: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
         =
         (num_format::format_unt radix) o  w31::to_large_unt;
 
-    to_string = format string_conversion::HEX;
+    to_string = format number_string::HEX;
 
     fun scan radix
         =
@@ -91,7 +91,7 @@ package unt31_guts: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 	  
 	    scan;
 	  };
-    from_string = pre_basis::scan_string (scan string_conversion::HEX);
+    from_string = pre_basis::scan_string (scan number_string::HEX);
 
 };	#  package unt31_guts 
 

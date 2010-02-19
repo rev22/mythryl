@@ -54,7 +54,7 @@ package prettyprint: (weak)  Prettyprint {
 
 	fun space ( { consumer, linewidth, flush }, n)
 	    =
-	    consumer (string_conversion::pad_left ' ' n "");
+	    consumer (number_string::pad_left ' ' n "");
 
 	fun newline  { consumer, linewidth, flush }     = consumer "\n";
 	fun string ( { consumer, linewidth, flush }, s) = consumer s;

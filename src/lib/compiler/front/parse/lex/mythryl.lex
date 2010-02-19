@@ -87,7 +87,7 @@ hash_string
     =
     hash_string::hash_string;
 
-							# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+							# number_string		is from   src/lib/std/src/number-string.pkg
 							# integer		is from   src/lib/std/integer.pkg
 							# substring		is from   src/lib/std/substring.pkg
 stipulate
@@ -99,9 +99,9 @@ herein
     # At some point we should support underbars in integer constants.
     # Just doing a s/_//g at this point should do, at least as a first cut.  XXX BUGGO FIXME
     #
-    atoi   =   convert  string_conversion::DECIMAL;
-    otoi   =   convert  string_conversion::OCTAL;
-    xtoi   =   convert  string_conversion::HEX;
+    atoi   =   convert  number_string::DECIMAL;
+    otoi   =   convert  number_string::OCTAL;
+    xtoi   =   convert  number_string::HEX;
 end;
 
 fun my_synch (src, pos, parts)

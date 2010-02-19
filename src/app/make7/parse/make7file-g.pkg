@@ -964,7 +964,7 @@ Make7file
 			=
 			{   file::vsay [
                                 "                   parse/make7file-g.pkg:   Reading   make   file   ",
-                                (string_conversion::pad_right ' ' 50 (ad::abbreviate (ad::os_string' make7_file_to_read))),
+                                (number_string::pad_right ' ' 50 (ad::abbreviate (ad::os_string' make7_file_to_read))),
                                 "\ton behalf of ",
                                 libname this_lib,
                                 "\n"

@@ -17,9 +17,9 @@ api Socket_Stuff {
 
     scan_addr
 	:
-	string_conversion::Reader (Char, X)
+	number_string::Reader (Char, X)
 	->
-	string_conversion::Reader ( { host:  Hostname, port:  Null_Or( Port ) }, X);
+	number_string::Reader ( { host:  Hostname, port:  Null_Or( Port ) }, X);
 
 	# scan an address, which has the form
 	#   address [ ":" port ]

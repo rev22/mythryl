@@ -16,7 +16,7 @@ with
 
    fun search regexp
        =
-       string_conversion::scan_string
+       number_string::scan_string
            (re::find
                (re::compile_string regexp));
 

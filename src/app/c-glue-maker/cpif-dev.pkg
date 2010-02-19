@@ -90,7 +90,7 @@ api {
     fun string (DEV { buffer, ... }, s) = buffer := s ! *buffer;
 
     fun char (d, c) = string (d, string::from_char c);
-    fun space (d, n) = string (d, string_conversion::pad_left ' ' n "");
+    fun space (d, n) = string (d, number_string::pad_left ' ' n "");
     fun newline d = string (d, "\n");
 
     fun flush d = ();

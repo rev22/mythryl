@@ -13,9 +13,9 @@ package float_format
 : (weak)
 api {
 
-    format_float:  string_conversion::Real_Format -> Float -> String;
+    format_float:  number_string::Real_Format -> Float -> String;
 /** The type should be: XXX BUGGO FIXME
-    my fmtReal:  string_conversion::Real_Format -> large_float::real -> String
+    my fmtReal:  number_string::Real_Format -> large_float::real -> String
  **/
 
 }
@@ -60,12 +60,12 @@ api {
     fun min (i, j) =  if (i::(<) (i, j) ) i; else j; fi;
     fun max (i, j) =  if (i::(>) (i, j) ) i; else j; fi;
 
-    atoi =  (num_format::format_int  string_conversion::DECIMAL)
+    atoi =  (num_format::format_int  number_string::DECIMAL)
             o
             inline_t::int32::from_int;
 
-    fun zero_lpad (s, wid) =  string_conversion::pad_left  '0' wid s;
-    fun zero_rpad (s, wid) =  string_conversion::pad_right '0' wid s;
+    fun zero_lpad (s, wid) =  number_string::pad_left  '0' wid s;
+    fun zero_rpad (s, wid) =  number_string::pad_right '0' wid s;
 
     fun make_digit d
         =
@@ -416,14 +416,14 @@ api {
                format_inf_nan r;
           fi;
 
-    fun format_float (string_conversion::SCI NULL)       => real_to_sci_string 6;
-	format_float (string_conversion::SCI (THE prec)) => real_to_sci_string prec;
-	format_float (string_conversion::FIX NULL)       => real_to_fix_string 6;
-	format_float (string_conversion::FIX (THE prec)) => real_to_fix_string prec;
-	format_float (string_conversion::GEN NULL)       => real_to_gen_string 12;
-	format_float (string_conversion::GEN (THE prec)) => real_to_gen_string prec;
+    fun format_float (number_string::SCI NULL)       => real_to_sci_string 6;
+	format_float (number_string::SCI (THE prec)) => real_to_sci_string prec;
+	format_float (number_string::FIX NULL)       => real_to_fix_string 6;
+	format_float (number_string::FIX (THE prec)) => real_to_fix_string prec;
+	format_float (number_string::GEN NULL)       => real_to_gen_string 12;
+	format_float (number_string::GEN (THE prec)) => real_to_gen_string prec;
 
-	format_float string_conversion::EXACT
+	format_float number_string::EXACT
             =>
 	    raise exception FAIL "RealFormat: format_float: EXACT not supported";
     end;

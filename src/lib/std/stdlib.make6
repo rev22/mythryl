@@ -154,7 +154,7 @@ LIBRARY_EXPORTS
 	api Char
 	api String
 	api Substring
-	api String_Conversion
+	api Number_String
 	api List
 	api Monomorphic_Rw_Vector
 	api Monomorphic_Rw_Vector_Slice
@@ -216,7 +216,7 @@ LIBRARY_EXPORTS
 	pkg vector
 	pkg vector_slice
 	pkg exceptions
-	pkg string_conversion
+	pkg number_string
 	pkg substring
 	pkg string
 	pkg char

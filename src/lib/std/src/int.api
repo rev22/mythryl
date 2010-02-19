@@ -47,13 +47,13 @@ api Int {
     from_string:  String -> Null_Or( Int );
 
     scan :
-	 string_conversion::Radix
+	 number_string::Radix
          ->
-         string_conversion::Reader (Char, X)
+         number_string::Reader (Char, X)
 	 ->
-         string_conversion::Reader (Int, X);
+         number_string::Reader (Int, X);
 
-    format:   string_conversion::Radix -> Int -> String;
+    format:   number_string::Radix -> Int -> String;
 
     is_prime: Int -> Bool;
     factors:  Int -> List( Int );

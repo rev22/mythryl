@@ -142,7 +142,7 @@ api {
 
 	    fun format_int i
                 =
-                lint::format  string_conversion::DECIMAL  i;
+                lint::format  number_string::DECIMAL  i;
 
 	    fun format_sec (neg, i)
                 =
@@ -184,8 +184,8 @@ api {
 
 		cat [ format_sec (neg, seconds),
                       ".",
-		      string_conversion::pad_left '0' 6 (format_int microseconds),
-		      string_conversion::pad_left '0' (precision - 6) ""
+		      number_string::pad_left '0' 6 (format_int microseconds),
+		      number_string::pad_left '0' (precision - 6) ""
                     ];
 
 	    else
@@ -216,7 +216,7 @@ api {
 
 		cat [   format_sec (neg, seconds),
 			   ".",
-			   string_conversion::pad_left '0' precision (format_int fractional_seconds)
+			   number_string::pad_left '0' precision (format_int fractional_seconds)
 		       ];
 	    fi;
 
@@ -330,7 +330,7 @@ api {
 		    _             =>  time (FALSE, s);
                 esac;
 	
-	    sign (string_conversion::skip_ws getc s);
+	    sign (number_string::skip_ws getc s);
 	};
 
     to_string   =  format 3;

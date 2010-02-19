@@ -53,9 +53,9 @@ api Ieee_Float {
 
      to_string:    Decimal_Approx -> String;
      from_string:  String -> Null_Or( Decimal_Approx );
-     scan:  string_conversion::Reader (Char, X)
+     scan:  number_string::Reader (Char, X)
                  ->
-	       string_conversion::Reader (Decimal_Approx, X);
+	       number_string::Reader (Decimal_Approx, X);
 
   };
 

@@ -173,7 +173,7 @@ package object_maker:  Object_Maker {
 
    fun tab n
        =
-       string_conversion::padLeft ' ' (n*2) "";
+       number_string::padLeft ' ' (n*2) "";
 
 
    #  Generate type definition for a class hierarchy 

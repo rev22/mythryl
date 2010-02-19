@@ -53,7 +53,7 @@ package awk_syntax: (weak)  Regular_Expression_Parser {	# Regular_Expression_Par
 
     package r = abstract_regular_expression;		# abstract_regular_expression	is from   src/lib/regex/front-end/abstract-regular-expression.pkg
 
-    package sc = string_conversion;			# string_conversion		is from   src/lib/std/src/string-conversion.pkg
+    package sc = number_string;				# number_string			is from   src/lib/std/src/number-string.pkg
     package w8 = unt8;					# unt8				is from   src/lib/std/unt8.pkg
     package c = char;					# char				is from   src/lib/std/char.pkg
 

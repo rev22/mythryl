@@ -30,7 +30,7 @@ where  Compiled_Regular_Expression
 =
 package {
 
-    package m = regex_match_result;			# regex_match_result	is from   src/lib/regex/glue/regex-match-result.pkg
+    package m = regex_match_result;			# regex_match_result		is from   src/lib/regex/glue/regex-match-result.pkg
 	
     package r =   p::r;
 
@@ -48,10 +48,10 @@ package {
 		};
         esac;
 
-							# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+							# number_string			is from   src/lib/std/src/number-string.pkg
     fun compile_string str
         =
-        case (string_conversion::scan_string p::scan str)
+        case (number_string::scan_string p::scan str)
 	  
 #	     THE r =>  e::compile r; 
 
@@ -69,10 +69,10 @@ package {
         =
         {   fun parse (s, f)
                 =
-                case (string_conversion::scan_string p::scan s)
-		  
-		     THE r =>  (r, f);
-		     NULL  =>  raise exception abstract_regular_expression::CANNOT_PARSE;
+                case (number_string::scan_string p::scan s)
+		    #
+		    THE r =>  (r, f);
+		    NULL  =>  raise exception abstract_regular_expression::CANNOT_PARSE;
                 esac;
 
 	    m =  e::match (map parse l);
@@ -121,7 +121,7 @@ package {
 
     fun search regex text
 	=
-	string_conversion::scan_string
+	number_string::scan_string
 	    (find (cached_compile regex))
 	    text;
 

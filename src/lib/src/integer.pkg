@@ -36,14 +36,14 @@ package integer   :> Integer {
 
     package num_scan:  api
 
-        my skipWS:  string_conversion::Reader( char, X ) -> X -> X
+        my skipWS:  number_string::Reader( char, X ) -> X -> X
 
-        my scanWord:  string_conversion::radix
-	      ->  string_conversion::Reader (char, X)
+        my scanWord:  number_string::radix
+	      ->  number_string::Reader (char, X)
 	        -> X -> Null_Or( unt32::word * X )
 
-        my scanInt:  string_conversion::radix
-	        -> string_conversion::Reader( char, X )
+        my scanInt:  number_string::radix
+	        -> number_string::Reader( char, X )
 	        -> X -> Null_Or (Int * X)
 	    # * should be to int32 *
 
@@ -63,7 +63,7 @@ package integer   :> Integer {
         my largestNegInt:  unt32::word = 0w1073741824	#  Absolute value of -2^30 
         my largestPosInt:  unt32::word = 0w1073741823	#  2^30-1 
     
-        type chr_strm( X ) = { getc:  string_conversion::Reader( char, X ) }
+        type chr_strm( X ) = { getc:  number_string::Reader( char, X ) }
     
       # A table for mapping digits to values.  Whitespace characters map to
       # 128, "+" maps to 129, "-", "~" map to 130, "." maps to 131, and the
@@ -97,7 +97,7 @@ package integer   :> Integer {
         my minusCode:  unt32::word = 0w130
         end #  local 
     
-        fun skipWS (getc:  string_conversion::Reader( char, X ) ) cs = let
+        fun skipWS (getc:  number_string::Reader( char, X ) ) cs = let
               fun skip cs = (case (getc cs)
 		     of NULL => cs
 		      | (THE (c, cs')) => if (code c == wsCode) then skip cs' else cs
@@ -107,7 +107,7 @@ package integer   :> Integer {
               end
     
       #  skip leading whitespace and any sign (+, -, or ~) 
-        fun scanPrefix (getc:  string_conversion::Reader (char, X) ) cs = let
+        fun scanPrefix (getc:  number_string::Reader (char, X) ) cs = let
     	  fun skipWS cs = (case (getc cs)
     		 of NULL => NULL
     		  | (THE (c, cs')) => let c' = code c
@@ -135,7 +135,7 @@ package integer   :> Integer {
         fun chkOverflow mask w =
     	  if (w::bitwise_and (mask, w) == 0w0) then () else raise OVERFLOW
     
-        fun scanBin (getc:  string_conversion::Reader (char, X) ) cs = (case (scanPrefix getc cs)
+        fun scanBin (getc:  number_string::Reader (char, X) ) cs = (case (scanPrefix getc cs)
     	   of NULL => NULL
     	    | (THE { neg, next, rest } ) => let
     		fun is_digit (d:  unt32::word) = (d < 0w2)
@@ -256,10 +256,10 @@ package integer   :> Integer {
     	    | (THE { neg=FALSE, word, rest } ) => THE (word, rest)
     	  )		# end case
     
-        fun scanWord string_conversion::BIN = finalWord scanBin
-          | scanWord string_conversion::OCT = finalWord scanOct
-          | scanWord string_conversion::DEC = finalWord scanDec
-          | scanWord string_conversion::HEX = finalWord scanHex
+        fun scanWord number_string::BINARY  = finalWord scanBin
+          | scanWord number_string::OCTAL   = finalWord scanOct
+          | scanWord number_string::DECIMAL = finalWord scanDec
+          | scanWord number_string::HEX     = finalWord scanHex
     
         fun finalInt scan_g getc cs = (case (scan_g getc cs)
     	   of NULL => NULL
@@ -273,17 +273,17 @@ package integer   :> Integer {
     		  else THE (w::toInt word, rest)
     	  )		# end case
     
-        fun scanInt string_conversion::BIN = finalInt scanBin
-          | scanInt string_conversion::OCT = finalInt scanOct
-          | scanInt string_conversion::DEC = finalInt scanDec
-          | scanInt string_conversion::HEX = finalInt scanHex
+        fun scanInt number_string::BINARY  = finalInt scanBin
+          | scanInt number_string::OCTAL   = finalInt scanOct
+          | scanInt number_string::DECIMAL = finalInt scanDec
+          | scanInt number_string::HEX     = finalInt scanHex
     
       end #  package num_scan 
 
     package num_format:  api
 
-        my fmtWord:  string_conversion::radix -> unt32::word -> String
-        my fmtInt:  string_conversion::radix -> Int -> String	# * should be int32 *
+        my fmtWord:  number_string::radix -> unt32::word -> String
+        my fmtInt:  number_string::radix -> Int -> String	# * should be int32 *
 
       end = pkg
 
@@ -331,10 +331,10 @@ package integer   :> Integer {
     	    f (w, 0, [])
     	  end
     
-        fun fmtW string_conversion::BIN = #2 o wordToBin
-          | fmtW string_conversion::OCT = #2 o wordToOct
-          | fmtW string_conversion::DEC = #2 o wordToDec
-          | fmtW string_conversion::HEX = #2 o wordToHex
+        fun fmtW number_string::BINARY  = #2 o wordToBin
+          | fmtW number_string::OCTAL   = #2 o wordToOct
+          | fmtW number_string::DECIMAL = #2 o wordToDec
+          | fmtW number_string::HEX     = #2 o wordToHex
     
         fun fmtWord radix = string::implode o (fmtW radix)
     
@@ -351,10 +351,10 @@ package integer   :> Integer {
     		    string::implode('-' . digits)
     		  end
     		    except _ => (case radix
-    		       of string_conversion::BIN => "-1111111111111111111111111111111"
-    			| string_conversion::OCT => "-7777777777"
-    			| string_conversion::DEC => "-1073741824"
-    			| string_conversion::HEX => "-3fffffff"
+    		       of number_string::BINARY  => "-1111111111111111111111111111111"
+    			| number_string::OCTAL   => "-7777777777"
+    			| number_string::DECIMAL => "-1073741824"
+    			| number_string::HEX     => "-3fffffff"
     		      )		# end case
     		else string::implode (fmtW (itow i))
     	  in
@@ -620,7 +620,7 @@ package integer   :> Integer {
         powers16 = mkPowers 16
 
 	fun fmt (pow, radpow, puti) n = let 
-              pad = string_conversion::padLeft '0' pow
+              pad = number_string::padLeft '0' pow
               fun ms0 (0, a) = (pad "") . a
         	| ms0 (i, a) = (pad (puti i)) . a
               fun ml (n, a) =
@@ -631,10 +631,10 @@ package integer   :> Integer {
                 cat (ml (n,[])) 
               end
 
-        fmt2 = fmt (#1 powers2, #2 powers2, num_format::fmtInt string_conversion::BIN)
-        fmt8 = fmt (#1 powers8, #2 powers8, num_format::fmtInt string_conversion::OCT)
-        fmt10 = fmt (#1 powers10, #2 powers10, num_format::fmtInt string_conversion::DEC)
-        fmt16 = fmt (#1 powers16, #2 powers16, num_format::fmtInt string_conversion::HEX)
+        fmt2 = fmt (#1 powers2, #2 powers2, num_format::fmtInt number_string::BINARY)
+        fmt8 = fmt (#1 powers8, #2 powers8, num_format::fmtInt number_string::OCTAL)
+        fmt10 = fmt (#1 powers10, #2 powers10, num_format::fmtInt number_string::DECIMAL)
+        fmt16 = fmt (#1 powers16, #2 powers16, num_format::fmtInt number_string::HEX)
 
         fun scan (bound, powers, geti) getc cs
             =
@@ -658,10 +658,10 @@ package integer   :> Integer {
                 | THE (i, (_, cs')) => THE (loop([i], cs'))
             end
 
-        fun scan2 getc = scan(#1 powers2, #3 powers2, num_scan::scanInt string_conversion::BIN) getc
-        fun scan8 getc = scan(#1 powers8, #3 powers8, num_scan::scanInt string_conversion::OCT) getc
-        fun scan10 getc = scan(#1 powers10, #3 powers10, num_scan::scanInt string_conversion::DEC) getc
-        fun scan16 getc = scan(#1 powers16, #3 powers16, num_scan::scanInt string_conversion::HEX) getc
+        fun scan2 getc = scan(#1 powers2, #3 powers2, num_scan::scanInt number_string::BINARY) getc
+        fun scan8 getc = scan(#1 powers8, #3 powers8, num_scan::scanInt number_string::OCTAL) getc
+        fun scan10 getc = scan(#1 powers10, #3 powers10, num_scan::scanInt number_string::DECIMAL) getc
+        fun scan16 getc = scan(#1 powers16, #3 powers16, num_scan::scanInt number_string::HEX) getc
 
       end #  package big_nat 
 
@@ -850,13 +850,13 @@ package integer   :> Integer {
             | (BI { sign=NEG, digits } ) => "-"$(fmtFn digits)
             | (BI { sign=POS, digits } ) => fmtFn digits
     in
-    fun fmt string_conversion::BIN = fmt' (bn::fmt2)
-      | fmt string_conversion::OCT = fmt' (bn::fmt8)
-      | fmt string_conversion::DEC = fmt' (bn::fmt10)
-      | fmt string_conversion::HEX = fmt' (bn::fmt16)
+    fun fmt number_string::BINARY  = fmt' (bn::fmt2)
+      | fmt number_string::OCTAL   = fmt' (bn::fmt8)
+      | fmt number_string::DECIMAL = fmt' (bn::fmt10)
+      | fmt number_string::HEX     = fmt' (bn::fmt16)
     end
 
-    to_string = fmt string_conversion::DEC
+    to_string = fmt number_string::DECIMAL
 
     local
       fun scan' scan_g getc cs = let
@@ -872,13 +872,13 @@ package integer   :> Integer {
               #  end case 
             end
     in
-    fun scan string_conversion::BIN = scan' (bn::scan2)
-      | scan string_conversion::OCT = scan' (bn::scan8)
-      | scan string_conversion::DEC = scan' (bn::scan10)
-      | scan string_conversion::HEX = scan' (bn::scan16)
+    fun scan number_string::BINARY  = scan' (bn::scan2)
+      | scan number_string::OCTAL   = scan' (bn::scan8)
+      | scan number_string::DECIMAL = scan' (bn::scan10)
+      | scan number_string::HEX     = scan' (bn::scan16)
     end
 
-    fun from_string s = string_conversion::scan_string (scan string_conversion::DEC) s
+    fun from_string s = number_string::scan_string (scan number_string::DECIMAL) s
 
     fun pow (_, 0) = one
       | pow (BI { sign=POS, digits }, n) = posi (bn::expression (digits, n))

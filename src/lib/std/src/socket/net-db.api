@@ -19,7 +19,7 @@ api Net_Db {
     get_by_name:    String -> Null_Or( Entry );
     get_by_address:  ((Network_Address, Address_Family)) -> Null_Or( Entry );
 
-    scan:           string_conversion::Reader (Char, X) -> string_conversion::Reader (Network_Address, X);
+    scan:           number_string::Reader (Char, X) -> number_string::Reader (Network_Address, X);
     from_string:    String -> Null_Or( Network_Address );
     to_string:      Network_Address -> String;
 };

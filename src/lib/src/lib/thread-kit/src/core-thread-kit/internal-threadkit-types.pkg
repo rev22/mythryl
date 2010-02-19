@@ -104,7 +104,7 @@ package internal_threadkit_types {
     fun thread_id_to_string (THREAD_ID { id, ... } )
         =
 	cat [ "[",
-               string_conversion::pad_left '0' 6 (int::to_string id),
+               number_string::pad_left '0' 6 (int::to_string id),
               "]"
             ];
 

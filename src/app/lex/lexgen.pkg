@@ -1732,7 +1732,7 @@ package lex_fn: (weak) Lexgen  {
 			    =
 			    {   fun emit8 (x, pos)
 				    =
-				    {   s =   string_conversion::pad_left '0' 3 (int::to_string x);
+				    {   s =   number_string::pad_left '0' 3 (int::to_string x);
 
 					case pos
 					    16	=> { say "\\\n\\\\";   say s;      1; };

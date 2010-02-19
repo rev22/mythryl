@@ -106,7 +106,7 @@ package net_db: (weak)  Net_Db {		# Net_Db	is from   src/lib/std/src/socket/net-
             esac;
 	  };
 
-    from_string = string_conversion::scan_string scan;
+    from_string = number_string::scan_string scan;
 
     fun to_string (NETWORK_ADDRESS address)
         =

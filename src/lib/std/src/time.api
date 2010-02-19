@@ -73,7 +73,7 @@ api Time {
     #
     #    [+-~]?([0-9]+(.[0-9]+)? | .[0-9]+)
     #
-    scan:         string_conversion::Reader (Char, X) -> string_conversion::Reader (Time, X);
+    scan:         number_string::Reader (Char, X) -> number_string::Reader (Time, X);
 
 };		# The End of Time.
 

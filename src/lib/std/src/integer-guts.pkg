@@ -223,12 +223,12 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
         =
 	{   to_string
                 =
-                unt31_guts::format string_conversion::DECIMAL;
+                unt31_guts::format number_string::DECIMAL;
 
 
 	    fun dec_dig d
                 =
-                string_conversion::pad_left  '0'  dec_digs  (to_string d);
+                number_string::pad_left  '0'  dec_digs  (to_string d);
 
 
 	    fun loop (l, [])
@@ -264,10 +264,10 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 	};
 
 
-    fun format string_conversion::OCTAL   =>  bitformat (0u3, 0ux7, "01234567");
-	format string_conversion::HEX     =>  bitformat (0u4, 0uxf, "0123456789abcdef");
-	format string_conversion::BINARY  =>  bitformat (0u1, 0ux1, "01");
-	format string_conversion::DECIMAL =>  decformat;
+    fun format number_string::OCTAL   =>  bitformat (0u3, 0ux7, "01234567");
+	format number_string::HEX     =>  bitformat (0u4, 0uxf, "0123456789abcdef");
+	format number_string::BINARY  =>  bitformat (0u1, 0ux1, "01");
+	format number_string::DECIMAL =>  decformat;
     end;
 
     fun sign i
@@ -436,7 +436,7 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 
     fun startscan (do_it, hex) getchar s
 	=
-	sign (string_conversion::skip_ws getchar s)
+	sign (number_string::skip_ws getchar s)
         where
 	    fun hexprefix (neg, s)
                 =
@@ -655,10 +655,10 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 	hex_dig_val _ => NULL;
     end;
 
-    fun scan string_conversion::DECIMAL =>  decscan;
-	scan string_conversion::HEX     =>  bitscan (0u4, hex_dig_val, TRUE);
-	scan string_conversion::OCTAL   =>  bitscan (0u3, oct_dig_val, FALSE);
-	scan string_conversion::BINARY  =>  bitscan (0u1, bin_dig_val, FALSE);
+    fun scan number_string::DECIMAL =>  decscan;
+	scan number_string::HEX     =>  bitscan (0u4, hex_dig_val, TRUE);
+	scan number_string::OCTAL   =>  bitscan (0u3, oct_dig_val, FALSE);
+	scan number_string::BINARY  =>  bitscan (0u1, bin_dig_val, FALSE);
     end;
 
     my (-_)   =  core_integer::neg;
@@ -686,11 +686,11 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 
     to_string
         =
-        format  string_conversion::DECIMAL;
+        format  number_string::DECIMAL;
 
     fun from_string s
         =
-        string_conversion::scan_string (scan string_conversion::DECIMAL) s;
+        number_string::scan_string (scan number_string::DECIMAL) s;
 
     my (<<)  =  lshift;
     my (>>>) =  rshift;

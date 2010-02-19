@@ -58,7 +58,7 @@ fun expand_tab ()
     {   n = *col;
         skip = 8 - (n & 0x7);
 	#
-	char_list := (string_conversion::pad_left ' ' skip "") ! *char_list;
+	char_list := (number_string::pad_left ' ' skip "") ! *char_list;
 	col := n + skip;
     };
 

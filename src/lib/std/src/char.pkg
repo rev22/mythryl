@@ -16,7 +16,7 @@ package char: (weak)
 api {
     include Char;				# Char	is from   src/lib/std/src/char.api
 
-    scan_c:   string_conversion::Reader( Char, X ) -> string_conversion::Reader( Char, X );
+    scan_c:   number_string::Reader( Char, X ) -> number_string::Reader( Char, X );
 	#  internal scanning function for C-style escape sequences 
 }
 {
@@ -383,10 +383,10 @@ api {
 
     from_string
 	=
-	string_conversion::scan_string scan;
+	number_string::scan_string scan;
 
     itoa =
-	(num_format::format_int string_conversion::DECIMAL)
+	(num_format::format_int number_string::DECIMAL)
         o
         inline_t::int32::from_int;
 
@@ -458,11 +458,11 @@ api {
 				=>
                                 # Hex escape code 
 				#
-			        check_digits string_conversion::HEX
+			        check_digits number_string::HEX
 				    (scan_digits is_hex_digit getc -1 stream'');
 			    _   =>
 				# Should be octal escape code 
-			       check_digits string_conversion::OCTAL
+			       check_digits number_string::OCTAL
 				   (scan_digits is_oct_digit getc 3 stream');
 			esac;
 
@@ -483,7 +483,7 @@ api {
 
     from_cstring
 	=
-	string_conversion::scan_string scan_c;
+	number_string::scan_string scan_c;
 
     fun to_cstring '\a' => "\\a";
 	to_cstring '\b' => "\\b";
@@ -518,7 +518,7 @@ api {
 			  ::  "\\";
 		    fi;
 
-		prestring::meld2 (prefix, num_format::format_int string_conversion::OCTAL i);
+		prestring::meld2 (prefix, num_format::format_int number_string::OCTAL i);
             fi;
     end;
 

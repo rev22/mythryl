@@ -128,26 +128,26 @@ package unt64: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 
 	    (hi, lo) => 
 		{ my (hi, lo) = extern w;
-		 w32::to_string hi + (string_conversion::pad_left '0' 8 (w32::to_string lo));
+		 w32::to_string hi + (number_string::pad_left '0' 8 (w32::to_string lo));
 		};
         esac;
 
-    fun format string_conversion::BINARY w
+    fun format number_string::BINARY w
             =>
 	    case (extern w)
                 #
 	        (0u0, lo)
 		    =>
-                    w32::format string_conversion::BINARY lo;
+                    w32::format number_string::BINARY lo;
 		#
 	        (hi, lo)
 		    => 
-		    {   w32bin = w32::format string_conversion::BINARY;
-			w32bin hi + (string_conversion::pad_left '0' 32 (w32bin lo));
+		    {   w32bin = w32::format number_string::BINARY;
+			w32bin hi + (number_string::pad_left '0' 32 (w32bin lo));
 		    };
             esac;
 
-       format string_conversion::HEX w
+       format number_string::HEX w
            =>
            to_string w;
 
@@ -166,7 +166,7 @@ package unt64: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 
 	    xok
                 = 
-                rdx == string_conversion::HEX;
+                rdx == number_string::HEX;
 
 	    fun startscan s0
                 =
@@ -226,7 +226,7 @@ package unt64: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 
     from_string
 	=
-	pre_basis::scan_string  (scan  string_conversion::HEX);
+	pre_basis::scan_string  (scan  number_string::HEX);
 
     my (*)  : (Unt, Unt) -> Unt = (*);
     my (+)  : (Unt, Unt) -> Unt = (+);

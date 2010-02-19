@@ -83,7 +83,7 @@ package lowcode_prettyprinter:  Lowcode_Prettyprinter {		# Lowcode_Prettyprinter
 
 	    if   (n > 0)
                 
-                 emit (pps, string_conversion::pad_left ' ' n "", SPACE);
+                 emit (pps, number_string::pad_left ' ' n "", SPACE);
             fi;
 	};
 

@@ -15,12 +15,12 @@ api String_To_List {
 	  first:        String,
 	  between:      String,
 	  last:         String,
-	  from_string:  string_conversion::Reader (Char, Y) -> string_conversion::Reader( X, Y )
+	  from_string:  number_string::Reader (Char, Y) -> number_string::Reader( X, Y )
 	}
         ->
-        string_conversion::Reader (Char, Y)
+        number_string::Reader (Char, Y)
         ->
-        string_conversion::Reader( List(X), Y );
+        number_string::Reader( List(X), Y );
 
 	# 'string_to_list' is given an expected initial string,
         # a separator, a terminating string, and an item scanning function,

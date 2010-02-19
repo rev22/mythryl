@@ -13,27 +13,27 @@ api {
 
     scan_word
         :
-        string_conversion::Radix				# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+        number_string::Radix				# number_string	is from   src/lib/std/src/number-string.pkg
 	->
-	string_conversion::Reader( Char, X )
+	number_string::Reader( Char, X )
 	->
-	string_conversion::Reader( unt32::Unt, X );
+	number_string::Reader( unt32::Unt, X );
 
 
     scan_int
         :
-        string_conversion::Radix
+        number_string::Radix
 	->
-	string_conversion::Reader( Char, X )
+	number_string::Reader( Char, X )
 	->
-	 string_conversion::Reader( int32::Int, X );
+	 number_string::Reader( int32::Int, X );
 
 
     scan_real
         :
-        string_conversion::Reader( Char, X)
+        number_string::Reader( Char, X)
 	->
-	string_conversion::Reader( Float, X );
+	number_string::Reader( Float, X );
 
 	# * should be to large_float::real *
 
@@ -433,10 +433,10 @@ api {
 	    NULL => NULL;
         esac;
 
-    fun scan_word string_conversion::BINARY  =>  final_word scan_bin;
-        scan_word string_conversion::OCTAL   =>  final_word scan_oct;
-        scan_word string_conversion::DECIMAL =>  final_word scan_dec;
-        scan_word string_conversion::HEX     =>  final_word scan_hex;
+    fun scan_word number_string::BINARY  =>  final_word scan_bin;
+        scan_word number_string::OCTAL   =>  final_word scan_oct;
+        scan_word number_string::DECIMAL =>  final_word scan_dec;
+        scan_word number_string::HEX     =>  final_word scan_hex;
     end;
 
     stipulate
@@ -476,10 +476,10 @@ api {
 	    esac;
     end;
 
-    fun scan_int string_conversion::BINARY  =>  final_int  scan_bin;
-        scan_int string_conversion::OCTAL   =>  final_int  scan_oct;
-        scan_int string_conversion::DECIMAL =>  final_int  scan_dec;
-        scan_int string_conversion::HEX     =>  final_int  scan_hex;
+    fun scan_int number_string::BINARY  =>  final_int  scan_bin;
+        scan_int number_string::OCTAL   =>  final_int  scan_oct;
+        scan_int number_string::DECIMAL =>  final_int  scan_dec;
+        scan_int number_string::HEX     =>  final_int  scan_hex;
     end;
   
     # Scan a string of decimal digits (starting with d), and return their

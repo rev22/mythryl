@@ -97,7 +97,7 @@ package process_commandline : Process_Commandline		# Process_Commandline	is from
                     (0, 0)
                     fmt_options;
 
-	    pad = string_conversion::pad_right ' ';
+	    pad = number_string::pad_right ' ';
 
 	    table
                 =

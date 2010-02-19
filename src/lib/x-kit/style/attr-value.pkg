@@ -62,15 +62,15 @@ package attribute_value:  Attribute_Value {
 	    then (case ordof (s, start+1)
 		    of (  88     #  'X' 
                      | 120     #  'x' 
-                    ) => string_conversion::xatoi s
-		  | _ => string_conversion::oatoi s
+                    ) => number_string::xatoi s
+		  | _ => number_string::oatoi s
 		  )      #  end case 
-	    else string_conversion::atoi s;
+	    else number_string::atoi s;
 	}
 	except
             _ => raise BAD_ATTRIBUTE_VALUE;
 
-    fun cvtReal s = (#1 (string_conversion::strToReal (strip s, 0)))
+    fun cvtReal s = (#1 (number_string::strToReal (strip s, 0)))
 	  except _ => raise BAD_ATTRIBUTE_VALUE
 
 
@@ -86,7 +86,7 @@ package attribute_value:  Attribute_Value {
 
 		    fun extract (s, i)
                         =
-			Bits::lshift (string_conversion::xatoi (substring (s, i, n)), shift);
+			Bits::lshift (number_string::xatoi (substring (s, i, n)), shift);
 
 		    xcore::CMS_RGB {
 			red = extract (s, 1),

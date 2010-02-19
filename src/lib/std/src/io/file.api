@@ -118,9 +118,9 @@ api  File {
     print:  String -> Void;
 
     scan_stream :
-	 (   string_conversion::Reader (Element, pure_io::Input_Stream)
+	 (   number_string::Reader (Element, pure_io::Input_Stream)
 	     ->
-	     string_conversion::Reader (X, pure_io::Input_Stream)
+	     number_string::Reader (X, pure_io::Input_Stream)
 	 )
 	 ->
          Input_Stream

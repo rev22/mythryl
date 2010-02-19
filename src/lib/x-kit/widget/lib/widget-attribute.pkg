@@ -184,18 +184,18 @@ herein
 
 	fun cvt_int s
 	    =
-	    {   s = string_conversion::skip_ws ss::getc (ss::from_string s);
+	    {   s = number_string::skip_ws ss::getc (ss::from_string s);
 		start = if (char::is_digit (ss::get (s, 0)) ) 0; else 1; fi;
 
 		rad =   if (ss::get (s, start) == '0')
 			    #		      
 			    case (ss::get (s, start+1))
 				#		         
-				('X' | 'x') =>  string_conversion::HEX;
-				_           =>  string_conversion::OCTAL;
+				('X' | 'x') =>  number_string::HEX;
+				_           =>  number_string::OCTAL;
 			    esac;
 			else
-			    string_conversion::DECIMAL;
+			    number_string::DECIMAL;
 			fi;
 
 		case (int::scan rad ss::getc s)
@@ -223,7 +223,7 @@ herein
 		    =
 		    {   fun extract i
 			    =
-			    #1 (the (unt::scan string_conversion::HEX ss::getc (ss::make_slice (s, i, THE n))));
+			    #1 (the (unt::scan number_string::HEX ss::getc (ss::make_slice (s, i, THE n))));
 
 			xc::CMS_RGB {
 			    red   => extract 1,
@@ -471,7 +471,7 @@ herein
 
 	fun make_string (STRING_VAL s)     => s;
 	    make_string (INT_VAL i)        => int::to_string i;
-	    make_string (FLOAT_VAL r)      => float::format (string_conversion::SCI (THE 6)) r;
+	    make_string (FLOAT_VAL r)      => float::format (number_string::SCI (THE 6)) r;
 	    make_string (BOOL_VAL b)       => bool::to_string b;
 	    make_string (COLOR_VAL c)      => color_to_string c;
 	    make_string (COLOR_SPEC_VAL c) => color_spec_to_string c;

@@ -1116,7 +1116,7 @@ package ml_grinder :> Ml_Grinder {
 	package p  = perl_syntax
 	package lg = lexer_generator_g (perl_syntax::R)
 
-	fun compile re = the (string_conversion::scan_string p::scan re)
+	fun compile re = the (number_string::scan_string p::scan re)
 
 	fun lexerGenerate prog
 	    =

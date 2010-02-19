@@ -113,7 +113,7 @@ package {
             esac;
 	};
 
-    from_string = string_conversion::scan_string scan;
+    from_string = number_string::scan_string scan;
 
     fun to_string (IPV4_ADDRESS address)
         =

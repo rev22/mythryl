@@ -25,7 +25,7 @@ generic package  generic_regular_expression_syntax_g (
        | MATCH_SET    r::char_set::Set			#  It is a set.
        | NONMATCH_SET r::char_set::Set			#  It is a set complemented.
        | REGEXP       r::Abstract_Regular_Expression	#  Do the work in the client.
-       | CHARCODE     string_conversion::Radix		#  Do character code parsing.
+       | CHARCODE     number_string::Radix		#  Do character code parsing.
        | CTRL						#  Do control character parsing.
        | BACKREF  ((String -> String), Int)		#  The i-th back reference.
        | ERROR String;                 			#  It is an error.
@@ -40,8 +40,8 @@ generic package  generic_regular_expression_syntax_g (
     escape
 	:  Callbackdata
         -> Context
-        -> string_conversion::Reader( Char,   X )
-        -> string_conversion::Reader( Escape, X );
+        -> number_string::Reader( Char,   X )
+        -> number_string::Reader( Escape, X );
 
     dot:  r::Abstract_Regular_Expression;	 #  What is '.' interpreted as?
 
@@ -61,15 +61,15 @@ api {
              error:      (X, String) -> Null_Or( (r::Abstract_Regular_Expression, X) )
            }
            ->
-           string_conversion::Reader (Char, X)
+           number_string::Reader (Char, X)
 	   ->
-           string_conversion::Reader (r::Abstract_Regular_Expression, X);
+           number_string::Reader (r::Abstract_Regular_Expression, X);
 }
 {
     package r  = r;
     package abstract_regular_expression = r;
     package s  = r::char_set;
-    package sc = string_conversion;			# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+    package sc = number_string;				# number_string		is from   src/lib/std/src/number-string.pkg
     package is = int_red_black_set;			# int_red_black_set	is from   src/lib/src/int-red-black-set.pkg
 
     fun char c

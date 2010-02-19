@@ -7,9 +7,9 @@ api Generalized_Regular_Expression_Parser {
 
     package r:  Abstract_Regular_Expression;
 
-    my scan:  string_conversion::Reader (Char, X)
+    my scan:  number_string::Reader (Char, X)
 	      ->
-              string_conversion::Reader (r::Abstract_Regular_Expression, X);
+              number_string::Reader (r::Abstract_Regular_Expression, X);
 
 	# Read an external representation of a regular expression
 	# from the stream and return an abstract syntax representation

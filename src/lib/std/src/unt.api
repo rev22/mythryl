@@ -56,13 +56,13 @@ api Unt {
      max:  ((Unt, Unt)) -> Unt;
 
     scan :
-	 string_conversion::Radix
-           -> string_conversion::Reader (Char, X)
-	   -> string_conversion::Reader (Unt,  X);
+	 number_string::Radix
+           -> number_string::Reader (Char, X)
+	   -> number_string::Reader (Unt,  X);
 
     from_string:  String -> Null_Or( Unt );
 
-    format:  string_conversion::Radix -> Unt -> String;
+    format:  number_string::Radix -> Unt -> String;
     to_string:    Unt -> String;
 
 };

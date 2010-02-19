@@ -480,7 +480,7 @@ package oh7_file: Oh7_File	{				# Oh7_File	is from   src/lib/compiler/execution/
                 =
                 {   new_string
                         =
-                        string_conversion::pad_right		# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+                        number_string::pad_right		# number_string	is from   src/lib/std/src/number-string.pkg
                             ' '
                             desired_length
                             string;

@@ -18,11 +18,11 @@ package string_to_list: (weak)  String_To_List {		# String_To_List	is from   src
     # string, and an item scanning function, return a function that
     # scans a string for a list of items.  Whitespace is ignored.
     # If the input string has the incorrect syntax, then the exception
-    # ScanList is raised with the position of the first error.		# Except that no exception is visibly defined or raised in this file:  Maybe it happens in string_conversion?
+    # ScanList is raised with the position of the first error.		# Except that no exception is visibly defined or raised in this file:  Maybe it happens in number_string?
     #
     fun string_to_list { first, between, last, from_string } getc stream
         =
-        {   skip_ws   =  string_conversion::skip_ws  getc;
+        {   skip_ws   =  number_string::skip_ws  getc;
 	    scan_item =  from_string getc;
 
 	    fun eat ""

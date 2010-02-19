@@ -27,7 +27,7 @@ local
               int32::to_string (gtk_spin_button_get_value_as_int::f (spin))
            else
            let digits = unt32::toInt (GtkSpinButton::get'digits spin)
-           in  float::fmt (string_conversion::FIX (THE digits))
+           in  float::fmt (number_string::FIX (THE digits))
                         (gtk_spin_button_get_value_as_float::f spin) 
            end
    in  gtk_label_set_text::f (label, buf)

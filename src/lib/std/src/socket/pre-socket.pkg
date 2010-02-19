@@ -82,7 +82,7 @@ herein
 	stipulate
 
 	    package sys_w =  host_unt;			# host_unt		is from   src/lib/std/types-only/bind-largest32.pkg
-	    package scvt  =  string_conversion;		# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+	    package scvt  =  number_string;		# number_string		is from   src/lib/std/src/number-string.pkg
 
 	    fun to_w (getc, stream)
 		=
@@ -183,7 +183,7 @@ herein
 
 	    fun from_bytes (a, b, c, d)
                 =
-                {   format =  unt8::format string_conversion::DECIMAL;
+                {   format =  unt8::format number_string::DECIMAL;
 
 		    cat [ format a, ".",
                           format b, ".",

@@ -150,7 +150,7 @@ package bitmap_io: (weak)  Bitmap_Io {		# Bitmap_Io	is from   src/lib/x-kit/draw
                         
                          get_next_int (input_ss());
 		    else
-                         case (int::scan string_conversion::HEX (ss::getc) ss')
+                         case (int::scan number_string::HEX (ss::getc) ss')
                            
 		              NULL  =>   raise exception BITMAP_FILE_INVALID;
 		              THE v =>   v;

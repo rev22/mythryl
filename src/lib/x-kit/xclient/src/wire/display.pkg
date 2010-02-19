@@ -529,13 +529,13 @@ herein
 			    =
 			    xok::read_xerror  xsocket;
 									# unt			is from   src/lib/std/unt.pkg
-									# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+									# number_string		is from   src/lib/std/src/number-string.pkg
 									# xerror_to_string	is from   src/lib/x-kit/xclient/src/stuff/xerror-to-string.pkg
 			trace .{
 			    #
 			    sprintf "Error on request #%s: %s"
 				#
-			        (unt::format  string_conversion::DECIMAL  seqn)
+			        (unt::format  number_string::DECIMAL  seqn)
 			        (xerror_to_string::xerror_to_string (w2v::decode_error err_msg));
 			};
 

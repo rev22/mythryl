@@ -36,7 +36,7 @@ package bool: (weak) Bool {		# Bool	is from   src/lib/std/src/bool.api
     # a wider range of arguments, but the
     # spec hasn't been written yet.              XXX BUGGO FIXME
     #
-    fun scan (getc:   string_conversion::Reader( Char, X ))  cs
+    fun scan (getc:   number_string::Reader( Char, X ))  cs
         =
 	case (getc (pre_basis::skip_ws  getc  cs))
           

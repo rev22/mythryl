@@ -82,7 +82,7 @@ herein
 		      ( pc::eat_char (fn c =  (c == ':')),
 			pc::or_op
 			  ( pc::wrap (scan_name, SERV_NAME),
-			    pc::wrap (int::scan string_conversion::DECIMAL, PORT_NUMBER)
+			    pc::wrap (int::scan number_string::DECIMAL, PORT_NUMBER)
 			  )
 		      )
 		  )
@@ -92,7 +92,7 @@ herein
 
 	addr_from_string
 	   =
-	   string_conversion::scan_string scan_addr;
+	   number_string::scan_string scan_addr;
 
 	exception BAD_ADDRESS  String;
 

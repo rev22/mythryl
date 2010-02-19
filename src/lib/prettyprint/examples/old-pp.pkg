@@ -54,7 +54,7 @@ package old_prettyprint :> Old_Prettyprint {
 	fun line_width { consumer, linewidth, flush } = THE linewidth
 	fun text_width _ = NULL
 	fun space ( { consumer, linewidth, flush }, n) =
-	      consumer (string_conversion::padLeft ' ' n "")
+	      consumer (number_string::padLeft ' ' n "")
 	fun newline { consumer, linewidth, flush } = consumer "\n"
 	fun string ( { consumer, linewidth, flush }, s) = consumer s
 	fun char ( { consumer, linewidth, flush }, c) = consumer (str c)

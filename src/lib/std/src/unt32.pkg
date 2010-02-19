@@ -61,10 +61,10 @@ package unt32_guts: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
     my max:  (Unt, Unt) -> Unt = w32::max;
 
     format = num_format::format_unt;
-    to_string = format string_conversion::HEX;
+    to_string = format number_string::HEX;
 
     scan = num_scan::scan_word;
-    from_string = pre_basis::scan_string (scan string_conversion::HEX);
+    from_string = pre_basis::scan_string (scan number_string::HEX);
 
 
 };	#  package unt32_guts 

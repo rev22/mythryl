@@ -138,7 +138,7 @@ herein
 	    infix val | & << >> ;
 
       /* +DEBUG 
-	    fun mask2str nbits m = string_conversion::padLeft '0' nbits (unt::fmt string_conversion::BIN m)
+	    fun mask2str nbits m = number_string::padLeft '0' nbits (unt::fmt number_string::BIN m)
 	    penMask2str = mask2str PenRep::numPenSlots
 	    gcMask2str = mask2str numGCSlots
        -DEBUG */

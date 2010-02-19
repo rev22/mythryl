@@ -1,4 +1,4 @@
-## string-conversion.api
+## number-string.api
 
 # Compiled by:
 #     src/lib/std/src/Base-imp.make6
@@ -11,9 +11,9 @@
 
 
 # This api is implemented in:
-#     src/lib/std/src/string-conversion.pkg
+#     src/lib/std/src/number-string.pkg
 
-api String_Conversion {
+api Number_String {
 
     Radix = BINARY | OCTAL | DECIMAL | HEX;
 

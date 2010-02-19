@@ -220,7 +220,7 @@ package parse_resource_specs: (weak)  api {
         =
         {   fun get_octal ss
                 =
-                {   scan =   int::scan  string_conversion::OCTAL  ss::getc;
+                {   scan =   int::scan  number_string::OCTAL  ss::getc;
 
 		    fun is_oct c
                         =

@@ -182,12 +182,12 @@ api Regular_Expression_Matcher {
     Compiled_Regular_Expression;			# The type of a compiled regular expression
         
 
-							# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+							# number_string		is from   src/lib/std/src/number-string.pkg
 							# regex_match_result	is from   src/lib/regex/glue/regex-match-result.pkg
 
     compile						# Read an external representation of a regular expression from a stream.
-	:   string_conversion::Reader( Char, X )
-        ->  string_conversion::Reader( Compiled_Regular_Expression, X );
+	:   number_string::Reader( Char, X )
+        ->  number_string::Reader( Compiled_Regular_Expression, X );
 
     compile_string					# Read an external representation of a regular expression from a string.
 	:
@@ -196,14 +196,14 @@ api Regular_Expression_Matcher {
 
     find					        # Scan the stream for the first occurrence of the regular expression.
 	:  Compiled_Regular_Expression
-        -> string_conversion::Reader( Char, X )
-        -> string_conversion::Reader( regex_match_result::Regex_Match_Result( Null_Or { match_position: X,  match_length: Int } ), X);
+        -> number_string::Reader( Char, X )
+        -> number_string::Reader( regex_match_result::Regex_Match_Result( Null_Or { match_position: X,  match_length: Int } ), X);
 
 
     prefix						# Try to match the stream at the current position with the regular expression.
 	:  Compiled_Regular_Expression
-        -> string_conversion::Reader( Char,X )
-        -> string_conversion::Reader( regex_match_result::Regex_Match_Result( Null_Or { match_position:  X, match_length:  Int } ), X);
+        -> number_string::Reader( Char,X )
+        -> number_string::Reader( regex_match_result::Regex_Match_Result( Null_Or { match_position:  X, match_length:  Int } ), X);
 
 
     stream_match					# Try to match the stream at the current position with one 
@@ -211,9 +211,9 @@ api Regular_Expression_Matcher {
 							# the corresponding action.
         List( (String, (  regex_match_result::Regex_Match_Result( Null_Or { match_position: X, match_length: Int } ) -> Y)))
 	->
-        string_conversion::Reader( Char, X )
+        number_string::Reader( Char, X )
         ->
-        string_conversion::Reader( Y, X );
+        number_string::Reader( Y, X );
 };
 
 

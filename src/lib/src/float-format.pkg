@@ -34,8 +34,8 @@ api {
     exception BAD_PRECISION;
 	# Raised by real to string conversions, if the precision is < 0. 
 
-    fun zero_lpad (s, w) =  string_conversion::pad_left  '0' w s;
-    fun zero_rpad (s, w) =  string_conversion::pad_right '0' w s;
+    fun zero_lpad (s, w) =  number_string::pad_left  '0' w s;
+    fun zero_rpad (s, w) =  number_string::pad_right '0' w s;
 
     # Convert an integer between 0..9 to a single digit:
     #

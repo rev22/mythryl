@@ -22,7 +22,7 @@ api Dns_Host_Lookup {
 
     get_host_name:    Void -> String;
 
-    scan:             string_conversion::Reader (Char, X) -> string_conversion::Reader (Internet_Address, X);
+    scan:             number_string::Reader (Char, X) -> number_string::Reader (Internet_Address, X);
     from_string:      String -> Null_Or( Internet_Address );
     to_string:        Internet_Address -> String;
 

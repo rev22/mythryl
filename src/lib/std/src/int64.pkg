@@ -119,7 +119,7 @@ package int64: (weak)  Int {			# Int	is from   src/lib/std/src/int.api
         integer_guts::format  rdx  (to_large i);
 
 
-    to_string =  format  string_conversion::DECIMAL;
+    to_string =  format  number_string::DECIMAL;
 
 
     fun scan rdx rdr s
@@ -140,7 +140,7 @@ package int64: (weak)  Int {			# Int	is from   src/lib/std/src/int.api
 
     from_string
         =
-        pre_basis::scan_string (scan string_conversion::HEX);
+        pre_basis::scan_string (scan number_string::HEX);
 
     my (-_)   : Int -> Int        = (-_);
     my neg    : Int -> Int        = (-_);

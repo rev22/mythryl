@@ -37,9 +37,9 @@ package picklehash : Picklehash {		# Picklehash	is from   src/lib/compiler/front
         = 
 	{   fun cvt_byte b
                 =
-                string_conversion::pad_left '0' 2 (unt8::to_string b);
+                number_string::pad_left '0' 2 (unt8::to_string b);
 
-						# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+						# number_string	is from   src/lib/std/src/number-string.pkg
 
 	    fun f (b, l)
                 =

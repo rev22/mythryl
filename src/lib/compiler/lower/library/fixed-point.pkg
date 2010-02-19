@@ -13,7 +13,7 @@ pkg
    infix & ||
 
    decimal_places = (decimal_bits + 2) div 3
-   realToString   = float::fmt (string_conversion::FIX (THE decimal_places))
+   realToString   = float::fmt (number_string::FIX (THE decimal_places))
 
    my op<< = W.<<
    my op>> = W.>>

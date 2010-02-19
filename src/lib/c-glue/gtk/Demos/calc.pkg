@@ -22,7 +22,7 @@ end
          | shows (first,[], d . ds) = (d <~ set::text ""; shows (FALSE,[], ds))
          | shows (first, n . ns, d . ds) = 
        let  num = if first then 
-                         float::fmt (string_conversion::FIX (THE *decimal)) n
+                         float::fmt (number_string::FIX (THE *decimal)) n
                       else float::to_string n
            num = if first and
                         *state = ENTER_DECIMAL and *decimal = 0 then

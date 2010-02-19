@@ -52,7 +52,7 @@ api {
     #
     fun space (DEV { dst, ... }, n)
         =
-        file::write (dst, string_conversion::pad_left ' ' n "");
+        file::write (dst, number_string::pad_left ' ' n "");
 
     # Output a newline to the device:
     #

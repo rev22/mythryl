@@ -23,9 +23,9 @@ api Bool {
     from_string:  String -> Null_Or( Bool );
 
     scan:
-        string_conversion::Reader (Char, X)
+        number_string::Reader (Char, X)
         ->
-        string_conversion::Reader (Bool, X);
+        number_string::Reader (Bool, X);
 
 };
 

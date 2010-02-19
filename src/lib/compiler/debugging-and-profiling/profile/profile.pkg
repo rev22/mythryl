@@ -98,7 +98,7 @@ api {
 
     fun field' (string, width)
         =
-        string_conversion::pad_left ' ' width string;		# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+        number_string::pad_left ' ' width string;		# number_string	is from   src/lib/std/src/number-string.pkg
 
 
 
@@ -112,7 +112,7 @@ api {
         {   len =  size st;
 	  
 	    if   (len <= w)
-	         string::cat [".", string_conversion::pad_left '0' w st];
+	         string::cat [".", number_string::pad_left '0' w st];
 	    else string::cat [
 		  substring (st, 0, len-w), ".", substring (st, len-w, w)
 		];

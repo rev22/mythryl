@@ -31,7 +31,7 @@ api Scanf {
     exception BAD_FORMAT String;				#  Bad format string 
 
 
-								# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+								# number_string	is from   src/lib/std/src/number-string.pkg
     # "fnsscanf" == "scanf over functional streams":
     fnsscanf
         :  (X -> Null_Or( (Char, X) ) )				# E.g., 'get' function fetching i-th char from input string.

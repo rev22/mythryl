@@ -459,7 +459,7 @@ herein
 	    =
 	    {   fun getword s
 		    =
-		    string_conversion::split_off_prefix  char::is_alpha  getc  s;
+		    number_string::split_off_prefix  char::is_alpha  getc  s;
 
 		fun expect c s f
 		    =
@@ -510,7 +510,7 @@ herein
 		fun year0 (wday, mon, d, hr, mn, sc) s
 		    =
 		    case (int_guts::scan
-			     string_conversion::DECIMAL
+			     number_string::DECIMAL
 			     getc
 			     s)
 
@@ -642,7 +642,7 @@ herein
 
 	fun from_string s
 	    =
-	    string_conversion::scan_string scan s;
+	    number_string::scan_string scan s;
 
 
 	# Comparison does not take into account the offset.

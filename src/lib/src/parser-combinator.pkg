@@ -14,7 +14,7 @@
 
 package parser_combinator: (weak)  Parser_Combinator {		# Parser_Combinator	is from   src/lib/src/parser-combinator.api
 
-    package sc= string_conversion;				# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+    package sc= number_string;					# number_stringn	is from   src/lib/std/src/number-string.pkg
 
     Parser (X, A_strm)
         =

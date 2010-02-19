@@ -158,16 +158,16 @@ package unt64:  Unt {
            b = w::to_string y
        in  a$padZero (b, 8-size b) end
 
-   fun bin (0w0, y) = w::fmt string_conversion::BIN y
+   fun bin (0w0, y) = w::fmt number_string::BIN y
      | bin (x, y) = 
-       let a = w::fmt string_conversion::BIN x
-           b = w::fmt string_conversion::BIN y
+       let a = w::fmt number_string::BIN x
+           b = w::fmt number_string::BIN y
        in  a$padZero (b, 32-size b) end
 
-   fun fmt string_conversion::BIN = bin
-     | fmt string_conversion::DEC = raise exception MATCH
-     | fmt string_conversion::HEX = hex
-     | fmt string_conversion::OCT = raise exception MATCH
+   fun fmt number_string::BIN = bin
+     | fmt number_string::DEC = raise exception MATCH
+     | fmt number_string::HEX = hex
+     | fmt number_string::OCT = raise exception MATCH
 
    to_string = hex
 

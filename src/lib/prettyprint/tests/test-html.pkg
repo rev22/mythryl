@@ -53,7 +53,7 @@ fun withPP (name, wid) prettyprint_g = let
       end;
 
 local
-  fun repeat c n = string_conversion::padLeft c n ""
+  fun repeat c n = number_string::padLeft c n ""
   fun simple1 (name, w, n, open_box) () =
 	withPP (name, w) (fn stream => (
 	  open_box stream (pp::Rel 0);

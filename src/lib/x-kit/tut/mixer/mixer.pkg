@@ -203,7 +203,7 @@ herein
 
 				n = do_mailop  slider_motion';
 
-				set (lbl::TEXT (unt::format string_conversion::DECIMAL n));
+				set (lbl::TEXT (unt::format number_string::DECIMAL n));
 
 				paint (make_color n);
 

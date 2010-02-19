@@ -146,7 +146,7 @@ package xsocket: (weak)  Xsocket			# Xsocket		is from   src/lib/x-kit/xclient/sr
     fun string_to_hex s
 	=
 	string::translate
-	    (fn c =  string_conversion::pad_left '0' 2 (int::format string_conversion::HEX (char::to_int c)) + ".")
+	    (fn c =  number_string::pad_left '0' 2 (int::format number_string::HEX (char::to_int c)) + ".")
 	     s;
 
     # Show printing chars verbatim, everything
@@ -466,7 +466,7 @@ package xsocket: (weak)  Xsocket			# Xsocket		is from   src/lib/x-kit/xclient/sr
 #  +DEBUG 
 	fun seqn_to_string  n
             =
-            u::format  string_conversion::DECIMAL  n;
+            u::format  number_string::DECIMAL  n;
 
 	fun dump_pending_q (seqn, ([], []))
 		=>

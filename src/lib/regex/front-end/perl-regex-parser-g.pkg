@@ -66,8 +66,8 @@ api {
 
    #  With user supplied error handler 
    scan':  ((X, String) -> Null_Or ((r::Abstract_Regular_Expression, X)) )
-        -> string_conversion::Reader (Char, X)
-        -> string_conversion::Reader (r::Abstract_Regular_Expression, X);
+        -> number_string::Reader (Char, X)
+        -> number_string::Reader (r::Abstract_Regular_Expression, X);
 }
 =
 package {
@@ -95,7 +95,7 @@ package {
 		| MATCH_SET    s::Set
 		| NONMATCH_SET s::Set
 		| REGEXP       r::Abstract_Regular_Expression 
-		| CHARCODE     string_conversion::Radix 
+		| CHARCODE     number_string::Radix 
 		| CTRL 
 		| BACKREF     ((String -> String), Int)
 		| ERROR       String
@@ -174,8 +174,8 @@ package {
 	    digit       = MATCH_SET digits;
 	    nondigit    = NONMATCH_SET digits;
 
-	    hex         = CHARCODE string_conversion::HEX;
-	    oct         = CHARCODE string_conversion::OCTAL;
+	    hex         = CHARCODE number_string::HEX;
+	    oct         = CHARCODE number_string::OCTAL;
 
 	    # Perl defines the following zero-width assertions:
 	    #
@@ -334,7 +334,7 @@ package {
 			    # How to handle things like \11 where  XXX BUGGO FIXME
 			    #    is it \1 and the character 1?
 
-			    case (int::scan string_conversion::DECIMAL getc s)
+			    case (int::scan number_string::DECIMAL getc s)
 				#                                
 				THE (i, s) =>  THE (BACKREF (fn x = x, i), s);
 				NULL       =>  THE (ERROR "back reference error", s);

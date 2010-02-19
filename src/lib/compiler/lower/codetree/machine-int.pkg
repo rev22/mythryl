@@ -43,8 +43,8 @@ herein
 
 	#  Parse hex or binary, but not octal:	# XXX BUGGO FIXME
 
-	hex_to_int =   string_conversion::scan_string (i::scan string_conversion::HEX);
-	bin_to_int =   string_conversion::scan_string (i::scan string_conversion::BINARY);
+	hex_to_int =   number_string::scan_string (i::scan number_string::HEX);
+	bin_to_int =   number_string::scan_string (i::scan number_string::BINARY);
 
 	# Precompute some tables for faster arithmetic 
 	#
@@ -194,8 +194,8 @@ herein
 	#
 	fun to_string   (size, i) =  i::to_string i;
 
-	to_hex = i::format string_conversion::HEX;
-	to_bin = i::format string_conversion::BINARY;
+	to_hex = i::format number_string::HEX;
+	to_bin = i::format number_string::BINARY;
 
 	fun to_hex_string (size, i) =   "0x" + to_hex (unsigned (size, i));
 	fun to_bin_string (size, i) =   "0b" + to_bin (unsigned (size, i));

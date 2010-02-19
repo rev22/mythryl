@@ -32,9 +32,9 @@ api Char {
 
     compare:  ((Char, Char)) -> Order;
 
-    scan:          string_conversion::Reader (Char, X)
+    scan:          number_string::Reader (Char, X)
                    ->
-                   string_conversion::Reader (Char, X);
+                   number_string::Reader (Char, X);
 
     from_string:   string::String -> Null_Or( Char );
     to_string:     Char -> string::String;

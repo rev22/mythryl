@@ -395,7 +395,7 @@ package ieee_float: (weak)  Ieee_Float {		# Ieee_Float	is from   src/lib/std/src
 
     fun from_string s
         =
-        string_conversion::scan_string  scan  s;
+        number_string::scan_string  scan  s;
 
 };						# package ieee_float
 

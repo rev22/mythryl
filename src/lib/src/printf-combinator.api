@@ -143,12 +143,12 @@ api Printf_Combinator {
     char'   : Element( X, Char );   #  using char::to_string 
 
 
-					# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+					# number_string	is from   src/lib/std/src/number-string.pkg
 
     # Parameterized elements:
     #
-    int'  : string_conversion::Radix       ->  Element( X, Int  );	#  using (int::format r) 
-    real' : string_conversion::Real_Format ->  Element (X, Float);	#  using (float::format f) 
+    int'  : number_string::Radix       ->  Element( X, Int  );	#  using (int::format r) 
+    real' : number_string::Real_Format ->  Element (X, Float);	#  using (float::format f) 
 
     # Generic "gluifier":
     #

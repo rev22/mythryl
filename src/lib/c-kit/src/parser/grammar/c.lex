@@ -66,8 +66,8 @@ fun make_string charlist = (implode(reverse *charlist) before charlist := NIL);
 
 fun make_hex_int (s,a,b,err_warn: Err_Warn)
     =
-   (  case (string_conversion::scan_string
-               (large_int::scan  string_conversion::HEX)
+   (  case (number_string::scan_string
+               (large_int::scan  number_string::HEX)
                s
       )
 
@@ -93,8 +93,8 @@ fun make_hex_char (args as (s, a, b, err_warn: Err_Warn)): Int /* returns a char
 
 fun make_oct_int (s,a,b,err_warn: Err_Warn)
     =
-    (   case (string_conversion::scan_string
-                 (large_int::scan string_conversion::OCTAL)
+    (   case (number_string::scan_string
+                 (large_int::scan number_string::OCTAL)
                  s
         )
 
@@ -127,8 +127,8 @@ fun make_oct_char (args as (s, a, b, err_warn: Err_Warn)) /* returns a character
 
 fun make_int (s,a,b,err_warn: Err_Warn)
     =
-    (   case (string_conversion::scan_string
-                 (large_int::scan string_conversion::DECIMAL)
+    (   case (number_string::scan_string
+                 (large_int::scan number_string::DECIMAL)
                  s
         )
 
@@ -148,7 +148,7 @@ fun make_int (s,a,b,err_warn: Err_Warn)
 
 fun make_real_num (s,a,b,err_warn: Err_Warn)
     =
-    (   case (string_conversion::scan_string
+    (   case (number_string::scan_string
                  float::scan
                  s
         )
