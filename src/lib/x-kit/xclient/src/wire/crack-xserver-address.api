@@ -46,7 +46,7 @@ api Crack_Xserver_Address {
     Xserver_Address
       = UNIX  String				#  ":display.screen" 			E.g., ":0.0"
       | INET_HOSTNAME  (String, Int)		#  "hostname: display.screen" 		E.g., "foo.com:0.0"
-      | INET_ADDR      (String, Int)		#  "ddd.ddd.ddd.ddd: display.screen" 	E.g., "192.168.0.1:0.0"
+      | INET_ADDRESS   (String, Int)		#  "ddd.ddd.ddd.ddd: display.screen" 	E.g., "192.168.0.1:0.0"
       ;
 	
     exception BAD_ADDRESS  String;

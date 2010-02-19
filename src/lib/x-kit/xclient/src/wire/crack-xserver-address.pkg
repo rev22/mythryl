@@ -23,7 +23,7 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
     Xserver_Address
       = UNIX  String				#  ":display.screen" 
       | INET_HOSTNAME  (String, Int)		#  "hostname: display.screen" 
-      | INET_ADDR      (String, Int)		#  "ddd.ddd.ddd.ddd: display.screen" 
+      | INET_ADDRESS   (String, Int)		#  "ddd.ddd.ddd.ddd: display.screen" 
       ;
 
     exception BAD_ADDRESS  String;
@@ -56,7 +56,7 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
         =
         if  (char::is_digit (string::get (host, 0)))
 
-	     { address                =>  INET_ADDR (host, x_tcpport+display_number),
+	     { address                =>  INET_ADDRESS (host, x_tcpport+display_number),
 	       canonical_display_name =>  f::sprintf' "%s:%d.%d" [f::STRING host, f::INT display_number, f::INT screen],
 	       screen
              };

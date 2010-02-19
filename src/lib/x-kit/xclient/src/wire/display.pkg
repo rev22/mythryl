@@ -14,7 +14,7 @@ stipulate
     package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package xok =  xsocket;			    			# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package g   =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package sa  =  crack_xserver_address;				# crack_xserver_address		is from   src/lib/x-kit/xclient/src/wire/crack-xserver-address.pkg
+    package cxa =  crack_xserver_address;				# crack_xserver_address		is from   src/lib/x-kit/xclient/src/wire/crack-xserver-address.pkg
     package v8s =  unt8_vector_slice;					# unt8_vector_slice		is from   src/lib/std/src/unt8-vector-slice.pkg
     package v2w =  value_to_wire;					# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package w2v =  wire_to_value;					# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
@@ -25,7 +25,7 @@ herein
 
     package display: (weak) Display {					# Display			is from   src/lib/x-kit/xclient/src/wire/display.api
 
-	exception BAD_ADDRESS = sa::BAD_ADDRESS;
+	exception BAD_ADDRESS = cxa::BAD_ADDRESS;
 
 	package dns = dns_host_lookup;					# dns_host_lookup		is from   src/lib/std/src/socket/dns-host-lookup.pkg
 	package w8v = unt8_vector;					# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
@@ -266,7 +266,16 @@ herein
 		#
 		my { address, canonical_display_name, screen }
 		    =
-		    sa::crack_xserver_address  raw_display_name;
+		    cxa::crack_xserver_address  raw_display_name;
+
+		trace .{ sprintf "display.pkg: connect_to_xserver: screen d=%d canonical_display_name s='%s'" screen canonical_display_name; };
+
+		case address
+		    #
+		    cxa::UNIX address'               => trace .{ sprintf "display.pkg: connect_to_xserver: address == UNIX '%s'" address'; };
+		    cxa::INET_HOSTNAME (string, int) => trace .{ sprintf "display.pkg: connect_to_xserver: address == INET_HOSTNAME ('%s',%d)" string int; };
+		    cxa::INET_ADDRESS  (string, int) => trace .{ sprintf "display.pkg: connect_to_xserver: address == INET_ADDRESS  ('%s',%d)" string int; };
+		esac;
 
 		fun repeat connection_fn
 		    =
@@ -285,7 +294,7 @@ herein
 		    =
 		    {   trace .{
 			    #
-                            sprintf "inet_connection: address = \"%s\", port d=%d"
+                            sprintf "display.pkg: connect_to_xserver: open_internet_domain_socket: address = \"%s\", port d=%d"
 			        #
                                 (dns::to_string  address)
                                 port;
@@ -310,7 +319,7 @@ herein
 
 		case address
 		    #
-		    sa::UNIX path
+		    cxa::UNIX path
 			=>
 			{   socket = unix_socket::stream::socket ();
 
@@ -322,7 +331,7 @@ herein
 			    say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
 			};
 
-		    sa::INET_ADDR (host, port)
+		    cxa::INET_ADDRESS (host, port)
 			=>
 			case (dns::from_string  host)
 			    #
@@ -331,7 +340,7 @@ herein
 			esac;
 
 
-		    sa::INET_HOSTNAME (host, port)
+		    cxa::INET_HOSTNAME (host, port)
 			=>
 			case (dns::get_by_name  host)
 			    #

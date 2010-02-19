@@ -1,3 +1,4 @@
+2010-02-18-20.17.09: src/lib/internet/socket-stuff.pkg: Light cleaning.
 2010-02-18-19.46.24: src/lib/x-kit/xclient/src/wire/display.pkg: say_hello_to_xserver: retry: Log exceptions caught by name instead of silently discarding.
 2010-02-18-16.39.35: src/lib/src/lib/thread-kit/src/lib/tracing.pkg: Tweak and date generated tracelog header. src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Remove an inappropriate newline.
 2010-02-18-16.15.14: src/lib/std/src/time.api: Got tired of the redundancy of time::get_time(), changed it to time::get(). Added some comments.  Makefile: somewhat-clean: Remove all .log files.
