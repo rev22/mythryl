@@ -39,7 +39,7 @@ api Unt {
     / : (Unt, Unt) -> Unt;
     % : (Unt, Unt) -> Unt;
 
-    compare:  ((Unt, Unt)) -> Order;
+    compare:  (Unt, Unt) -> Order;
     >  : (Unt, Unt) -> Bool;
     >= : (Unt, Unt) -> Bool;
     <  : (Unt, Unt) -> Bool;
@@ -50,8 +50,9 @@ api Unt {
      max:  ((Unt, Unt)) -> Unt;
 
     scan :
-	 string_conversion::Radix -> string_conversion::Reader (Char, X)
-	   -> string_conversion::Reader (Unt, X);
+	 string_conversion::Radix
+           -> string_conversion::Reader (Char, X)
+	   -> string_conversion::Reader (Unt,  X);
 
     from_string:  String -> Null_Or( Unt );
 
