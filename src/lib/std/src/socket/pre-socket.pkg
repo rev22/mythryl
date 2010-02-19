@@ -68,7 +68,12 @@ herein
 	    Socket_Type =  SOCKET_TYPE c_interface::System_Const;
 	};
 
-	Shutdown_Mode =  NO_RECVS | NO_SENDS | NO_RECVS_OR_SENDS;
+	Shutdown_Mode
+	  #
+          =  NO_RECVS
+          |  NO_SENDS
+          |  NO_RECVS_OR_SENDS
+          ;
 
 	Socket_Descriptor =  winix_types::io::Io_Descriptor;
 
@@ -86,34 +91,33 @@ herein
 
 	    fun to_w (getc, stream)
 		=
-		{   fun scan radix stream
+		{   fun scan  radix  stream
 			=
-			(case (sys_w::scan radix getc stream)
-			   
-			      NULL          =>  NULL;
-			      THE (w, stream) =>  THE (w, stream);
-			 esac
-			);
+			case (sys_w::scan  radix  getc  stream)
+			    #
+			    THE (w, stream) =>  THE (w, stream);
+			    NULL            =>  NULL;
+			esac;
 
 		    case (getc stream)
-		      
-			 NULL => NULL;
+			#		      
+			NULL => NULL;
+			#		      
+			THE ('0', stream')
+			    =>
+			    (case (getc stream')
 
-			 THE ('0', stream')
-			     =>
-			     (case (getc stream')
-			        
-				   NULL => THE (0u0, stream');
+				  NULL => THE (0u0, stream');
 
-				   THE(('x' | 'X'), stream'')
-				       =>
-				       scan scvt::HEX stream'';
+				  THE(('x' | 'X'), stream'')
+				      =>
+				      scan scvt::HEX stream'';
 
-				   _ =>  scan scvt::OCTAL stream;
-			      esac
-			     );
+				  _ =>  scan scvt::OCTAL stream;
+			     esac
+			    );
 
-			 _ => scan scvt::DECIMAL stream;
+			_ => scan scvt::DECIMAL stream;
 		    esac;
 		};
 
@@ -193,6 +197,16 @@ herein
 		};
 
 	end;	# stipulate
+
+        fun to_string (SOCKET { file_descriptor, nonblocking })
+	    #								# NB: sfprintf package is not defined at this level of the library.
+	    =  "SOCKET { file_descriptor => "
+            +  (num_format::format_int  number_string::DECIMAL  (int32_guts::from_int file_descriptor))
+            +  ",  nonblocking => "
+            +  (*nonblocking ?? "TRUE" :: "FALSE")
+	    +  " }"
+	    ;
+
     };		# pre_socket 
 end;		# stipulate
 

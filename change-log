@@ -1,3 +1,4 @@
+2010-02-19-16.41.34: src/lib/std/src/socket/internet-socket.pkg: Tidying.
 2010-02-19-16.14.28: src/runtime/c-libs/lib7-c.h: Report line number as well as filename in RAISE_SYSERR and RAISE_ERROR macros.
 2010-02-19-13.54.29: src/lib/std/src/: Renamed string-conversion.api,string-conversion.pkg -> number-string.api,number-string.pkg for brevity and clarity -- they are more about numbers than strings.
 2010-02-19-13.08.32: src/lib/std/src/socket/: Renamed unix-generic-socket.pkg -> generic-socket.pkg for clarity and as part of concentrating on being posix-centric rather than cross-platform-centric.

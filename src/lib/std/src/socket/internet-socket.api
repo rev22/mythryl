@@ -65,6 +65,8 @@ api Internet_Socket {
 	                get_nodelay:    Stream_Socket( A_mode ) -> Bool;
 	                set_nodelay:   (Stream_Socket( A_mode ), Bool) -> Void;
                       };
+
+    to_string: Socket(X) -> String;				# For debug printouts etc.
 };
 
 

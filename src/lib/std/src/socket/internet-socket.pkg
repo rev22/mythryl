@@ -77,6 +77,8 @@ herein
 		    ignore (ctl_delay (file_descriptor, THE flag));
 	    end;
 	};
+
+        to_string =  ps::to_string;
     };
 end;
 

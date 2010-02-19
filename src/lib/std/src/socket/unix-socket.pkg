@@ -3,52 +3,60 @@
 # Compiled by:
 #     src/lib/std/src/Base-imp.make6
 
+stipulate
+    package sg =  socket_guts;			# socket_guts		is from   src/lib/std/src/socket/socket-guts.pkg
+    package gs =  generic_socket;		# generic_socket	is from   src/lib/std/src/socket/generic-socket.pkg
+    package ps =  pre_socket;			# pre_socket		is from   src/lib/std/src/socket/pre-socket.pkg
+herein
 
-package unix_socket: (weak)  Unix_Socket {	# Unix_Socket	is from   src/lib/std/src/socket/unix-socket.api
+    package unix_socket: (weak)  Unix_Socket {	# Unix_Socket	is from   src/lib/std/src/socket/unix-socket.api
 
-    package socket= socket_guts::socket;	# socket_guts	is from   src/lib/std/src/socket/socket-guts.pkg
 
-    fun socket_fn x
-        =
-        c_interface::c_function "Lib7-Sockets" x;
+	fun socket_fn x
+	    =
+	    c_interface::c_function "Lib7-Sockets" x;
 
-    Unix = UNIX;
+	Unix = UNIX;
 
-    Socket( X ) = pre_socket::Socket( Unix, X ); 
-    Stream_Socket( X ) = Socket( socket_guts::Stream( X ) );
-    Datagram_Socket = Socket( socket_guts::Datagram );
+	Socket(X) = ps::Socket( Unix, X ); 
 
-    Socket_Address = pre_socket::Socket_Address( Unix );
+	Stream_Socket(X) = Socket( sg::Stream(X) );
+	Datagram_Socket  = Socket( sg::Datagram );
 
-    unix_address_family = null_or::the (socket_guts::af::from_string "UNIX");
+	Socket_Address = ps::Socket_Address( Unix );
 
-    # * We should probably do some error checking on the length of the string XXX BUGGO FIXME
-    #
-    stipulate
-	my to_unix_address:  String -> pre_socket::Internet_Address = socket_fn "toUnixAddr";
-	my from_unix_address:  pre_socket::Internet_Address -> String = socket_fn "fromUnixAddr";
-    herein
-	fun to_address s = pre_socket::ADDRESS (to_unix_address s);
-	fun from_address (pre_socket::ADDRESS address) = from_unix_address address;
-    end;
+	unix_address_family
+	    =
+	    null_or::the  (sg::af::from_string  "UNIX");
 
-    package stream {
+	# We should probably do some error checking
+        # on the length of the string.			 XXX BUGGO FIXME
+	#
+	stipulate
+	    my to_unix_address:    String -> ps::Internet_Address =   socket_fn "toUnixAddr";
+	    my from_unix_address:  ps::Internet_Address -> String =   socket_fn "fromUnixAddr";
+	herein
+	    fun to_address s = ps::ADDRESS (to_unix_address s);
+	    fun from_address (ps::ADDRESS address) = from_unix_address address;
+	end;
 
-	fun socket ()          =  generic_socket::socket       (unix_address_family, socket::stream);
-	fun socket' proto      =  generic_socket::socket'      (unix_address_family, socket::stream, proto);
-	fun socket_pair ()     =  generic_socket::socket_pair  (unix_address_family, socket::stream);
-	fun socket_pair' proto =  generic_socket::socket_pair' (unix_address_family, socket::stream, proto);
+	package stream {
+
+	    fun socket ()          =  gs::socket       (unix_address_family, sg::socket::stream);
+	    fun socket' proto      =  gs::socket'      (unix_address_family, sg::socket::stream, proto);
+	    fun socket_pair ()     =  gs::socket_pair  (unix_address_family, sg::socket::stream);
+	    fun socket_pair' proto =  gs::socket_pair' (unix_address_family, sg::socket::stream, proto);
+	};
+
+	package datagram {
+
+	    fun socket ()          =  gs::socket       (unix_address_family, sg::socket::datagram);
+	    fun socket' proto      =  gs::socket'      (unix_address_family, sg::socket::datagram, proto);
+	    fun socket_pair ()     =  gs::socket_pair  (unix_address_family, sg::socket::datagram);
+	    fun socket_pair' proto =  gs::socket_pair' (unix_address_family, sg::socket::datagram, proto);
+	};
     };
-
-    package datagram {
-
-	fun socket ()          =  generic_socket::socket       (unix_address_family, socket::datagram);
-	fun socket' proto      =  generic_socket::socket'      (unix_address_family, socket::datagram, proto);
-	fun socket_pair ()     =  generic_socket::socket_pair  (unix_address_family, socket::datagram);
-	fun socket_pair' proto =  generic_socket::socket_pair' (unix_address_family, socket::datagram, proto);
-    };
-};
-
+end;
 
 ## COPYRIGHT (c) 1995 AT&T Bell Laboratories.
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,
