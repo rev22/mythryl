@@ -142,7 +142,7 @@ api {
 
 	    fun format_int i
                 =
-                lint::format  string_conversion::DEC  i;
+                lint::format  string_conversion::DECIMAL  i;
 
 	    fun format_sec (neg, i)
                 =

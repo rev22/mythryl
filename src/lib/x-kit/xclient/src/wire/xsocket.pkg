@@ -464,9 +464,9 @@ package xsocket: (weak)  Xsocket			# Xsocket		is from   src/lib/x-kit/xclient/sr
           ;
 
 #  +DEBUG 
-	fun seqn_to_string n
+	fun seqn_to_string  n
             =
-            u::format string_conversion::DEC n;
+            u::format  string_conversion::DECIMAL  n;
 
 	fun dump_pending_q (seqn, ([], []))
 		=>

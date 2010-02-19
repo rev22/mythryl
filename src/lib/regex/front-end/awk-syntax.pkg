@@ -92,7 +92,7 @@ package awk_syntax: (weak)  Regular_Expression_Parser {	# Regular_Expression_Par
                     except
                         _ = raise exception ERROR;
 
-		    #  sc::scan_string (int::scan sc::OCT) (implode [c1, c2, c3]) 
+		    #  sc::scan_string (int::scan sc::OCTAL) (implode [c1, c2, c3]) 
 		};
 
 	    fun get_hex_char (c, cs)
@@ -114,24 +114,24 @@ package awk_syntax: (weak)  Regular_Expression_Parser {	# Regular_Expression_Par
                 =
                 case (getc cs)
 		  
-		    NULL =>   return_val (sc::OCT,[c], cs);
+		    NULL =>   return_val (sc::OCTAL,[c], cs);
 
 		    THE (c', cs')
                         => 
 			if   (not (is_oct_digit c'))
                             
-                             return_val (sc::OCT,[c], cs);
+                             return_val (sc::OCTAL,[c], cs);
 			else
                              case (getc cs')
 			       
-			         NULL =>   return_val (sc::OCT,[c, c'], cs');
+			         NULL =>   return_val (sc::OCTAL,[c, c'], cs');
 
 			         THE (c'', cs'')
                                      => 
 			             if   (not (is_oct_digit c''))
                                          
-                                          return_val (sc::OCT, [c, c'],      cs' );
-			             else return_val (sc::OCT, [c, c', c''], cs'');
+                                          return_val (sc::OCTAL, [c, c'],      cs' );
+			             else return_val (sc::OCTAL, [c, c', c''], cs'');
                                      fi;
                              esac;
                         fi;
@@ -140,7 +140,7 @@ package awk_syntax: (weak)  Regular_Expression_Parser {	# Regular_Expression_Par
 	    fun get_escape_char cs
                 =
                 case (getc' cs)
-		  
+		    #		  
 		    ('b', cs) => ('\008', cs);
 		    ('f', cs) => ('\012', cs);
 		    ('n', cs) => ('\n',   cs);

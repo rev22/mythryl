@@ -85,7 +85,7 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
 	    {
 		fun convert_int  substring
                     =
-                    case (int::scan string_conversion::DEC substring::getc  substring)
+                    case (int::scan  string_conversion::DECIMAL  substring::getc  substring)
 			#		      
 			THE (n, _) =>  n;
 		        NULL       =>  raise exception BAD_ADDRESS "expected integer";

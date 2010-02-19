@@ -109,11 +109,11 @@ herein
 				       =>
 				       scan scvt::HEX stream'';
 
-				   _ =>  scan scvt::OCT stream;
+				   _ =>  scan scvt::OCTAL stream;
 			      esac
 			     );
 
-			 _ => scan scvt::DEC stream;
+			 _ => scan scvt::DECIMAL stream;
 		    esac;
 		};
 
@@ -183,7 +183,7 @@ herein
 
 	    fun from_bytes (a, b, c, d)
                 =
-                {   format =  unt8::format string_conversion::DEC;
+                {   format =  unt8::format string_conversion::DECIMAL;
 
 		    cat [ format a, ".",
                           format b, ".",

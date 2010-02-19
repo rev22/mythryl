@@ -82,7 +82,7 @@ herein
 		      ( pc::eat_char (fn c =  (c == ':')),
 			pc::or_op
 			  ( pc::wrap (scan_name, SERV_NAME),
-			    pc::wrap (int::scan string_conversion::DEC, PORT_NUMBER)
+			    pc::wrap (int::scan string_conversion::DECIMAL, PORT_NUMBER)
 			  )
 		      )
 		  )

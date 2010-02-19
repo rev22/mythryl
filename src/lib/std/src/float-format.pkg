@@ -13,9 +13,9 @@ package float_format
 : (weak)
 api {
 
-    format_float:  string_conversion::Realfmt -> Float -> String;
+    format_float:  string_conversion::Real_Format -> Float -> String;
 /** The type should be: XXX BUGGO FIXME
-    my fmtReal:  string_conversion::realfmt -> large_float::real -> String
+    my fmtReal:  string_conversion::Real_Format -> large_float::real -> String
  **/
 
 }
@@ -60,7 +60,7 @@ api {
     fun min (i, j) =  if (i::(<) (i, j) ) i; else j; fi;
     fun max (i, j) =  if (i::(>) (i, j) ) i; else j; fi;
 
-    atoi =  (num_format::format_int string_conversion::DEC)
+    atoi =  (num_format::format_int  string_conversion::DECIMAL)
             o
             inline_t::int32::from_int;
 

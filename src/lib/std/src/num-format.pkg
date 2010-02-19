@@ -94,10 +94,10 @@ herein
 		    fi;
 	    end;
 
-	fun format_w string_conversion::BIN => word_to_bin;
-	    format_w string_conversion::OCT => word_to_oct;
-	    format_w string_conversion::DEC => word_to_dec;
-	    format_w string_conversion::HEX => word_to_hex;
+	fun format_w string_conversion::BINARY  => word_to_bin;
+	    format_w string_conversion::OCTAL   => word_to_oct;
+	    format_w string_conversion::DECIMAL => word_to_dec;
+	    format_w string_conversion::HEX     => word_to_hex;
 	end;
 
 	fun format_unt radix
@@ -108,19 +108,21 @@ herein
 
 	fun format_int radix i
 	    = 
-	    if   (i2w i == 0ux80000000)
-
-		 "-2147483648";
+	    if (i2w i == 0ux80000000)
+		#
+		"-2147483648";
 	    else
-		 w32 =  i2w (if (i32::(<) (i, 0) ) i32::neg(i); else i;fi);
+		w32 =  i2w (if (i32::(<) (i, 0) ) i32::neg(i); else i;fi);
 
-		 my (n, digits) =  format_w radix w32;
+		my (n, digits)
+		    =
+                    format_w radix w32;
 
-		 if (i32::(<) (i, 0))
-		      #
-		      prestring::implode (i::(+) (n, 1), '-' ! digits);
-		 else prestring::implode (n, digits);
-		 fi;
+		if (i32::(<) (i, 0))
+		     #
+		     prestring::implode (i::(+) (n, 1), '-' ! digits);
+		else prestring::implode (n, digits);
+		fi;
 	    fi;
     };
 

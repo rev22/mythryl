@@ -147,8 +147,8 @@ api Printf_Combinator {
 
     # Parameterized elements:
     #
-    int'  : string_conversion::Radix   ->  Element( X, Int );  #  using (int::fmt r) 
-    real' : string_conversion::Realfmt ->  Element (X, Float);  #  using (float::fmt f) 
+    int'  : string_conversion::Radix       ->  Element( X, Int  );	#  using (int::format r) 
+    real' : string_conversion::Real_Format ->  Element (X, Float);	#  using (float::format f) 
 
     # Generic "gluifier":
     #

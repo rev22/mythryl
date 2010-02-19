@@ -41,9 +41,9 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
                      =>
                      {   max_p1 =  large_unt::from_large_int n + 0u1;
 
-			 ( large_unt::format sc::OCT max_p1,
-			   large_unt::format sc::DEC max_p1,
-			   large_unt::format sc::HEX max_p1
+			 ( large_unt::format sc::OCTAL   max_p1,
+			   large_unt::format sc::DECIMAL max_p1,
+			   large_unt::format sc::HEX     max_p1
 			 );
 		     };
 
@@ -58,7 +58,7 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
             | MAX_INT;
 
 	fun int_to_octal MAX_INT     =>  max_int8;
-	    int_to_octal (POS_INT i) =>  large_int::format sc::OCT i;
+	    int_to_octal (POS_INT i) =>  large_int::format sc::OCTAL i;
         end;
 
 	fun int_to_string MAX_INT     =>  max_int10;
@@ -80,9 +80,9 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
 
     # Unt to string conversions:
     #
-    word_to_octal  =  large_unt::format sc::OCT;
-    word_to_string =  large_unt::format sc::DEC;
-    word_to_hex    =  large_unt::format sc::HEX;
+    word_to_octal  =  large_unt::format  sc::OCTAL;
+    word_to_string =  large_unt::format  sc::DECIMAL;
+    word_to_hex    =  large_unt::format  sc::HEX;
     #
     fun word_to_he_x i
         =

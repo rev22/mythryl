@@ -175,7 +175,7 @@ package {
 	    nondigit    = NONMATCH_SET digits;
 
 	    hex         = CHARCODE string_conversion::HEX;
-	    oct         = CHARCODE string_conversion::OCT;
+	    oct         = CHARCODE string_conversion::OCTAL;
 
 	    # Perl defines the following zero-width assertions:
 	    #
@@ -272,72 +272,78 @@ package {
 	    fun escape data context getc s
 		= 
 		case (getc s, context)
-		  
-		     (NULL, _) => NULL;
+		    #		  
+		    (NULL, _) => NULL;
 
-		     #  Simple escapes 
-		     (THE('t', s), _) => THE (tab, s);
-		     (THE('n', s), _) => THE (nl, s);
-		     (THE('r', s), _) => THE (cr, s);
-		     (THE('f', s), _) => THE (ff, s);
-		     (THE('a', s), _) => THE (bel, s);
-		     (THE('e', s), _) => THE (esc, s);
+		    # Simple escapes:
+		    #
+		    (THE('t', s), _) => THE (tab, s);
+		    (THE('n', s), _) => THE (nl, s);
+		    (THE('r', s), _) => THE (cr, s);
+		    (THE('f', s), _) => THE (ff, s);
+		    (THE('a', s), _) => THE (bel, s);
+		    (THE('e', s), _) => THE (esc, s);
 
-		     #  Character codes; no unicode support yet! 
-		     (THE('0', s), _) => THE (oct, s);
-		     (THE('x', s), _) => THE (hex, s);
-		     (THE('c', s), _) => THE (CTRL, s);
+		    # Character codes; no unicode support yet! 
+		    #
+		    (THE('0', s), _) => THE (oct, s);
+		    (THE('x', s), _) => THE (hex, s);
+		    (THE('c', s), _) => THE (CTRL, s);
 
-		     #  Not yet supported 
-		     (THE('N', s), _) => THE (ERROR "named character",     s);
-		     (THE('l', s), _) => THE (ERROR "lowercase next char", s);
-		     (THE('u', s), _) => THE (ERROR "uppercase next char", s);
+		    #  Not yet supported 
+		    (THE('N', s), _) => THE (ERROR "named character",     s);
+		    (THE('l', s), _) => THE (ERROR "lowercase next char", s);
+		    (THE('u', s), _) => THE (ERROR "uppercase next char", s);
 
-		     #  Character set abbreviations 
-		     (THE('w', s), _) => THE (word, s);
-		     (THE('W', s), _) => THE (nonword, s);
-		     (THE('s', s), _) => THE (space, s);
-		     (THE('S', s), _) => THE (nonspace, s);
-		     (THE('d', s), _) => THE (digit, s);
-		     (THE('D', s), _) => THE (nondigit, s);
+		    # Character set abbreviations:
+		    #
+		    (THE('w', s), _) => THE (word, s);
+		    (THE('W', s), _) => THE (nonword, s);
+		    (THE('s', s), _) => THE (space, s);
+		    (THE('S', s), _) => THE (nonspace, s);
+		    (THE('d', s), _) => THE (digit, s);
+		    (THE('D', s), _) => THE (nondigit, s);
 
-		     # Quoting
-		     (THE('Q', s), _) => quote (fn x=x) context getc s;
-		     (THE('L', s), _) => quote char::to_lower context getc s;
-		     (THE('U', s), _) => quote char::to_upper context getc s;
+		    # Quoting:
+		    #
+		    (THE('Q', s), _) => quote (fn x=x) context getc s;
+		    (THE('L', s), _) => quote char::to_lower context getc s;
+		    (THE('U', s), _) => quote char::to_upper context getc s;
 
-		     #  Boundary operators; these cannot appear in a char set 
-		     (THE('b', s), IN_REGEXP) => THE (word_b, s);
-		     (THE('B', s), IN_REGEXP) => THE (nonword_b, s);
-		     (THE('A', s), IN_REGEXP) => THE (begin_b, s);
-		     (THE('Z', s), IN_REGEXP) => THE (end_b', s);
-		     (THE('z', s), IN_REGEXP) => THE (end_b, s);
+		    # Boundary operators; these cannot appear in a char set:
+		    #
+		    (THE('b', s), IN_REGEXP) => THE (word_b, s);
+		    (THE('B', s), IN_REGEXP) => THE (nonword_b, s);
+		    (THE('A', s), IN_REGEXP) => THE (begin_b, s);
+		    (THE('Z', s), IN_REGEXP) => THE (end_b', s);
+		    (THE('z', s), IN_REGEXP) => THE (end_b, s);
 
-		     # Property
-		  /* What are these?
-		   | (THE('p', s), _) => (THE PROPERTY, s)
-		   | (THE('P', s), _) => (THE NONPROPERTY, s)
-		   */
+		    # Property
+		 /* What are these?
+		  | (THE('p', s), _) => (THE PROPERTY, s)
+		  | (THE('P', s), _) => (THE NONPROPERTY, s)
+		  */
 
-		     (THE (c, s'), _)
-			 => 
-			 if   (char::is_digit c and context == IN_REGEXP)
-			     
-			      # It's a back reference 
-			      # BUG: int::scan is too greedy.  
-			      # How to handle things like \11 where  XXX BUGGO FIXME
-			      #    is it \1 and the character 1?
+		    (THE (c, s'), _)
+			=> 
+			if (char::is_digit c and context == IN_REGEXP)
 
-			      case (int::scan string_conversion::DEC getc s)
-                                
-				   THE (i, s) =>  THE (BACKREF (fn x = x, i), s);
-			           NULL       =>  THE (ERROR "back reference error", s);
-			      esac;
+			    # It is a back reference.
+ 
+			    # BUG: int::scan is too greedy.  
+			    # How to handle things like \11 where  XXX BUGGO FIXME
+			    #    is it \1 and the character 1?
 
-			 else
-			      #  By default just treat the character literally 
-			      THE (CHAR (char c), s');
-                         fi;
+			    case (int::scan string_conversion::DECIMAL getc s)
+				#                                
+				THE (i, s) =>  THE (BACKREF (fn x = x, i), s);
+				NULL       =>  THE (ERROR "back reference error", s);
+			    esac;
+
+			else
+			    #  By default just treat the character literally 
+			    THE (CHAR (char c), s');
+			fi;
                 esac;
     );	# package s
 

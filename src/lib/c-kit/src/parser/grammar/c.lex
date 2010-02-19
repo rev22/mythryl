@@ -94,7 +94,7 @@ fun make_hex_char (args as (s, a, b, err_warn: Err_Warn)): Int /* returns a char
 fun make_oct_int (s,a,b,err_warn: Err_Warn)
     =
     (   case (string_conversion::scan_string
-                 (large_int::scan string_conversion::OCT)
+                 (large_int::scan string_conversion::OCTAL)
                  s
         )
 
@@ -128,7 +128,7 @@ fun make_oct_char (args as (s, a, b, err_warn: Err_Warn)) /* returns a character
 fun make_int (s,a,b,err_warn: Err_Warn)
     =
     (   case (string_conversion::scan_string
-                 (large_int::scan string_conversion::DEC)
+                 (large_int::scan string_conversion::DECIMAL)
                  s
         )
 

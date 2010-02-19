@@ -235,46 +235,46 @@ api {
 				 );
                         esac;
 
-		    case (int::scan sc::DEC getc s)
-		      
-		         THE (min, s)
-                             => 
-			     case (getc (sc::skip_ws getc s))
-			       
-			          THE (',', s)
-                                      => 
-			              case (getc (sc::skip_ws getc s))
-	                                
-	                                   THE ('}', s)
-					       =>
-					       done (s, min, NULL);
+		    case (int::scan sc::DECIMAL getc s)
+			#
+			THE (min, s)
+			    => 
+			    case (getc (sc::skip_ws getc s))
+				#
+				THE (',', s)
+				    => 
+				    case (getc (sc::skip_ws getc s))
+					#
+					THE ('}', s)
+					    =>
+					    done (s, min, NULL);
 
-			                   THE _
-                                               =>
-			                       case (int::scan sc::DEC getc s)
-			                         
-			                            THE (max, s)
-							=> 
-							done (   expect( '}', sc::skip_ws getc s),
-								 min,
-								 THE max
-							     );
+					THE _
+					    =>
+					    case (int::scan sc::DECIMAL getc s)
+						#
+						THE (max, s)
+						    => 
+						    done (   expect( '}', sc::skip_ws getc s),
+							     min,
+							     THE max
+							 );
 
-			                            NULL
-							=>
-							err (s, "illegal max in interval");
-			                       esac;
+						NULL
+						    =>
+						    err (s, "illegal max in interval");
+					    esac;
 
-			                   NULL => err (s, "missing '}'");
-                                       esac;
+					NULL => err (s, "missing '}'");
+				    esac;
 
 
-			       THE ('}', s)
-				   =>
-				   done (s, min, THE min);
+				THE ('}', s)
+				    =>
+				    done (s, min, THE min);
 
-			       _ => err (s, "missing }");
-			 esac;
+				_ => err (s, "missing }");
+			    esac;
 
 		      NULL => err (s, "missing min in interval");
                     esac;
@@ -286,49 +286,49 @@ api {
             fun parse_char s
                 =
 		case (getc s)
-		  
-		     NULL        => err (s, "missing closing ]");
-		     THE(']', _) => NULL;				# Finished.
-		     THE('[', _) => err (s, "dangling [ in set");
+		    #
+		    NULL        => err (s, "missing closing ]");
+		    THE(']', _) => NULL;				# Finished.
+		    THE('[', _) => err (s, "dangling [ in set");
 
-		     THE (c, s')
-			 =>				# Handle escape sequences.
-			 if   (c != backslash)
-			     
-			      THE (CHAR (char c), s');
-			 else
-			      case (escape data IN_CHARSET getc s')
-			        
-				   NULL => err (s, "dangling \\ in set");
+		    THE (c, s')
+			=>				# Handle escape sequences.
+			if (c != backslash)
+			    #
+			    THE (CHAR (char c), s');
+			else
+			    case (escape data IN_CHARSET getc s')
+				#
+				NULL => err (s, "dangling \\ in set");
+				#
+				THE (ERROR msg, s')
+				    => 
+				    err (s, "bad escape sequence in charset: " + msg);
 
-				   THE (ERROR msg, s')
-				       => 
-				       err (s, "bad escape sequence in charset: " + msg);
+				THE (CHARCODE radix, s')
+				    => 
+				    {   my  (c, s')
+					    =
+					    parse_char_code (radix, s');
 
-				   THE (CHARCODE radix, s')
-				       => 
-				       {   my  (c, s')
-					       =
-					       parse_char_code (radix, s');
+					THE (CHAR c, s');
+				    };
 
-					   THE (CHAR c, s');
-				       };
+				THE (CTRL, s)
+				    =>
+				    {   my  (c, s)
+					    =
+					    parse_control s;
 
-				   THE (CTRL, s)
-				       =>
-				       {   my  (c, s)
-					       =
-					       parse_control s;
+					THE (CHAR c, s);
+				    };
 
-					   THE (CHAR c, s);
-				       };
-
-				   THE (REGEXP (r::CHAR c),           s) =>   THE (CHAR c, s');
-				   THE (REGEXP (r::MATCH_SET set),    s) =>   THE (MATCH_SET set, s');
-				   THE (REGEXP (r::NONMATCH_SET set), s) =>   THE (NONMATCH_SET set, s');
-				   x => x;
-			      esac;
-			fi;
+				THE (REGEXP (r::CHAR c),           s) =>   THE (CHAR c, s');
+				THE (REGEXP (r::MATCH_SET set),    s) =>   THE (MATCH_SET set, s');
+				THE (REGEXP (r::NONMATCH_SET set), s) =>   THE (NONMATCH_SET set, s');
+				x => x;
+			    esac;
+		       fi;
                 esac
 
 	    #  Parse a character set expression:
@@ -339,42 +339,42 @@ api {
 		{   fun loop (s, set)
                         = 
 			case (parse_char s)
-			  
-			     NULL => (set, s);
+			    #
+			    NULL => (set, s);
+			    #
+			    THE (CHAR c', s')
+				=> 
+				case (getc s')
+				    #
+				    THE ('-', s'')
+					=>	 #  range? 
+					case (parse_char s'')
+					    #
+					    NULL => err (s', "dangling -");
+					    #
+					    THE (CHAR c''', s''')
+						=> 
+						loop (s''', r::add_range (set, c', c'''));
 
-			     THE (CHAR c', s')
-                                 => 
-			         case (getc s')
-			           
-			              THE ('-', s'')
-                                          =>	 #  range? 
-				          case (parse_char s'')
-					    
-					       NULL => err (s', "dangling -");
+					    THE (_, s')
+						=>
+						err (s', "end range must be a character");
+					esac;
 
-					       THE (CHAR c''', s''')
-						   => 
-						   loop (s''', r::add_range (set, c', c'''));
+				    _ => loop (s', s::add (set, c'));
+				esac;
 
-					       THE (_, s')
-						   =>
-						   err (s', "end range must be a character");
-				          esac;
+			    THE (MATCH_SET set', s)
+				=>
+				loop (s, s::union (set, set'));
 
-			             _ => loop (s', s::add (set, c'));
-			         esac;
+			    THE (NONMATCH_SET set', s)
+				=>
+				loop (s, s::union (set, s::difference (r::all_chars, set')));
 
-			     THE (MATCH_SET set', s)
-				 =>
-				 loop (s, s::union (set, set'));
-
-			     THE (NONMATCH_SET set', s)
-				 =>
-				 loop (s, s::union (set, s::difference (r::all_chars, set')));
-
-			     THE _
-				 => 
-				 err (s, "bug in charset escape sequence");
+			    THE _
+				=> 
+				err (s, "bug in charset escape sequence");
                         esac;
 
 		    my (mode, (set, s))
@@ -401,49 +401,49 @@ api {
             fun parse (s, stack)
                 =
 		case (getc s)
-		  
-		     NULL
-			 =>
-			 (cat stack, s);
+		    #
+		    NULL
+			=>
+			(cat stack, s);
 
-		     THE (c', s')
-			 =>
-			 case c'
-			   
-			       ')' => (cat stack, s);
-			       '|' => (cat stack, s);
+		    THE (c', s')
+			=>
+			case c'
+			    #
+			    ')' => (cat stack, s);
+			    '|' => (cat stack, s);
 
-			       '(' => {   my (re, s') = parse_alt s';
-					  parse (expect(')', s'), r::GROUP re ! stack);
-				      };
+			    '(' => {   my (re, s') = parse_alt s';
+				       parse (expect(')', s'), r::GROUP re ! stack);
+				   };
 
-			       '[' =>  {   my (re, s') = parse_set s';
-					   parse (expect(']', s'), re ! stack);
-				       };
+			    '[' =>  {   my (re, s') = parse_set s';
+					parse (expect(']', s'), re ! stack);
+				    };
 
-			       '^' => parse (s', r::BEGIN ! stack);
-			       '$' => parse (s', r::END ! stack);
-			       '.' => parse (s', dot ! stack);
-			       '*' => parse (star (s', stack));
-			       '+' => parse (plus (s', stack));
-			       '?' => parse (opt  (s', stack));
-			       '{' => parse (interval (s', stack));
-			       ']' => err (s, "dangling ]");
-			       '}' => err (s, "dangling }");
+			    '^' => parse (s', r::BEGIN ! stack);
+			    '$' => parse (s', r::END ! stack);
+			    '.' => parse (s', dot ! stack);
+			    '*' => parse (star (s', stack));
+			    '+' => parse (plus (s', stack));
+			    '?' => parse (opt  (s', stack));
+			    '{' => parse (interval (s', stack));
+			    ']' => err (s, "dangling ]");
+			    '}' => err (s, "dangling }");
 
-			       c'
-				   =>
-				   if   (c' == backslash)
-				       
-					my  (re, s')
-					    =
-					    parse_escape s';
+			    c'
+				=>
+				if (c' == backslash)
+				    #
+				    my  (re, s')
+					=
+					parse_escape s';
 
-					parse (s', re ! stack);
-				   else
-					parse (s', r::CHAR (char c') ! stack);
-				   fi;
-		         esac;
+				    parse (s', re ! stack);
+				else
+				    parse (s', r::CHAR (char c') ! stack);
+				fi;
+			esac;
 		esac
 
 	    also
@@ -452,16 +452,16 @@ api {
 		{   fun loop (s, alts)
                         =
 			case (getc s)
-                           
-			     NULL => (alt alts, s);
+			    #                           
+			    NULL => (alt alts, s);
+			    #                           
+			    THE('|', s')
+				=> 
+				{    my (re, s'') = parse (s', []) ;
+				     loop (s'', re ! alts);
+				};
 
-			     THE('|', s')
-                                 => 
-                                 {    my (re, s'') = parse (s', []) ;
-			              loop (s'', re ! alts);
-			         };
-
-			     THE _ => (alt alts, s);
+			    THE _ => (alt alts, s);
                         esac;
 
 		    my  (re, s)
@@ -477,16 +477,16 @@ api {
             fun parse_char_code (radix, s)
                 =
 		case (int::scan radix getc s)
-                  
-		     THE (n, s)
-                         =>  
-		         ((r::char::from_int n, s) 
-		         except
-                             BAD_CHAR
-                                 =
-			         err (s, "character code out of range"));
+		    #                  
+		    THE (n, s)
+			=>  
+			((r::char::from_int n, s) 
+			except
+			    BAD_CHAR
+				=
+				err (s, "character code out of range"));
 
-		     NULL => err (s, "bad character code");
+		    NULL => err (s, "bad character code");
                 esac
 
 	    #  Do control character parsing:
@@ -495,18 +495,18 @@ api {
             fun parse_control s
                 =
 		case (getc s)
-		  
-		     NULL         =>  err (s, "bad control character");
-		     THE ('[', s) =>  (r::char::from_int 27, s);
+		    #		  
+		    NULL         =>  err (s, "bad control character");
+		    THE ('[', s) =>  (r::char::from_int 27, s);
 
-		     THE (c, s)
-			 =>
-			 if (char::is_alpha c)
-			     
-			      (r::char::from_int (char::to_int (char::to_lower c) - char::to_int 'a' + 1), s);
-			 else
-			      err (s, "bad control character");
-			 fi;
+		    THE (c, s)
+			=>
+			if (char::is_alpha c)
+			    #
+			    (r::char::from_int (char::to_int (char::to_lower c) - char::to_int 'a' + 1), s);
+			else
+			    err (s, "bad control character");
+			fi;
                 esac
 
 	    #  Do escape sequence 
@@ -515,32 +515,32 @@ api {
             fun parse_escape s
                 =
 		case (escape data IN_REGEXP getc s)
-		  
-		     NULL => err (s, "dangling \\");
+		    #		  
+		    NULL => err (s, "dangling \\");
 
-		     THE (CHAR c, s)         => (r::CHAR c, s);
-		     THE (CHARCODE radix, s) => {   my (c, s) = parse_char_code (radix, s);
-						    (r::CHAR (c), s);
-						};
+		    THE (CHAR c, s)         => (r::CHAR c, s);
+		    THE (CHARCODE radix, s) => {   my (c, s) = parse_char_code (radix, s);
+						   (r::CHAR (c), s);
+					       };
 
-		     THE (MATCH_SET    set, s) => (r::MATCH_SET set, s);
-		     THE (NONMATCH_SET set, s) => (r::NONMATCH_SET set, s);
+		    THE (MATCH_SET    set, s) => (r::MATCH_SET set, s);
+		    THE (NONMATCH_SET set, s) => (r::NONMATCH_SET set, s);
 
-		     THE (CTRL, s) => {   my (c, s) = parse_control s;
-					  (r::CHAR (c), s);
-				      };
+		    THE (CTRL, s) => {   my (c, s) = parse_control s;
+					 (r::CHAR (c), s);
+				     };
 
-		     THE (REGEXP re,  s)  => (re, s);
+		    THE (REGEXP re,  s)  => (re, s);
 
-		     THE (BACKREF (f, i), s)
-			 => 
-			 {   back_refs := is::add(*back_refs, i);
-			     (r::BACK_REF (f, i), s);
-			 };
+		    THE (BACKREF (f, i), s)
+			=> 
+			{   back_refs := is::add(*back_refs, i);
+			    (r::BACK_REF (f, i), s);
+			};
 
-		     THE (ERROR msg, s)
-			 => 
-			 err (s, "bad escape sequence " + msg);
+		    THE (ERROR msg, s)
+			=> 
+			err (s, "bad escape sequence " + msg);
 		esac;
 
 

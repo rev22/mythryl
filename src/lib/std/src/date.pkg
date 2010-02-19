@@ -510,7 +510,7 @@ herein
 		fun year0 (wday, mon, d, hr, mn, sc) s
 		    =
 		    case (int_guts::scan
-			     string_conversion::DEC
+			     string_conversion::DECIMAL
 			     getc
 			     s)
 

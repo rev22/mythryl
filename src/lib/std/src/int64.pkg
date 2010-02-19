@@ -119,7 +119,7 @@ package int64: (weak)  Int {			# Int	is from   src/lib/std/src/int.api
         integer_guts::format  rdx  (to_large i);
 
 
-    to_string = format string_conversion::DEC;
+    to_string =  format  string_conversion::DECIMAL;
 
 
     fun scan rdx rdr s

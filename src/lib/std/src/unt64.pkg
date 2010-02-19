@@ -132,17 +132,17 @@ package unt64: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 		};
         esac;
 
-    fun format string_conversion::BIN w
+    fun format string_conversion::BINARY w
             =>
 	    case (extern w)
                 #
 	        (0u0, lo)
 		    =>
-                    w32::format string_conversion::BIN lo;
+                    w32::format string_conversion::BINARY lo;
 		#
 	        (hi, lo)
 		    => 
-		    {   w32bin = w32::format string_conversion::BIN;
+		    {   w32bin = w32::format string_conversion::BINARY;
 			w32bin hi + (string_conversion::pad_left '0' 32 (w32bin lo));
 		    };
             esac;
@@ -171,58 +171,62 @@ package unt64: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 	    fun startscan s0
                 =
 		case (rdr s0)
-                  
+		    #                  
 		    THE ('0', s1)
                         =>
 			{   fun wordor0 s
 				=
 				case (doword s)
-				  
-				     NULL        =>  THE (0, s1);
-				     THE (i, s') =>  THE (i, s');
+				    #
+				    NULL        =>  THE (0, s1);
+				    THE (i, s') =>  THE (i, s');
 				esac;
 
 			    fun saww s
 				=
 				case (rdr s)
-				  
-				     THE ('x', s')
-					 =>
-					 if xok    wordor0 s';
-						 else  THE (0, s1);  fi;
+				    #				  
+				    THE ('x', s')
+					=>
+					if xok    wordor0 s';
+						else  THE (0, s1);  fi;
 
-				     _ => wordor0 s;
+				    _ => wordor0 s;
 				esac;
 
-			  case (rdr s1)
-			    
-			       THE ('w', s2) => saww s2;
+			    case (rdr s1)
+				#
+				THE ('w', s2) => saww s2;
+				#
+				THE ('x', s2)
+				    =>
+				    if xok  wordor0 s2;
+				    else    THE (0, s1);
+                                    fi;
 
-			       THE ('x', s2)
-				   =>
-				   if xok  wordor0 s2;
-				   else THE (0, s1);fi;
-
-			       _   => doword s0;
-			  esac;
+				_   => doword s0;
+			    esac;
 			};
-		   _ => doword s0;
-                esac;
 
-	     case (startscan s)
-	       
-		  THE (i, s')
-		      =>
-		      if   (i < 0                 )  NULL;
-		      elif (i > 0xffffffffffffffff)  raise exception OVERFLOW;
-		      else                           THE (from_large_int i, s');
-                      fi;
+		    _ => doword s0;
+		esac;
 
-		  NULL => NULL;
-	     esac;
+	    case (startscan s)
+		#
+		THE (i, s')
+		    =>
+		    if   (i < 0                 )  NULL;
+		    elif (i > 0xffffffffffffffff)  raise exception OVERFLOW;
+		    else                           THE (from_large_int i, s');
+		    fi;
+
+		NULL => NULL;
+	    esac;
 	};
 
-    from_string = pre_basis::scan_string (scan string_conversion::HEX);
+    from_string
+	=
+	pre_basis::scan_string  (scan  string_conversion::HEX);
 
     my (*)  : (Unt, Unt) -> Unt = (*);
     my (+)  : (Unt, Unt) -> Unt = (+);

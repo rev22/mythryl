@@ -105,7 +105,7 @@ stipulate
         =
         #1 (the (integer::scan radix substring::getc (substring::drop_first i (substring::from_string s))));
 herein
-    atoi   =   convert string_conversion::DEC;
+    atoi   =   convert string_conversion::DECIMAL;
     xtoi   =   convert string_conversion::HEX;
 end;
 

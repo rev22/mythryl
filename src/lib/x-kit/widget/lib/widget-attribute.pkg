@@ -187,25 +187,25 @@ herein
 	    {   s = string_conversion::skip_ws ss::getc (ss::from_string s);
 		start = if (char::is_digit (ss::get (s, 0)) ) 0; else 1; fi;
 
-		rad = if (ss::get (s, start) == '0')
-			  #		      
-			  case (ss::get (s, start+1))
-			      #		         
-			      ('X' | 'x') =>  string_conversion::HEX;
-			      _           =>  string_conversion::OCT;
-			  esac;
-		      else
-			  string_conversion::DEC;
-		      fi;
+		rad =   if (ss::get (s, start) == '0')
+			    #		      
+			    case (ss::get (s, start+1))
+				#		         
+				('X' | 'x') =>  string_conversion::HEX;
+				_           =>  string_conversion::OCTAL;
+			    esac;
+			else
+			    string_conversion::DECIMAL;
+			fi;
 
-		  case (int::scan rad ss::getc s)
-
-		       NULL       =>  raise exception BAD_ATTRIBUTE_VALUE;
-		       THE (n, _) =>  n;
-		  esac;
-	      }
-	      except
-		  _ => raise exception BAD_ATTRIBUTE_VALUE; end ;
+		case (int::scan rad ss::getc s)
+		    #
+		    NULL       =>  raise exception BAD_ATTRIBUTE_VALUE;
+		    THE (n, _) =>  n;
+		esac;
+	    }
+	    except
+		_ = raise exception BAD_ATTRIBUTE_VALUE;
 
 	fun cvt_real s
 	    =

@@ -155,7 +155,8 @@ api {
     # String to int conversions:
 
     my dec_to_int:  sc::Reader (Char, Substring) -> sc::Reader (int::Int, Substring)
-	         =  int::scan sc::DEC;
+	=
+        int::scan  sc::DECIMAL;
 
     # Scan a field specification.
     #

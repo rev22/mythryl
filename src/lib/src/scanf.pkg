@@ -286,8 +286,8 @@ package scanf: (weak)  Scanf {			# Scanf			is from   src/lib/src/scanf.api
 
 			case type
                           
-			     OCTAL_FIELD   =>  get_int sc::OCT;
-			     INT_FIELD     =>  get_int sc::DEC;
+			     OCTAL_FIELD   =>  get_int sc::OCTAL;
+			     INT_FIELD     =>  get_int sc::DECIMAL;
 			     HEX_FIELD     =>  get_int sc::HEX;
 			     CAP_HEX_FIELD =>  get_int sc::HEX;
 

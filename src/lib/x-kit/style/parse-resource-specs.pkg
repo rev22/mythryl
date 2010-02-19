@@ -220,7 +220,7 @@ package parse_resource_specs: (weak)  api {
         =
         {   fun get_octal ss
                 =
-                {   scan =   int::scan string_conversion::OCT ss::getc;
+                {   scan =   int::scan  string_conversion::OCTAL  ss::getc;
 
 		    fun is_oct c
                         =
@@ -228,22 +228,21 @@ package parse_resource_specs: (weak)  api {
 
 		    my (oct, rest) =   ss::split_at (ss, 3);
 
-		    if   (is_oct (ss::get (oct, 0)))
-		        
-			 case (scan oct)
-			   
-			      THE (n, r)
-				  =>
-				  if    (ss::is_empty r)
-				       (string::from_char (char::from_int n), rest);
-				  else  raise exception BAD_SPECIFICATION i;fi;
+		    if (is_oct (ss::get (oct, 0)))
+			#		        
+			case (scan oct)
+			    #
+			    THE (n, r)
+				=>
+				if    (ss::is_empty r)
+				     (string::from_char (char::from_int n), rest);
+				else  raise exception BAD_SPECIFICATION i;fi;
 
-			      NULL => raise exception BAD_SPECIFICATION i;
-			 esac;
-
+			    NULL => raise exception BAD_SPECIFICATION i;
+			esac;
 		    else
-                           raise exception BAD_SPECIFICATION i;
-                   fi;
+                        raise exception BAD_SPECIFICATION i;
+                    fi;
 		}
 		except
                     _ = raise exception BAD_SPECIFICATION i;
@@ -269,30 +268,31 @@ package parse_resource_specs: (weak)  api {
                         scan (rest, (ss::from_string c) ! prefix ! chunks);
 
 		    case (ss::getc rest)
-
+			#
 		        NULL => (finish (prefix, chunks), FALSE);
+			#
+			THE ('\n', rest) => (finish (prefix, chunks), FALSE);
 
-			THE('\n', rest) => (finish (prefix, chunks), FALSE);
+			THE (_, rest)
+			    =>
+			    case (ss::getc rest)
+				#
+				NULL => (finish (prefix, chunks), TRUE);
+				THE('\t', rest) => add("\t", rest);
+				THE(' ',  rest) => add(" ", rest);
+				THE('\\', rest) => add("\\", rest);
 
-			THE(_, rest)
-			     =>
-			     case (ss::getc rest)
-				 NULL => (finish (prefix, chunks), TRUE);
-				 THE('\t', rest) => add("\t", rest);
-				 THE(' ',  rest) => add(" ", rest);
-				 THE('\\', rest) => add("\\", rest);
-
-				 THE('\n', rest)
-                                     =>
-                                     case (ss::getc rest)
-					 THE _ => scan (rest, prefix ! chunks);
-				         NULL  => (finish (prefix, chunks), TRUE);
-                                     esac;
+				THE('\n', rest)
+				    =>
+				    case (ss::getc rest)
+					THE _ => scan (rest, prefix ! chunks);
+					NULL  => (finish (prefix, chunks), TRUE);
+				    esac;
 
 
-				 THE('n', rest) => add("\n", rest);
-				 THE _          => add (get_octal rest);
-                             esac;
+				THE('n', rest) => add("\n", rest);
+				THE _          => add (get_octal rest);
+			    esac;
 		    esac;
 		};
 
@@ -314,14 +314,15 @@ package parse_resource_specs: (weak)  api {
 		    fun get_rest i
                         =
                         case comp
-			     NAME attribute =>   (reverse path, attribute, skip_ws (ln, i+1));
-			     WILD      =>   raise exception (BAD_SPECIFICATION i);
+			    #
+			    NAME attribute =>   (reverse path, attribute, skip_ws (ln, i+1));
+			    WILD      =>   raise exception (BAD_SPECIFICATION i);
                         esac;
 
 		    case (get_cc (ln, i))
-
+			#
 		        COLON => get_rest i;
-
+			#
 		        SPACE
                              =>
                              {   i =   skip_ws (ln, i+1);
@@ -341,11 +342,11 @@ package parse_resource_specs: (weak)  api {
 		};
 
 	    case (get_cc (ln, start))
-
-		 (EOL | COMMENT) => NO_SPEC;
-
+		#
+	        (EOL | COMMENT) => NO_SPEC;
+		#
 		DIRECTIVE => NO_SPEC; 		#  fix 
-
+		#
 		(WILD_COMP | NAME_CHAR)
 		     =>
 		     {   my (path, attribute_name, val_start)

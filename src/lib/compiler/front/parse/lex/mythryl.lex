@@ -99,8 +99,8 @@ herein
     # At some point we should support underbars in integer constants.
     # Just doing a s/_//g at this point should do, at least as a first cut.  XXX BUGGO FIXME
     #
-    atoi   =   convert  string_conversion::DEC;
-    otoi   =   convert  string_conversion::OCT;
+    atoi   =   convert  string_conversion::DECIMAL;
+    otoi   =   convert  string_conversion::OCTAL;
     xtoi   =   convert  string_conversion::HEX;
 end;
 

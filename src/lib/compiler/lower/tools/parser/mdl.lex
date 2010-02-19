@@ -69,29 +69,29 @@ fun scan err fmt (s,s') tok pos
 
 fun wdecimal (err,s,pos)
     = 
-    scan err (unt32::scan string_conversion::DEC) (s,strip 2 s) word pos;
+    scan err (unt32::scan string_conversion::DECIMAL) (s,strip 2 s) word pos;
 
 fun whex (err,s,pos)
     = 
     scan err (unt32::scan string_conversion::HEX) (s,strip 3 s) word pos;
 
-fun woctal (err,s,pos) =  scan err (unt32::scan string_conversion::OCT) (s,strip 3 s) word pos;
-fun wbinary (err,s,pos) =  scan err (unt32::scan string_conversion::BIN) (s,strip 3 s) word pos;
-fun decimal (err,s,pos) =  scan err (int::scan string_conversion::DEC)   (s,s)         int  pos;
+fun woctal  (err,s,pos) =  scan err (unt32::scan string_conversion::OCTAL)   (s,strip 3 s) word pos;
+fun wbinary (err,s,pos) =  scan err (unt32::scan string_conversion::BINARY)  (s,strip 3 s) word pos;
+fun decimal (err,s,pos) =  scan err (int::scan   string_conversion::DECIMAL) (s,s)         int  pos;
 
 fun real (err,s,pos)
     =
     scan err (float::scan) (s,s) 
                        (fn (x,y,z) =  real_t(float::to_string x, y, z)) pos;
 
-fun hex    (err,s,pos) =  scan err (int::scan string_conversion::HEX) (s,strip 2 s) int pos;
-fun octal  (err,s,pos) =  scan err (int::scan string_conversion::OCT) (s,strip 2 s) int pos;
-fun binary (err,s,pos) =  scan err (int::scan string_conversion::BIN) (s,strip 2 s) int pos;
+fun hex    (err,s,pos) =  scan err (int::scan string_conversion::HEX)    (s,strip 2 s) int pos;
+fun octal  (err,s,pos) =  scan err (int::scan string_conversion::OCTAL)  (s,strip 2 s) int pos;
+fun binary (err,s,pos) =  scan err (int::scan string_conversion::BINARY) (s,strip 2 s) int pos;
 
-fun decimalinf (err,s,pos) =  scan err (integer::scan string_conversion::DEC) (s,s)         intinf pos;
-fun hexinf     (err,s,pos) =  scan err (integer::scan string_conversion::HEX) (s,strip 2 s) intinf pos;
-fun octalinf   (err,s,pos) =  scan err (integer::scan string_conversion::OCT) (s,strip 2 s) intinf pos;
-fun binaryinf  (err,s,pos) =  scan err (integer::scan string_conversion::BIN) (s,strip 2 s) intinf pos;
+fun decimalinf (err,s,pos) =  scan err (integer::scan string_conversion::DECIMAL) (s,s)         intinf pos;
+fun hexinf     (err,s,pos) =  scan err (integer::scan string_conversion::HEX)     (s,strip 2 s) intinf pos;
+fun octalinf   (err,s,pos) =  scan err (integer::scan string_conversion::OCTAL)   (s,strip 2 s) intinf pos;
+fun binaryinf  (err,s,pos) =  scan err (integer::scan string_conversion::BINARY)  (s,strip 2 s) intinf pos;
 
 fun string (err,s,pos)
     = 

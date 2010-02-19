@@ -44,7 +44,7 @@ herein
 	#  Parse hex or binary, but not octal:	# XXX BUGGO FIXME
 
 	hex_to_int =   string_conversion::scan_string (i::scan string_conversion::HEX);
-	bin_to_int =   string_conversion::scan_string (i::scan string_conversion::BIN);
+	bin_to_int =   string_conversion::scan_string (i::scan string_conversion::BINARY);
 
 	# Precompute some tables for faster arithmetic 
 	#
@@ -187,14 +187,15 @@ herein
 
 	# machine_int <-> other types 
 	#
-	fun from_int (size, i)     = narrow (size, convert::from_int i);
-	fun from_int32 (size, i)    = narrow (size, convert::from_int32 i);
-	fun from_word (size, w)     = narrow (size, convert::from_word w);
-	fun from_word32 (size, w)   = narrow (size, convert::from_word32 w);
-	fun to_string (size, i)    = i::to_string i;
+	fun from_int    (size, i) =  narrow (size, convert::from_int    i);
+	fun from_int32  (size, i) =  narrow (size, convert::from_int32  i);
+	fun from_word   (size, w) =  narrow (size, convert::from_word   w);
+	fun from_word32 (size, w) =  narrow (size, convert::from_word32 w);
+	#
+	fun to_string   (size, i) =  i::to_string i;
 
 	to_hex = i::format string_conversion::HEX;
-	to_bin = i::format string_conversion::BIN;
+	to_bin = i::format string_conversion::BINARY;
 
 	fun to_hex_string (size, i) =   "0x" + to_hex (unsigned (size, i));
 	fun to_bin_string (size, i) =   "0b" + to_bin (unsigned (size, i));

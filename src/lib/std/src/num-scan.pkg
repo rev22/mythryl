@@ -433,10 +433,10 @@ api {
 	    NULL => NULL;
         esac;
 
-    fun scan_word string_conversion::BIN =>  final_word scan_bin;
-        scan_word string_conversion::OCT =>  final_word scan_oct;
-        scan_word string_conversion::DEC =>  final_word scan_dec;
-        scan_word string_conversion::HEX =>  final_word scan_hex;
+    fun scan_word string_conversion::BINARY  =>  final_word scan_bin;
+        scan_word string_conversion::OCTAL   =>  final_word scan_oct;
+        scan_word string_conversion::DECIMAL =>  final_word scan_dec;
+        scan_word string_conversion::HEX     =>  final_word scan_hex;
     end;
 
     stipulate
@@ -476,10 +476,10 @@ api {
 	    esac;
     end;
 
-    fun scan_int string_conversion::BIN =>  final_int  scan_bin;
-        scan_int string_conversion::OCT =>  final_int  scan_oct;
-        scan_int string_conversion::DEC =>  final_int  scan_dec;
-        scan_int string_conversion::HEX =>  final_int  scan_hex;
+    fun scan_int string_conversion::BINARY  =>  final_int  scan_bin;
+        scan_int string_conversion::OCTAL   =>  final_int  scan_oct;
+        scan_int string_conversion::DECIMAL =>  final_int  scan_dec;
+        scan_int string_conversion::HEX     =>  final_int  scan_hex;
     end;
   
     # Scan a string of decimal digits (starting with d), and return their

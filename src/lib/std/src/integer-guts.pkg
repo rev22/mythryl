@@ -223,7 +223,7 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
         =
 	{   to_string
                 =
-                unt31_guts::format string_conversion::DEC;
+                unt31_guts::format string_conversion::DECIMAL;
 
 
 	    fun dec_dig d
@@ -264,10 +264,10 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 	};
 
 
-    fun format string_conversion::OCT =>  bitformat (0u3, 0ux7, "01234567");
-	format string_conversion::HEX =>  bitformat (0u4, 0uxf, "0123456789abcdef");
-	format string_conversion::BIN =>  bitformat (0u1, 0ux1, "01");
-	format string_conversion::DEC =>  decformat;
+    fun format string_conversion::OCTAL   =>  bitformat (0u3, 0ux7, "01234567");
+	format string_conversion::HEX     =>  bitformat (0u4, 0uxf, "0123456789abcdef");
+	format string_conversion::BINARY  =>  bitformat (0u1, 0ux1, "01");
+	format string_conversion::DECIMAL =>  decformat;
     end;
 
     fun sign i
@@ -655,10 +655,10 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 	hex_dig_val _ => NULL;
     end;
 
-    fun scan string_conversion::DEC =>  decscan;
-	scan string_conversion::HEX =>  bitscan (0u4, hex_dig_val, TRUE);
-	scan string_conversion::OCT =>  bitscan (0u3, oct_dig_val, FALSE);
-	scan string_conversion::BIN =>  bitscan (0u1, bin_dig_val, FALSE);
+    fun scan string_conversion::DECIMAL =>  decscan;
+	scan string_conversion::HEX     =>  bitscan (0u4, hex_dig_val, TRUE);
+	scan string_conversion::OCTAL   =>  bitscan (0u3, oct_dig_val, FALSE);
+	scan string_conversion::BINARY  =>  bitscan (0u1, bin_dig_val, FALSE);
     end;
 
     my (-_)   =  core_integer::neg;
@@ -686,11 +686,11 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 
     to_string
         =
-        format  string_conversion::DEC;
+        format  string_conversion::DECIMAL;
 
     fun from_string s
         =
-        string_conversion::scan_string (scan string_conversion::DEC) s;
+        string_conversion::scan_string (scan string_conversion::DECIMAL) s;
 
     my (<<)  =  lshift;
     my (>>>) =  rshift;
