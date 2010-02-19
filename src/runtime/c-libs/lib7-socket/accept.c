@@ -24,7 +24,7 @@ lib7_val_t _lib7_Sock_accept (lib7_state_t *lib7_state, lib7_val_t arg)
     newSock = accept (socket, (struct sockaddr *)addrBuf, &addrLen);
 
     if (newSock == -1)
-	return RAISE_SYSERR(lib7_state, newSock);
+        return RAISE_SYSERR(lib7_state, newSock, __LINE__);
     else {
 	lib7_val_t	data = LIB7_CData (lib7_state, addrBuf, addrLen);
 	lib7_val_t	addr, res;

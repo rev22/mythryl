@@ -1,3 +1,4 @@
+2010-02-19-13.54.29: src/lib/std/src/: Renamed string-conversion.api,string-conversion.pkg -> number-string.api,number-string.pkg for brevity and clarity -- they are more about numbers than strings.
 2010-02-19-13.08.32: src/lib/std/src/socket/: Renamed unix-generic-socket.pkg -> generic-socket.pkg for clarity and as part of concentrating on being posix-centric rather than cross-platform-centric.
 2010-02-19-12.58.16: src/lib/std/src/string-conversion.api: For clarity, renamed Realfmt -> Real_Format and DEC/BIN/OCT -> DECIMAL/BINARY/OCTAL.
 2010-02-19-12.04.32: src/lib/std/src/: Removed word.api, which was apparently just an old and unused copy of unt.api.

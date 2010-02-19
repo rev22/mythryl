@@ -34,12 +34,9 @@ lib7_val_t _lib7_Sock_socket (lib7_state_t *lib7_state, lib7_val_t arg)
 
     int sock     = socket (domain, type, protocol);
 
-    if (sock < 0)
-	return RAISE_SYSERR(lib7_state, status);
-    else
-	return INT_CtoLib7(sock);
-
-} /* end of _lib7_Sock_socket */
+    if (sock < 0)   return RAISE_SYSERR(lib7_state, status, __LINE__);	/* RAISE_SYSERR is defined in src/runtime/c-libs/lib7-c.h */
+    else	    return INT_CtoLib7(sock);
+}
 
 
 /* COPYRIGHT (c) 1995 AT&T Bell Laboratories.

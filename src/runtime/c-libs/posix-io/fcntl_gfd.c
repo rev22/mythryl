@@ -26,7 +26,7 @@ lib7_val_t _lib7_P_IO_fcntl_gfd (lib7_state_t *lib7_state, lib7_val_t arg)
     flag = fcntl(INT_LIB7toC(arg), F_GETFD);
 
     if (flag == -1)
-        return RAISE_SYSERR(lib7_state, flag);
+        return RAISE_SYSERR(lib7_state, flag, __LINE__);
     else {
         WORD_ALLOC (lib7_state, v, flag);
         return v;

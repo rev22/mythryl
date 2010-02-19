@@ -42,7 +42,7 @@ _lib7_Ncurses_initscr (lib7_state_t *lib7_state, lib7_val_t arg)
     return LIB7_void;
 #else
     extern char* no_ncurses_support_in_runtime;
-    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime);
+    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime, __LINE__);
 #endif
 }
 

@@ -84,7 +84,7 @@ lib7_val_t _lib7_win32_FS_get_current_directory(lib7_state_t *lib7_state, lib7_v
   DWORD r = GetCurrentDirectory(MAX_PATH,buf);
 
   if (r == 0 || r > MAX_PATH) {
-    return RAISE_SYSERR(lib7_state,-1);
+      return RAISE_SYSERR(lib7_state,-1, __LINE__);
   }
   return LIB7_CString(lib7_state,buf);
 }
@@ -152,7 +152,7 @@ lib7_val_t _lib7_win32_FS_get_full_path_name(lib7_state_t *lib7_state, lib7_val_
 
   r = GetFullPathName(STR_LIB7toC(arg),MAX_PATH,buf,&dummy);
   if (r == 0 | r > MAX_PATH) {
-    return  RAISE_SYSERR(lib7_state,-1);
+      return  RAISE_SYSERR(lib7_state,-1, __LINE__);
   }
   res = LIB7_CString(lib7_state,buf);
   return res;

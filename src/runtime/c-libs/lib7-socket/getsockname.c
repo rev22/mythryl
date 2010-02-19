@@ -32,9 +32,11 @@ lib7_val_t _lib7_Sock_getsockname (lib7_state_t *lib7_state, lib7_val_t arg)
 
     status = getsockname (socket, (struct sockaddr *)addrBuf, &addrLen);
 
-    if (status == -1)
-	return RAISE_SYSERR(lib7_state, status);
-    else {
+    if (status == -1) {
+
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
+
+    } else {
 	lib7_val_t	data = LIB7_CData (lib7_state, addrBuf, addrLen);
 	lib7_val_t	addr;
 	SEQHDR_ALLOC (lib7_state, addr, DESC_word8vec, data, addrLen);

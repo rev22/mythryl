@@ -16,7 +16,7 @@
 lib7_val_t _lib7_Sock_shutdown (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     if (shutdown (REC_SELINT(arg, 0), REC_SELINT(arg, 1)) < 0)
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
     else
 	return LIB7_void;
 

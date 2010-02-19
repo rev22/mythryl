@@ -39,26 +39,40 @@ static char *strerror (int errnum)
  *
  * Raise the Lib7 exception SYSTEM_ERROR, which has the spec:
  *
- *    exception SYSTEM_ERROR of (String * System_Error Null_Or)
+ *    exception SYSTEM_ERROR of (String, Null_Or(System_Error) );
  *
  * For the time being, we use the errno value as the System_Error; eventually that
- * will be represented by an (int * String) pair.  If alt_msg is non-zero,
+ * will be represented by an (Int, String) pair.  If alt_msg is non-zero,
  * then use it as the error string and use NULL for the System_Error.
  */
-lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *altMsg, const char *at)
-{
-    lib7_val_t	    s, atStk, syserror, arg, exn;
-    const char	    *msg;
+lib7_val_t  RaiseSysError (
+
+    lib7_state_t*  lib7_state,
+    const char*    altMsg,
+    const char*    at			/* C sourcefile and line number raising this error:  "<foo.c:37>"	*/
+
+) {
+
+    lib7_val_t	    s;
+    lib7_val_t	    atStk;
+    lib7_val_t	    syserror;
+    lib7_val_t	    arg;
+    lib7_val_t	    exn;
+
+    const char*	    msg;
     char	    buf[32];
 
     if (altMsg != NULL) {
-	msg = altMsg;
-	syserror = OPTION_NONE;
-    }
-    else if ((msg = strerror(errno)) != NULL) {
-	OPTION_SOME(lib7_state, syserror, INT_CtoLib7(errno))
-    }
-    else {
+
+	msg      =  altMsg;
+	syserror =  OPTION_NONE;
+
+    } else if ((msg = strerror(errno)) != NULL) {
+
+	OPTION_SOME (lib7_state, syserror, INT_CtoLib7(errno))
+
+    } else {
+
 	sprintf(buf, "<unknown error %d>", errno);
 	msg = buf;
 	OPTION_SOME(lib7_state, syserror, INT_CtoLib7(errno));
@@ -70,14 +84,22 @@ lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *altMsg, const ch
 #endif
 
     s = LIB7_CString (lib7_state, msg);
+
     if (at != NULL) {
-	lib7_val_t atMsg = LIB7_CString (lib7_state, at);
+
+	lib7_val_t  atMsg
+            =
+            LIB7_CString (lib7_state, at);
+
 	LIST_cons(lib7_state, atStk, atMsg, LIST_nil);
-    }
-    else
+
+    } else {
+
 	atStk = LIST_nil;
+    }
+
     REC_ALLOC2 (lib7_state, arg, s, syserror);
-    EXN_ALLOC (lib7_state, exn, PTR_CtoLib7(SysErrId), arg, atStk);
+    EXN_ALLOC  (lib7_state, exn, PTR_CtoLib7(SysErrId), arg, atStk);
 
     RaiseLib7Exception (lib7_state, exn);
 

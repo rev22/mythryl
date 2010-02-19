@@ -23,7 +23,7 @@ lib7_val_t _lib7_P_ProcEnv_ctermid (lib7_state_t *lib7_state, lib7_val_t arg)
 
     status = ctermid(name);
     if (status == NULL || *status == '\0')
-        return RAISE_ERROR(lib7_state, "cannot determine controlling terminal");
+      return RAISE_ERROR(lib7_state, "cannot determine controlling terminal", __LINE__);
   
     return LIB7_CString (lib7_state, name);
 

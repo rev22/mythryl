@@ -25,7 +25,7 @@ lib7_val_t _lib7_P_SysDB_getgrnam (lib7_state_t *lib7_state, lib7_val_t arg)
 
     info = getgrnam(STR_LIB7toC(arg));
     if (info == NULL)
-        return RAISE_SYSERR(lib7_state, -1);
+        return RAISE_SYSERR(lib7_state, -1, __LINE__);
   
     gr_name = LIB7_CString (lib7_state, info->gr_name);
     WORD_ALLOC (lib7_state, gr_gid, (Word_t)(info->gr_gid));

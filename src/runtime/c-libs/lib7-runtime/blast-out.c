@@ -23,8 +23,8 @@ lib7_val_t   _lib7_runtime_blast_out   (   lib7_state_t*   lib7_state,
 
     data = BlastOut (lib7_state, arg);
 
-    if (data == LIB7_void)   return RAISE_ERROR(lib7_state, "attempt to blast chunk failed");
-    else                      return data;
+    if (data == LIB7_void)   return RAISE_ERROR(lib7_state, "attempt to blast chunk failed", __LINE__);
+    else                     return data;
 }
 
 

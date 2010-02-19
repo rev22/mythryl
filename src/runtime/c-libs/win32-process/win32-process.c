@@ -101,7 +101,7 @@ lib7_val_t _lib7_win32_PS_get_environment_variable(lib7_state_t *lib7_state, lib
   lib7_val_t ml_s,res = OPTION_NONE;
 
   if (ret > GEV_BUF_SZ) {
-    return RAISE_SYSERR(lib7_state,-1);
+    return RAISE_SYSERR(lib7_state,-1, __LINE__);
   }
   if (ret > 0) {
     ml_s = LIB7_CString(lib7_state,buf);

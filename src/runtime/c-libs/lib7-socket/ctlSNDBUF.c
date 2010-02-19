@@ -32,7 +32,7 @@ lib7_val_t _lib7_Sock_ctlSNDBUF (lib7_state_t *lib7_state, lib7_val_t arg)
     }
 
     if (status < 0)
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
     else
 	return INT_CtoLib7(size);
 

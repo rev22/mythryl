@@ -70,20 +70,20 @@ lib7_val_t _lib7_P_ProcEnv_getgroups (lib7_state_t *lib7_state, lib7_val_t arg)
        * raise exception.
        */
 	if (errno != EINVAL)
-	    return RAISE_SYSERR(lib7_state, -1);
+	    return RAISE_SYSERR(lib7_state, -1, __LINE__);
 
       /* Find out how many groups there are and allocate enough space. */
 	ngrps = getgroups (0, gidset);
 	gp = (gid *)MALLOC(ngrps * (sizeof (gid)));
 	if (gp == 0) {
 	    errno = ENOMEM;
-	    return RAISE_SYSERR(lib7_state, -1);
+	    return RAISE_SYSERR(lib7_state, -1, __LINE__);
 	}
 
 	ngrps = getgroups (ngrps, gp);
 
 	if (ngrps == -1)
-	    p = RAISE_SYSERR(lib7_state, -1);
+	  p = RAISE_SYSERR(lib7_state, -1, __LINE__);
 	else
 	    p = mkList (lib7_state, ngrps, gp);
         

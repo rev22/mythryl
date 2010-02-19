@@ -44,7 +44,7 @@ static lib7_val_t FDSetToList (lib7_state_t *lib7_state, fd_set *fds, int width)
 lib7_val_t _lib7_IO_select (lib7_state_t *lib7_state, lib7_val_t arg)
 {
 #if ((*defined(HAS_SELECT)) && (*defined(HAS_POLL)))
-    return RAISE_ERROR (lib7_state, "LIB7-io.select unsupported");
+    return RAISE_ERROR (lib7_state, "LIB7-io.select unsupported", __LINE__);
 #else
     lib7_val_t	    rl = REC_SEL(arg, 0);
     lib7_val_t	    wl = REC_SEL(arg, 1);
@@ -138,7 +138,7 @@ lib7_val_t _lib7_IO_select (lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef HAS_POLL
 	FREE (fds);
 #endif
-	return RAISE_SYSERR (lib7_state, status);
+	return RAISE_SYSERR (lib7_state, status, __LINE__);
     }
     else {
 	lib7_val_t	    rfdl, wfdl, efdl, res;

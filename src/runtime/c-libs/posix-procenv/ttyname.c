@@ -24,7 +24,7 @@ lib7_val_t _lib7_P_ProcEnv_ttyname (lib7_state_t *lib7_state, lib7_val_t arg)
 
     name = ttyname(INT_LIB7toC(arg));
     if (name == NULL)
-        return RAISE_ERROR(lib7_state, "not a terminal device");
+        return RAISE_ERROR(lib7_state, "not a terminal device", __LINE__);
   
     return LIB7_CString (lib7_state, name);
 

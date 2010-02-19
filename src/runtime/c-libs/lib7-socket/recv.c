@@ -36,7 +36,7 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
     n = recv (socket, PTR_LIB7toC(char, vec), nbytes, flag);
 
     if (n < 0)
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
     else if (n == 0)
 	return LIB7_string0;
 

@@ -53,11 +53,12 @@ static lib7_val_t mkValue (lib7_state_t *lib7_state, int val)
     if (val >= 0) {
 	WORD_ALLOC (lib7_state, p, val);
 	OPTION_SOME(lib7_state, chunk, p);
-    }
-    else if (errno == 0)
+
+    } else if (errno == 0) {
 	chunk = OPTION_NONE;
-    else
-	chunk = RAISE_SYSERR(lib7_state, val);
+    } else {
+        chunk = RAISE_SYSERR(lib7_state, val, __LINE__);
+    }
 
     return chunk;
 
@@ -79,7 +80,7 @@ lib7_val_t _lib7_P_FileSys_pathconf (lib7_state_t *lib7_state, lib7_val_t arg)
     attribute = _lib7_posix_nv_lookup (STR_LIB7toC(mlAttr), values, NUMELMS);
     if (!attribute) {
 	errno = EINVAL;
-	return RAISE_SYSERR(lib7_state, -1);
+	return RAISE_SYSERR(lib7_state, -1, __LINE__);
     }
  
     errno = 0;
@@ -107,7 +108,7 @@ lib7_val_t _lib7_P_FileSys_fpathconf (lib7_state_t *lib7_state, lib7_val_t arg)
     attribute = _lib7_posix_nv_lookup (STR_LIB7toC(mlAttr), values, NUMELMS);
     if (!attribute) {
 	errno = EINVAL;
-	return RAISE_SYSERR(lib7_state, -1);
+	return RAISE_SYSERR(lib7_state, -1, __LINE__);
     }
  
     errno = 0;

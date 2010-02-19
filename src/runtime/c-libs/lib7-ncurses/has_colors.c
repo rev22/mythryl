@@ -26,7 +26,7 @@ _lib7_Ncurses_has_colors (lib7_state_t *lib7_state, lib7_val_t arg)
     return (has_colors()  ? LIB7_true : LIB7_false);
 #else
     extern char* no_ncurses_support_in_runtime;
-    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime);
+    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime, __LINE__);
 #endif
 }
 

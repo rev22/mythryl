@@ -22,9 +22,12 @@ lib7_val_t _lib7_P_IO_pipe (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     int         fds[2];
 
-    if (pipe(fds) == -1)
-        return RAISE_SYSERR(lib7_state, -1);
-    else {
+    if (pipe(fds) == -1) {
+
+        return RAISE_SYSERR(lib7_state, -1, __LINE__);
+
+    } else {
+
         lib7_val_t        chunk;
         REC_ALLOC2 (lib7_state, chunk, INT_CtoLib7(fds[0]), INT_CtoLib7(fds[1]));
         return chunk;

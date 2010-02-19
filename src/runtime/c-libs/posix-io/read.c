@@ -36,7 +36,7 @@ lib7_val_t _lib7_P_IO_read (lib7_state_t *lib7_state, lib7_val_t arg)
 
         int n = read (fd, PTR_LIB7toC(char, vec), nbytes);
 	if (n < 0)
-	    return RAISE_SYSERR(lib7_state, n);
+	    return RAISE_SYSERR(lib7_state, n, __LINE__);
 	else if (n == 0)
 	    return LIB7_string0;
 

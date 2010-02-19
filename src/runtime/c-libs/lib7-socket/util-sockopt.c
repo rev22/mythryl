@@ -32,7 +32,7 @@ lib7_val_t _util_Sock_ControlFlg (lib7_state_t *lib7_state, lib7_val_t arg, int 
 	status = setsockopt (socket, SOL_SOCKET, option, (sockoptval_t)&flag, sizeof(int));
     }
 
-    if (status < 0)	return  RAISE_SYSERR(lib7_state, status);
+    if (status < 0)	return  RAISE_SYSERR(lib7_state, status, __LINE__);
     else	        return  (flag ? LIB7_true : LIB7_false);
 }
 

@@ -66,7 +66,7 @@ lib7_val_t _lib7_P_IO_osval (lib7_state_t *lib7_state, lib7_val_t arg)
     if (res)
 	return INT_CtoLib7(res->val);
     else {
-	return RAISE_ERROR(lib7_state, "system constant not defined");
+      return RAISE_ERROR(lib7_state, "system constant not defined", __LINE__);
     }
 
 } /* end of _lib7_P_IO_osval */

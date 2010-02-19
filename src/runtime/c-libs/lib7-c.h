@@ -4,25 +4,35 @@
  * a number of macros for checking return results and for raising the SYSTEM_ERROR
  * exception:
  *
- *	RAISE_SYSERR(lib7_state, status)		Raise the SYSTEM_ERROR exception using the
- *					appropriate system error message (on
- *					some systems, status may be an error code).
+ *	RAISE_SYSERR(lib7_state, status, line)
+ *          #
+ *	    Raise the SYSTEM_ERROR exception using the
+ *	    appropriate system error message (on
+ *	    some systems, status may be an error code).
  *
- *	RAISE_ERROR(lib7_state, msg)		Raise the SYSTEM_ERROR exception using the
- *					given message (with NULL for the system
- *					error part).
+ *	RAISE_ERROR(lib7_state, msg, line)
+ *          #
+ *          Raise the SYSTEM_ERROR exception using the
+ *	    given message (with NULL for the system
+ *	    error part).
  *
- *	CHECK_RETURN_VAL(lib7_state, status, val)	Check status for an error (< 0); if okay,
- *					then return val.  Otherwise raise
- *					SYSTEM_ERROR with the appropriate system
- *					error message.
+ *	CHECK_RETURN_VAL(lib7_state, status, val)
+ *          #
+ *   	    Check status for an error (< 0); if okay,
+ *	    then return val.  Otherwise raise
+ *	    SYSTEM_ERROR with the appropriate system
+ *	    error message.
  *
- *	CHECK_RETURN(lib7_state, status)		Check status for an error (< 0); if okay,
- *					then return it as the result (after
- *					converting to an Lib7 int).
+ *	CHECK_RETURN(lib7_state, status)
+ *          #
+ *	    Check status for an error (< 0); if okay,
+ *	    then return it as the result (after
+ *	    converting to an Lib7 int).
  *
- *	CHECK_RETURN_UNIT(lib7_state, status)	Check status for an error (< 0); if okay,
- *					then return Void.
+ *	CHECK_RETURN_UNIT(lib7_state, status)
+ *          #
+ * 	    Check status for an error (< 0); if okay,
+ *	    then return Void.
  */
 
 #ifndef _LIB7_C_
@@ -31,21 +41,23 @@
 #ifndef _LIB7_OSDEP_
 #include "runtime-osdep.h"
 #endif
-
+					/* RaiseSysError	is in     src/runtime/c-libs/unix-raise-syserr.c
+					*/
 
 #ifdef SYSCALL_RET_ERR
+
 lib7_val_t RaiseSysError (lib7_state_t *lib7_state, int err, const char *alt_msg, const char *at);
-#define RAISE_SYSERR(lib7_state, status)	\
-	RaiseSysError((lib7_state), (status), NULL, "<" __FILE__ ">")
-#define RAISE_ERROR(lib7_state, msg)	\
-	RaiseSysError((lib7_state), 0, (msg), "<" __FILE__ ">")
+#define RAISE_SYSERR(lib7_state, status,line)	\
+	RaiseSysError((lib7_state), (status), NULL, "<" __FILE__ ":" #line ">")
+#define RAISE_ERROR(lib7_state, msg,line)	\
+	RaiseSysError((lib7_state), 0, (msg), "<" __FILE__  ":" #line ">")
 
 #else
 lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *alt_msg, const char *at);
-#define RAISE_SYSERR(lib7_state, status)	\
-	RaiseSysError((lib7_state), NULL, "<" __FILE__ ">")
-#define RAISE_ERROR(lib7_state, msg)	\
-	RaiseSysError((lib7_state), (msg), "<" __FILE__ ">")
+#define RAISE_SYSERR(lib7_state, status,line)	\
+	RaiseSysError((lib7_state), NULL, "<" __FILE__  ":" #line ">")
+#define RAISE_ERROR(lib7_state, msg,line)	\
+	RaiseSysError((lib7_state), (msg), "<" __FILE__  ":" #line ">")
 
 #endif
 
@@ -54,7 +66,7 @@ lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *alt_msg, const c
  */
 #define CHECK_RETURN_VAL(lib7_state,status,val)	{			\
 	if ((status) < 0)						\
-	    return RAISE_SYSERR(lib7_state, status);			\
+	    return RAISE_SYSERR(lib7_state, status,__LINE__);			\
 	else							\
 	    return (val);					\
     }

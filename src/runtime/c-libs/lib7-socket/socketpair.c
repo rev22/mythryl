@@ -36,16 +36,21 @@
  */
 lib7_val_t _lib7_Sock_socketpair (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int		domain = REC_SELINT(arg, 0);
-    int		type = REC_SELINT(arg, 1);
-    int		protocol = REC_SELINT(arg, 2);
-    int		status, socket[2];
+    int	 domain   = REC_SELINT(arg, 0);
+    int	 type     = REC_SELINT(arg, 1);
+    int	 protocol = REC_SELINT(arg, 2);
+
+    int	 status;
+    int	 socket[2];
 
     status = socketpair (domain, type, protocol, socket);
 
-    if (status < 0)
-	return RAISE_SYSERR(lib7_state, status);
-    else {
+    if (status < 0) {
+
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
+
+    } else {
+
 	lib7_val_t	res;
 	REC_ALLOC2(lib7_state, res, INT_CtoLib7(socket[0]), INT_CtoLib7(socket[1]));
 	return res;

@@ -49,7 +49,7 @@ lib7_val_t _lib7_Prof_setpref (lib7_state_t *lib7_state, lib7_val_t arg)
 
     return LIB7_void;
 #else
-    return RAISE_ERROR(lib7_state, "time profiling not supported");
+    return RAISE_ERROR(lib7_state, "time profiling not supported", __LINE__);
 #endif
 
 } /* end of _lib7_Prof_setpref */

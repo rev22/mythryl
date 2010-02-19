@@ -26,7 +26,7 @@ lib7_val_t _lib7_P_ProcEnv_uname (lib7_state_t *lib7_state, lib7_val_t arg)
     status = uname (&name);
 
     if (status == -1)
-	RAISE_SYSERR(lib7_state, status);
+        RAISE_SYSERR(lib7_state, status, __LINE__);
 
 /** NOTE: we should do something about possible GC!!! XXX BUGGO FIXME **/
 

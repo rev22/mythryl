@@ -56,18 +56,20 @@ lib7_val_t ApplyLib7Fn (lib7_state_t *lib7_state, lib7_val_t f, lib7_val_t arg, 
 
 /* RaiseLib7Exception:
  *
- * Modify the Lib7 state, so that the given exception will be raised
- * when Lib7 is resumed.
+ * Modify the Lib7 state so that the given exception
+ * will be raised when Lib7 is resumed.
  */
-void RaiseLib7Exception (lib7_state_t *lib7_state, lib7_val_t exn)
+void  RaiseLib7Exception  (lib7_state_t *lib7_state, lib7_val_t exn)
 {
     lib7_val_t	kont = lib7_state->lib7_exception_fate;
 
-/** NOTE: we should have a macro defined in runtime-state.h for this  XXX BUGGO FIXME **/
-    lib7_state->lib7_argument		= exn;
+    /* We should have a macro defined in runtime-state.h for this.  XXX BUGGO FIXME **/
+
+    lib7_state->lib7_argument	= exn;
     lib7_state->lib7_closure	= kont;
     lib7_state->lib7_fate	= LIB7_void;
-    lib7_state->lib7_program_counter		=
+
+    lib7_state->lib7_program_counter	=
     lib7_state->lib7_link_register	= GET_CODE_ADDR(kont);
 
 } /* end of RaiseLib7Exception. */

@@ -10,17 +10,18 @@ package generic_socket: (weak)  Generic_Socket {	# Generic_Socket	is from   src/
 
     fun socket_fn x
         =
-        c_interface::c_function "Lib7-Sockets" x;
+        c_interface::c_function "Lib7-Sockets" x;	# Lib7-Sockets		is in     src/runtime/c-libs/lib7-socket/cfun-list.h
 
 
-    my c_socket:	 (Int, Int, Int) -> s::Socket_Fd
+    my  c_socket:	 (Int, Int, Int) -> s::Socket_Fd
 	=
-        socket_fn "socket";
+        socket_fn "socket";				# socket		is in     src/runtime/c-libs/lib7-socket/socket.c
 
 
     my c_socket_pair:	 (Int, Int, Int) -> (s::Socket_Fd, s::Socket_Fd)
 	=
-        socket_fn "socketPair";
+        socket_fn "socketPair";				# socketPair		is in     src/runtime/c-libs/lib7-socket/socketpair.c
+
 
     fun fd2sock file_descriptor
         =

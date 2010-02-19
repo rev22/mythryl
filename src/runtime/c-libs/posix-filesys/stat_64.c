@@ -114,7 +114,7 @@ lib7_val_t _lib7_P_FileSys_stat_64 (lib7_state_t *lib7_state, lib7_val_t arg)
     status = stat(path, &buf);
 
     if (status < 0)
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
 
     return (mkStatRep(lib7_state, &buf));
 
@@ -133,7 +133,7 @@ lib7_val_t _lib7_P_FileSys_fstat_64 (lib7_state_t *lib7_state, lib7_val_t arg)
     status = fstat(fd, &buf);
 
     if (status < 0)
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
 
     return (mkStatRep(lib7_state, &buf));
 
@@ -153,7 +153,7 @@ lib7_val_t _lib7_P_FileSys_lstat_64 (lib7_state_t *lib7_state, lib7_val_t arg)
     status = lstat(path, &buf);
 
     if (status < 0)
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
 
     return (mkStatRep(lib7_state, &buf));
 

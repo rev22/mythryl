@@ -44,7 +44,7 @@ lib7_val_t _lib7_Sock_recvbuffrom (lib7_state_t *lib7_state, lib7_val_t arg)
     n = recvfrom (socket, start, nbytes, flag, (struct sockaddr *)addrBuf, &addrLen);
 
     if (n < 0)
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
     else {
 	lib7_val_t	data = LIB7_CData (lib7_state, addrBuf, addrLen);
 	lib7_val_t	addr, res;

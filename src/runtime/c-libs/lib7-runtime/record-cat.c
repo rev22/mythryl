@@ -30,7 +30,7 @@ lib7_val_t   _lib7_runtime_recordmeld   (   lib7_state_t*   lib7_state,
     else {
 	lib7_val_t	result = RecordMeld (lib7_state, r1, r2);
 
-	if (result == LIB7_void)   return RAISE_ERROR( lib7_state, "recordmeld: not a record" );
+	if (result == LIB7_void)   return RAISE_ERROR( lib7_state, "recordmeld: not a record", __LINE__);
 	else                       return result;
     }
 }

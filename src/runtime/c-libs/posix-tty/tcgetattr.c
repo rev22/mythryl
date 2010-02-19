@@ -34,7 +34,7 @@ lib7_val_t _lib7_P_TTY_tcgetattr (lib7_state_t *lib7_state, lib7_val_t arg)
     int status = tcgetattr(fd, &data);
 
     if (status < 0) {
-	return RAISE_SYSERR(lib7_state, status);
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
     }
 
     WORD_ALLOC (lib7_state, iflag, data.c_iflag);

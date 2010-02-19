@@ -39,7 +39,7 @@ _lib7_NetDB_getnetbyaddr (lib7_state_t *lib7_state, lib7_val_t arg)
 #if defined(OPSYS_WIN32)
   /* FIXME:  getnetbyaddr() does not seem to exist under Windows.  What is
      the equivalent? */
-  return RAISE_ERROR(lib7_state, "<getnetbyaddr not implemented>");
+  return RAISE_ERROR(lib7_state, "<getnetbyaddr not implemented>", __LINE__);
 #else
     unsigned long   net = REC_SELWORD(arg, 0);
     int		    type = REC_SELINT(arg, 1);

@@ -32,9 +32,12 @@ _lib7_Sock_getpeername (lib7_state_t *lib7_state, lib7_val_t arg)
     char	    addr[MAX_SOCK_ADDR_SZB];
     int		    addrLen = MAX_SOCK_ADDR_SZB;
 
-    if (getpeername (INT_LIB7toC(arg), (struct sockaddr *)addr, &addrLen) < 0)
-	return RAISE_SYSERR(lib7_state, status);
-    else {
+    if (getpeername (INT_LIB7toC(arg), (struct sockaddr *)addr, &addrLen) < 0) {
+
+        return RAISE_SYSERR(lib7_state, status, __LINE__);
+
+    } else {
+
 	lib7_val_t	cdata = LIB7_CData(lib7_state, addr, addrLen);
 	lib7_val_t	res;
 

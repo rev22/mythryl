@@ -43,7 +43,7 @@ _lib7_OpenCV_cvCreateImage (lib7_state_t *lib7_state, lib7_val_t arg)
 #else
 
     extern char* no_opencv_support_in_runtime;
-    return RAISE_ERROR(lib7_state, no_opencv_support_in_runtime);
+    return RAISE_ERROR(lib7_state, no_opencv_support_in_runtime, __LINE__);
 
 #endif
 }
