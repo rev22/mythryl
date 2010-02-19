@@ -3,8 +3,8 @@
 # Compiled by:
 #     src/lib/std/src/Base-imp.make6
 
-# Eventually, this should move to PreBasis so that we don't need the PreGeneral
-# package anymore.
+# Eventually, this should move to PreBasis so that we
+# don't need the PreGeneral package anymore.
 
 
 
@@ -22,6 +22,10 @@
 ###                                 -- Rudyard Kipling
 
 
+
+# This package gets 'include'd by:
+#
+#     src/lib/std/exceptions.pkg
 
 stipulate
 
@@ -53,22 +57,22 @@ herein
 
 
 	    exception_message (io_exceptions::IO { cause, function, name } )
-		 =>
-		 {   cause_message
-			 =
-			 case cause
-			   
-			      winix::SYSTEM_ERROR (s, _)            => [", ", s];
-			      io_exceptions::BLOCKING_IO_NOT_SUPPORTED      => [", blocking I/O not supported"];
-			      io_exceptions::NONBLOCKING_IO_NOT_SUPPORTED   => [", non-blocking I/O not supported"];
-			      io_exceptions::RANDOM_ACCESS_IO_NOT_SUPPORTED => [", random access not supported"];
-			      io_exceptions::TERMINATED_INPUT_STREAM        => [", terminated input stream"];
-			      io_exceptions::CLOSED_IO_STREAM               => [", closed stream"];
-			      _                                  => [" with exception ", exception_message cause];
-			esac;
+		=>
+		{   cause_message
+			=
+			case cause
+			    #
+			    winix::SYSTEM_ERROR (s, _)                    => [", ", s];
+			    io_exceptions::BLOCKING_IO_NOT_SUPPORTED      => [", blocking I/O not supported"];
+			    io_exceptions::NONBLOCKING_IO_NOT_SUPPORTED   => [", non-blocking I/O not supported"];
+			    io_exceptions::RANDOM_ACCESS_IO_NOT_SUPPORTED => [", random access not supported"];
+			    io_exceptions::TERMINATED_INPUT_STREAM        => [", terminated input stream"];
+			    io_exceptions::CLOSED_IO_STREAM               => [", closed stream"];
+			    _                                             => [" with exception ", exception_message cause];
+		       esac;
 
-		     cat ("Io: " ! function ! " failed on \"" ! name ! "\"" ! cause_message);
-		 };
+		    cat ("Io: " ! function ! " failed on \"" ! name ! "\"" ! cause_message);
+		};
 
 	    exception_message (FAIL s)            => "FAIL: " + s;
 	    exception_message BIND                => "nonexhaustive naming failure";     # NOTE: we should probably include line/file info for MATCH and BIND  XXX BUGGO FIXME

@@ -12,7 +12,7 @@
 
 
 
-package threadkit: (weak)  Threadkit {		# Threadkit			is from   src/lib/thread-kit/src/core-thread-kit/threadkit.api
+package threadkit: (weak)  Threadkit {		# Threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.api
 
     include threadkit_version;			# threadkit_version		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit-version.pkg
     include thread;				# thread			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread.pkg

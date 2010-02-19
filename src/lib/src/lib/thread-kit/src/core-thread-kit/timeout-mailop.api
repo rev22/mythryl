@@ -6,7 +6,7 @@
 
 
 # Exported interface for timeout synchronization.
-
+								# time		is from   src/lib/std/time.pkg
 api Timeout_Mailop {
 
     Mailop(X);

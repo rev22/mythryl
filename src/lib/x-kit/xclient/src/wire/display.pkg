@@ -130,24 +130,50 @@ herein
 		sox::send_vector (socket, connect_msg);
 
 # +DEBUG
-		trace  .{ "reading connection reply header"; };
+		trace  .{ "display.pkg: say_hello_to_xserver: Reading connection reply header"; };
 # -DEBUG
-		# ddeboer, fall 2004: error in ssh tunneling happens in following line 
+		# ddeboer, fall 2004: error in ssh tunnelling happens in following line 
 		# modified to retry on exception.
 
 		fun sleep n
 		    =
-		    do_mailop (timeout_in' (time::from_seconds n));
+		    do_mailop (timeout_in' (time::from_seconds (large_int::from_int n)));
 
-		fun retry 0 ts => sox::receive_vector (socket, 8);
-		    retry n ts => sox::receive_vector (socket, 8) except _ = { sleep ts; (retry (n - 1) (ts*2));};
+
+											# exceptions			is from   src/lib/std/exceptions.pkg
+		fun retry 0 ts
+			=>
+			sox::receive_vector (socket, 8);
+
+		    retry n ts
+			=>
+			{
+		            trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Calling sox::receive_vector (socket, 8)..." n; };
+			    sox::receive_vector (socket, 8)
+                            except x
+                                =
+                                { 
+		                    trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Caught exception '%s', sleeping %d seconds..."
+                                        n
+					(exceptions::exception_message  x)
+                                        ts;
+                                    };
+
+                                    sleep ts;
+
+                                    (retry (n - 1) (ts*2));
+                                };
+			};
 		end;
 
 											# large_unt			is from   src/lib/std/large-unt.pkg
 											# pack_big_endian_unt16		is from   src/lib/std/src/pack-big-endian-unt16.pkg
 		header = retry 2 1;
-		#  original: header = SockUtil::recvVec (socket, 8) 
+		#  original: header = sox::receive_vector (socket, 8);
+
 		len = 4 * large_unt::to_int_x (pack_big_endian_unt16::get_vec (header, 3));
+		    #
+		    # "4 * ..." because X reports packet lengths in multiples of 32 bits.
 
 # +DEBUG
                 trace .{ sprintf "Reading connection reply body (%d bytes)..." len; };

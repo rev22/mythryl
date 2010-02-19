@@ -68,7 +68,13 @@ herein
 				=>
 				{
                                     trace .{ sprintf "xclient-unit-test.pkg: DISPLAY variable is set to '%s'" display_name; };
-#				    dy::open_xdisplay { display_name, authentication => NULL };
+
+				    xdisplay
+					=	
+				        dy::open_xdisplay { display_name, authentication => NULL };
+
+				    ();
+
 #                                   do_it (make_root_window NULL);
 				};
 			esac;

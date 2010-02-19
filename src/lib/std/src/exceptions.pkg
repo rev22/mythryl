@@ -9,7 +9,13 @@
 ###
 ###                                     -- Mark Twain
 
+# NB: Normally we avoid plural package names
+# (except for collections); we use one here
+# only becase 'exception' is a Mythryl reserved word.
 
+# This package gets 'include'd by:
+#
+#     src/lib/std/exceptions.pkg
 
 package exceptions: (weak)  Pre_Exceptions {		# Pre_Exceptions	is from   src/lib/std/src/exceptions.api
 
