@@ -513,7 +513,7 @@ LIBRARY_GROUP_COMPONENTS
 	$ROOT/src/lib/std/src/socket/net-db.api
 	$ROOT/src/lib/std/src/socket/net-db.pkg
 	$ROOT/src/lib/std/src/socket/unix-socket.api
-	$ROOT/src/lib/std/src/socket/unix-generic-socket.pkg
+	$ROOT/src/lib/std/src/socket/generic-socket.pkg
 	$ROOT/src/lib/std/src/socket/unix-socket.pkg
 	$ROOT/src/lib/std/src/socket/unix-details.pkg
 	#elif defined(OPSYS_WIN32)

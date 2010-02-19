@@ -24,10 +24,11 @@ package internet_socket: (weak)  Internet_Socket {		# Internet_Socket	is from   
     inet_af = null_or::the (socket_guts::af::from_string "INET");
 
     stipulate
-	my to_inet_addr:   (pre_socket::Internet_Address, Int) -> pre_socket::Internet_Address = socket_fn "toInetAddr";
-	my from_inet_addr:  pre_socket::Internet_Address -> (pre_socket::Internet_Address, Int) = socket_fn "fromInetAddr";
-        my inet_any:   Int -> pre_socket::Internet_Address = socket_fn "inetany";
+	my to_inet_addr:   (pre_socket::Internet_Address, Int) ->  pre_socket::Internet_Address       =  socket_fn "toInetAddr";
+	my from_inet_addr:  pre_socket::Internet_Address       -> (pre_socket::Internet_Address, Int) =  socket_fn "fromInetAddr";
+        my inet_any:        Int                                ->  pre_socket::Internet_Address       =  socket_fn "inetany";
     herein
+
 	fun to_address (ina, port)
             =
 	    pre_socket::ADDRESS (to_inet_addr (dns_host_lookupinternal::un_internet_address ina, port));
@@ -44,7 +45,7 @@ package internet_socket: (weak)  Internet_Socket {		# Internet_Socket	is from   
             pre_socket::ADDRESS (inet_any port);
     end;
 
-											# generic_socket	is from   src/lib/std/src/socket/unix-generic-socket.pkg
+											# generic_socket	is from   src/lib/std/src/socket/generic-socket.pkg
     package udp {
 
 	fun socket ()     = generic_socket::socket  (inet_af, socket::datagram       );
@@ -71,7 +72,7 @@ package internet_socket: (weak)  Internet_Socket {		# Internet_Socket	is from   
 	    fun set_nodelay (pre_socket::SOCKET { file_descriptor, ... }, flag)
 		=
 		ignore (ctl_delay (file_descriptor, THE flag));
-	end; #  local 
+	end;
     };
 };
 

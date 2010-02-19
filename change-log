@@ -1,3 +1,4 @@
+2010-02-19-12.58.16: src/lib/std/src/string-conversion.api: For clarity, renamed Realfmt -> Real_Format and DEC/BIN/OCT -> DECIMAL/BINARY/OCTAL.
 2010-02-19-12.04.32: src/lib/std/src/: Removed word.api, which was apparently just an old and unused copy of unt.api.
 2010-02-19-11.53.09: src/lib/std/src/: Contents of word.api, unt.api were nearly identical; renamed div,mod -> /,% to make them fully identical.
 2010-02-18-22.15.18: src/lib/x-kit/xclient/src/wire/crack-xserver-address.api: Added to_string.  src/lib/x-kit/xclient/src/wire/display.pkg: connect_to_xserver: Addional tracing.

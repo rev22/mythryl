@@ -22,7 +22,7 @@ package threadkit_generic_socket: (weak)  Threadkit_Generic_Socket {	# Threadkit
 */
 
     package pre = threadkit_pre_socket;					# threadkit_pre_socket		is from   src/lib/std/src/socket/threadkit-pre-socket.pkg
-									# generic_socket		is from   src/lib/std/src/socket/unix-generic-socket.pkg
+									# generic_socket		is from   src/lib/std/src/socket/generic-socket.pkg
 
     #  Create sockets using default protocol 
     #
