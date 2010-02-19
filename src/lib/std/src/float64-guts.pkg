@@ -543,8 +543,8 @@ package float64_guts: (weak)  Float {		# Float	is from   src/lib/std/src/float.a
     fun to_decimal   _ =  raise exception FAIL "float::toDecimal unimplemented";
     fun from_decimal _ =  raise exception FAIL "float::fromDecimal unimplemented";
 
-    fmt = float_format::format_float;
-    to_string = fmt (string_conversion::GEN NULL);
+    format = float_format::format_float;
+    to_string = format (string_conversion::GEN NULL);
 
     scan = num_scan::scan_real;
     from_string = string_conversion::scan_string scan;

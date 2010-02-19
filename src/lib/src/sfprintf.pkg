@@ -9,7 +9,7 @@
 
 # TODO  XXX BUGGO FIXME
 #   - field widths in scan
-#   - add PREC of (Int * fmt_item) constructor to allow dynamic control of
+#   - add PREC of (Int * format_item) constructor to allow dynamic control of
 #     precision.
 #   - precision in %d, %s, ...
 #   - * flag in scan (checks, but doesn't scan input)
@@ -41,9 +41,9 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
                      =>
                      {   max_p1 =  large_unt::from_large_int n + 0u1;
 
-			 ( large_unt::fmt sc::OCT max_p1,
-			   large_unt::fmt sc::DEC max_p1,
-			   large_unt::fmt sc::HEX max_p1
+			 ( large_unt::format sc::OCT max_p1,
+			   large_unt::format sc::DEC max_p1,
+			   large_unt::format sc::HEX max_p1
 			 );
 		     };
 
@@ -58,7 +58,7 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
             | MAX_INT;
 
 	fun int_to_octal MAX_INT     =>  max_int8;
-	    int_to_octal (POS_INT i) =>  large_int::fmt sc::OCT i;
+	    int_to_octal (POS_INT i) =>  large_int::format sc::OCT i;
         end;
 
 	fun int_to_string MAX_INT     =>  max_int10;
@@ -66,7 +66,7 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
         end;
 
 	fun int_to_hex MAX_INT     =>  max_int16;
-	    int_to_hex (POS_INT i) =>  large_int::fmt sc::HEX i;
+	    int_to_hex (POS_INT i) =>  large_int::format sc::HEX i;
         end;
 
 	fun int_to_he_x i
@@ -80,9 +80,9 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
 
     # Unt to string conversions:
     #
-    word_to_octal  =  large_unt::fmt sc::OCT;
-    word_to_string =  large_unt::fmt sc::DEC;
-    word_to_hex    =  large_unt::fmt sc::HEX;
+    word_to_octal  =  large_unt::format sc::OCT;
+    word_to_string =  large_unt::format sc::DEC;
+    word_to_hex    =  large_unt::format sc::HEX;
     #
     fun word_to_he_x i
         =
@@ -539,20 +539,20 @@ package sfprintf: (weak)  Sfprintf {		# Sfprintf		is from   src/lib/src/sfprintf
 
     fun fnprintf' consumer
         =
-	fn fmt
+	fn format
             =
             fn args
                 =
-                consumer (sprintf' fmt args);
+                consumer (sprintf' format args);
 
 
     fun fprintf' stream
         =
-	fn fmt
+	fn format
 	    =
 	    fn args
 		=
-		{   file::write  (stream,  sprintf' fmt args);
+		{   file::write  (stream,  sprintf' format args);
 		    file::flush stream;				# Default to occasional inefficiency rather than occasional mysterious lockups.
 		};
 

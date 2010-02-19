@@ -193,8 +193,8 @@ herein
 	fun from_word32 (size, w)   = narrow (size, convert::from_word32 w);
 	fun to_string (size, i)    = i::to_string i;
 
-	to_hex = i::fmt string_conversion::HEX;
-	to_bin = i::fmt string_conversion::BIN;
+	to_hex = i::format string_conversion::HEX;
+	to_bin = i::format string_conversion::BIN;
 
 	fun to_hex_string (size, i) =   "0x" + to_hex (unsigned (size, i));
 	fun to_bin_string (size, i) =   "0b" + to_bin (unsigned (size, i));

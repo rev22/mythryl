@@ -140,13 +140,13 @@ api {
                 else            (FALSE, usec);
                 fi;
 
-	    fun fmt_int i
+	    fun format_int i
                 =
-                lint::fmt  string_conversion::DEC  i;
+                lint::format  string_conversion::DEC  i;
 
-	    fun fmt_sec (neg, i)
+	    fun format_sec (neg, i)
                 =
-                fmt_int (neg ?? -i :: i);
+                format_int (neg ?? -i :: i);
 
 	    fun is_even i
                 =
@@ -174,7 +174,7 @@ api {
                                                     ::  seconds + 1;
 		    esac;
 
-		fmt_sec (neg, rounded_seconds);
+		format_sec (neg, rounded_seconds);
 
 	    elif (precision >= 6)
 
@@ -182,9 +182,9 @@ api {
 		    =
 		    integer_guts::quot_rem  (usec, 1000000);
 
-		cat [ fmt_sec (neg, seconds),
+		cat [ format_sec (neg, seconds),
                       ".",
-		      string_conversion::pad_left '0' 6 (fmt_int microseconds),
+		      string_conversion::pad_left '0' 6 (format_int microseconds),
 		      string_conversion::pad_left '0' (precision - 6) ""
                     ];
 
@@ -214,9 +214,9 @@ api {
 		    =
 		    integer_guts::quot_rem (rounded_whole_part, rscl);
 
-		cat [   fmt_sec (neg, seconds),
+		cat [   format_sec (neg, seconds),
 			   ".",
-			   string_conversion::pad_left '0' precision (fmt_int fractional_seconds)
+			   string_conversion::pad_left '0' precision (format_int fractional_seconds)
 		       ];
 	    fi;
 

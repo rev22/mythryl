@@ -155,7 +155,7 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
     # Formatting for bases 2, 8, 16 by
     # slicing off the right number of bits:
     #
-    fun bitfmt (bits, maxdig, digvec) i
+    fun bitformat (bits, maxdig, digvec) i
 	=
 	{   fun dig d
                 =
@@ -219,11 +219,11 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
     # Decimal formatting by repeatedly dividing
     # by the largest possible power of 10:
     #
-    fun decfmt i
+    fun decformat i
         =
 	{   to_string
                 =
-                unt31_guts::fmt string_conversion::DEC;
+                unt31_guts::format string_conversion::DEC;
 
 
 	    fun dec_dig d
@@ -264,10 +264,10 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 	};
 
 
-    fun fmt string_conversion::OCT =>  bitfmt (0u3, 0ux7, "01234567");
-	fmt string_conversion::HEX =>  bitfmt (0u4, 0uxf, "0123456789abcdef");
-	fmt string_conversion::BIN =>  bitfmt (0u1, 0ux1, "01");
-	fmt string_conversion::DEC =>  decfmt;
+    fun format string_conversion::OCT =>  bitformat (0u3, 0ux7, "01234567");
+	format string_conversion::HEX =>  bitformat (0u4, 0uxf, "0123456789abcdef");
+	format string_conversion::BIN =>  bitformat (0u1, 0ux1, "01");
+	format string_conversion::DEC =>  decformat;
     end;
 
     fun sign i
@@ -686,7 +686,7 @@ package integer_guts: Integer {			# Integer	is from   src/lib/std/src/integer.ap
 
     to_string
         =
-        fmt  string_conversion::DEC;
+        format  string_conversion::DEC;
 
     fun from_string s
         =

@@ -12,116 +12,119 @@
 
 
 
-package num_format: (weak)  api {
-
-     fmt_word:  string_conversion::Radix -> unt32::Unt -> String;
-     fmt_int:   string_conversion::Radix -> int32::Int -> String;
-
-  }
-{
-    package w= inline_t::unt32;	# inline_t	is from   src/lib/core/init/built-in.pkg
-    package i = inline_t::int31;
+stipulate
+    package w   = inline_t::unt32;	# inline_t	is from   src/lib/core/init/built-in.pkg
+    package i   = inline_t::int31;
     package i32 = inline_t::int32;
+herein
+    package num_format: (weak)  api {
 
-    my (<)   = w::(<);
-    my (-)   = w::(-);
-    my (*)   = w::(*);
-    my (div) = w::div;
+	 format_unt:  string_conversion::Radix -> unt32::Unt -> String;
+	 format_int:  string_conversion::Radix -> int32::Int -> String;
 
-    fun mk_digit (w:  unt32::Unt)
-        =
-	inline_t::char_vector::get ("0123456789ABCDEF", w::to_int w);
+      }
+    {
 
-    fun word_to_bin w
-        =
-	f (w, 0, [])
-        where
-	    fun make_bit w
-                =
-                w::bitwise_and (w, 0u1) == 0u0
-                  ?? '0'
-                  :: '1';
+	my (<)   = w::(<);
+	my (-)   = w::(-);
+	my (*)   = w::(*);
+	my (div) = w::div;
 
-	    fun f (0u0, n, l) =>   (i::(+) (n, 1), '0' ! l);
-		f (0u1, n, l) =>   (i::(+) (n, 1), '1' ! l);
-		f (w,   n, l) =>   f (w::rshiftl (w, 0u1), i::(+) (n, 1), (make_bit w) ! l);
+	fun mk_digit (w:  unt32::Unt)
+	    =
+	    inline_t::char_vector::get ("0123456789ABCDEF", w::to_int w);
+
+	fun word_to_bin w
+	    =
+	    f (w, 0, [])
+	    where
+		fun make_bit w
+		    =
+		    w::bitwise_and (w, 0u1) == 0u0
+		      ?? '0'
+		      :: '1';
+
+		fun f (0u0, n, l) =>   (i::(+) (n, 1), '0' ! l);
+		    f (0u1, n, l) =>   (i::(+) (n, 1), '1' ! l);
+		    f (w,   n, l) =>   f (w::rshiftl (w, 0u1), i::(+) (n, 1), (make_bit w) ! l);
+		end;
 	    end;
+
+	fun word_to_oct w
+	    =
+	    f (w, 0, [])
+	    where
+		fun f (w, n, l)
+		    =
+		    if   (w < 0u8)
+
+			 (i::(+) (n, 1), (mk_digit w) ! l);
+		    else
+			 f (w::rshiftl (w, 0u3), i::(+) (n, 1), mk_digit (w::bitwise_and (w, 0ux7)) ! l);
+		    fi;
+	    end;
+
+	fun word_to_dec w
+	    =
+	    f (w, 0, [])
+	    where
+		fun f (w, n, l)
+		    =
+		    if   (w < 0u10)
+
+			 (i::(+) (n, 1), (mk_digit w) ! l);
+		    else
+			 j = w div 0u10;
+
+			 f (j,  i::(+) (n, 1), mk_digit (w - 0u10*j) ! l);
+		    fi;
+	    end;
+
+	fun word_to_hex w
+	    =
+	    f (w, 0, [])
+	    where
+		fun f (w, n, l)
+		    =
+		    if   (w < 0u16)
+
+			 (i::(+) (n, 1), (mk_digit w) ! l);
+		    else
+			 f (w::rshiftl (w, 0u4), i::(+) (n, 1), mk_digit (w::bitwise_and (w, 0uxf)) ! l);
+		    fi;
+	    end;
+
+	fun format_w string_conversion::BIN => word_to_bin;
+	    format_w string_conversion::OCT => word_to_oct;
+	    format_w string_conversion::DEC => word_to_dec;
+	    format_w string_conversion::HEX => word_to_hex;
 	end;
 
-    fun word_to_oct w
-        =
-	f (w, 0, [])
-        where
-	    fun f (w, n, l)
-                =
-                if   (w < 0u8)
-		    
-                     (i::(+) (n, 1), (mk_digit w) ! l);
-		else
-                     f (w::rshiftl (w, 0u3), i::(+) (n, 1), mk_digit (w::bitwise_and (w, 0ux7)) ! l);
-                fi;
-	end;
+	fun format_unt radix
+	    =
+	    prestring::implode o (format_w radix);
 
-    fun word_to_dec w
-        =
-	f (w, 0, [])
-        where
-	    fun f (w, n, l)
-                =
-                if   (w < 0u10)
-		    
-                     (i::(+) (n, 1), (mk_digit w) ! l);
-		else
-                     j = w div 0u10;
+	i2w =  w::from_large_int o i32::to_large;
 
-		     f (j,  i::(+) (n, 1), mk_digit (w - 0u10*j) ! l);
-		fi;
-	end;
+	fun format_int radix i
+	    = 
+	    if   (i2w i == 0ux80000000)
 
-    fun word_to_hex w
-        =
-	f (w, 0, [])
-        where
-	    fun f (w, n, l)
-                =
-                if   (w < 0u16)
-		    
-                     (i::(+) (n, 1), (mk_digit w) ! l);
-		else
-                     f (w::rshiftl (w, 0u4), i::(+) (n, 1), mk_digit (w::bitwise_and (w, 0uxf)) ! l);
-                fi;
-	end;
+		 "-2147483648";
+	    else
+		 w32 =  i2w (if (i32::(<) (i, 0) ) i32::neg(i); else i;fi);
 
-    fun fmt_w string_conversion::BIN => word_to_bin;
-	fmt_w string_conversion::OCT => word_to_oct;
-	fmt_w string_conversion::DEC => word_to_dec;
-	fmt_w string_conversion::HEX => word_to_hex;
-    end;
+		 my (n, digits) =  format_w radix w32;
 
-    fun fmt_word radix
-        =
-        prestring::implode o (fmt_w radix);
+		 if (i32::(<) (i, 0))
+		      #
+		      prestring::implode (i::(+) (n, 1), '-' ! digits);
+		 else prestring::implode (n, digits);
+		 fi;
+	    fi;
+    };
 
-    i2w =  w::from_large_int o i32::to_large;
-
-    fun fmt_int radix i
-	= 
-	if   (i2w i == 0ux80000000)
-	    
-	     "-2147483648";
-	else
-	     w32 =  i2w (if (i32::(<) (i, 0) ) i32::neg(i); else i;fi);
-
-	     my (n, digits) =  fmt_w radix w32;
-
-	     if   (i32::(<) (i, 0))
-	          prestring::implode (i::(+) (n, 1), '-' ! digits);
-	     else prestring::implode (n, digits);
-             fi;
-	fi;
-};
-
-
+end;
 
 
 ##########################################################################

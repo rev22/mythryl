@@ -60,8 +60,8 @@ package unt32_guts: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
     my min:  (Unt, Unt) -> Unt = w32::min;
     my max:  (Unt, Unt) -> Unt = w32::max;
 
-    fmt = num_format::fmt_word;
-    to_string = fmt string_conversion::HEX;
+    format = num_format::format_unt;
+    to_string = format string_conversion::HEX;
 
     scan = num_scan::scan_word;
     from_string = pre_basis::scan_string (scan string_conversion::HEX);

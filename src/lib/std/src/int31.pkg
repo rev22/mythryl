@@ -134,9 +134,9 @@ package int31_guts: (weak)  Int {		# Int		is from   src/lib/std/src/int.api
 	    end;
 	end;
 
-    fun fmt radix
+    fun format radix
         =
-        (num_format::fmt_int radix)					# num_format	is from   src/lib/std/src/num-format.pkg
+        (num_format::format_int radix)					# num_format	is from   src/lib/std/src/num-format.pkg
         o
         int32_guts::from_int;					# int32_guts	is from   src/lib/std/src/int32.pkg
 
@@ -167,7 +167,7 @@ package int31_guts: (weak)  Int {		# Int		is from   src/lib/std/src/int.api
 
     to_string
         =
-        fmt  string_conversion::DEC;					# string_conversion	is from   src/lib/std/src/string-conversion.pkg
+        format  string_conversion::DEC;					# string_conversion	is from   src/lib/std/src/string-conversion.pkg
 
 #   from_string = PreBasis::scan_string (scan string_conversion::DEC)
 

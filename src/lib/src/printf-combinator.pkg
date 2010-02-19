@@ -84,8 +84,8 @@ Printf_Combinator		# Printf_Combinator	is from   src/lib/src/printf-combinator.a
 	fun char    fm       = using string::from_char fm;
 	fun char'   fm       = using char::to_string   fm;
 
-	fun int' rdx fm      = using (int::fmt rdx)    fm;
-	fun real' rfmt fm    = using (float::fmt rfmt) fm;
+	fun int' rdx fm      = using (int::format rdx)       fm;
+	fun real' rformat fm = using (float::format rformat) fm;
 
 	fun pad  place       = ptf pad1  place;
 	fun trim place       = ptf trim1 place;

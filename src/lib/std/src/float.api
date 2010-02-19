@@ -59,7 +59,7 @@ api  Float {
 
     ilk:  Float -> ieee_float::Float_Ilk;
 
-    fmt:   string_conversion::Realfmt -> Float -> String;
+    format:   string_conversion::Realfmt -> Float -> String;
     to_string:    Float -> String;
     from_string:  String -> Null_Or( Float );
     scan:  string_conversion::Reader (Char, X) -> string_conversion::Reader (Float, X);

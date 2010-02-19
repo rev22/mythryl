@@ -183,12 +183,12 @@ herein
 
 	    fun from_bytes (a, b, c, d)
                 =
-                {   fmt =  unt8::fmt string_conversion::DEC;
+                {   format =  unt8::format string_conversion::DEC;
 
-		    cat [ fmt a, ".",
-                          fmt b, ".",
-                          fmt c, ".",
-                          fmt d
+		    cat [ format a, ".",
+                          format b, ".",
+                          format c, ".",
+                          format d
                         ];
 		};
 

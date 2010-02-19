@@ -55,7 +55,7 @@ api Unt {
 
     from_string:  String -> Null_Or( Unt );
 
-    fmt:  string_conversion::Radix -> Unt -> String;
+    format:  string_conversion::Radix -> Unt -> String;
     to_string:    Unt -> String;
 
 };

@@ -132,24 +132,28 @@ package unt64: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 		};
         esac;
 
-    fun fmt string_conversion::BIN w
+    fun format string_conversion::BIN w
             =>
 	    case (extern w)
-              
-	       (0u0, lo) => w32::fmt string_conversion::BIN lo;
-
-	       (hi, lo)
-                   => 
-		   {   w32bin = w32::fmt string_conversion::BIN;
-		       w32bin hi + (string_conversion::pad_left '0' 32 (w32bin lo));
-		   };
+                #
+	        (0u0, lo)
+		    =>
+                    w32::format string_conversion::BIN lo;
+		#
+	        (hi, lo)
+		    => 
+		    {   w32bin = w32::format string_conversion::BIN;
+			w32bin hi + (string_conversion::pad_left '0' 32 (w32bin lo));
+		    };
             esac;
 
-       fmt string_conversion::HEX w
+       format string_conversion::HEX w
            =>
            to_string w;
 
-       fmt rdx w => /* I am lazy */ integer_guts::fmt rdx (to_large_int w);
+       format rdx w
+	    =>
+            integer_guts::format rdx (to_large_int w);		# Lazy way.
     end;
 
     # piggy-back on intinf... 

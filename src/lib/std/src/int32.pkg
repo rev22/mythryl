@@ -119,10 +119,10 @@ package int32_guts: (weak)  Int {		# Int	is from   src/lib/std/src/int.api
 	    end;
 	end;
 
-    scan =  num_scan::scan_int;
-    fmt  =  num_format::fmt_int;
+    scan   =  num_scan::scan_int;
+    format =  num_format::format_int;
 
-    to_string   =  fmt string_conversion::DEC;
+    to_string   =  format string_conversion::DEC;
     from_string =  pre_basis::scan_string (scan string_conversion::DEC); 
 
     my to_int:    Int -> int::Int   = i32::to_int;

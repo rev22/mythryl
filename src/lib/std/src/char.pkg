@@ -385,7 +385,7 @@ api {
 	=
 	string_conversion::scan_string scan;
 
-    itoa = (num_format::fmt_int string_conversion::DEC) o inline_t::int32::from_int;
+    itoa = (num_format::format_int string_conversion::DEC) o inline_t::int32::from_int;
 
     fun to_string '\a' => "\\a";
 	to_string '\b' => "\\b";
@@ -515,7 +515,7 @@ api {
 			  ::  "\\";
 		    fi;
 
-		prestring::meld2 (prefix, num_format::fmt_int string_conversion::OCT i);
+		prestring::meld2 (prefix, num_format::format_int string_conversion::OCT i);
             fi;
     end;
 

@@ -60,7 +60,7 @@ api {
     fun min (i, j) =  if (i::(<) (i, j) ) i; else j; fi;
     fun max (i, j) =  if (i::(>) (i, j) ) i; else j; fi;
 
-    atoi =  (num_format::fmt_int string_conversion::DEC)
+    atoi =  (num_format::format_int string_conversion::DEC)
             o
             inline_t::int32::from_int;
 
@@ -338,7 +338,7 @@ api {
 	        };
         end;
 
-   fun fmt_inf_nan x
+   fun format_inf_nan x
        =
        if   (x ====  infinity)  "inf";
        elif (x ==== -infinity) "-inf";
@@ -361,7 +361,7 @@ api {
 	     cat [sign, mantissa, "E", atoi exp];
 
         else
-             fmt_inf_nan r;
+             format_inf_nan r;
         fi;
 
     # Convert a real number to a string of
@@ -377,7 +377,7 @@ api {
 	  
 	     sign + mantissa;			# This '+' is string concatenation.
         else
-             fmt_inf_nan x;
+             format_inf_nan x;
         fi;
 
       fun real_to_gen_string prec r 
@@ -413,7 +413,7 @@ api {
 		cat [sign, whole, frac, exp_string];
 
 	  else
-               fmt_inf_nan r;
+               format_inf_nan r;
           fi;
 
     fun format_float (string_conversion::SCI NULL)       => real_to_sci_string 6;

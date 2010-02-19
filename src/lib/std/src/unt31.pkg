@@ -61,8 +61,11 @@ package unt31_guts: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
     my  min:  (Unt, Unt) -> Unt = w31::min;
     my  max:  (Unt, Unt) -> Unt = w31::max;
 
-    fun fmt radix = (num_format::fmt_word radix) o  w31::to_large_unt;
-    to_string = fmt string_conversion::HEX;
+    fun format radix
+        =
+        (num_format::format_unt radix) o  w31::to_large_unt;
+
+    to_string = format string_conversion::HEX;
 
     fun scan radix
         =

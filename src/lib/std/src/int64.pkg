@@ -114,12 +114,12 @@ package int64: (weak)  Int {			# Int	is from   src/lib/std/src/int.api
 	};
 
 
-    fun fmt  rdx  i
+    fun format  rdx  i
         =
-        integer_guts::fmt  rdx  (to_large i);
+        integer_guts::format  rdx  (to_large i);
 
 
-    to_string = fmt string_conversion::DEC;
+    to_string = format string_conversion::DEC;
 
 
     fun scan rdx rdr s

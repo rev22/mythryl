@@ -53,7 +53,7 @@ api Int {
 	 ->
          string_conversion::Reader (Int, X);
 
-    fmt:   string_conversion::Radix -> Int -> String;
+    format:   string_conversion::Radix -> Int -> String;
 
     is_prime: Int -> Bool;
     factors:  Int -> List( Int );

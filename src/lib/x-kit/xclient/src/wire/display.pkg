@@ -535,7 +535,7 @@ herein
 			    #
 			    sprintf "Error on request #%s: %s"
 				#
-			        (unt::fmt  string_conversion::DEC  seqn)
+			        (unt::format  string_conversion::DEC  seqn)
 			        (xerror_to_string::xerror_to_string (w2v::decode_error err_msg));
 			};
 

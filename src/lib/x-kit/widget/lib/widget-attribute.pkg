@@ -326,7 +326,7 @@ herein
 	    gravity_to_string wt::CENTER     => "center";
 	end;
 
-	color_fmt = f::sprintf' "#%04x%04x%04x";
+	color_format = f::sprintf' "#%04x%04x%04x";
 
 	fun color_to_string c
 	    =
@@ -334,12 +334,12 @@ herein
 		    =
 		    xc::rgb_of_color c;
 
-		color_fmt [f::UNT red, f::UNT green, f::UNT blue];
+		color_format [f::UNT red, f::UNT green, f::UNT blue];
 	    };
 
 	fun color_spec_to_string (xc::CMS_RGB { red, green, blue } )
 		=>
-		color_fmt [f::UNT red, f::UNT green, f::UNT blue];
+		color_format [f::UNT red, f::UNT green, f::UNT blue];
 
 	    color_spec_to_string _ =>   raise exception NO_CONVERSION;
 	end;
@@ -471,7 +471,7 @@ herein
 
 	fun make_string (STRING_VAL s)     => s;
 	    make_string (INT_VAL i)        => int::to_string i;
-	    make_string (FLOAT_VAL r)      => float::fmt (string_conversion::SCI (THE 6)) r;
+	    make_string (FLOAT_VAL r)      => float::format (string_conversion::SCI (THE 6)) r;
 	    make_string (BOOL_VAL b)       => bool::to_string b;
 	    make_string (COLOR_VAL c)      => color_to_string c;
 	    make_string (COLOR_SPEC_VAL c) => color_spec_to_string c;
