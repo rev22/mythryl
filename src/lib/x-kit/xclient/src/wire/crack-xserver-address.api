@@ -60,6 +60,7 @@ api Crack_Xserver_Address {
 	  screen:                  Int
 	};
 
+    to_string: Xserver_Address -> String;
 };
 
 

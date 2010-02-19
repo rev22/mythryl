@@ -21,14 +21,13 @@ stipulate
     package sok =  socket;						# socket			is from   src/lib/std/socket.pkg
     package sox =  socket_stuff;					# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
     package xtr =  xtracing;						# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    package dns =  dns_host_lookup;					# dns_host_lookup		is from   src/lib/std/src/socket/dns-host-lookup.pkg
+    package w8v =  unt8_vector;						# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
 herein
 
     package display: (weak) Display {					# Display			is from   src/lib/x-kit/xclient/src/wire/display.api
 
 	exception BAD_ADDRESS = cxa::BAD_ADDRESS;
-
-	package dns = dns_host_lookup;					# dns_host_lookup		is from   src/lib/std/src/socket/dns-host-lookup.pkg
-	package w8v = unt8_vector;					# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
 
 	trace =  xtr::print_if  xtr::io_tracing;			# Conditionally write strings to tracing.log or whatever.
 
@@ -268,21 +267,31 @@ herein
 		    =
 		    cxa::crack_xserver_address  raw_display_name;
 
-		trace .{ sprintf "display.pkg: connect_to_xserver: screen d=%d canonical_display_name s='%s'" screen canonical_display_name; };
-
-		case address
-		    #
-		    cxa::UNIX address'               => trace .{ sprintf "display.pkg: connect_to_xserver: address == UNIX '%s'" address'; };
-		    cxa::INET_HOSTNAME (string, int) => trace .{ sprintf "display.pkg: connect_to_xserver: address == INET_HOSTNAME ('%s',%d)" string int; };
-		    cxa::INET_ADDRESS  (string, int) => trace .{ sprintf "display.pkg: connect_to_xserver: address == INET_ADDRESS  ('%s',%d)" string int; };
-		esac;
+		trace .{ sprintf "display.pkg: connect_to_xserver: address s='%s' screen d=%d canonical_display_name s='%s'" (cxa::to_string address) screen canonical_display_name; };
 
 		fun repeat connection_fn
 		    =
 		    loop 4			# Try up to five times.
 		    where
-			fun loop 0 =>  connection_fn();
-			    loop n => (connection_fn() except _ =  loop (n - 1));
+			fun loop 0
+                                =>
+                                connection_fn();
+
+			    loop n
+                                =>
+                                {   connection_fn ()
+                                    except x
+                                        =
+                                        {   trace  .{
+						#
+                                                sprintf "display.pkg: connect_to_xserver: repeat %d: Caught exception '%s', retrying..."
+						    n
+						    (exceptions::exception_message  x);
+					    };
+	
+                                            loop (n - 1);
+					};
+				};
 			end;
 		    end
 		    except

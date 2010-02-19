@@ -1,3 +1,4 @@
+2010-02-18-20.42.49: src/lib/x-kit/xclient/src/wire/crack-xserver-address.api: Renamed INET_ADDR -> INET_ADDRESS for clarity. src/lib/x-kit/xclient/src/wire/display.pkg: connect_to_xserver: Additional tracing printouts.
 2010-02-18-20.17.09: src/lib/internet/socket-stuff.pkg: Light cleaning.
 2010-02-18-19.46.24: src/lib/x-kit/xclient/src/wire/display.pkg: say_hello_to_xserver: retry: Log exceptions caught by name instead of silently discarding.
 2010-02-18-16.39.35: src/lib/src/lib/thread-kit/src/lib/tracing.pkg: Tweak and date generated tracelog header. src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Remove an inappropriate newline.

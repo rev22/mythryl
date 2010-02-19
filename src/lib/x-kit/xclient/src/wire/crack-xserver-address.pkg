@@ -31,6 +31,14 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
     x_tcpport  =  6000;
     x_unixpath =  "/tmp/.X11-unix/X";
 
+    fun to_string  address
+	=    
+	case address
+	    #
+	    UNIX address'               =>  sprintf "UNIX '%s'" address';
+	    INET_HOSTNAME (string, int) =>  sprintf "INET_HOSTNAME ('%s',%d)" string int;
+	    INET_ADDRESS  (string, int) =>  sprintf "INET_ADDRESS  ('%s',%d)" string int;
+	esac;
 
     fun find_char c (s, j)
         =
