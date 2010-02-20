@@ -66,15 +66,15 @@ lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *alt_msg, const c
  */
 #define CHECK_RETURN_VAL(lib7_state,status,val)	{			\
 	if ((status) < 0)						\
-	    return RAISE_SYSERR(lib7_state, status,__LINE__);			\
-	else							\
-	    return (val);					\
+	    return RAISE_SYSERR(lib7_state, status,__LINE__);		\
+	else								\
+	    return (val);						\
     }
 
-/* return status to the calling Lib7 code, but raise an exception if an error occured */
+/* Return status to the calling Lib7 code, but raise an exception if an error occurred */
 #define CHECK_RETURN(lib7_state,status)	{				\
 	int	__sts = (status);					\
-	CHECK_RETURN_VAL((lib7_state), __sts, INT_CtoLib7(__sts))		\
+	CHECK_RETURN_VAL((lib7_state), __sts, INT_CtoLib7(__sts))	\
     }
 
 /* return Void to the calling Lib7 code, but raise an exception if an error occured */

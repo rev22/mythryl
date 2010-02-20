@@ -30,7 +30,16 @@
 #include "stats-data.h"
 #endif
 
-FILE		*DebugF = NULL;
+FILE* DebugF = NULL;
+    /*
+     * SayDebug writes to DebugF -- see src/runtime/main/error.c
+     *
+     * DebugF defaults to stderr;  it may be set via
+     *
+     *     --runtime-debug=foo.log
+     *
+     * commandline switch.
+     */
 
 #ifdef TARGET_BYTECODE
 FILE		*BC_stdout = NULL;
@@ -228,7 +237,12 @@ static void   process_commandline_options   (   int              argc,
 			    }								\
                         } /* CHECK */
 
-	if (is_runtime_option(arg, option, &option_arg)) {
+
+        /* Process only commandline arguments starting with
+         *
+         *     --runtime-
+         */
+	if (is_runtime_option(arg, option, &option_arg)) {	/* is_runtime_option	is from   src/runtime/main/runtime-options.c	*/
 
 	    if (MATCH("o7-files-to-load")) {
 		CHECK("o7-files-to-load");

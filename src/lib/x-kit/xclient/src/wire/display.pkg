@@ -275,7 +275,7 @@ herein
 		    where
 			fun loop 0
                                 =>
-                                connection_fn();
+                                connection_fn ();
 
 			    loop n
                                 =>
@@ -319,9 +319,11 @@ herein
 
 			repeat .{
 			    #
+			    trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Calling sok::connect...";  };
                             sok::connect (socket, internet_socket::to_address (address, port));
 			};
 
+		        trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Calling say_hello_to_xserver...";  };
 			say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
 		    };
 

@@ -26,7 +26,7 @@
 ###                             -- George Orwell, 1984
  */
 
-/* _lib7_Sock_connect : (Socket, Address) -> Void
+/* _lib7_Sock_connect: (Socket, Address) -> Void
  */
 lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
 {
@@ -34,12 +34,15 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
     lib7_val_t	addr = REC_SEL(arg, 1);
     int		status;
 
-    status = connect (
-	socket,
-	GET_SEQ_DATAPTR(struct sockaddr, addr),
-	GET_SEQ_LEN(addr));
+    status
+        =
+        connect (
+	    socket,
+	    GET_SEQ_DATAPTR(struct sockaddr, addr),
+	    GET_SEQ_LEN(addr)
+        );
 
-    CHECK_RETURN_UNIT(lib7_state, status);
+    CHECK_RETURN_UNIT(lib7_state, status);		/* CHECK_RETURN_UNIT	is from   src/runtime/c-libs/lib7-c.h	*/
 }
 
 

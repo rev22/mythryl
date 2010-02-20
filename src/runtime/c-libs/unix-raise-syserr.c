@@ -39,7 +39,12 @@ static char *strerror (int errnum)
  *
  * Raise the Lib7 exception SYSTEM_ERROR, which has the spec:
  *
- *    exception SYSTEM_ERROR of (String, Null_Or(System_Error) );
+ *    exception SYSTEM_ERROR (String, Null_Or(System_Error) );
+ *
+ * We normally get invoked via either the
+ * RAISE_SYSERR or RAISE_ERROR macro from
+ *
+ *     src/runtime/c-libs/lib7-c.h 
  *
  * For the time being, we use the errno value as the System_Error; eventually that
  * will be represented by an (Int, String) pair.  If alt_msg is non-zero,
@@ -53,29 +58,29 @@ lib7_val_t  RaiseSysError (
 
 ) {
 
-    lib7_val_t	    s;
-    lib7_val_t	    atStk;
-    lib7_val_t	    syserror;
-    lib7_val_t	    arg;
-    lib7_val_t	    exn;
+    lib7_val_t	    errno_string;	/* From strerror(errno).				*/
+    lib7_val_t	    at_list;		/* [] or [ "<foo.c:187>" ].				*/
+    lib7_val_t	    null_or_errno;	/* NULL or (THE errno).					*/
+    lib7_val_t	    arg;		/* Holds pair (errno_string, null_or_errno).		*/
+    lib7_val_t	    exception;		/* Final return value and exception raised.		*/
 
     const char*	    msg;
     char	    buf[32];
 
     if (altMsg != NULL) {
 
-	msg      =  altMsg;
-	syserror =  OPTION_NONE;
+	msg           =  altMsg;
+	null_or_errno =  OPTION_NONE;
 
     } else if ((msg = strerror(errno)) != NULL) {
 
-	OPTION_SOME (lib7_state, syserror, INT_CtoLib7(errno))
+	OPTION_SOME (lib7_state, null_or_errno, INT_CtoLib7(errno))
 
     } else {
 
 	sprintf(buf, "<unknown error %d>", errno);
 	msg = buf;
-	OPTION_SOME(lib7_state, syserror, INT_CtoLib7(errno));
+	OPTION_SOME(lib7_state, null_or_errno, INT_CtoLib7(errno));
     }
 
 #if (defined(DEBUG_OS_INTERFACE) || defined(DEBUG_TRACE_CCALL))
@@ -83,27 +88,32 @@ lib7_val_t  RaiseSysError (
 	(altMsg != NULL) ? -1 : errno, msg);
 #endif
 
-    s = LIB7_CString (lib7_state, msg);
+    errno_string
+	=
+	LIB7_CString (lib7_state, msg);
 
     if (at != NULL) {
 
-	lib7_val_t  atMsg
+	lib7_val_t  at_cstring
             =
             LIB7_CString (lib7_state, at);
 
-	LIST_cons(lib7_state, atStk, atMsg, LIST_nil);
+	LIST_cons(lib7_state, at_list, at_cstring, LIST_nil);
 
     } else {
 
-	atStk = LIST_nil;
+	at_list = LIST_nil;
     }
 
-    REC_ALLOC2 (lib7_state, arg, s, syserror);
-    EXN_ALLOC  (lib7_state, exn, PTR_CtoLib7(SysErrId), arg, atStk);
+    REC_ALLOC2 (lib7_state, arg, errno_string, null_or_errno);
+    EXN_ALLOC  (lib7_state, exception, PTR_CtoLib7(SysErrId), arg, at_list);
 
-    RaiseLib7Exception (lib7_state, exn);
+    /* Modify the Lib7 state so that 'exception'
+     * will be raised when Mythryl execution resumes:
+     */
+    RaiseLib7Exception (lib7_state, exception);		/* RaiseLib7Exception	is from    src/runtime/main/run-runtime.c	*/
 
-    return exn;
+    return exception;
 
 } /* end of RaiseSysError */
 

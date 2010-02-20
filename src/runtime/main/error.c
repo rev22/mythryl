@@ -33,12 +33,12 @@ void say (char *fmt, ...)
 /* SayDebug:
  * Print a message to the debug output stream.
  */
-void SayDebug (char *fmt, ...)
+void SayDebug (char *format, ...)
 {
     va_list	ap;
 
-    va_start (ap, fmt);
-    vfprintf (DebugF, fmt, ap);
+    va_start (ap, format);
+    vfprintf (DebugF, format, ap);
     va_end(ap);
     fflush (DebugF);
 
