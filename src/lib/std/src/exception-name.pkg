@@ -51,9 +51,9 @@ herein
 		"SYSTEM_ERROR: " + s;
 
 
-	    exception_message (winix::SYSTEM_ERROR (s, THE e))
+	    exception_message (winix::SYSTEM_ERROR (s, THE errno))		# (strerror(errno),errno)  from  src/runtime/c-libs/unix-raise-syserr.c
 		=>
-		cat ["SYSTEM_ERROR: ", s, " [", winix::error_name e, "]"];
+		cat ["SYSTEM_ERROR: ", s, " [", winix::error_name errno, "]"];
 
 
 	    exception_message (io_exceptions::IO { cause, function, name } )

@@ -4,7 +4,7 @@
 #     src/lib/std/src/Base-imp.make6
 
 stipulate
-    package string =  string_guts;		# string_guts	is from   src/lib/std/src/string-guts.pkg
+    package sg =  string_guts;			# string_guts	is from   src/lib/std/src/string-guts.pkg
 herein
     package c_interface: Cinterface {		# Cinterface	is from   src/lib/std/src/unsafe/cinterface.api
 
@@ -25,11 +25,11 @@ herein
 	    =
 	    {   cfun =  bind_cfun (module_name, fun_name);
 
-		if   (inline_t::cast cfun  !=  0)
-		    
-		     fn x =  (assembly::a::callc (cfun, x));
+		if (inline_t::cast cfun  !=  0)
+		    #		    
+		    fn x =  (assembly::a::callc (cfun, x));
 		else
-		     raise exception  CFUN_NOT_FOUND (string::cat [module_name, ".", fun_name]);
+		    raise exception  CFUN_NOT_FOUND (sg::cat [module_name, "::", fun_name]);
 		fi;
 	    };
 
@@ -40,6 +40,10 @@ herein
 
 	exception  SYSTEM_CONSTANT_NOT_FOUND String;
 
+	# Linear scan down list,
+	# checking for string equality
+	# on (#2 listelement):
+	#
 	fun find_sys_const (name, l)
 	    =
 	    get l
@@ -50,11 +54,11 @@ herein
 
 		    get ((sys_const:  System_Const) ! r)
 			=>
-			if   (#2 sys_const  ==  name)
-			    
-			     THE sys_const;
+			if (#2 sys_const  ==  name)
+			    #  
+			    THE sys_const;
 			else
-			     get r;
+			    get r;
 			fi;
 		end;
 	    end;
@@ -62,9 +66,9 @@ herein
 	fun bind_sys_const (name, l)
 	    =
 	    case (find_sys_const (name, l))
-	      
-		 THE sc =>   sc;
-		 NULL   =>   raise exception  SYSTEM_CONSTANT_NOT_FOUND name;
+		#	      
+		THE sc =>   sc;
+		NULL   =>   raise exception  SYSTEM_CONSTANT_NOT_FOUND name;
 	    esac;
 
     }; #  package c_interface 

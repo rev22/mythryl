@@ -3,7 +3,9 @@
 # Compiled by:
 #     src/lib/std/src/Base-imp.make6
 
-
+# This api is implemented in:
+#
+#     src/lib/std/src/unsafe/cinterface.pkg
 
 api Cinterface {
 
@@ -11,20 +13,21 @@ api Cinterface {
 
     c_function:  String -> String -> (X -> Y);
        #
-       # the operation for naming ML callable C functions; raises
-       # the exception CFUN_NOT_FOUND if the function is unknown.
+       # The operation for naming Mythryl-callable C functions.
+       # Raises the exception CFUN_NOT_FOUND if the function is unknown.
 
     Cfunction;
 
-    bind_cfun:  ((String, String)) -> Cfunction;
+    bind_cfun:  (String, String) -> Cfunction;
 
-   # utilities for working with system constants 
-    System_Const = ((Int, String));
+    # Utilities for working with system constants 
+    #
+    System_Const = (Int, String);
 
     exception SYSTEM_CONSTANT_NOT_FOUND  String;
 
-    find_sys_const:  ((String, List( System_Const )) ) -> Null_Or( System_Const );
-    bind_sys_const:  ((String, List( System_Const )) ) -> System_Const;
+    find_sys_const:  (String, List(System_Const)) -> Null_Or(System_Const);	# Returns NULL                     if not found.
+    bind_sys_const:  (String, List(System_Const)) -> System_Const;		# Raises SYSTEM_CONSTANT_NOT_FOUND if not found.
 };
 
 

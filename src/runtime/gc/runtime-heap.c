@@ -529,7 +529,10 @@ lib7_val_t
 LIB7_SysConstList (lib7_state_t *lib7_state, sysconst_table_t *table)
 {
     int		i;
-    lib7_val_t	name, sysConst, list;
+
+    lib7_val_t	name;
+    lib7_val_t	sysConst;
+    lib7_val_t	list;
 
 /** Should check for available heap space !!! XXX BUGGO FIXME **/
 
