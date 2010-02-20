@@ -133,14 +133,23 @@ herein
 		sox::send_vector (socket, connect_msg);
 
 # +DEBUG
-		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, now reading back connection reply header"; };
+		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, sleeping for 2 seconds"; };
 # -DEBUG
+
 		# ddeboer, fall 2004: error in ssh tunnelling happens in following line 
 		# modified to retry on exception.
 
 		fun sleep n
 		    =
 		    do_mailop (timeout_in' (time::from_seconds (large_int::from_int n)));
+
+	        # 2010-02-20 Debug hack on hypothesis that the problem is SIGALRM is interrupting the socket read
+                #            before the remote X server has a chance to respond;  this should give it that chance,
+		#            so that the reply is already in the kernel socket buffer when we issue the socket read.
+		#	     This is a diagnostic test, not a fix:	
+#               sleep 2;	Result: no change.
+
+#		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, slept 2 seconds, now reading back connection reply header"; };
 
 
 											# exceptions			is from   src/lib/std/exceptions.pkg

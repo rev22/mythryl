@@ -1,3 +1,4 @@
+2010-02-20-14.12.59: src/lib/std/src/: Renamed Base-imp.make6 -> stdlib-core.make6 for clarity and to reserve <<imp>> for threadservers.
 2010-02-20-13.45.53: src/lib/std/src/unsafe/cinterface.pkg and kith: Light commenting and tidying.
 2010-02-20-13.05.52: src/runtime/c-libs/unix-raise-syserr.c: Save errno value early to be on the safe side.
 2010-02-20-11.31.32: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Implement and export bytes_to_hex, bytes_to_ascii, string_to_hex, string_to_ascii. (They belong elsewhere.)  src/lib/x-kit/xclient/src/wire/display.pkg: More trace print_ifs taking advantage of preceding.
