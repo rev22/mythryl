@@ -65,6 +65,14 @@ herein
 	wait_for_xevent:  Xsocket -> Mailop( event_types::Xevent );
 
 	read_xerror:  Xsocket -> (Unt, unt8_vector::Vector);
+
+	string_to_hex:                 String -> String;
+	string_to_ascii:               String -> String;
+
+	bytes_to_hex:     unt8_vector::Vector -> String;
+	bytes_to_ascii:   unt8_vector::Vector -> String;
+
+	# XXX BUGGO FIXME the above four belong in string:: and unt8_vector::
     };
 
 end;

@@ -115,7 +115,8 @@ herein
 	    =
 	    {
 # +DEBUG
-		trace  .{  "initializing xsocket to \"" + canonical_display_name + "\"";  };
+		trace  .{  "display.pkg: say_hello_to_xserver/TOP (initializing xsocket to \"" + canonical_display_name + "\")";  };
+		trace  .{  "display.pkg: say_hello_to_xserver: computing connect_msg";  };
 # -DEBUG
 
 		connect_msg
@@ -126,10 +127,13 @@ herein
 			auth
 		      };
 
+		trace  .{  "display.pkg: say_hello_to_xserver: connect_msg x=" + (xsocket::bytes_to_hex connect_msg) + " s='" + (xsocket::bytes_to_ascii connect_msg) + "'";  };
+		trace  .{  "display.pkg: say_hello_to_xserver: Sending connect_msg to socket"; };
+
 		sox::send_vector (socket, connect_msg);
 
 # +DEBUG
-		trace  .{ "display.pkg: say_hello_to_xserver: Reading connection reply header"; };
+		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, now reading back connection reply header"; };
 # -DEBUG
 		# ddeboer, fall 2004: error in ssh tunnelling happens in following line 
 		# modified to retry on exception.

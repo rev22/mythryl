@@ -1,3 +1,4 @@
+2010-02-20-02.56.46: src/runtime/c-libs/unix-raise-syserr.c and kith:  Commenting.
 2010-02-20-02.02.54: src/lib/std/src/socket/socket-guts.pkg: Tidying.
 2010-02-19-17.28.39: src/lib/x-kit/xclient/src/wire/display.pkg: Trace listing of generated socket. src/lib/std/src/socket/internet-socket.pkg: Added to_string() to support previous.
 2010-02-19-16.41.34: src/lib/std/src/socket/internet-socket.pkg: Tidying.
