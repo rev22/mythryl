@@ -212,7 +212,7 @@ package raw_syntax: (weak)  Raw_Syntax {			# Raw_Syntax	is from   src/lib/compil
 	     constraint:         Package_Cast( Api_Expression )
           }
 	| CONSTRAINED_CALL_OF_GENERIC  (Path,						#  Application.				
-                                List ((Package_Expression , Bool)),			#  Parameter (s).			
+                                List ((Package_Expression, Bool)),			#  Parameter (s).			
                                 Package_Cast( Generic_Api_Expression ))	        	#  Package cast per api.
 	| SOURCE_CODE_REGION_FOR_GENERIC  (Generic_Expression, Source_Code_Region)	#  For debugging msgs &tc.		
 

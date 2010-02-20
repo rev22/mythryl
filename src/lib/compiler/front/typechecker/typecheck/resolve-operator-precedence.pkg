@@ -182,8 +182,8 @@ api Resolve_Operator_Precedence {
 
      parse
          :
-         {   apply: (X , X) -> X,
-	     pair:  (X , X) -> X
+         {   apply: (X, X) -> X,
+	     pair:  (X, X) -> X
 	 }
          ->
          ( List( raw_syntax::Fixity_Item( X ) ),                             #  Input list.                   

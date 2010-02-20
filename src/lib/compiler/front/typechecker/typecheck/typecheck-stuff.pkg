@@ -1101,7 +1101,7 @@ package typecheck_stuff
 
                 apply nasty (ts::get_elements (ts::diff (used, boundset, err)))
                 where
-		    fun nasty { id => _, ref_typevar => REF (RESOLVED_TYPE_VARIABLE (TYPE_VARIABLE_REF (typevar_ref as { id , ref_typevar }) )) }
+		    fun nasty { id => _, ref_typevar => REF (RESOLVED_TYPE_VARIABLE (TYPE_VARIABLE_REF (typevar_ref as { id, ref_typevar }) )) }
 			    =>
 			    nasty  typevar_ref;
 

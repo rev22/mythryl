@@ -830,7 +830,7 @@ generic package closure_g (
 
 		
                     pr "Values:";                   ilist value_l;
-		    pr "Closures:\n";               p (fn () => (); end , closure_l, NIL);
+		    pr "Closures:\n";               p (fn () => (); end, closure_l, NIL);
 		    pr "Disposable records:\n";     ilist disp_l;
 		    pr "Known function mapping:\n"; int_hash_table::keyed_apply fp what_map;
 
@@ -1598,7 +1598,7 @@ generic package closure_g (
 
 		my (rl, cl, header, dictionary)
                     =
-                    fold_right   g   (NIL, NIL, fn ce => ce; end , dictionary)   l;
+                    fold_right   g   (NIL, NIL, fn ce => ce; end, dictionary)   l;
 
 		header = if   (*cgoptions::allocprof)
 			     
@@ -2061,7 +2061,7 @@ generic package closure_g (
 
 		my (dictionary, header, frames)
                     =
-                    fold_right   g   (dictionary, fn ce => ce; end , [])   clist;
+                    fold_right   g   (dictionary, fn ce => ce; end, [])   clist;
 
 		my (values, closures, fvars, cvars)
                     =

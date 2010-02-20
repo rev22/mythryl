@@ -367,7 +367,7 @@ generic package generate_tree_gui_g (package appl: Application;)		# Application	
 
     fun newobject2object (ob, pos)
         =
-        split (fn((n, _), ol)=>folder((n, pos), ol); end , 
+        split (fn((n, _), ol)=>folder((n, pos), ol); end, 
                                           fn (ob, _)=>content (ob, pos); end ) ob;
 
 
@@ -733,7 +733,7 @@ generic package generate_tree_gui_g (package appl: Application;)		# Application	
                 
             label_action  = label_action;
 
-            create_actions = [(fn { pos=>(x, y), tag=>str } => create_folder (x, y); end , "folder")]; 
+            create_actions = [(fn { pos=>(x, y), tag=>str } => create_folder (x, y); end, "folder")]; 
             
             is_locked_object = is_open;
             fun init () = map (fn x=> (content x, snd x); end ) (appl::init()); 

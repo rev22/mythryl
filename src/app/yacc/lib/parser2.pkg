@@ -140,7 +140,7 @@ package lr_parser: Lr_Parser {			# Lr_Parser	is from   src/app/yacc/lib/base.api
 
 	Queue( X )
             =
-            (List(X) , List(X));
+            (List(X), List(X));
 
 	empty =  (NIL, NIL);
 

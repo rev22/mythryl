@@ -291,7 +291,7 @@ generic package codetree_stuff_g (
 		 =>
 		 if   (is_natural type)
 		     
-		      remzero (fn (_, type, a, b) => t::DIVU (type, a, b); end , t::MULU, type, a, b);
+		      remzero (fn (_, type, a, b) => t::DIVU (type, a, b); end, t::MULU, type, a, b);
 		 else
 		      promotable t::RIGHTSHIFTU (expression, t::REMU, type, a, b);
                  fi;

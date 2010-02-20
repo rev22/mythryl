@@ -176,7 +176,7 @@ package primitives_symbol_table
 
 		typechecker_dictionary
                     =
-                    typechecker_dictionary::mark (fn _ => st::special"primMacroExpansionDict"; end , typechecker_dictionary);
+                    typechecker_dictionary::mark (fn _ => st::special"primMacroExpansionDict"; end, typechecker_dictionary);
 
 		api_record
 		    = 

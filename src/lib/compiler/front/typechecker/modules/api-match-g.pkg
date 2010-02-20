@@ -819,7 +819,7 @@ if_debugging_say ("check_named_type_constructor/DEFINED_TYPE_CONSTRUCTOR/BBB nam
 					=>
 					case (ms::get_api_element (elements, symbol))
 
-					    PACKAGE_IN_API { an_api => API { elements, ... }, module_stamp , ... }
+					    PACKAGE_IN_API { an_api => API { elements, ... }, module_stamp, ... }
 						=>
 						case (td::find_entry_by_module_stamp (typechecker_dictionary, module_stamp))
 

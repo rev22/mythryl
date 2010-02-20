@@ -269,7 +269,7 @@ api Xdraw {
     # These return mailops which will evaluate to the
     # result boxlists when the relevant X events arrive
     # from the X server:  By doing a do_mailop() on them
-    # in a throwaway thread , or by doing a select() on
+    # in a throwaway thread, or by doing a select() on
     # themspinning off
 
     pixel_blt

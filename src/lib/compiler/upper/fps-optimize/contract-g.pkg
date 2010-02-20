@@ -452,11 +452,11 @@ generic package contract_g (
 
                                 fn [t2] => (k, ltc_fun (arg_lty r, t2));
 				    _   => bug "unexpected make_fn_lty";
-                                end , 
+                                end, 
 
 				fn [t2] => (k, ltc_fun (arg_lty r, lt::ltc_tyc t2));
 				    _   => bug "unexpected make_fn_lty";
-                                end , 
+                                end, 
 
 				fn x =  (k, ltc_fun (arg_lty r, x))
                               );

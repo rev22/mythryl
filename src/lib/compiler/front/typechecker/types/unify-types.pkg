@@ -769,7 +769,7 @@ printf "src/lib/compiler/front/typechecker/types/unify-types.pkg: USER_TYPE_VARI
                          fi;
                 esac;   
 
-	    resolve_type_variable ({ id, ref_typevar as REF (i as USER_TYPE_VARIABLE _) } , _, ety)
+	    resolve_type_variable ({ id, ref_typevar as REF (i as USER_TYPE_VARIABLE _) }, _, ety)
                 =>
 	        case ety
 		     WILDCARD_TYPE => ();

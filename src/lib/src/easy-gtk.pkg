@@ -222,7 +222,7 @@ package easy_gtk:  Easy_Gtk			# Easy_Gtk	is from   src/lib/src/easy-gtk.api
 
 	    kid = make_kid (session, #a_kid);
 
-            add_kid { session , kid, mom };
+            add_kid { session, kid, mom };
 	}
 
     also

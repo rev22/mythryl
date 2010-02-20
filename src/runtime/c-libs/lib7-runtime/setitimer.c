@@ -84,7 +84,7 @@ lib7_val_t   _lib7_runtime_setitimer   (   lib7_state_t*   lib7_state,
 	}
     }
 #else
-    return RAISE_ERROR( lib7_state, "setitimer not supported" , __LINE__);
+    return RAISE_ERROR( lib7_state, "setitimer not supported", __LINE__);
 #endif
 
 }

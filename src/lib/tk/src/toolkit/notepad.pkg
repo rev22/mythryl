@@ -774,7 +774,7 @@ generic package notepad_g (package appl: Notepad_Application; )		# Notepad_Appli
 	{   fun item2nu_obj (obj (window, wid, cid, dz, ob))
 		    =>
 		    THE (ob, (hd (get_tcl_canvas_item_coordinates wid cid)
-					       except EMPTY=> (0, 0); end , CENTER));
+					       except EMPTY=> (0, 0); end, CENTER));
 
 	       item2nu_obj (trashcan _)
                    =>

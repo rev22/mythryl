@@ -29,8 +29,8 @@ api Symbol_Table_Entry {
 
 	| NAMED_FIXITY  fixity::Fixity;
 
-    binder_gt:  (((symbol::Symbol , Symbol_Table_Entry))
-                 , ((symbol::Symbol , Symbol_Table_Entry)))
+    binder_gt:  (((symbol::Symbol, Symbol_Table_Entry))
+                 , ((symbol::Symbol, Symbol_Table_Entry)))
                 -> Bool;
 
 }; #  Api Symbol_Table_Entry 

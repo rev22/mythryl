@@ -22,7 +22,7 @@ package cache_ref: Cache_Ref {			# Cache_Ref	is from   src/lib/compiler/lower/li
 
     Cache( X )
         =
-        (Ref( Null_Or(X) ) , (Void -> X));
+        (Ref( Null_Or(X) ), (Void -> X));
 
 
     fun cache f x

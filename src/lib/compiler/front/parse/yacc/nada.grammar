@@ -3180,7 +3180,7 @@ But *shrug* we can just do
    weak-semi operator, and 'do' is better than
    C's parens.
 
-   Independently, for list iteration , we likely
+   Independently, for list iteration, we likely
    should have
 
        for x in list_expression do

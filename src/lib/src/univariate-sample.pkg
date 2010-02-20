@@ -71,7 +71,7 @@ package univariate_sample : api {
     # Two kinds of "extra info": 
     #
     Light = Void;		  #  nothing 
-    Heavy = (Rw_Vector( Float ) , Int); #  rubber rw_vector of points, size 
+    Heavy = (Rw_Vector( Float ), Int); #  rubber rw_vector of points, size 
 
 
     # A sample:  extra info * nn * sum x^4 * sum x^3 * sum x^2 * sum x:  

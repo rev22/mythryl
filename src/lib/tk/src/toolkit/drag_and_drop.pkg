@@ -42,7 +42,7 @@ package {
     #  local variables 
 
 
-    drop_zones      = REF ([]:  List( (Widget_Id , Item , Box) ) );
+    drop_zones      = REF ([]:  List( (Widget_Id, Item, Box) ) );
 
     fun print_drop_zones ()
         =
@@ -54,7 +54,7 @@ package {
     also
     fun ddebug (str)      = debug::print 11 ("DD: " + str);
 
-    Grab_Item  = (Item , null_or::Null_Or (Box) , Coordinate);
+    Grab_Item  = (Item, null_or::Null_Or (Box), Coordinate);
 
     grab_items  = REF ([]: List( Grab_Item ));
     sel_items   = REF ([]: List( Item ));

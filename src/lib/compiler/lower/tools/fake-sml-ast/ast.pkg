@@ -156,7 +156,7 @@ package mdlast: (weak)  Mdl_Ast {		# Mdl_Ast	is from   src/lib/compiler/lower/to
                        aggregable: Bool,
                        defaults: List( ((Int,Expression)) ) }
 
-   also  Locbind = LOCBIND  (Id, Null_Or( Pattern ) , Expression)
+   also  Locbind = LOCBIND  (Id, Null_Or( Pattern ), Expression)
    
    also         Endianess = LITTLE | BIG
    

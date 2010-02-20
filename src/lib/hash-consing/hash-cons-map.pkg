@@ -15,7 +15,7 @@ package hash_cons_map:  Hash_Cons_Map		# Hash_Cons_Map		is from   src/lib/hash-c
 
     Chunk( X ) = hc::Chunk( X );
 
-    Map (X, Y) = map::Map ((Chunk(X) , Y)); 
+    Map (X, Y) = map::Map ((Chunk(X), Y)); 
 
     fun lift2  f ((_, a), (_, b)) = f (a, b);
     fun lift2i f (_, (k, a), (_, b)) = f (k, a, b);

@@ -1005,11 +1005,11 @@ package unparse_chunk: (weak)  Unparse_Chunk {			# Unparse_Chunk	is from   src/l
 			     pp::string stream  sep; breaker ();
 			     unparse_val_share (v::get (chunks, index), type, members_op,
 					  depth - 1, accu);
-			     print_rest (", ", fn () => break stream { spaces=>0, indent_on_wrap=>0 }; end , index + 1);
+			     print_rest (", ", fn () => break stream { spaces=>0, indent_on_wrap=>0 }; end, index + 1);
 			fi;
 
 		    begin_indented_wrap_box stream (pp::CURSOR_RELATIVE 1);
-		    pp::string stream "#["; print_rest("", fn () => (); end , 0);
+		    pp::string stream "#["; print_rest("", fn () => (); end, 0);
 		    end_box stream;
 		}
 

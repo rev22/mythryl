@@ -10,14 +10,15 @@ stipulate
     package ci  =  c_interface;			# c_interface		is from   src/lib/std/src/unsafe/cinterface.pkg
     package w8a =  rw_unt8_vector;		# rw_unt8_vector	is from   src/lib/std/src/rw-unt8-vector.pkg
     package w8v =  unt8_vector;			# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
+    package ps  =  pre_socket;			# pre_socket		is from   src/lib/std/src/socket/pre-socket.pkg
 herein
 
     package socket_guts: (weak)  Socket {	# Socket		is from   src/lib/std/src/socket/socket.api
 
-						# pre_socket		is from   src/lib/std/src/socket/pre-socket.pkg
 	fun socket_fn x
 	    =
-	    ci::c_function "Lib7-Sockets" x;
+	    ci::c_function "Lib7-Sockets" x;	#  Lib7-Sockets		is in     src/runtime/c-libs/lib7-socket/cfun-list.h
+
 
 	Wy8Vector = w8v::Vector;
 	Wy8Array  = w8a::Rw_Vector;
@@ -26,7 +27,7 @@ herein
 	#
 	Socket_Fd
 	    =
-	    pre_socket::Socket_Fd;
+	    ps::Socket_Fd;
 
 	# Import the various socket related types:
 	#
@@ -44,7 +45,8 @@ herein
 	#
 	package af {
 
-	    include af;
+	    include af;				# af			is from   src/lib/std/src/socket/pre-socket.pkg
+						#			via above 'include pre_socket'.
 
 	    my  list_addr_families:  Void -> List( ci::System_Const )
 		=
@@ -77,7 +79,7 @@ herein
 
 	    Socket_Type
 		=
-		pre_socket::socket::Socket_Type;
+		ps::socket::Socket_Type;
 
 	    my list_socket_types:  Void -> List( ci::System_Const )
 		=
@@ -99,6 +101,7 @@ herein
 	    fun from_string name
 		=
 		case (ci::find_sys_const (name, list_socket_types ()))
+		    #
 		    THE ty =>  THE (socket::SOCKET_TYPE ty);
 		    NULL   =>  NULL;
 		esac;
@@ -111,24 +114,24 @@ herein
 
 	    stipulate
 
-		fun the_else control_fn (pre_socket::SOCKET { file_descriptor, ... } )
+		fun the_else control_fn (ps::SOCKET { file_descriptor, ... } )
 		    =
 		    control_fn (file_descriptor, NULL);
 
-		fun set_opt control_fn (pre_socket::SOCKET { file_descriptor, ... }, value)
+		fun set_opt control_fn (ps::SOCKET { file_descriptor, ... }, value)
 		    =
 		    ignore (control_fn (file_descriptor, THE value));
 
-		my ctl_debug:      ((Socket_Fd , Null_Or( Bool )) ) -> Bool =		socket_fn "ctlDEBUG";
-		my ctl_reuseaddr:  ((Socket_Fd , Null_Or( Bool )) ) -> Bool =		socket_fn "ctlREUSEADDR";
-		my ctl_keepalive:  ((Socket_Fd , Null_Or( Bool )) ) -> Bool =		socket_fn "ctlKEEPALIVE";
-		my ctl_dontroute:  ((Socket_Fd , Null_Or( Bool )) ) -> Bool =		socket_fn "ctlDONTROUTE";
-		my ctl_broadcast:  ((Socket_Fd , Null_Or( Bool )) ) -> Bool =		socket_fn "ctlBROADCAST";
-		my ctl_oobinline:  ((Socket_Fd , Null_Or( Bool )) ) -> Bool =		socket_fn "ctlOOBINLINE";
-		my ctl_sndbuf:     ((Socket_Fd , Null_Or( Int  )) ) -> Int  =		socket_fn "ctlSNDBUF";
-		my ctl_rcvbuf:     ((Socket_Fd , Null_Or( Int  )) ) -> Int  =		socket_fn "ctlSNDBUF";
+		my ctl_debug:      ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlDEBUG";
+		my ctl_reuseaddr:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlREUSEADDR";
+		my ctl_keepalive:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlKEEPALIVE";
+		my ctl_dontroute:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlDONTROUTE";
+		my ctl_broadcast:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlBROADCAST";
+		my ctl_oobinline:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlOOBINLINE";
+		my ctl_sndbuf:     ((Socket_Fd, Null_Or( Int  )) ) -> Int  =		socket_fn "ctlSNDBUF";
+		my ctl_rcvbuf:     ((Socket_Fd, Null_Or( Int  )) ) -> Int  =		socket_fn "ctlSNDBUF";
 
-		my ctl_linger:     ((Socket_Fd ,  Null_Or( Null_Or( Int ) )) ) -> Null_Or( Int ) =	socket_fn "ctlLINGER";
+		my ctl_linger:     ((Socket_Fd,  Null_Or( Null_Or( Int ) )) ) -> Null_Or( Int ) =	socket_fn "ctlLINGER";
 
 	    herein
 
@@ -199,7 +202,7 @@ herein
 
 		    fun get_type  (SOCKET { file_descriptor, ... } )
                         =
-                        pre_socket::socket::SOCKET_TYPE (get_type' file_descriptor);
+                        ps::socket::SOCKET_TYPE (get_type' file_descriptor);
 
 		    fun get_error (SOCKET { file_descriptor, ... } )
                         =
@@ -248,7 +251,7 @@ herein
 	};				# package control 
 
 
-	my set_nbio'   : ((Socket_Fd , Bool)) -> Void
+	my set_nbio'   : (Socket_Fd, Bool) -> Void
 	    =
 	    socket_fn "setNBIO";
 
@@ -257,9 +260,9 @@ herein
 
 	# Extract a blocking file descriptor;
 	# implicitly set socket to
-	# blocking mode if necessary:
+	# blocking mode if necessary:			# "fd" == "file descriptor"
 	#
-	fun fd_b (SOCKET { file_descriptor, nonblocking => nbr as REF nb } )
+	fun to_blocking_fd (SOCKET { file_descriptor, nonblocking => nbr as REF nb } )
 	    =
 	    if nb
 		 set_nbio' (file_descriptor, FALSE);
@@ -271,7 +274,7 @@ herein
 
 	# Same for non-blocking:
 	#
-	fun fd_nb (SOCKET { file_descriptor, nonblocking => nbr as REF nb } )
+	fun to_nonblocking_fd (SOCKET { file_descriptor, nonblocking => nbr as REF nb } )
 	    =
 	    {   if (not nb)
 		     set_nbio' (file_descriptor, TRUE);
@@ -309,11 +312,11 @@ herein
 	#
 	stipulate
 
-	    my accept'  : Int -> (Int, Internet_Address)	= socket_fn  "accept";
-	    my bind'    : (Int, Internet_Address) -> Void	= socket_fn  "bind";
-	    my connect' : (Int, Internet_Address) -> Void	= socket_fn  "connect";
-	    my listen'  : (Int, Int) -> Void			= socket_fn  "listen";
-	    my close'   : Int -> Void				= socket_fn  "close";
+	    my accept'  : Int -> (Int, Internet_Address)	= socket_fn  "accept";		# accept	is in    src/runtime/c-libs/lib7-socket/accept.c
+	    my bind'    : (Int, Internet_Address) -> Void	= socket_fn  "bind";		# bind		is in    src/runtime/c-libs/lib7-socket/bind.c
+	    my connect' : (Int, Internet_Address) -> Void	= socket_fn  "connect";		# connect	is in    src/runtime/c-libs/lib7-socket/connect.c
+	    my listen'  : (Int, Int) -> Void			= socket_fn  "listen";		# listen	is in    src/runtime/c-libs/lib7-socket/listen.c
+	    my close'   : Int -> Void				= socket_fn  "close";		# close		is in    src/runtime/c-libs/lib7-socket/close.c
 
 	herein
 
@@ -338,12 +341,12 @@ herein
 
 	    fun accept s
 		=
-		accept0 (sock_b, fd_b) s;
+		accept0 (sock_b, to_blocking_fd) s;
 
 
 	    fun accept_nonblocking s
 		=
-		wrap_nb_o (accept0 (sock_nb, fd_nb)) s;
+		wrap_nb_o (accept0 (sock_nb, to_nonblocking_fd)) s;
 
 
 	    fun connect0 getfd (s, ADDRESS address)
@@ -353,12 +356,12 @@ herein
 
 	    fun connect arg
 		=
-		connect0 fd_b arg;
+		connect0  to_blocking_fd  arg;
 
 
 	    fun connect_nonblocking arg
 		=
-		wrap_nb_b (connect0 fd_nb) arg;
+		wrap_nb_b (connect0 to_nonblocking_fd) arg;
 
 
 	    fun close (SOCKET { file_descriptor, ... } )
@@ -368,7 +371,7 @@ herein
 
 	stipulate
 
-	    my  shutdown' : ((Int , Int)) -> Void
+	    my  shutdown' : (Int, Int) -> Void
 		=
 		socket_fn "shutdown";
 
@@ -489,11 +492,11 @@ herein
 	#
 	stipulate
 
-	    my send_v:  ((Int , Wy8Vector , Int , Int , Bool , Bool)) -> Int
+	    my send_v:  (Int, Wy8Vector, Int, Int, Bool, Bool) -> Int
 		=
 		socket_fn "sendBuf";
 
-	    my send_a:  ((Int , Wy8Array , Int , Int , Bool , Bool)) -> Int
+	    my send_a:  (Int, Wy8Array, Int, Int, Bool, Bool) -> Int
 		=
 		socket_fn "sendBuf";
 	herein
@@ -523,12 +526,12 @@ herein
 
 	    fun send_vector arg
 		=
-		send_vec0 fd_b arg;
+		send_vec0  to_blocking_fd  arg;
 
 
 	    fun send_vector_nonblocking arg
 		=
-		wrap_nb_o (send_vec0 fd_nb) arg;
+		wrap_nb_o (send_vec0 to_nonblocking_fd) arg;
 
 	    fun send_vector'0 getfd (socket, buffer, { don't_route, oob } )
 		=
@@ -545,11 +548,11 @@ herein
 
 	    fun send_vector' arg
 		=
-		send_vector'0 fd_b arg;
+		send_vector'0  to_blocking_fd  arg;
 
 	    fun send_vector_nonblocking' arg
 		=
-		wrap_nb_o (send_vector'0 fd_nb) arg;
+		wrap_nb_o (send_vector'0 to_nonblocking_fd) arg;
 
 	    fun send_arr0 getfd (socket, buffer)
 		=
@@ -563,11 +566,11 @@ herein
 
 	    fun send_rw_vector arg
 		=
-		send_arr0 fd_b arg;
+		send_arr0  to_blocking_fd  arg;
 
 	    fun send_rw_vector_nonblocking arg
 		=
-		wrap_nb_o (send_arr0 fd_nb) arg;
+		wrap_nb_o (send_arr0 to_nonblocking_fd) arg;
 
 	    fun send_rw_vector'0 getfd (socket, buffer, { don't_route, oob } )
 		=
@@ -584,11 +587,11 @@ herein
 
 	    fun send_rw_vector' arg
 		=
-		send_rw_vector'0 fd_b arg;
+		send_rw_vector'0  to_blocking_fd  arg;
 
 	    fun send_rw_vector_nonblocking' arg
 		=
-		wrap_nb_o (send_rw_vector'0 fd_nb) arg;
+		wrap_nb_o (send_rw_vector'0 to_nonblocking_fd) arg;
 
 	end;					# stipulate
 
@@ -621,12 +624,12 @@ herein
 
 	    fun send_vector_to arg
 		=
-		send_vec_to0 fd_b arg;
+		send_vec_to0  to_blocking_fd  arg;
 
 
 	    fun send_vector_to_nonblocking arg
 		=
-		wrap_nb_b (send_vec_to0 fd_nb) arg;
+		wrap_nb_b (send_vec_to0 to_nonblocking_fd) arg;
 
 
 	    fun send_vector_to'0 getfd (socket, ADDRESS address, buffer, { don't_route, oob } )
@@ -647,12 +650,12 @@ herein
 
 	    fun send_vector_to' arg
 		=
-		send_vector_to'0 fd_b arg;
+		send_vector_to'0  to_blocking_fd  arg;
 
 
 	    fun send_vector_to_nonblocking' arg
 		=
-		wrap_nb_b (send_vector_to'0 fd_nb) arg;
+		wrap_nb_b (send_vector_to'0 to_nonblocking_fd) arg;
 
 
 	    fun send_arr_to0 getfd (socket, ADDRESS address, buffer)
@@ -672,12 +675,12 @@ herein
 
 	    fun send_rw_vector_to arg
 		=
-		send_arr_to0 fd_b arg;
+		send_arr_to0  to_blocking_fd  arg;
 
 
 	    fun send_rw_vector_to_nonblocking arg
 		=
-		wrap_nb_b (send_arr_to0 fd_nb) arg;
+		wrap_nb_b (send_arr_to0 to_nonblocking_fd) arg;
 
 
 	    fun send_rw_vector_to'0 getfd (socket, ADDRESS address, buffer, { don't_route, oob } )
@@ -698,12 +701,12 @@ herein
 
 	    fun send_rw_vector_to' arg
 		=
-		send_rw_vector_to'0 fd_b arg;
+		send_rw_vector_to'0  to_blocking_fd  arg;
 
 
 	    fun send_rw_vector_to_nonblocking' arg
 		=
-		wrap_nb_b (send_rw_vector_to'0 fd_nb) arg;
+		wrap_nb_b (send_rw_vector_to'0 to_nonblocking_fd) arg;
 
 	end;						# stipulate
 
@@ -712,7 +715,7 @@ herein
 	#
 	stipulate
 
-	    my  recv_v' : ((Int , Int , Bool , Bool)) -> Wy8Vector
+	    my  recv_v' : (Int, Int, Bool, Bool) -> Wy8Vector
 		=
 		socket_fn "recv";
 
@@ -729,7 +732,7 @@ herein
 		    fi;
 	    end;
 
-	    my recv_a:  ((Int , Wy8Array , Int , Int , Bool , Bool)) -> Int
+	    my recv_a:  (Int, Wy8Array, Int, Int, Bool, Bool) -> Int
 		=
 		socket_fn "recvBuf";
 
@@ -742,12 +745,12 @@ herein
 
 	    fun receive_vector arg
 		=
-		recv_vec0 fd_b arg;
+		recv_vec0  to_blocking_fd  arg;
 
 
 	    fun receive_vector_nonblocking arg
 		=
-		wrap_nb_o (recv_vec0 fd_nb) arg;
+		wrap_nb_o (recv_vec0 to_nonblocking_fd) arg;
 
 
 	    fun receive_vector'0 getfd (socket, size, { peek, oob } )
@@ -757,12 +760,12 @@ herein
 
 	    fun receive_vector'  arg
 		=
-		receive_vector'0  fd_b  arg;
+		receive_vector'0  to_blocking_fd  arg;
 
 
 	    fun receive_vector_nonblocking' arg
 		=
-		wrap_nb_o (receive_vector'0 fd_nb)  arg;
+		wrap_nb_o (receive_vector'0 to_nonblocking_fd)  arg;
 
 
 	    fun recv_arr0 getfd (socket, buffer)
@@ -781,12 +784,12 @@ herein
 
 	    fun receive_rw_vector    arg
 		=
-		recv_arr0 fd_b arg;
+		recv_arr0  to_blocking_fd  arg;
 
 
 	    fun receive_rw_vector_nonblocking arg
 		=
-		wrap_nb_o (recv_arr0 fd_nb) arg;
+		wrap_nb_o (recv_arr0 to_nonblocking_fd) arg;
 
 
 	    fun receive_rw_vector'0 getfd (socket, buffer, { peek, oob } )
@@ -804,12 +807,12 @@ herein
 
 	    fun receive_rw_vector' arg
 		=
-		receive_rw_vector'0 fd_b arg;
+		receive_rw_vector'0  to_blocking_fd  arg;
 
 
 	    fun receive_rw_vector_nonblocking' arg
 		=
-		wrap_nb_o (receive_rw_vector'0 fd_nb) arg;
+		wrap_nb_o (receive_rw_vector'0 to_nonblocking_fd) arg;
 
 	end;					# stipulate
 
@@ -854,12 +857,12 @@ herein
 
 	    fun receive_vector_from arg
 		=
-		recv_vec_from0 fd_b arg;
+		recv_vec_from0  to_blocking_fd  arg;
 
 
 	    fun receive_vector_from_nonblocking arg
 		=
-		wrap_nb_o (recv_vec_from0 fd_nb) arg;
+		wrap_nb_o (recv_vec_from0 to_nonblocking_fd) arg;
 
 
 	    fun receive_vector_from'0 getfd (socket, size, { peek, oob } )
@@ -869,12 +872,12 @@ herein
 
 	    fun receive_vector_from' arg
 		=
-		receive_vector_from'0 fd_b arg;
+		receive_vector_from'0  to_blocking_fd  arg;
 
 
 	    fun receive_vector_from_nonblocking' arg
 		=
-		wrap_nb_o (receive_vector_from'0 fd_nb) arg;
+		wrap_nb_o (receive_vector_from'0 to_nonblocking_fd) arg;
 
 
 	    fun recv_arr_from0 getfd (socket, asl)
@@ -900,12 +903,12 @@ herein
 
 	    fun receive_rw_vector_from arg
 		=
-		recv_arr_from0 fd_b arg;
+		recv_arr_from0  to_blocking_fd  arg;
 
 
 	    fun receive_rw_vector_from_nonblocking arg
 		=
-		wrap_nb_o (recv_arr_from0 fd_nb) arg;
+		wrap_nb_o (recv_arr_from0 to_nonblocking_fd) arg;
 
 
 	    fun receive_rw_vector_from'0 getfd (socket, asl, { peek, oob } )
@@ -930,12 +933,12 @@ herein
 
 		fun receive_rw_vector_from'    arg
 		    =
-		    receive_rw_vector_from'0 fd_b arg;
+		    receive_rw_vector_from'0  to_blocking_fd  arg;
 
 
 		fun receive_rw_vector_from_nonblocking' arg
 		    =
-		    wrap_nb_o (receive_rw_vector_from'0 fd_nb) arg;
+		    wrap_nb_o (receive_rw_vector_from'0 to_nonblocking_fd) arg;
 
 	end;			# stipulate
     };				# package socket 

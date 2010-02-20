@@ -1371,7 +1371,7 @@ package {
 			    =>
 			    case (constraining_api_or_null, a_package)
 				( THE (old_api as API { stamp, name, stub, elements => constraining_elements, closed, symbols, property_list, contains_generic, type_sharing, package_sharing } ),
-				  A_PACKAGE  { an_api =>  API { elements => constrained_elements , ... }, ... }
+				  A_PACKAGE  { an_api =>  API { elements => constrained_elements, ... }, ... }
 				)
 				    =>
 				    {    # The difference between PARTIAL_PACKAGE_CAST

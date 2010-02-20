@@ -19,8 +19,8 @@ api Control_Set {
 	     ->
              Null_Or { control:  Control( X ), info:  Y };
 
-    set:     ((Control_Set(X, Y) ,  Control(X), Y)) -> Void;
-    remove:  ((Control_Set(X, Y) , quickstring::Quickstring)) -> Void;
+    set:     ((Control_Set(X, Y),  Control(X), Y)) -> Void;
+    remove:  ((Control_Set(X, Y), quickstring::Quickstring)) -> Void;
     info_of:   Control_Set(X, Y)  -> Control( X ) -> Null_Or( Y );
 
 

@@ -150,7 +150,7 @@ package dot_subgraph_tree: (weak) Dot_Subgraph_Tree {
 	    =
 	    case (scan "%d,%d,%d,%d"  (s, i))
 		#
-		([ INT i, INT j, INT k, INT l], new_offset) =>  (i, j, k, l , new_offset);
+		([ INT i, INT j, INT k, INT l], new_offset) =>  (i, j, k, l, new_offset);
 		_			                    =>  raise exception SUBGRAPH_TREE_ERROR (sprintf "Invalid bounding box value at %d in %s" i s);	
 	    esac;
     end;

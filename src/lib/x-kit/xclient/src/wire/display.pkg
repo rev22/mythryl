@@ -315,15 +315,7 @@ herein
 			# 
 			socket = internet_socket::tcp::socket ();
 
-			trace .{
-			    #
-                            sprintf "display.pkg: connect_to_xserver: open_internet_domain_socket: socket s='%s'"
-				#
-                                (internet_socket::to_string  socket);
-                        };
-
-										# socket		is from   src/lib/std/socket.pkg
-										# socket_guts		is from   src/lib/std/src/socket/socket-guts.pkg
+			trace .{  sprintf "display.pkg: connect_to_xserver: open_internet_domain_socket: socket s='%s'"  (internet_socket::to_string  socket);  };
 
 			repeat .{
 			    #

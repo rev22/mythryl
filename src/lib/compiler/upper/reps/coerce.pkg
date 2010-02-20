@@ -128,7 +128,7 @@ package coerce: (weak)  Coerce {		# Coerce		is from   src/lib/compiler/upper/rep
 
 	Wrapper_Dictionary
             =
-            List ((Ref( List( Function_Declaration )) , Ref (Wrapper_Cache)) ); 
+            List ((Ref( List( Function_Declaration )), Ref (Wrapper_Cache)) ); 
 
 	my empty_wrapper_cache:  Wrapper_Cache
             =

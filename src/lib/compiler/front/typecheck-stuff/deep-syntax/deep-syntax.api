@@ -68,8 +68,8 @@ api Deep_Syntax {
       | FLOAT_CONSTANT_IN_EXPRESSION       String
       | STRING_CONSTANT_IN_EXPRESSION      String
       | CHAR_CONSTANT_IN_EXPRESSION        String
-      | RECORD_EXPRESSION                  List ((Numbered_Label , Deep_Expression))
-      | RECORD_SELECTOR_EXPRESSION         (Numbered_Label , Deep_Expression)
+      | RECORD_EXPRESSION                  List ((Numbered_Label, Deep_Expression))
+      | RECORD_SELECTOR_EXPRESSION         (Numbered_Label, Deep_Expression)
       | VECTOR_EXPRESSION                  (List( Deep_Expression ), types::Type)        
       | PACK_EXPRESSION                    (Deep_Expression, types::Type, List( types::Type_Constructor ))
       | APPLY_EXPRESSION                   (Deep_Expression, Deep_Expression)

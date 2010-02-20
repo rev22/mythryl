@@ -14,7 +14,7 @@ lib7_val_t   _lib7_runtime_itick   (   lib7_state_t*   lib7_state,
 {
     /* _lib7_runtime_itick : Void -> (int * int) */
 
-  return RAISE_ERROR( lib7_state, "itick unimplemented" , __LINE__);
+  return RAISE_ERROR( lib7_state, "itick unimplemented", __LINE__);
 }
 
 

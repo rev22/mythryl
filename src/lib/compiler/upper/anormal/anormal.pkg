@@ -145,7 +145,7 @@ package anormal
 	    | EXCEPT  (Anormal_Expression, Value)
 
 	    | BRANCH  (Primitive_Operation, List( Value ), Anormal_Expression, Anormal_Expression)
-	    | PRIMOP  (Primitive_Operation, List( Value ), Highcode_Variable  , Anormal_Expression)
+	    | PRIMOP  (Primitive_Operation, List( Value ), Highcode_Variable , Anormal_Expression)
 
 	withtype
         Function_Declaration

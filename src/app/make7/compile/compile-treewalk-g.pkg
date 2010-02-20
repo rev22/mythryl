@@ -920,7 +920,7 @@ herein
 	#
 	fun symbol_and_inlining_tables_atop
             (
-              { symbol_table , inlining_table  },
+              { symbol_table, inlining_table  },
               { symbol_table => symbol_table', inlining_table => inlining_table' }
             )
             =

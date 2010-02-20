@@ -23,7 +23,7 @@ api {
 
     # Select the i-th order statistic:
     #
-    random_selection  :   (Rw_Vector( Float) , Int) -> Float;
+    random_selection  :   (Rw_Vector( Float), Int) -> Float;
     random_selection' :   (rw_vector_slice::Slice( Float ), Int) -> Float;
 
     # Calculate the median:

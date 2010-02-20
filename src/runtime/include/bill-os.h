@@ -50,8 +50,8 @@ struct netent * getnetbyaddr(long net, int type) __NO_THROW;
 
 /* Symlinks sipport */
 int open(const char * filename, int, ...) __NO_THROW;
-int symlink(const char * , const char *) __NO_THROW;
-int readlink(const char * , const char *) __NO_THROW;
+int symlink(const char *, const char *) __NO_THROW;
+int readlink(const char *, const char *) __NO_THROW;
 int stat(const char * filename, struct stat * buf) __NO_THROW;
 int lstat(const char * filename, struct stat * buf) __NO_THROW;
 FILE * winduh_fopen(const char * filename, const char * mode) __NO_THROW;

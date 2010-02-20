@@ -266,7 +266,7 @@ api Ctypes {
 	    # These are the "type digits".  Type "Dec" acts as a "terminator".
 	    # We chose its name so to remind us that the encoding is decimal.
 	    # If a nonzero value's decimal representation is "<Dn>...<D0>", then
-	    # its type will be "Dim0 ( dg<D0> ... Dg<Dn> Dec , Nonzero) ", which
+	    # its type will be "Dim0 ( dg<D0> ... Dg<Dn> Dec, Nonzero) ", which
 	    # is the same as "Dim Dg<D0> ... Dg<Dn> Dec".  The type of the zero
 	    # value is "Dim0( Dec, Zero )".
 	    Dec;

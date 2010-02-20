@@ -499,12 +499,12 @@ generic package x86_spill_instruction_generation_g (
 		  case instruction
 
 		      i::JMP (i::DIRECT _, labs) => done (i::JMP (spill_loc, labs), an);
-		      i::JMP (operand, labs) => with_tmp (fn t => i::JMP (do_operand (t, operand), labs); end , an);
+		      i::JMP (operand, labs) => with_tmp (fn t => i::JMP (do_operand (t, operand), labs); end, an);
 		      i::JCC { operand=>i::DIRECT _, cond } => done (i::JCC { operand=>spill_loc, cond }, an);
 
 		      i::JCC { operand, cond }
                           => 
-			  with_tmp (fn t => i::JCC { operand=>do_operand (t, operand), cond }; end , an);
+			  with_tmp (fn t => i::JCC { operand=>do_operand (t, operand), cond }; end, an);
 
 		      i::CALL { operand, defs, uses, return, cuts_to, mem, pops }
                           => 
@@ -521,7 +521,7 @@ generic package x86_spill_instruction_generation_g (
 
 		      i::MOVE { mv_op, src, dst as i::DIRECT _}
                           => 
-			  with_tmp_avail (fn t =>i::MOVE { mv_op, src=>do_operand (t, src), dst }; end , an);
+			  with_tmp_avail (fn t =>i::MOVE { mv_op, src=>do_operand (t, src), dst }; end, an);
 
 		      i::MOVE { mv_op, src as i::DIRECT _, dst }
                           => 

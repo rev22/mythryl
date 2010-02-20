@@ -1404,7 +1404,7 @@ herein
 		    };
 	    herein
 		encode_poly_text8  = encode (string::length, req_poly_text8);
-		encode_poly_text16 = encode (fn s => ((string::length s) / 2); end , req_poly_text16);
+		encode_poly_text16 = encode (fn s => ((string::length s) / 2); end, req_poly_text16);
 	    end;
 
 	    stipulate
