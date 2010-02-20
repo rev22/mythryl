@@ -1,7 +1,7 @@
 ## monomorphic-matrix.api
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # There do not appear to be any implementations of this API at present.
 

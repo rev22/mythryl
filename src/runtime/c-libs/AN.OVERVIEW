@@ -221,7 +221,7 @@ ADDING GLUE FOR A NEW C LIBRARY:
 
     to the LIBRARY_COMPONENTS section of
 
-        src/lib/std/src/Base-imp.make6
+        src/lib/std/src/stdlib-core.make6
 
     To make your Mythryl glue code visible at top 
     level in the interactive system, you'll need
@@ -232,7 +232,7 @@ ADDING GLUE FOR A NEW C LIBRARY:
 
     to the LIBRARY_EXPORTS section of the files
 
-        src/lib/std/src/Base-imp.make6
+        src/lib/std/src/stdlib-core.make6
         src/lib/std/stdlib.make6
 
 

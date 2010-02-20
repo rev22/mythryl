@@ -1,7 +1,7 @@
 ## signals.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # These are the two basic interfaces to the run-time system signals support.
 # The interface covers the basic signals operations, plus a small collection

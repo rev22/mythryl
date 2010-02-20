@@ -1,7 +1,7 @@
 ## pack-little-endian-unt16.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # This is the non-native implementation of 16-bit little-endian packing
 # operations.

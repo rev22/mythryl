@@ -2,7 +2,7 @@
 ## Author: Matthias Blume (blume@tti-c.org)
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 #   64-bit word support
 

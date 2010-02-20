@@ -1,7 +1,7 @@
 ## posix-signal.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 ## POSIX 1003.1 signals.
 # This is a subpackage of the POSIX 1003.1 based

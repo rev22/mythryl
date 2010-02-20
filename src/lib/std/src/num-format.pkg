@@ -1,7 +1,7 @@
 ## num-format.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # The word to string conversion for the largest word and int types.
 # All of the other fmt functions can be implemented in terms of them.

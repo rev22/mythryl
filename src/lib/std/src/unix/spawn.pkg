@@ -1,7 +1,7 @@
 ## spawn.pkg	-- high-level support for spawning unix child processes.
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 
 # See comments in spawn.api

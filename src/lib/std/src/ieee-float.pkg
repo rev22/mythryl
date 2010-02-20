@@ -1,7 +1,7 @@
 ## ieee-float.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 package ieee_float: (weak)  Ieee_Float {		# Ieee_Float	is from   src/lib/std/src/ieee-float.api
 

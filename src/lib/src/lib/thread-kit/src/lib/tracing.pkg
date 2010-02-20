@@ -352,7 +352,7 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 
 				      TO_STREAM stream;
 				  }
-				  except
+				  except					# threakit_debug	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit-debug.pkg
 				     _ =  {   threadkit_debug::say_debug (
 						  cat [
 						      "tracing: Unable to open \"", filename,

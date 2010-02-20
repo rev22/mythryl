@@ -2,7 +2,7 @@
 ## author: Matthias Blume (blume@cs.princeton.edu)
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # Output of feedback and diagnostics.
 

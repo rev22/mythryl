@@ -1,7 +1,7 @@
 ## posix-binary-io.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 
 # The implementation of the binary_io stack on Posix systems.

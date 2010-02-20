@@ -1,7 +1,7 @@
 ## bit-flags-g.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # generic for bit flags.
 

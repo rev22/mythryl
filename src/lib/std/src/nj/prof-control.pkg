@@ -1,7 +1,7 @@
 ## prof-control.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # This package implements the interface to the run-time system's profiling
 # support library.  It is not meant for general use.

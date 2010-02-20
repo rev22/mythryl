@@ -7,7 +7,7 @@
 #
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # See also:
 #     src/lib/std/src/char.api

@@ -1,7 +1,7 @@
 ## posix.api
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # Implemented by:
 #     src/lib/std/src/posix/posix.pkg

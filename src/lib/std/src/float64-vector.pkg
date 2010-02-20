@@ -1,7 +1,7 @@
 ## float64-vector.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # Vectors of float64::real values.
 # NOTE: currently, we do not have sufficient tag bits to use a packed

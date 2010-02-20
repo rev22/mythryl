@@ -1,7 +1,7 @@
 ## posix-tty.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 
 # Package for POSIX 1003.1 operations on terminal devices

@@ -1,7 +1,7 @@
 ## num-scan.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # The string conversion for the largest int and word types.
 # All of the other scan functions can be implemented in terms of them.

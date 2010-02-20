@@ -1,9 +1,9 @@
 ## file.api
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
-# Implemented by:
+# This api is implemented in:
 #     src/lib/std/src/unix/file.pkg
 
 # Compare with:

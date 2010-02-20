@@ -1,7 +1,7 @@
 ## float64-guts.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 ###                    "Science is what you know,
 ###                     philosophy is what you don't know."

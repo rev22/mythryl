@@ -18,7 +18,7 @@
 ## *************************************************************************
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # The following functions were adapted from the 4.3BSD math library.
 # Eventually, each machine supported should have a hand-coded math

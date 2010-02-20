@@ -1,7 +1,7 @@
 ## io-exceptions.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 package io_exceptions: (weak)  Io_Exceptions {		# Io_Exceptions	is from   src/lib/std/src/io/io-exceptions.api
 

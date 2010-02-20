@@ -1,7 +1,7 @@
 ## weak-reference.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 package weak_reference : Weak_Reference {			# Weak_Reference	is from   src/lib/std/src/nj/weak-reference.api
 

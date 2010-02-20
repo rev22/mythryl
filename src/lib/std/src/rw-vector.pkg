@@ -1,7 +1,7 @@
 ## rw-vector.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 package rw_vector: (weak)  Rw_Vector {		# Rw_Vector	is from   src/lib/std/src/rw-vector.api
 

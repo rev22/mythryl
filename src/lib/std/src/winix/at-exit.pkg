@@ -1,14 +1,14 @@
 ## at-exit.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 
 
 # The (generic) support for the winix::process::atExit function.
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 ###             "Every exit is an entry somewhere else."
 ###

@@ -1,7 +1,7 @@
 ## unsafe-chunk.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 
 package unsafe_chunk: Unsafe_Chunk {		# Unsafe_Chunk	is from   src/lib/std/src/unsafe/unsafe-chunk.api

@@ -1,7 +1,7 @@
 ## posix-error.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # Package for POSIX error codes.
 # This is a subpackage of the POSIX 1003.1 based

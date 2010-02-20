@@ -1,7 +1,7 @@
 #  (C) 1999 Lucent Technologies, Bell Laboratories 
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # suspension can't be a subpackage of Lib7 because the magical
 # property of the Suspension datatype would be lost in api

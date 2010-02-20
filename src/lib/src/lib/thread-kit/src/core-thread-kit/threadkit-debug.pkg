@@ -27,7 +27,7 @@ package threadkit_debug: (weak)  api {
         =
         unsafe::get_current_thread_register;
 
-    fun say_debug_id msg
+    fun say_debug_id  msg
         =
         say_debug (cat [
 	    internal_threadkit_types::thread_id_to_string (get_current_thread()), " ", msg

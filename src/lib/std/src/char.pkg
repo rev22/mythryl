@@ -1,7 +1,7 @@
 ## char.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 ###                          "Almost everything that distinguishes the modern world
 ###                           from earlier centuries is attributable to science,

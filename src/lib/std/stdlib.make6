@@ -691,7 +691,7 @@ LIBRARY_EXPORTS
 
 LIBRARY_COMPONENTS
 
-	$ROOT/src/lib/std/src/Base-imp.make6
+	$ROOT/src/lib/std/src/stdlib-core.make6
 
 	$ROOT/src/lib/std/string.pkg
 	$ROOT/src/lib/std/char.pkg

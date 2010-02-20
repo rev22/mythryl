@@ -3,7 +3,7 @@
 ## Author of the current code: Matthias Blume (blume@tti-c.org)
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # The implementation in this file, together with its counterpart
 # in lib/core/init/core-integer.pkg inf

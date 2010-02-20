@@ -1,7 +1,7 @@
 ## float-format.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # Code for converting from real (IEEE 64-bit floating-point) to string.
 # This ought to be replaced with David Gay's conversion algorithm.  XXX BUGGO FIXME

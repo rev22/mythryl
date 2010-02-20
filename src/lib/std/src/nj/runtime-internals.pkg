@@ -1,7 +1,7 @@
 ## runtime-internals.pkg
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 # This package (lib7::internals) is a gathering place for internal
 # features that need to be exposed outside the boot directory.

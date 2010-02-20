@@ -2,7 +2,7 @@
 ## Author: Matthias Blume (blume@tti-c.org)
 
 # Compiled by:
-#     src/lib/std/src/Base-imp.make6
+#     src/lib/std/src/stdlib-core.make6
 
 package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice	is from   src/lib/std/src/monomorphic-vector-slice.api
 				 where  Element == Char
