@@ -1400,7 +1400,7 @@ herein
 
 	fun open_for_write filename
 	    =
-	    {   wr = winix_primitive_io::open_for_write filename;
+	    {   wr = winix_primitive_io::open_for_write  filename;
 
 		make_outstream (pure_io::make_outstream (wr, buffering wr));
 	    }

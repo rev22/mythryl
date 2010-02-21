@@ -1,3 +1,4 @@
+2010-02-20-15.12.56: src/lib/std/src/io/file-g.pkg: Tidying.
 2010-02-20-14.12.59: src/lib/std/src/: Renamed Base-imp.make6 -> stdlib-core.make6 for clarity and to reserve <<imp>> for threadservers.
 2010-02-20-13.45.53: src/lib/std/src/unsafe/cinterface.pkg and kith: Light commenting and tidying.
 2010-02-20-13.05.52: src/runtime/c-libs/unix-raise-syserr.c: Save errno value early to be on the safe side.
