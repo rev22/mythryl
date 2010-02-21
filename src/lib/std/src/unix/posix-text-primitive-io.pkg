@@ -63,7 +63,7 @@ herein
 		  psx::s::irgrp, psx::s::iwgrp,
 		  psx::s::iroth, psx::s::iwoth
 		];
-
+								# createf			def in    src/lib/std/src/posix/posix-file.pkg
 	fun create_file (name, mode, flags)
 	    =
 	    announce "createf" psx::createf (name, mode, flags, standard_mode);

@@ -90,19 +90,19 @@ api  File {
 
     make_instream:   pure_io::Input_Stream -> Input_Stream;
     get_instream:    Input_Stream -> pure_io::Input_Stream;
-    set_instream:  ((Input_Stream,   pure_io::Input_Stream)) -> Void;
+    set_instream:   (Input_Stream,   pure_io::Input_Stream) -> Void;
 
     get_output_position:       Output_Stream -> pure_io::Out_Position;
-    set_output_position:     ((Output_Stream, pure_io::Out_Position)) -> Void;
+    set_output_position:      (Output_Stream, pure_io::Out_Position) -> Void;
 
     make_outstream: pure_io::Output_Stream -> Output_Stream;
-    get_outstream:             Output_Stream -> pure_io::Output_Stream;
-    set_outstream:           ((Output_Stream,   pure_io::Output_Stream)) -> Void;
+    get_outstream:           Output_Stream -> pure_io::Output_Stream;
+    set_outstream:          (Output_Stream,   pure_io::Output_Stream) -> Void;
 
     read_line:         Input_Stream -> Null_Or( String );
     read_lines:        Input_Stream -> List(    String );
     lines:             String       -> List(    String );
-    write_substring:  ((Output_Stream, Substring)) -> Void;
+    write_substring:  (Output_Stream, Substring) -> Void;
 
     from_lines: String -> List(String) -> Void;			# filename -> file_lines -> ().
 
@@ -125,7 +125,7 @@ api  File {
 	 ->
          Input_Stream
 	 ->
-         Null_Or( X );
+         Null_Or(X);
 
 
  # Stuff from say.pkg

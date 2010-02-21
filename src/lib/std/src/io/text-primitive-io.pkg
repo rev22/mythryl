@@ -5,7 +5,7 @@
 
 package text_primitive_io
     =
-    primitive_io_g (					# primitive_io_g	def in    src/lib/std/src/io/primitive-io-g.pkg
+    primitive_io_g (						# primitive_io_g	is from   src/lib/std/src/io/primitive-io-g.pkg
 
 	package vector          =  char_vector;			# char_vector		is from   src/lib/std/src/char-vector.pkg
 	package rw_vector       =  rw_char_vector;		# rw_char_vector	is from   src/lib/std/src/rw-char-vector.pkg

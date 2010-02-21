@@ -16,22 +16,23 @@
 #     src/lib/std/src/unix/winix-io.pkg
 
 stipulate
-    package host_unt      =      host_unt_guts;		# host_unt_guts		is from   src/lib/std/src/bind-sysword-32.pkg
-    package int           =           int_guts;		# int_guts		is from   src/lib/std/src/bind-int-32.pkg
-    package file_position = file_position_guts;		# file_position_guts	is from   src/lib/std/src/bind-position-31.pkg
+    package host_unt      =      host_unt_guts;				# host_unt_guts		is from   src/lib/std/src/bind-sysword-32.pkg
+    package int           =           int_guts;				# int_guts		is from   src/lib/std/src/bind-int-32.pkg
+    package file_position = file_position_guts;				# file_position_guts	is from   src/lib/std/src/bind-position-31.pkg
 herein
     package posix_io {
 
 	package fs
 	    =
-	    posix_file;				# posix_file		is from   src/lib/std/src/posix/posix-file.pkg
+	    posix_file;							# posix_file		is from   src/lib/std/src/posix/posix-file.pkg
 
-	package om: (weak)  api { 
-			   Open_Mode = O_RDONLY | O_WRONLY | O_RDWR; 
-		     }
-	    = fs;
-
-	include om;
+	stipulate
+	    package open_mode: (weak)  api { Open_Mode = O_RDONLY | O_WRONLY | O_RDWR; }
+		=
+		fs;
+	herein
+	    include  open_mode;
+	end;
 
 	Sy_Unt = host_unt::Unt;
 	Sy_Int = host_int::Int;
@@ -43,7 +44,9 @@ herein
 	    =
 	    c_interface::c_function "POSIX-IO" x;
 
-	my osval:  String -> Sy_Int = cfun "osval";			# osval		is from  src/runtime/c-libs/posix-io/osval.c
+	my osval:  String -> Sy_Int
+	    =
+            cfun "osval";						# osval		is from  src/runtime/c-libs/posix-io/osval.c
 
 	w_osval = host_unt::from_int o osval;
 
@@ -51,8 +54,9 @@ herein
 	    =
 	    raise exception FAIL ("POSIX_IO." + fct + ": " + msg);
 
-	File_Descriptor = fs::File_Descriptor;
-	Process_Id = posix_process::Process_Id;
+	File_Descriptor =  fs::File_Descriptor;
+
+	Process_Id =  posix_process::Process_Id;
 
 	my pipe' : Void -> (Sy_Int, Sy_Int)
 	    =
@@ -60,9 +64,11 @@ herein
 
 	fun pipe ()
 	    =
-	    {   my (ifd, ofd) = pipe' ();
+	    {   my (ifd, ofd) =   pipe' ();
 
-		{ infd => fs::int_to_fd ifd, outfd => fs::int_to_fd ofd };
+		{ infd  =>  fs::int_to_fd  ifd,
+                  outfd =>  fs::int_to_fd  ofd
+                };
 	    };
 
 	my dup'  : Sy_Int -> Sy_Int         = cfun "dup";		# dup		is from  src/runtime/c-libs/posix-io/dup.c
@@ -89,22 +95,24 @@ herein
 
 	fun read_rw_vector (fd, asl)
 	    =
-	    {
-		my (buf, i, len) = rw_unt8_vector_slice::base asl;
+	    {   my (buf, i, len)
+                    =
+                    rw_unt8_vector_slice::base  asl;
 
 		readbuf' (fs::fd_to_int fd, buf, len, i);
 	    };
 
 	fun read_vector (fd, count)
 	    = 
-	    if  (count < 0  )  raise exception SIZE;
-			 else  read'(fs::fd_to_int fd, count);  fi;
+	    if  (count < 0)  raise exception SIZE;
+	    else             read'(fs::fd_to_int fd, count);
+            fi;
 
-	my writevec' : ((Int, unt8_vector::Vector, Int, Int)) -> Int
+	my writevec' : (Int, unt8_vector::Vector, Int, Int) -> Int
 	    =
 	    cfun "writebuf";					# writebuf	is from  src/runtime/c-libs/posix-io/writebuf.c
 
-	my writearr' : ((Int, rw_unt8_vector::Rw_Vector, Int, Int)) -> Int
+	my writearr' : (Int, rw_unt8_vector::Rw_Vector, Int, Int) -> Int
 	    =
 	    cfun "writebuf";
 
@@ -121,7 +129,7 @@ herein
 	    =
 	    {   my (buf, i, len)
 		    =
-		    unt8_vector_slice::base vsl;
+		    unt8_vector_slice::base  vsl;
 
 		writevec' (fs::fd_to_int fd, buf, len, i);
 	    };
@@ -145,23 +153,23 @@ herein
 	    else                   fail ("whFromWord", "unknown whence " + (int::to_string wh));
 	    fi;
 
-	package fd
-	  =
-	  package {
-	    stipulate package bf = bit_flags_g ();
+	package fd {
+
+	    stipulate
+		package bit_flags = bit_flags_g ();
 	    herein
-		include bf;
+		include bit_flags;
 	    end;
 
 	    cloexec = from_word (w_osval "cloexec");
-	  };
+	};
 
-	package flags
-	  =
-	  package {
-	    stipulate package bf = bit_flags_g ();
+	package flags {
+
+	    stipulate
+		package bit_flags =  bit_flags_g ();
 	    herein
-		include bf;
+		include bit_flags;
 	    end;
 
 	    append   = from_word (w_osval "append");
@@ -169,13 +177,13 @@ herein
 	    nonblock = from_word (w_osval "nonblock");
 	    rsync    = from_word (w_osval "rsync");
 	    sync     = from_word (w_osval "sync");
-	  };
+	};
 
-	my fcntl_d:    (Sy_Int, Sy_Int) -> Sy_Int    = cfun "fcntl_d";	# fcntl_d	is from  src/runtime/c-libs/posix-io/fcntl_d.c
-	my fcntl_gfd:  Sy_Int -> Sy_Unt              = cfun "fcntl_gfd";	# fcntl_gfd	is from  src/runtime/c-libs/posix-io/fcntl_gfd.c
-	my fcntl_sfd:  ((Sy_Int, Sy_Unt)) -> Void    = cfun "fcntl_sfd";	# fcntl_sfd	is from  src/runtime/c-libs/posix-io/fcntl_sfd.c
-	my fcntl_gfl:  Sy_Int -> ((Sy_Unt, Sy_Unt))  = cfun "fcntl_gfl";	# fcntl_gfl	is from  src/runtime/c-libs/posix-io/fcntl_gfl.c
-	my fcntl_sfl:  ((Sy_Int, Sy_Unt)) -> Void    = cfun "fcntl_sfl";	# fcntl_sfl	is from  src/runtime/c-libs/posix-io/fcntl_sfl.c
+	my fcntl_d:    (Sy_Int, Sy_Int) -> Sy_Int             = cfun "fcntl_d";		# fcntl_d	is from  src/runtime/c-libs/posix-io/fcntl_d.c
+	my fcntl_gfd:   Sy_Int          -> Sy_Unt             = cfun "fcntl_gfd";	# fcntl_gfd	is from  src/runtime/c-libs/posix-io/fcntl_gfd.c
+	my fcntl_sfd:  (Sy_Int, Sy_Unt) -> Void               = cfun "fcntl_sfd";	# fcntl_sfd	is from  src/runtime/c-libs/posix-io/fcntl_sfd.c
+	my fcntl_gfl:   Sy_Int          -> (Sy_Unt, Sy_Unt)   = cfun "fcntl_gfl";	# fcntl_gfl	is from  src/runtime/c-libs/posix-io/fcntl_gfl.c
+	my fcntl_sfl:  (Sy_Int, Sy_Unt) -> Void               = cfun "fcntl_sfl";	# fcntl_sfl	is from  src/runtime/c-libs/posix-io/fcntl_sfl.c
 
 	fun dupfd { old, base }
 	    =
@@ -191,7 +199,7 @@ herein
 
 	fun getfl fd
 	    =
-	    {   my (status, omode) = fcntl_gfl (fs::fd_to_int fd);
+	    {   my (status, omode) =  fcntl_gfl (fs::fd_to_int fd);
 
 		(flags::from_word status, fs::omode_from_unt omode);
 	    };
@@ -204,16 +212,15 @@ herein
 	    =
 	    F_RDLCK | F_WRLCK | F_UNLCK;
 
-	package flock
-	  =
-	  package {
-	     Flock = FLOCK  {
-		 ltype:  Lock_Type,
-		 whence: Whence,
-		 start:  file_position::Int,
-		 len:    file_position::Int,
-		 pid:    Null_Or( Process_Id )
-	       };
+	package flock {
+
+	    Flock = FLOCK
+                      { ltype:  Lock_Type,
+			whence: Whence,
+			start:  file_position::Int,
+			len:    file_position::Int,
+			pid:    Null_Or( Process_Id )
+		      };
 
 	    fun flock fv = FLOCK fv;
 	    fun ltype (FLOCK fv) = fv.ltype;
@@ -221,7 +228,7 @@ herein
 	    fun start (FLOCK fv) = fv.start;
 	    fun len (FLOCK fv) = fv.len;
 	    fun pid (FLOCK fv) = fv.pid;
-	  };
+	};
 
 	Flock_Rep
 	    =
@@ -319,9 +326,11 @@ herein
 
 	buffer_size_b = 4096;
 
+
 	fun is_reg_file  fd
 	    =
 	    fs::stat::is_file (fs::fstat fd);
+
 
 	fun file_position_fns (closed, fd)
 	    =
@@ -374,7 +383,12 @@ herein
 		};
 	    fi;
 
-	fun make_reader { mk_rd, cvt_vec, cvt_arr_slice } { fd, name, blocking_mode }
+	fun make_reader
+            { mk_rd,			# Either binary_primitive_io::READER or text_primitive_io::READER -- see src/lib/std/src/io/primitive-io-g.pkg
+              cvt_vec,
+              cvt_arr_slice
+            }
+            { fd, name, blocking_mode }
 	    =
 	    {   closed = REF FALSE;
 
@@ -397,6 +411,7 @@ herein
 		    {   v = announce "read" read_vector (fd, n);
 
 			inc_pos (unt8_vector::length v);
+
 			cvt_vec v;
 		    };
 
@@ -409,15 +424,15 @@ herein
 
 		fun block_wrap f x
 		    =
-		    {   if   *closed              raise exception io_exceptions::CLOSED_IO_STREAM;  fi;
-			if   (not *blocking   )   blocking_on ();                         fi;
+		    {   if   *closed           raise exception io_exceptions::CLOSED_IO_STREAM;  fi;
+			if   (not *blocking)   blocking_on ();                                   fi;
 			f x;
 		    };
 
 		fun no_block_wrap f x
 		    =
 		    {   if   *closed        raise exception io_exceptions::CLOSED_IO_STREAM;   fi;
-			if   *blocking      blocking_off();                          fi;
+			if   *blocking      blocking_off();                                    fi;
 
 			THE (f x)
 			except
@@ -471,7 +486,10 @@ herein
 
 	fun make_writer
 		#
-		{ mk_wr, cvt_vec_slice, cvt_arr_slice }
+		{ mk_wr,			# Either binary_primitive_io::WRITER or text_primitive_io::WRITER -- see src/lib/std/src/io/primitive-io-g.pkg
+                  cvt_vec_slice,
+                  cvt_arr_slice
+                }
 		#
 		{ fd, name, blocking_mode, append_mode, chunk_size }
 	    =

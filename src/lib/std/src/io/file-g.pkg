@@ -11,12 +11,12 @@
 # closed?		XXX BUGGO FIXME
 
 stipulate
-    package int = int_guts;				# int_guts			is from   src/lib/std/src/bind-int-32.pkg
-    package os  = winix_guts;				# winix_guts			is from   src/lib/std/src/unix/winix-guts.pkg
-    package a  =  rw_char_vector;			# rw_char_vector		is from   src/lib/std/src/rw-char-vector.pkg
-    package v  =  char_vector;				# char_vector			is from   src/lib/std/src/char-vector.pkg
-    package rs =  rw_char_vector_slice;			# rw_char_vector_slice		is from   src/lib/std/src/rw-char-vector-slice.pkg
-    package vs =  char_vector_slice;			# char_vector_slice		is from   src/lib/std/src/char-vector-slice.pkg
+    package int =  int_guts;				# int_guts			is from   src/lib/std/src/bind-int-32.pkg
+    package os  =  winix_guts;				# winix_guts			is from   src/lib/std/src/unix/winix-guts.pkg
+    package a   =  rw_char_vector;			# rw_char_vector		is from   src/lib/std/src/rw-char-vector.pkg
+    package v   =     char_vector;			#    char_vector		is from   src/lib/std/src/char-vector.pkg
+    package rs  =  rw_char_vector_slice;		# rw_char_vector_slice		is from   src/lib/std/src/rw-char-vector-slice.pkg
+    package vs  =     char_vector_slice;		#    char_vector_slice		is from   src/lib/std/src/char-vector-slice.pkg
 herein
 							# Winix_Primitive_Io		is from   src/lib/std/src/io/winix-primitive-io.api
 							# File				is from   src/lib/std/src/io/file.api
@@ -42,7 +42,9 @@ herein
     )
     : (weak)  File
     {
-	package pio =  winix_primitive_io::primitive_io;
+	package pio					# Unpack part of our generic's argument.
+	    =
+	    winix_primitive_io::primitive_io;
 
 	some_element = '\000';
 	    #

@@ -62,12 +62,12 @@ package posix_file # : Posix_File				# Posix_File		is from   src/lib/std/src/pos
     File_Descriptor = host_int::Int;
 
 
-    fun fd_to_int fd
+    fun fd_to_int  fd
         =
         fd;
 
 
-    fun int_to_fd fd
+    fun int_to_fd  fd
         =
         fd;
 
@@ -240,48 +240,52 @@ package posix_file # : Posix_File				# Posix_File		is from   src/lib/std/src/pos
 	    ];
 
 
-    package o
-      =
-      package {
+    package o {
 
-	  stipulate
-	      package bf = bit_flags_g ();				# bit_flags_g	def in    src/lib/std/src/bit-flags-g.pkg
-	  herein
-	      include bf;
-	  end;
+	stipulate
+	    package bf = bit_flags_g ();				# bit_flags_g	def in    src/lib/std/src/bit-flags-g.pkg
+	herein
+	    include bf;
+	end;
 
-	  append   = from_word (w_osval "O_APPEND");
-	  dsync    = from_word (w_osval "O_DSYNC");
-	  excl     = from_word (w_osval "O_EXCL");
-	  noctty   = from_word (w_osval "O_NOCTTY");
-	  nonblock = from_word (w_osval "O_NONBLOCK");
-	  rsync    = from_word (w_osval "O_RSYNC");
-	  sync     = from_word (w_osval "O_SYNC");
-	  o_trunc  = w_osval "O_TRUNC";
-	  trunc    = from_word  o_trunc;
-	  o_creat  = w_osval "O_CREAT";
-	  crflags  = o_wronly | o_creat | o_trunc;
+	append   = from_word (w_osval "O_APPEND");
+	dsync    = from_word (w_osval "O_DSYNC");
+	excl     = from_word (w_osval "O_EXCL");
+	noctty   = from_word (w_osval "O_NOCTTY");
+	nonblock = from_word (w_osval "O_NONBLOCK");
+	rsync    = from_word (w_osval "O_RSYNC");
+	sync     = from_word (w_osval "O_SYNC");
+	o_trunc  = w_osval "O_TRUNC";
+	trunc    = from_word  o_trunc;
+	o_creat  = w_osval "O_CREAT";
+	crflags  = o_wronly | o_creat | o_trunc;
 
-      };
+    };
 
     my openf' : (String, host_unt::Unt, host_unt::Unt) -> host_int::Int
         =
-        cfun "openf";					# openf		is from   src/runtime/c-libs/posix-filesys/openf.c
+        cfun "openf";							# openf		is from   src/runtime/c-libs/posix-filesys/openf.c
 
     fun openf (fname, omode, flags)
         =
         int_to_fd (openf'(fname, o::to_word flags | (omode_to_unt omode), 0u0));
 
+
     fun createf (fname, omode, oflags, mode)
         =
-        {   flags = o::o_creat | o::to_word oflags | (omode_to_unt omode);
+        {   flags = o::o_creat
+                  | o::to_word  oflags
+                  | omode_to_unt  omode
+                  ;
           
             int_to_fd (openf'(fname, flags, s::to_word mode));
         };
 
+
     fun creat (fname, mode)
         =
         int_to_fd (openf'(fname, o::crflags, s::to_word mode));
+
 
     my umask' : host_unt::Unt -> host_unt::Unt = cfun "umask";
     fun umask mode = s::from_word (umask' (s::to_word mode));
