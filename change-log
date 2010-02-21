@@ -1,3 +1,4 @@
+2010-02-21-03.50.40: src/runtime/c-libs/lib7-socket/: Rename settracefn.c -> setprintiffn.c, add print-if.c to do actual trace logging from C code.
 2010-02-21-01.53.21: src/runtime/c-libs/lib7-socket/: Create settracefn.c to support C-level tracing coordinated with tracing.pkg.  src/lib/std/src/socket/internet-socket.pkg: Add set_trace_fd call providing access to preceding.
 2010-02-21-01.10.34: src/lib/src/lib/thread-kit/src/lib/tracing.pkg: Add logic to pry Unix fd out of Output_Stream value.
 2010-02-20-23.10.59: src/lib/std/src/io/pure-io.api: Tidying.

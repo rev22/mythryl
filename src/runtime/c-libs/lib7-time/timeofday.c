@@ -26,16 +26,17 @@
 #include "runtime-heap.h"
 #include "cfun-proto-list.h"
 
-/* _lib7_Time_timeofday : Void -> (int32.Int, Int)
+/* _lib7_time_gettimeofday -- time as (seconds,microseconds).
  *
- * Return the time of day.
- * NOTE: gettimeofday() is not POSIX (time() returns seconds, and is POSIX
- * and ISO C).
+ * We break this out in a function separate from
+ * _lib7_Time_timeofday so as to have it available
+ * at the C level for the benefit of modules like
+ * src/runtime/c-libs/lib7-socket/print-if.c
  */
-lib7_val_t _lib7_Time_timeofday (lib7_state_t *lib7_state, lib7_val_t arg)
+int   _lib7_time_gettimeofday   (int* microseconds)
 {
-    int			c_sec, c_usec;
-    lib7_val_t		lib7_sec, res;
+    int			c_sec;
+    int			c_usec;
 
 #ifdef HAS_GETTIMEOFDAY
 #if defined(OPSYS_UNIX)
@@ -67,10 +68,30 @@ lib7_val_t _lib7_Time_timeofday (lib7_state_t *lib7_state, lib7_val_t arg)
 #error no timeofday mechanism
 #endif
 
-    INT32_ALLOC(lib7_state, lib7_sec, c_sec);
-    REC_ALLOC2 (lib7_state, res, lib7_sec, INT_CtoLib7(c_usec));
+    *microseconds = c_usec;
+    return c_sec;
+}				/* end of _lib7_time_gettimeofday */
 
-    return res;
+
+/* _lib7_Time_timeofday : Void -> (int32::Int, Int)
+ *
+ * Return the time of day.
+ * NOTE: gettimeofday() is not POSIX (time() returns seconds, and is POSIX
+ * and ISO C).
+ */
+lib7_val_t _lib7_Time_timeofday (lib7_state_t *lib7_state, lib7_val_t arg)
+{
+    int			c_seconds;
+    int			c_microseconds;
+    lib7_val_t		lib7_seconds;
+    lib7_val_t		result;
+
+    c_seconds = _lib7_time_gettimeofday( &c_microseconds );
+
+    INT32_ALLOC(lib7_state, lib7_seconds, c_seconds);
+    REC_ALLOC2 (lib7_state, result, lib7_seconds, INT_CtoLib7(c_microseconds));
+
+    return result;
 
 } /* end of _lib7_Time_timeofday */
 

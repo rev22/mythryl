@@ -518,6 +518,11 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 
 #           time_string  =  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()));	# "2010-01-05:14:17:23" or such.
 	    time_string  =  time::format 6 (time::get());						# "1262722876.273621"   or such.
+		#
+		# NB: If you change the time_string content/format you
+		#     should probably make corresponding changes in
+		#
+		#          src/runtime/c-libs/lib7-socket/print-if.c
 
 	    trace_string =  time_string + ":  "
                          +  (sprintf "%-20s" (thread::get_thread_name() + ": "))
