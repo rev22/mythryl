@@ -20,9 +20,9 @@
  */
 lib7_val_t _lib7_P_IO_fsync (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int         status, fd = INT_LIB7toC(arg);
+    int fd = INT_LIB7toC(arg);
 
-    status = fsync(fd);
+    int status = fsync(fd);
 
     CHECK_RETURN_UNIT(lib7_state, status)
 

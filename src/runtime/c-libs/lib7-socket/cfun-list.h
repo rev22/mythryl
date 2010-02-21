@@ -61,6 +61,8 @@ CFUNC("recvBufFrom",	_lib7_Sock_recvbuffrom,	"")
 
 CFUNC("socket",		_lib7_Sock_socket,	"(int * int * int) -> socket")
 
+CFUNC("setTraceFd",	_lib7_Sock_settracefd,	"Int -> Void")
+
 #ifdef HAS_UNIX_DOMAIN
 CFUNC("socketPair",	_lib7_Sock_socketpair,	"(int * int * int) -> (socket * socket)")
 CFUNC("fromUnixAddr",	_lib7_Sock_fromunixaddr,	"addr -> String")

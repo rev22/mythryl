@@ -74,7 +74,8 @@ UTIL_OBJS =     util-mkhostent.obj \
                 util-mkservent.obj \
                 util-sockopt.obj \
                 tbl-socket-type.obj \
-                tbl-addr-family.obj
+                tbl-addr-family.obj \
+		settracefd.obj
 
 OBJS =		lib7-socket-lib.obj \
 		$(NETDB_OBJS) $(CTL_OBJS) $(SOCK_OBJS) $(MISC_OBJS) \

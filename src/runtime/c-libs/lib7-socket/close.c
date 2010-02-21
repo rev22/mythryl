@@ -17,7 +17,8 @@ lib7_val_t
 
 _lib7_Sock_close (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int		status, fd = INT_LIB7toC(arg);
+    int		status;
+    int         fd      =  INT_LIB7toC(arg);
 
     /* FIXME:  Architecture dependencies code should probably moved to
        sockets-osdep.h */
