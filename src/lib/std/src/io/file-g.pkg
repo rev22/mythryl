@@ -106,7 +106,7 @@ herein
 	    # field of the "info" package points to a more REF that is either
 	    # NO_MORE or TERMINATED.
 
-	    Input_Stream = INPUT_STREAM  ((Input_Buffer, Int))
+	    Input_Stream = INPUT_STREAM  (Input_Buffer, Int)
 
 	    also
 	    Input_Buffer
@@ -1194,9 +1194,9 @@ herein
 
 		    case *buffering
 			#
-			io_exceptions::NO_BUFFERING    =>  write_direct();
-			io_exceptions::LINE_BUFFERING  =>  insert line_buf_copy_vec;
-			io_exceptions::BLOCK_BUFFERING =>  insert block_buf_copy_vec;
+			io_exceptions::NO_BUFFERING    =>  write_direct ();
+			io_exceptions::LINE_BUFFERING  =>  insert  line_buf_copy_vec;
+			io_exceptions::BLOCK_BUFFERING =>  insert  block_buf_copy_vec;
 		    esac;
 		};
 
@@ -1400,7 +1400,7 @@ herein
 	# * Open files *
 	#   fun open_for_read was originally defined here... 2007-01-19 CrT 
 
-	fun open_for_write filename
+	fun open_for_write  filename
 	    =
 	    {   wr = winix_primitive_io::open_for_write  filename;
 
