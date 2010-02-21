@@ -300,6 +300,29 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 
         lines_printed = REF 0;
 
+	# Extract the unix Int file descriptor
+	# from a file::Output_Stream -- this is
+	# a bit like pulling teeth:
+	#
+	fun outstream_to_fd  stream					# file			is from   src/lib/std/src/unix/file.pkg
+	    =								# text_primitive_io	is from   src/lib/std/src/io/text-primitive-io.pkg
+	    {   purestream =  file::get_outstream  stream;
+
+		my (writer, _)
+		    =
+		    file::pure_io::get_writer  purestream;
+
+		my fd: Int
+		    =
+                    case writer
+			#
+			text_primitive_io::WRITER { io_descriptor => THE iod, ... } =>  iod;
+			_ => raise exception FAIL "tracing.pkg: No iod in stream?!";
+		    esac;	
+
+		fd;
+	    };		
+
     herein
 
 	fun trace_print  message
@@ -333,7 +356,9 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 			=>
 			{   to  = {   stream = file::open_for_write filename;
 
-				      file::write (stream, sprintf "# This is a trace log created by %s by:\n" (date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()))));
+				      fd =  outstream_to_fd  stream;
+
+				      file::write (stream, sprintf "# (fd==%d) This is a trace log created by %s by:\n" fd (date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()))));
 				      file::write (stream, "# \n");
 				      file::write (stream, "#     src/lib/src/lib/thread-kit/src/lib/tracing.pkg\n");
 				      file::write (stream, "# \n");
