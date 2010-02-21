@@ -12,6 +12,7 @@
 #include "lib7-c.h"
 #include "cfun-proto-list.h"
 
+#include "print-if.h"
 
 /*
 ###        "How often, or on what system, the Thought Police
@@ -31,8 +32,10 @@
 lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     int		socket = REC_SELINT(arg, 0);
-    lib7_val_t	addr = REC_SEL(arg, 1);
+    lib7_val_t	addr   = REC_SEL(   arg, 1);
     int		status;
+
+    print_if("Test print_if from top of connect.c\n");
 
     status
         =

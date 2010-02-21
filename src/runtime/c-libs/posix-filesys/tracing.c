@@ -1,4 +1,4 @@
-/* openf.c
+/* tracing.c
  *
  */
 
@@ -6,20 +6,7 @@
 
 #include "runtime-unixdep.h"
 
-#if HAVE_FCNTL_H
-#include <fcntl.h>
-#endif
-
-#include "runtime-heap.h"
-#include "lib7-c.h"
-#include "cfun-proto-list.h"
-
-/* _lib7_P_FileSys_openf : (String * word * word) -> int
- *                        name     flags  mode
- *
- * Open a file and return the file descriptor.
- */
-lib7_val_t _lib7_P_FileSys_openf (lib7_state_t *lib7_state, lib7_val_t arg)
+void print_if_lib7_P_FileSys_openf (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     lib7_val_t	    path  = REC_SEL(arg, 0);
     int		    flags = REC_SELWORD(arg, 1);

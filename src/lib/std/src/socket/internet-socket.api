@@ -68,7 +68,7 @@ api Internet_Socket {
 
     to_string: Socket(X) -> String;				# For debug printouts etc.
 
-    set_trace_fd: Int -> Void;					# Enable socket I/O debug fprintfs to given fd -- see src/runtime/c-libs/lib7-socket/settracefd.c
+    set_printif_fd: Int -> Void;				# Enable C-level socket I/O debug print_ifs to given fd -- see src/runtime/c-libs/lib7-socket/setprintiffd.c
 };
 
 

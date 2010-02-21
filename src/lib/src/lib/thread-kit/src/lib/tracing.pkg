@@ -358,6 +358,8 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 
 				      fd =  outstream_to_fd  stream;
 
+				      internet_socket::set_printif_fd  fd;	# Enable C-level print_if()s to this tracelog.
+
 				      file::write (stream, sprintf "# (fd==%d) This is a trace log created by %s by:\n" fd (date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()))));
 				      file::write (stream, "# \n");
 				      file::write (stream, "#     src/lib/src/lib/thread-kit/src/lib/tracing.pkg\n");

@@ -1,4 +1,4 @@
-/* settracefd.c
+/* setprintiffd.c
  *
  */
 
@@ -11,13 +11,15 @@
 #include "lib7-c.h"
 #include "cfun-proto-list.h"
 
+#include "print-if.h"
 
-
-/* _lib7_Sock_settracefd : Int -> Void
+/* _lib7_Sock_setprintiffd : Int -> Void
  */
-lib7_val_t _lib7_Sock_settracefd (lib7_state_t *lib7_state, lib7_val_t arg)
+lib7_val_t _lib7_Sock_setprintiffd (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int         fd      =  INT_LIB7toC(arg);
+    int fd      =  INT_LIB7toC(arg);
+
+    print_if_fd = fd;
 
     return LIB7_void;
 }

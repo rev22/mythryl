@@ -278,7 +278,7 @@ package posix_file # : Posix_File				# Posix_File		is from   src/lib/std/src/pos
                   | omode_to_unt  omode
                   ;
           
-            int_to_fd (openf'(fname, flags, s::to_word mode));
+            int_to_fd (openf' (fname, flags, s::to_word mode));
         };
 
 

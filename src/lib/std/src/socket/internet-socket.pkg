@@ -80,12 +80,12 @@ herein
 
         to_string =  ps::to_string;
 
-	my set_trace_fd:        Int -> Void
+	my set_printif_fd:        Int -> Void
 	    =
-	    socket_fn "setTraceFd";
+	    socket_fn "setPrintIfFd";					# setPrintIfFd		is in     src/runtime/c-libs/lib7-socket/setprintiffd.c
 		#
 		# Enable socket I/O debug fprintfs to given
- 		# fd -- see src/runtime/c-libs/lib7-socket/settracefd.c
+ 		# fd -- see src/runtime/c-libs/lib7-socket/setprintiffd.c
 		# (There might be a better package to put this in...?)
 
     };
