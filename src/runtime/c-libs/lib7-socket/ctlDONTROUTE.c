@@ -14,14 +14,17 @@
 
 /*
 ###        "The popular mind often pictures gigantic flying machines
-###           speeding across the Atlantic carrying innumerable passengers
-###           in a way analogous to our modern steamships.
+###         speeding across the Atlantic carrying innumerable passengers
+###         in a way analogous to our modern steamships.
 ###         It seems safe to say that such ideas are wholly visionary." 
 ###
 ###                    -- William H. Pickering, astronomer 1910
  */
 
 /* _lib7_Sock_ctlDONTROUTE : (Socket, Null_Or( Bool )) -> Bool
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t
 

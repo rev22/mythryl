@@ -16,6 +16,9 @@
 /* _lib7_Sock_getaddrfamily : addr -> af
  *
  * Extract the family field, convert to host byteorder, and return it.
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t _lib7_Sock_getaddrfamily (lib7_state_t *lib7_state, lib7_val_t arg)
 {

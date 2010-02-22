@@ -14,6 +14,9 @@
 #include "socket-util.h"
 
 /* _lib7_Sock_ctlSNDBUF : (socket * int option) -> int
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t _lib7_Sock_ctlSNDBUF (lib7_state_t *lib7_state, lib7_val_t arg)
 {

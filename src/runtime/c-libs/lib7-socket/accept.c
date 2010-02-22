@@ -13,6 +13,9 @@
 #include "cfun-proto-list.h"
 
 /* _lib7_Sock_accept : Socket -> (Socket, Address)
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t _lib7_Sock_accept (lib7_state_t *lib7_state, lib7_val_t arg)
 {

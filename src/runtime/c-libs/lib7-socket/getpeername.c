@@ -24,6 +24,9 @@
 
 
 /* _lib7_Sock_getpeername : Socket -> (Address_Family, Address)
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t
 

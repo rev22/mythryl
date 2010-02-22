@@ -276,7 +276,10 @@ herein
 	    {   # Digest a user-level X server spec
 		# into a form easier to work with:
 		#
-		my { address, canonical_display_name, screen }
+		my  { address:                  cxa::Xserver_Address,
+                      canonical_display_name:   String,
+                      screen:                   Int
+                    }
 		    =
 		    cxa::crack_xserver_address  raw_display_name;
 
@@ -312,7 +315,11 @@ herein
 			    =
 			    raise exception BAD_ADDRESS s;
 
-		fun open_internet_domain_socket (address, port)
+		fun open_internet_domain_socket
+                    (
+                      address:  dns::Internet_Address,
+                      port:     Int
+                    )
 		    =
 		    {   trace .{
 			    #

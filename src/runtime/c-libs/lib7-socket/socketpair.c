@@ -33,6 +33,10 @@
  *
  * Create a pair of sockets.  The arguments are: domain (should be
  * AF_UNIX), type, and protocol.
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/generic-socket.pkg
+
  */
 lib7_val_t _lib7_Sock_socketpair (lib7_state_t *lib7_state, lib7_val_t arg)
 {

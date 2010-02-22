@@ -13,6 +13,9 @@
 #include "cfun-proto-list.h"
 
 /* _lib7_Sock_bind : (socket * addr) -> Void
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t 
 

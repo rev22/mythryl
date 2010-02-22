@@ -122,30 +122,30 @@ herein
 		    =
 		    ignore (control_fn (file_descriptor, THE value));
 
-		my ctl_debug:      ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlDEBUG";
-		my ctl_reuseaddr:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlREUSEADDR";
-		my ctl_keepalive:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlKEEPALIVE";
-		my ctl_dontroute:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlDONTROUTE";
-		my ctl_broadcast:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlBROADCAST";
-		my ctl_oobinline:  ((Socket_Fd, Null_Or( Bool )) ) -> Bool =		socket_fn "ctlOOBINLINE";
-		my ctl_sndbuf:     ((Socket_Fd, Null_Or( Int  )) ) -> Int  =		socket_fn "ctlSNDBUF";
-		my ctl_rcvbuf:     ((Socket_Fd, Null_Or( Int  )) ) -> Int  =		socket_fn "ctlSNDBUF";
+		my ctl_debug:      (Socket_Fd, Null_Or(Bool)) -> Bool =		socket_fn "ctlDEBUG";
+		my ctl_reuseaddr:  (Socket_Fd, Null_Or(Bool)) -> Bool =		socket_fn "ctlREUSEADDR";
+		my ctl_keepalive:  (Socket_Fd, Null_Or(Bool)) -> Bool =		socket_fn "ctlKEEPALIVE";
+		my ctl_dontroute:  (Socket_Fd, Null_Or(Bool)) -> Bool =		socket_fn "ctlDONTROUTE";
+		my ctl_broadcast:  (Socket_Fd, Null_Or(Bool)) -> Bool =		socket_fn "ctlBROADCAST";
+		my ctl_oobinline:  (Socket_Fd, Null_Or(Bool)) -> Bool =		socket_fn "ctlOOBINLINE";
+		my ctl_sndbuf:     (Socket_Fd, Null_Or(Int )) -> Int  =		socket_fn "ctlSNDBUF";
+		my ctl_rcvbuf:     (Socket_Fd, Null_Or(Int )) -> Int  =		socket_fn "ctlRCVBUF";	/* SML/NJ has ctlSNDBUF here. */
 
-		my ctl_linger:     ((Socket_Fd,  Null_Or( Null_Or( Int ) )) ) -> Null_Or( Int ) =	socket_fn "ctlLINGER";
+		my ctl_linger:     (Socket_Fd,  Null_Or( Null_Or(Int) )) -> Null_Or(Int) =	socket_fn "ctlLINGER";
 
 	    herein
 
 		# Get/set socket options 
 
 		fun get_debug x = the_else ctl_debug x;
-		fun set_debug x = set_opt ctl_debug x;
+		fun set_debug x = set_opt  ctl_debug x;
 
 		fun get_reuseaddr x = the_else ctl_reuseaddr x;
-		fun set_reuseaddr x = set_opt ctl_reuseaddr x;
+		fun set_reuseaddr x = set_opt  ctl_reuseaddr x;
 		fun get_keepalive x = the_else ctl_keepalive x;
-		fun set_keepalive x = set_opt ctl_keepalive x;
+		fun set_keepalive x = set_opt  ctl_keepalive x;
 		fun get_dontroute x = the_else ctl_dontroute x;
-		fun set_dontroute x = set_opt ctl_dontroute x;
+		fun set_dontroute x = set_opt  ctl_dontroute x;
 
 		fun get_linger socket
                     =

@@ -21,6 +21,9 @@
  */
 
 /* _lib7_Sock_ctlKEEPALIVE : (Socket, Null_Or( Bool )) -> Bool
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t
 

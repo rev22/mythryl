@@ -14,6 +14,9 @@
 #include "print-if.h"
 
 /* _lib7_Sock_setprintiffd : Int -> Void
+ *
+ * This function gets imported into the Mythryl world by:
+ *     src/lib/std/src/socket/internet-socket.pkg
  */
 lib7_val_t _lib7_Sock_setprintiffd (lib7_state_t *lib7_state, lib7_val_t arg)
 {
