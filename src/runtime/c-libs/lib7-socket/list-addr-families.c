@@ -26,7 +26,7 @@
  * Return a list of the known address famlies (this may contain unsupported
  * families).
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t _lib7_Sock_listaddrfamilies (lib7_state_t *lib7_state, lib7_val_t arg)

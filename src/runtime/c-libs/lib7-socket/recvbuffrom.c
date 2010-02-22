@@ -26,6 +26,9 @@
  * The arguments are: socket, data buffer, start position, number of
  * bytes, OOB flag and peek flag.  The result is number of bytes read and
  * the source address.
+ *
+ * This function gets imported into the Mythryl world via:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t _lib7_Sock_recvbuffrom (lib7_state_t *lib7_state, lib7_val_t arg)
 {

@@ -140,7 +140,7 @@ static char* type_name( int type ) {
 
 /* _lib7_Sock_socket : (Int, Int, Int) -> Socket_Fd
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/generic-socket.pkg
  */
 lib7_val_t _lib7_Sock_socket (lib7_state_t *lib7_state, lib7_val_t arg)

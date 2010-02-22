@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
 #include "runtime-base.h"
@@ -12,28 +14,43 @@
 #include "lib7-c.h"
 #include "cfun-proto-list.h"
 
+#include "print-if.h"
+
 /* _lib7_Sock_recv : (socket * int * Bool * Bool) -> int
  *
  * The arguments are: socket, number of bytes, OOB flag and peek flag; the
  * result is the vector of bytes received.
+ *
+ * This function gets imported into the Mythryl world via:
+ *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int		socket = REC_SELINT(arg, 0);
-    int		nbytes = REC_SELINT(arg, 1);
-    int		flag = 0;
-    lib7_val_t	vec, res;
+    lib7_val_t	vec;
+    lib7_val_t	result;
     int		n;
 
-    if (REC_SEL(arg, 2) == LIB7_true) flag |= MSG_OOB;
-    if (REC_SEL(arg, 3) == LIB7_true) flag |= MSG_PEEK;
+    int		socket = REC_SELINT(arg, 0);
+    int		nbytes = REC_SELINT(arg, 1);
+    lib7_val_t	oob    = REC_SEL(   arg, 2);
+    lib7_val_t	peek   = REC_SEL(   arg, 3);
+
+    int		flag = 0;
+
+    if (oob  == LIB7_true) flag |= MSG_OOB;
+    if (peek == LIB7_true) flag |= MSG_PEEK;
 
     /* Allocate the vector.
      * Note that this might cause a GC:
      */
     vec = LIB7_AllocRaw32 (lib7_state, BYTES_TO_WORDS(nbytes));
 
+    print_if("recv.c/before: socket d=%d nbytes d=%d oob=%s peek=%s\n",socket,nbytes,(oob == LIB7_true)?"TRUE":"FALSE",(peek == LIB7_true)?"TRUE":"FALSE");
+    errno = 0;
+
     n = recv (socket, PTR_LIB7toC(char, vec), nbytes, flag);
+
+    print_if("recv.c/after: n d=%d errno d=%d\n",n,errno);
 
     if (n < 0)
         return RAISE_SYSERR(lib7_state, status, __LINE__);
@@ -45,9 +62,9 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
 	LIB7_ShrinkRaw32 (lib7_state, vec, BYTES_TO_WORDS(n));
     }
 
-    SEQHDR_ALLOC (lib7_state, res, DESC_string, vec, n);
+    SEQHDR_ALLOC (lib7_state, result, DESC_string, vec, n);
 
-    return res;
+    return result;
 
 } /* end of _lib7_Sock_recv */
 

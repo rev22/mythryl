@@ -34,7 +34,7 @@
  * Create a pair of sockets.  The arguments are: domain (should be
  * AF_UNIX), type, and protocol.
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/generic-socket.pkg
 
  */

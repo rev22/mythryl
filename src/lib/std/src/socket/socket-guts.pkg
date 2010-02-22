@@ -491,14 +491,8 @@ herein
 	# Socket output operations 
 	#
 	stipulate
-
-	    my send_v:  (Int, Wy8Vector, Int, Int, Bool, Bool) -> Int
-		=
-		socket_fn "sendBuf";
-
-	    my send_a:  (Int, Wy8Array, Int, Int, Bool, Bool) -> Int
-		=
-		socket_fn "sendBuf";
+	    my send_v:  (Int, Wy8Vector, Int, Int, Bool, Bool) -> Int   = socket_fn "sendBuf";		# "sendBuf"	is in   src/runtime/c-libs/lib7-socket/sendbuf.c
+	    my send_a:  (Int, Wy8Array,  Int, Int, Bool, Bool) -> Int	= socket_fn "sendBuf";
 	herein
 
 	    fun send_vec0 getfd (s, buffer)
@@ -596,14 +590,8 @@ herein
 	end;					# stipulate
 
 	stipulate
-
-	    my send_to_v:  ((Int, Wy8Vector, Int, Int, Bool, Bool, Internet_Address)) -> Int
-		=
-		socket_fn "sendBufTo";
-
-	    my send_to_a:  ((Int, Wy8Array, Int, Int, Bool, Bool, Internet_Address)) -> Int
-		=
-		socket_fn "sendBufTo";
+	    my send_to_v:  (Int, Wy8Vector, Int, Int, Bool, Bool, Internet_Address) -> Int   = socket_fn "sendBufTo";		# sendBufTo	is in   src/runtime/c-libs/lib7-socket/sendbufto.c
+	    my send_to_a:  (Int, Wy8Array,  Int, Int, Bool, Bool, Internet_Address) -> Int   = socket_fn "sendBufTo";
 	herein
 
 	    fun send_vec_to0 getfd (socket, ADDRESS address, buffer)
@@ -717,7 +705,7 @@ herein
 
 	    my  recv_v' : (Int, Int, Bool, Bool) -> Wy8Vector
 		=
-		socket_fn "recv";
+		socket_fn "recv";							# "recv"	is in   src/runtime/c-libs/lib7-socket/recv.c
 
 	    fun recv_v _ (_, 0, _, _)
 		    =>
@@ -734,7 +722,7 @@ herein
 
 	    my recv_a:  (Int, Wy8Array, Int, Int, Bool, Bool) -> Int
 		=
-		socket_fn "recvBuf";
+		socket_fn "recvBuf";							# "recvBuf"	is in   src/runtime/c-libs/lib7-socket/recvbuf.c
 
 	herein
 
@@ -821,7 +809,7 @@ herein
 
 	    my recv_from_v' : ((Int, Int, Bool, Bool)) -> ((Wy8Vector, Internet_Address))
 		=
-		socket_fn "recvFrom";
+		socket_fn "recvFrom";							# "recvFrom	is in   src/runtime/c-libs/lib7-socket/recvfrom.c
 
 
 	    fun recv_from_v _ (_, 0, _, _)
@@ -846,7 +834,7 @@ herein
 
 	    my recv_from_a:   ((Int, Wy8Array, Int, Int, Bool, Bool)) -> ((Int, Internet_Address))
 		=
-		socket_fn "recvBufFrom";
+		socket_fn "recvBufFrom";						# "recvBufFrom"		is in   src/runtime/c-libs/lib7-socket/recvbuffrom.c
 
 	herein
 

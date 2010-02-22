@@ -147,9 +147,9 @@ herein
                 #            before the remote X server has a chance to respond;  this should give it that chance,
 		#            so that the reply is already in the kernel socket buffer when we issue the socket read.
 		#	     This is a diagnostic test, not a fix:	
-#               sleep 2;	Result: no change.
+		sleep 2;	#	Result: no change.
 
-#		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, slept 2 seconds, now reading back connection reply header"; };
+		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, slept 2 seconds, now reading back connection reply header"; };
 
 
 											# exceptions			is from   src/lib/std/exceptions.pkg

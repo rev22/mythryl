@@ -15,7 +15,7 @@
 
 /* _lib7_Sock_getATMARK : socket -> int
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t _lib7_Sock_getATMARK (lib7_state_t *lib7_state, lib7_val_t arg)

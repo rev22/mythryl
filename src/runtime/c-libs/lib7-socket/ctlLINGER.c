@@ -29,7 +29,7 @@
  *   THE(NULL)		=> disable linger
  *   THE(THE t)	=> enable linger with timeout t.
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t

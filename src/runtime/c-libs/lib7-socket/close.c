@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
 #include "runtime-base.h"
@@ -11,9 +13,11 @@
 #include "lib7-c.h"
 #include "cfun-proto-list.h"
 
+#include "print-if.h"
+
 /* _lib7_Sock_close : Socket -> Void
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t
@@ -26,11 +30,16 @@ _lib7_Sock_close (lib7_state_t *lib7_state, lib7_val_t arg)
     /* FIXME:  Architecture dependencies code should probably moved to
        sockets-osdep.h */
 
+    print_if( "close.c/top: fd d=%d\n", fd );
+    errno = 0;
+
 #if defined(OPSYS_WIN32)
     status = closesocket(fd);
 #else
     status = close(fd);
 #endif
+
+    print_if( "close.c/bot: status d=%d errno d=%d\n", status, errno);
 
     CHECK_RETURN_UNIT(lib7_state, status);
 }

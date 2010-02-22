@@ -26,7 +26,7 @@
  *
  * Given a INET address and port number, allocate a INET-domain socket address.
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/internet-socket.pkg
  *
  */

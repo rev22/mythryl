@@ -14,7 +14,7 @@
 
 /* _lib7_Sock_ctlDEBUG : (Socket, Null_Or( Bool )) -> Bool
  *
- * This function gets imported into the Mythryl world by:
+ * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/socket-guts.pkg
  */
 lib7_val_t
