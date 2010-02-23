@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
 #include "runtime-base.h"
@@ -44,7 +46,10 @@ lib7_val_t _lib7_Sock_recvbuffrom (lib7_state_t *lib7_state, lib7_val_t arg)
     if (REC_SEL(arg, 4) == LIB7_true) flag |= MSG_OOB;
     if (REC_SEL(arg, 5) == LIB7_true) flag |= MSG_PEEK;
 
-    n = recvfrom (socket, start, nbytes, flag, (struct sockaddr *)addrBuf, &addrLen);
+    do {
+        n = recvfrom (socket, start, nbytes, flag, (struct sockaddr *)addrBuf, &addrLen);
+
+    } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     if (n < 0)
         return RAISE_SYSERR(lib7_state, status, __LINE__);

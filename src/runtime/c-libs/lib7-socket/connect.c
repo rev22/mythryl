@@ -63,6 +63,9 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
 	    addrlen
         );
 
+    /* NB: Unix Network Programming p135 S5.9 says that for connect() we cannot just retry on EINTR. */
+
+
     print_if( "connect.c/bot: status d=%d errno d=%d\n", status, errno);
 
     CHECK_RETURN_UNIT(lib7_state, status);		/* CHECK_RETURN_UNIT	is from   src/runtime/c-libs/lib7-c.h	*/

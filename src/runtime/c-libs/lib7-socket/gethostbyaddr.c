@@ -31,7 +31,7 @@ lib7_val_t _lib7_NetDB_gethostbyaddr (lib7_state_t *lib7_state, lib7_val_t arg)
     return _util_NetDB_mkhostent (
 	lib7_state,
 	gethostbyaddr (STR_LIB7toC(arg), sizeof(struct in_addr), AF_INET));
-} /* end of _lib7_NetDB_gethostbyaddr */
+}
 
 
 /* COPYRIGHT (c) 1995 AT&T Bell Laboratories.

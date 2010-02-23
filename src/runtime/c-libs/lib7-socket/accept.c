@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
 #include "runtime-base.h"
@@ -24,7 +26,11 @@ lib7_val_t _lib7_Sock_accept (lib7_state_t *lib7_state, lib7_val_t arg)
     int		addrLen = MAX_SOCK_ADDR_SZB;
     int		newSock;
 
-    newSock = accept (socket, (struct sockaddr *)addrBuf, &addrLen);
+    do {
+
+        newSock = accept (socket, (struct sockaddr *)addrBuf, &addrLen);
+
+    } while (newSock == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     if (newSock == -1) {
         return RAISE_SYSERR(lib7_state, newSock, __LINE__);

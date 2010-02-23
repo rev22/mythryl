@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
 #include "runtime-base.h"
@@ -44,10 +46,19 @@ lib7_val_t _lib7_Sock_setNBIO (lib7_state_t *lib7_state, lib7_val_t arg)
 	n |= O_NONBLOCK;
     else
 	n &= ~O_NONBLOCK;
-    status = fcntl(F_SETFL, socket, n);
+
+    do {
+        status = fcntl(F_SETFL, socket, n);
+
+    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+
 #else
     n = (REC_SEL(arg, 1) == LIB7_true);
-    status = ioctl (socket, FIONBIO, (char *)&n);
+
+    do {
+        status = ioctl (socket, FIONBIO, (char *)&n);
+
+    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 #endif
 
     CHECK_RETURN_UNIT(lib7_state, status);

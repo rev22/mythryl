@@ -98,15 +98,15 @@ herein
 	family_wild     =  65535;
 
 	# Return the default name of the authentication file (either
-	# specified by the XAUTHORITY dictionary variable, or the
-	# file $HOME/.Xauthority.  If neither XAUTHORITY or HOME 
+	# specified by the XAUTHORITY environment variable, or the
+	# file $HOME/.Xauthority.  If neither XAUTHORITY nor HOME 
 	# are defined, then ".Xauthority" is returned.
 	#
 	fun get_xauthority_filename ()
 	    =
 	    case (threadkit_winix::process::get_env "XAUTHORITY")
 		#
-		THE fname => fname;
+		THE filename => filename;
 		#
 		NULL
 		    =>
@@ -118,11 +118,12 @@ herein
 	    esac;
 
 
-	# Read the entire contents of a file:
+	# Read the entire contents of a .Xauthority file:
 	# 
-	fun read_file file
+	fun read_file filename
 	    = 
-	    {   stream   =   binary_io::open_for_read  file;
+	    {   stream   =   binary_io::open_for_read  filename;
+
 		contents =   binary_io::read_all  stream;
 
 		binary_io::close_input  stream;
@@ -132,7 +133,7 @@ herein
 
 	# Extract an authentication entry from a data string:
 	#
-	fun extract_auth contents
+	fun extract_authentication_entry contents
 	    =
 	    {   len =   unt8_vector::length contents;
 
@@ -172,25 +173,23 @@ herein
 				 family,
 				 address => if (family == family_internet)
 
-						str =   get_address_string (contents, addr_start, addr_len);
+						string =   get_address_string (contents, addr_start, addr_len);
 
-						# For 110.58, Dusty Deboer replaced the below by just
+						# For 110.59, Dusty Deboer replaced the below by just
 						#
-						str;
+						string;
 
-    #					    str =   get_address_string (contents, addr_start, addr_len);
+    #					        string =   get_address_string (contents, addr_start, addr_len);
     #
-    #					    case (dns_host_lookup::from_string str)   
+    #					        case (dns_host_lookup::from_string string)   
     #
-    #						 NULL   => "";
+    #						     NULL   => "";
     #
-    #						 THE ia => case (dns_host_lookup::get_by_address ia)    
-    #								NULL  => ""; 
-    #								THE e => (dns_host_lookup::name e);
-    #                                                           esac;
-    #                                            esac;
-
-
+    #						     THE ia => case (dns_host_lookup::get_by_address ia)    
+    #							  	   NULL  => ""; 
+    #								   THE e => (dns_host_lookup::name e);
+    #                                                          esac;
+    #                                           esac;
 
 					    else
 						get_string (contents, addr_start, addr_len);
@@ -218,7 +217,7 @@ herein
 	#
 	fun get_xauthority_file_entry_by_address { family, display, address }
 	    = 
-	    {   extract_auth =   extract_auth (read_file (get_xauthority_filename()));
+	    {   extract_authentication_entry =   extract_authentication_entry (read_file (get_xauthority_filename()));
 
 		# hack by ddeboer, Feb 2005 - this is surely not the right way to do this...?? 	XXX BUGGO FIXME
 		# if family is internet and address is local_host, change to the local hostname
@@ -257,7 +256,7 @@ herein
 
 		fun get offset
 		    =
-		    case (extract_auth offset)
+		    case (extract_authentication_entry offset)
 			#
 			THE (auth, next) => if (check_auth auth)   THE auth;
 					    else                 get next;
@@ -311,7 +310,7 @@ herein
 	#
 	fun get_best_xauthority_file_entry_by_address { family, address, display, acceptable_authentication_methods }
 	    =
-	    {   extract_auth =   extract_auth (read_file (get_xauthority_filename()));
+	    {   extract_authentication_entry =   extract_authentication_entry (read_file (get_xauthority_filename()));
 
 		#  hack by ddeboer, Feb 2005 - this is surely not the right way to do this...?? 
 		#  if family is internet and address is localhost, change to the local hostname
@@ -345,7 +344,7 @@ herein
 
 		fun get (offset, best_rank, best)
 		    =
-		    case (extract_auth offset)
+		    case (extract_authentication_entry offset)
 			#
 			NULL => best;
 			#
@@ -386,24 +385,24 @@ herein
 	# and return a list of the entries that
 	# satisfy the given predicate.
 	#
-	fun get_selected_xauthority_file_entries  check_auth  file
+	fun get_selected_xauthority_file_entries  want_entry  file
 	    =
 	    filter (0, [])
 	    where
-		extract_auth =   extract_auth (read_file file);
+		extract_authentication_entry =   extract_authentication_entry (read_file file);
 
-		fun filter (offset, l)
+		fun filter (offset, results_so_far)
 		    =
-		    case (extract_auth offset)
+		    case (extract_authentication_entry  offset)
 			#
-			NULL => reverse l;
+			NULL => reverse results_so_far;
 			#
-			THE (auth, next)
+			THE (this_entry, next_offset)
 			     =>
-			     if (check_auth auth)
-				  filter (next, auth ! l);
-			     else filter (next,        l);
-			     fi;
+			     want_entry  this_entry
+				 ##	
+				 ??  filter (next_offset, this_entry ! results_so_far)
+				 ::  filter (next_offset,              results_so_far);
 		    esac;
 	    end;
 
@@ -422,7 +421,14 @@ herein
 	end;
 
 
-	# Parse a string specifying a X display into its components. 
+	# Parse an xdisplay string:
+	#
+	#     "foo.com:0.0"
+        #     ->
+        #     { host    => "foo.com",
+        #       display => "0",
+        #       screen  => "0"
+        #     }
 	#
 	fun parse_xdisplay_string ""
 		=>

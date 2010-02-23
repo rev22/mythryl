@@ -97,8 +97,8 @@ api  Xcore {
 	    family:   Int,
 	    address:  String,
 	    display:  String,
-	    name:     String,
-	    data:     unt8_vector::Vector
+	    name:     String,						# E.g., "MIT-MAGIC-COOKIE-1"
+	    data:     unt8_vector::Vector				# For    MIT-MAGIC-COOKIE-1 this is 16 bytes (128 bits) of random data.
 	  };
 
     # Identity tests:

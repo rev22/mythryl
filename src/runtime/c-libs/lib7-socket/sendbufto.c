@@ -55,16 +55,19 @@ lib7_val_t _lib7_Sock_sendbufto (lib7_state_t *lib7_state, lib7_val_t arg)
     if (REC_SEL(arg, 4) == LIB7_true) flgs |= MSG_OOB;
     if (REC_SEL(arg, 5) == LIB7_true) flgs |= MSG_DONTROUTE;
 
-    {   int n
-            =
-            sendto (
-                socket,
-                data,
-                nbytes,
-                flgs,
-	        GET_SEQ_DATAPTR (struct sockaddr, addr),
-                GET_SEQ_LEN(addr)
-            );
+    {   int n;
+
+        do {
+	    n = sendto (
+		    socket,
+		    data,
+		    nbytes,
+		    flgs,
+		    GET_SEQ_DATAPTR (struct sockaddr, addr),
+		    GET_SEQ_LEN(addr)
+		);
+
+        } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
         CHECK_RETURN (lib7_state, n);
     }

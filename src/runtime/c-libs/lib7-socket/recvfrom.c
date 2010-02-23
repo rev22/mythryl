@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
 #include "runtime-base.h"
@@ -50,7 +52,10 @@ lib7_val_t _lib7_Sock_recvfrom (lib7_state_t *lib7_state, lib7_val_t arg)
      */
     {   lib7_val_t vec = LIB7_AllocRaw32 (lib7_state, BYTES_TO_WORDS(nbytes));
 
-        int n = recvfrom (
+        int n;
+
+        do {
+            n = recvfrom (
 	            socket,
                     PTR_LIB7toC (char, vec),
                     nbytes,
@@ -58,6 +63,8 @@ lib7_val_t _lib7_Sock_recvfrom (lib7_state_t *lib7_state, lib7_val_t arg)
 	            (struct sockaddr *)addrBuf,
                     &addrLen
                 );
+
+        } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
 	if (n < 0) {
   	    return RAISE_SYSERR(lib7_state, status, __LINE__);

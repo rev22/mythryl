@@ -36,7 +36,10 @@ _lib7_Sock_close (lib7_state_t *lib7_state, lib7_val_t arg)
 #if defined(OPSYS_WIN32)
     status = closesocket(fd);
 #else
-    status = close(fd);
+    do {
+        status = close(fd);
+
+    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 #endif
 
     print_if( "close.c/bot: status d=%d errno d=%d\n", status, errno);
