@@ -8,6 +8,17 @@
 #include <stdio.h>
 #include <errno.h>
 
+       /* For select(): */
+
+       /* According to POSIX.1-2001 */
+       #include <sys/select.h>
+
+       /* According to earlier standards */
+       #include <sys/time.h>
+       #include <sys/types.h>
+       #include <unistd.h>
+
+
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
 #include "runtime-base.h"
@@ -44,7 +55,7 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
 
     socklen_t addrlen  = GET_SEQ_LEN(addr);
 
-    {   unsigned char* a = GET_SEQ_DATAPTR(unsigned char*, addr);
+    {   unsigned char* a = GET_SEQ_DATAPTR(unsigned char, addr);
         char buf[ 1024 ];
 	int i;
 	buf[0] = '\0';
@@ -63,7 +74,52 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
 	    addrlen
         );
 
-    /* NB: Unix Network Programming p135 S5.9 says that for connect() we cannot just retry on EINTR. */
+    /* NB: Unix Network Programming p135 S5.9 says that
+     *     for connect() we cannot just retry on EINTR.
+     *     On p452 it says we must instead do a select(),
+     *     which will wait until the three-way TCP
+     *     handshake either succeeds or fails:  To Be Coded.	XXX BUGGO FIXME
+     */
+    if (status < 0 && errno == EINTR) {
+
+        int eintr_count = 1;
+
+        int maxfd = socket+1;
+
+	fd_set read_set;
+	fd_set write_set;
+
+	do {
+	    print_if( "connect.c/mid: Caught EINTR #%d, doing a select() on fd %d\n", eintr_count, socket);
+
+	    FD_ZERO( &read_set);
+	    FD_ZERO(&write_set);
+
+	    FD_SET( socket,  &read_set );
+	    FD_SET( socket, &write_set );
+
+	    errno = 0;
+
+	    status = select(maxfd, &read_set, &write_set, NULL, NULL); 
+
+            ++eintr_count;
+
+	} while (status < 0 && errno == EINTR);
+
+	/* According to p452, if the connection completes properly
+         * the socket will be writable, but if it fails it will be
+         * both readable and writable.  On return 'status' is the
+         * count of bits set in the fd_sets;  if it is 2, the fd
+         * is both readable and writable, implying connect failure.
+         * To be on the safe side, in this case I ensure that status
+         * is negative and errno set to something valid for a failed
+         * connect().  I don't know if this situation is even possible:
+         */
+	if (status == 2) {
+	    status = -1;
+	    errno  = EINTR;	/* Possibly ENETUNREACH or ETIMEDOUT would be better?	*/
+	}
+    }
 
 
     print_if( "connect.c/bot: status d=%d errno d=%d\n", status, errno);
