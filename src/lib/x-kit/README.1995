@@ -13,7 +13,7 @@ AUTHENTICATION
 
 X-Kit now has hooks for authentication, which at least work with
 the xdm protocol that many X terminals use.  Look at the files
-xauth-sig.sml and xauth.pkg in graph-util.
+x11-authentication.api and x11-authentication.pkg in graph-util.
 
 
 -------------------------------------------------------------------

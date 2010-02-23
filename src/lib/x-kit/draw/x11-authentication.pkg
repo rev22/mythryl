@@ -1,0 +1,414 @@
+## x11-authentication.pkg
+
+# Compiled by:
+#     src/lib/x-kit/draw/xkit-draw.make6
+
+# Support for X11 authentication.  The authentication file, which is
+# specified by the XAUTHORITY variable (default $HOME/.Xauthority),
+# consists of a sequence of entries with the following format:
+#
+#      2 bytes         Family value (second byte is as in protocol HOST)
+#      2 bytes         address length (always MSB first)
+#      A bytes         host address (as in protocol HOST)
+#      2 bytes         display "number" length (always MSB first)
+#      S bytes         display "number" string
+#      2 bytes         name length (always MSB first)
+#      N bytes         authorization name string
+#      2 bytes         data length (always MSB first)
+#      D bytes         authorization data string
+#
+# This implementation is partially based on code contributed by Juergen Buntrock.
+
+# This code gets used in:
+#
+#     src/lib/x-kit/draw/get-display.pkg
+
+stipulate
+    package xc =  xcore;								# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+herein
+
+    package x11_authentication: (weak)  X11_Authentication {				# X11_Authentication	is from   src/lib/x-kit/draw/x11-authentication.api
+
+	w8vextract = unt8_vector_slice::to_vector  o  unt8_vector_slice::make_slice;
+
+	get8 = unt8::to_int o unt8_vector::get;
+
+	# This version of get16 handles unaligned data:
+	#
+	fun get16 (s, i)
+	    =
+	    {   s =   w8vextract (s, i, THE 2);
+
+		large_unt::to_int (pack_big_endian_unt16::get_vec (s, 0));
+	    };
+
+	fun get_data (s, i, n)
+	    =
+	    w8vextract (s, i, THE n);
+
+	fun get_string (s, i, n)
+	    =
+	    byte::unpack_string_vector (unt8_vector_slice::make_slice (s, i, THE n));
+
+
+	# Added ddeboer: ip addresses are encoded as raw bytes not a string. 
+	#
+	fun get_address_string (s, i, n)
+	    =
+	    case ( n,
+		   (unt8_vector_slice::fold_right
+		       (fn (e, a)
+			   = 
+			   (int::to_string (char::to_int (byte::byte_to_char e))) ! a
+		       )
+		       []
+		       (unt8_vector_slice::make_slice (s, i, THE n))
+		   )
+		 )
+		#
+		(4, [a, b, c, d]) =>   a + "." + b + "." + c + "." + d;
+		_                 =>   "";
+	    esac;
+
+	# The different family codes
+	# (from X.h and xc/lib/Xau/Xauth.h)
+	#
+	family_internet =  0;
+	family_decnet   =  1;
+	family_chaos    =  2;
+	family_local    =  256;
+	family_wild     =  65535;
+
+	# Return the default name of the authentication file (either
+	# specified by the XAUTHORITY dictionary variable, or the
+	# file $HOME/.Xauthority.  If neither XAUTHORITY or HOME 
+	# are defined, then ".Xauthority" is returned.
+	#
+	fun auth_file_name ()
+	    =
+	    case (threadkit_winix::process::get_env "XAUTHORITY")
+		#
+		THE fname => fname;
+		#
+		NULL
+		    =>
+		    case (threadkit_winix::process::get_env "HOME")
+			#
+			THE path =>  path + "/.Xauthority";
+			NULL     =>  ".Xauthority";
+		    esac;
+	    esac;
+
+
+	# Read the entire contents of a file:
+	# 
+	fun read_file file
+	    = 
+	    {   instrm =   binary_io::open_for_read file;
+		contents = binary_io::read_all instrm;
+
+		binary_io::close_input instrm;
+		contents;
+	    };
+
+	# Extract an authentication entry from a data string:
+	#
+	fun extract_auth contents
+	    =
+	    {   len =   unt8_vector::length contents;
+
+		fun get_len start
+		    =
+		    get16 (contents, start - 2);
+
+		fun extract offset
+		    =
+		    if (offset < len)
+			#
+			addr_start =   4 + offset;
+			addr_len   =   get_len addr_start;
+
+			dpy_start  =   addr_start + addr_len + 2;
+			dpy_len    =   get_len dpy_start;
+
+			name_start =   dpy_start + dpy_len + 2;
+			name_len   =   get_len name_start;
+
+			data_start =   name_start + name_len + 2;
+			data_len   =   get_len data_start;
+
+			next       =   data_start + data_len;
+
+			#  Added following line, Feb 2005, ddeboer 
+			family = get16 (contents, offset);
+
+			THE (
+			    xc::AUTHENTICATION {
+				 # modified by ddeboer: 
+				 # entries of family=familyInternet are stored as 4-byte ip addresses.
+				 # it seems that we must convert these into hostnames for comparison...?!?
+				 # original:
+				 # family = get16 (contents, offset),
+				 # address = get_string (contents, addrStart, addrLen),
+				 family,
+				 address => if (family == family_internet)
+
+						str =   get_address_string (contents, addr_start, addr_len);
+
+						# For 110.58, Dusty Deboer replaced the below by just
+						#
+						str;
+
+    #					    str =   get_address_string (contents, addr_start, addr_len);
+    #
+    #					    case (dns_host_lookup::from_string str)   
+    #
+    #						 NULL   => "";
+    #
+    #						 THE ia => case (dns_host_lookup::get_by_address ia)    
+    #								NULL  => ""; 
+    #								THE e => (dns_host_lookup::name e);
+    #                                                           esac;
+    #                                            esac;
+
+
+
+					    else
+						get_string (contents, addr_start, addr_len);
+					    fi,
+
+				 #  end modification 
+
+				 display =>  get_string (contents, dpy_start,  dpy_len ),
+				 name    =>  get_string (contents, name_start, name_len),
+				 data    =>  get_data   (contents, data_start, data_len)
+			    },
+			    next
+			);
+		    else
+			NULL;
+		    fi;
+
+		extract;
+	    };
+
+	# Search the default authentication file for the first entry that
+	# matches the family, network address and display number.  If no
+	# such match is found, return NULL.  The * value family_wild
+	# matches anything, as do the empty strings when given for address or display.
+
+	fun get_auth_by_addr { family, display, address }
+	    = 
+	    {   extract_auth =   extract_auth (read_file (auth_file_name()));
+
+		# hack by ddeboer, Feb 2005 - this is surely not the right way to do this...?? 	XXX BUGGO FIXME
+		# if family is internet and address is local_host, change to the local hostname
+		# and family_local.
+		#
+    #	    my (family, address)
+    #                =
+    #                if (address == "localhost"	and
+    #		    family  == family_internet
+    #		)
+    #		     (family_local, dns_host_lookup::get_host_name());
+    #		else
+    #                     (family, address);
+    #                fi; 
+
+		#  end hack 
+
+		fun compare_string ("", _)   =>   TRUE;
+		    compare_string (_, "")   =>   TRUE;
+		    compare_string (a, b)    =>   (a == b);
+		end;
+
+		fun check_auth (xc::AUTHENTICATION { family=>f, display=>d, address=>a, ... } )
+		    =
+		    (   # tracing added ddeboer, Jan 2005. 
+			#  (file::print ("chkAuth seeking family=" + (int::to_string (family)) + ", display="
+			#    + display + ", address=" + address + "; examining address=" + a + ", display=" + d + "\n"));
+
+			(   (family == family_wild)   or
+			    (f      == family_wild)   or
+			    (family == f)
+			)
+			and compare_string (display, d)
+			and compare_string (address, a)
+		    );
+
+		fun get offset
+		    =
+		    case (extract_auth offset)
+			#
+			THE (auth, next) => if (check_auth auth)   THE auth;
+					    else                 get next;
+					    fi;
+			NULL => NULL;
+		    esac;
+
+
+    #	    get 0 ;
+
+    #	    modified ddeboer, Jan 2005 for testing. 
+
+		{   rv = get 0;
+
+		    case rv
+			#
+			THE (xc::AUTHENTICATION { address, display, name, data, ... } )
+			    =>
+			    file::print (
+			       "get_auth_by_addr returns THE xd::AUTHENTICATION { address="
+			     + address
+			     + ", display="
+			     + display
+			     + ", name="
+			     + name
+			     + ", ... }\n"
+			   );
+
+			NULL =>
+			    file::print (
+				"get_auth_by_addr returns NULL (address="
+			      + address
+			      + ", display="
+			      + display
+			      + ")\n"
+			    );
+		     esac;
+
+		     rv;
+		 };
+
+	    }
+	    except
+		_ = NULL;
+
+	# This is similar to get_auth_by_addr, except that a list of acceptable
+	# authentication methods is specified by the list auth_names.
+	#
+	# It returns the matching authentication info that matches the earliest
+	# name on the list.  NULL is returned if no match is found.
+	#
+	fun get_best_auth_by_addr { family, address, display, auth_names }
+	    =
+	    {   extract_auth =   extract_auth (read_file (auth_file_name()));
+
+		#  hack by ddeboer, Feb 2005 - this is surely not the right way to do this...?? 
+		#  if family is internet and address is localhost, change to the local hostname
+		#  and familyLocal.
+
+    #	    my (family, address)
+    #                =
+    #                if (address == "localhost"	and       #  or (address=="")
+    #		    family  == family_internet
+    #		) 
+    #		     (family_local, dns_host_lookup::get_host_name());
+    #		else (family, address);
+    #                fi;
+
+		#  end hack 
+
+		fun compare_string ("", _) =>   TRUE;
+		    compare_string (_, "") =>   TRUE;
+		    compare_string (a,  b) =>   (a == b);
+		end;
+
+		fun check_auth (xc::AUTHENTICATION { family=>f, display=>d, address=>a, ... } )
+		    =
+		    (   (   family == family_wild   or
+			    f      == family_wild   or
+			    family == f
+			)
+			and compare_string (display, d)
+			and compare_string (address, a)
+		    );
+
+		fun get (offset, best_rank, best)
+		    =
+		    case (extract_auth offset)
+			#
+			NULL => best;
+			#
+			THE (auth as xc::AUTHENTICATION { name, ... }, next)
+			     =>
+			     if (check_auth auth)
+
+				 fun check_name (   [],    _)
+					 =>
+					 get (next, best_rank, best);
+
+				     check_name (n ! r, rank)
+					 =>
+					 if (rank < best_rank)
+
+						if (name == n)   get (next, rank, THE auth);
+						else             check_name (r, rank+1);
+						fi;
+
+					 else   get (next, best_rank, best);
+					 fi;
+				 end;
+
+				 check_name (auth_names, 0);
+
+			     else
+				 get (next, best_rank, best);
+			     fi;
+		    esac;
+
+
+		get (0, length auth_names, NULL);
+	    }
+	    except _ = NULL;
+
+
+	# Read the specified authentication file
+	# and return a list of the entries that
+	# satisfy the given predicate.
+	#
+	fun read_authentication_file check_auth file
+	    =
+	    filter (0, [])
+	    where
+		extract_auth =   extract_auth (read_file file);
+
+		fun filter (offset, l)
+		    =
+		    case (extract_auth offset)
+
+			NULL => reverse l;
+
+			THE (auth, next)
+			     =>
+			     if (check_auth auth)
+				  filter (next, auth ! l);
+			     else filter (next,        l);
+			     fi;
+		    esac;
+	    end;
+    };				# package xauth
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1996 AT&T Research.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

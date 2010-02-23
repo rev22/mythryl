@@ -1,12 +1,14 @@
 ## get-display.pkg
+#
+# Utility code for getting the display name and authentication information.
 
 # Compiled by:
 #     src/lib/x-kit/draw/xkit-draw.make6
 
-# Utility code for getting the display name and authentication information.
 
 stipulate
     package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
+    package xau =  x11_authentication;		# x11_authentication	is from   src/lib/x-kit/draw/x11-authentication.pkg
     package ss  =  substring;			# substring		is from   src/lib/std/substring.pkg
     package dns =  dns_host_lookup;		# dns_host_lookup	is from   src/lib/std/src/socket/dns-host-lookup.pkg
 herein
@@ -28,7 +30,7 @@ herein
 
 
 	# Parse a string specifying a X display into its components. 
-
+	#
 	fun parse_display ""
 		=>
 		{ host=>"", display=>"0", screen=>"0"};
@@ -43,19 +45,19 @@ herein
 			=
 			ss::split_off_prefix   .{ #c != '.'; }  rest;
 
-		    if     (ss::size display < 2)
-
-			   raise exception xc::BAD_ADDRESS "No display field";
+		    if (ss::size display < 2)
+			#
+			raise exception xc::BAD_ADDRESS "No display field";
 		    else
-			   if    (ss::size screen == 1)
-
-				 raise exception xc::BAD_ADDRESS "No screen number";
-			   else
-				 { host    =>   ss::to_string host,
-				   display =>   ss::to_string (ss::drop_first 1 display),
-				   screen  =>   ss::to_string (ss::drop_first 1 screen)
-				 };
-			   fi;
+			if (ss::size screen == 1)
+			    #
+			    raise exception xc::BAD_ADDRESS "No screen number";
+			else
+			    { host    =>   ss::to_string host,
+			      display =>   ss::to_string (ss::drop_first 1 display),
+			      screen  =>   ss::to_string (ss::drop_first 1 screen)
+			    };
+			fi;
 		    fi;
 		};
 	end;
@@ -75,9 +77,9 @@ herein
 
 		auth =  case display
 			    #                        
-			    "" =>   xauth::get_auth_by_addr
+			    "" =>   xau::get_auth_by_addr
 				      {
-					family  =>  xauth::family_wild,
+					family  =>  xau::family_wild,
 					address =>  dns::get_host_name (),	# Necessary to look up xrdb record -- ddeboer, 110.59.
 					display =>  "0"
 				      };
@@ -89,7 +91,7 @@ herein
 
 				    fun make_xa  family  address				# "xa" may be "x-window authentication (string)"
 					=
-					xauth::get_auth_by_addr { family, address, display };
+					xau::get_auth_by_addr { family, address, display };
 
 
 				    # We must obtain the string to be used for comparison
@@ -100,12 +102,12 @@ herein
 
 					("" | "localhost")
 					    =>
-					    make_xa   xauth::family_local   (dns::get_host_name ());
+					    make_xa   xau::family_local   (dns::get_host_name ());
 
 					_   =>
 					    make_xa
 
-                                                xauth::family_internet
+                                                xau::family_internet
 
 						# This should more properly be set to the
 						# peer address of the connection, *after*

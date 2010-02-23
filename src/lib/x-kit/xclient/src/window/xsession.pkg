@@ -269,8 +269,8 @@ herein
 	#	      display::BAD_ADDRESS "somestring";
 	#
 	#     authentication:
-	#	  See	src/lib/x-kit/draw/xauth.api
-	#	  and   src/lib/x-kit/draw/xauth.pkg
+	#	  See	src/lib/x-kit/draw/x11-authentication.api
+	#	  and   src/lib/x-kit/draw/x11-authentication.pkg
 	#
 	fun open_xsession
             ( display_name:    String,

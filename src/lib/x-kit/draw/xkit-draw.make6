@@ -13,7 +13,7 @@ LIBRARY_GROUP_EXPORTS
 	api Cartouche
 	api Spline
 	api Region
-	api Xauth
+	api X11_Authentication
 	api Color_Space
 	api Get_Display
 
@@ -22,7 +22,7 @@ LIBRARY_GROUP_EXPORTS
 	pkg cartouche
 	pkg spline
 	pkg region
-	pkg xauth
+	pkg x11_authentication
 	pkg color_space
 	pkg get_display
 
@@ -44,8 +44,8 @@ LIBRARY_GROUP_COMPONENTS
 	scan-convert.pkg
 	region.api
 	region.pkg
-	xauth.api
-	xauth.pkg
+	x11-authentication.api
+	x11-authentication.pkg
 	color-space.api
 	color-space.pkg
 	get-display.api
