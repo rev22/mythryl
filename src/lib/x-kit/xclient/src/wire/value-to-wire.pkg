@@ -76,22 +76,22 @@ herein
 	#
 	#     src/lib/x-kit/xclient/src/window/pen.pkg
 	#
-	fun graph_op_to_wire xt::OP_CLR		=> 0u0;
-	    graph_op_to_wire xt::OP_AND		=> 0u1;
+	fun graph_op_to_wire xt::OP_CLR			=> 0u0;
+	    graph_op_to_wire xt::OP_AND			=> 0u1;
 	    graph_op_to_wire xt::OP_AND_NOT		=> 0u2;
 	    graph_op_to_wire xt::OP_COPY		=> 0u3;
 	    graph_op_to_wire xt::OP_AND_INVERTED	=> 0u4;
-	    graph_op_to_wire xt::OP_NOP		=> 0u5;
-	    graph_op_to_wire xt::OP_XOR		=> 0u6;
-	    graph_op_to_wire xt::OP_OR		=> 0u7;
-	    graph_op_to_wire xt::OP_NOR		=> 0u8;
+	    graph_op_to_wire xt::OP_NOP			=> 0u5;
+	    graph_op_to_wire xt::OP_XOR			=> 0u6;
+	    graph_op_to_wire xt::OP_OR			=> 0u7;
+	    graph_op_to_wire xt::OP_NOR			=> 0u8;
 	    graph_op_to_wire xt::OP_EQUIV		=> 0u9;
-	    graph_op_to_wire xt::OP_NOT		=> 0u10;
+	    graph_op_to_wire xt::OP_NOT			=> 0u10;
 	    graph_op_to_wire xt::OP_OR_NOT		=> 0u11;
-	    graph_op_to_wire xt::OP_COPY_NOT	=> 0u12;
-	    graph_op_to_wire xt::OP_OR_INVERTED	=> 0u13;
+	    graph_op_to_wire xt::OP_COPY_NOT		=> 0u12;
+	    graph_op_to_wire xt::OP_OR_INVERTED		=> 0u13;
 	    graph_op_to_wire xt::OP_NAND		=> 0u14;
-	    graph_op_to_wire xt::OP_SET		=> 0u15;
+	    graph_op_to_wire xt::OP_SET			=> 0u15;
 	end;
 
 	# Used (only) in:
@@ -511,7 +511,7 @@ herein
 	    # This consists of the byte-order,
 	    # protocol version, and optional authentication data.
 	    #
-	    fun encode_connection_req { minor_version, auth }
+	    fun encode_xserver_connection_request { minor_version, xauthentication }
 		=
 		{
 		    fun set_prefix size
@@ -525,11 +525,11 @@ herein
 			    buf;
 			};
 
-		    case auth
+		    case xauthentication
 			#
 			NULL => set_prefix 12;
 			#
-			THE (xt::AUTHENTICATION { name, data, ... } )
+			THE (xt::XAUTHENTICATION { name, data, ... } )
 			    =>
 			    {   auth_name_len =  pad (size name);
 				auth_data_len =  pad (unt8_vector::length data);

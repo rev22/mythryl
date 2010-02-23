@@ -31,7 +31,9 @@ herein
 	    #
 	    fun init_bounce display_name
 		=
-		{   xsession =  xc::open_xsession (display_name, NULL);
+		{
+# XXX BUGGO FIXME need xauthentication here:
+		    xsession =  xc::open_xsession (display_name, NULL);
 		    screen   =  xc::default_screen_of  xsession;
 
 		    my (window, in_kidplug, mailslot)				# 2009-12-09 CrT: Added 'mailslot' to make it compile. 

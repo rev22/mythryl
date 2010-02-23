@@ -152,6 +152,7 @@ stipulate
     package f_i = font_imp;				# font_imp		is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
     package gci = graphics_context_imp;			# graphics_context_imp	is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
     package ki  = keymap_imp;				# keymap_imp		is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+    package xt  = xtypes;				# xtypes		is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     package xsession {
@@ -268,18 +269,18 @@ herein
 	#
 	#	      display::BAD_ADDRESS "somestring";
 	#
-	#     authentication:
-	#	  See	src/lib/x-kit/xclient/xauthentication.api
-	#	  and   src/lib/x-kit/xclient/xauthentication.pkg
+	#     xauthentication:
+	#	  See Xauthentication comments in
+	#               src/lib/x-kit/xclient/xcore.api.
 	#
 	fun open_xsession
-            ( display_name:    String,
-              authentication:  Null_Or( xtypes::Authentication )				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg	
+            ( display_name:     String,
+              xauthentication:  Null_Or( xt::Xauthentication )				# Xauthentication info comes ultimately from ~/.Xauthority
             )
 	    =
 	    {   my (display as dy::XDISPLAY { default_screen, screens, xsocket, next_xid, ... } )
 		    =
-		    dy::open_xdisplay { display_name, authentication };
+		    dy::open_xdisplay { display_name, xauthentication };
 
 		keymap_imp =   ki::make_keymap_imp  display;
 		atom_imp   =   ai::make_atom_imp    display;
@@ -379,7 +380,7 @@ herein
 			      );
 
 			imps = make_gc_imps (visualdepths, [root_imps]);
-			imps = make_gc_imps([xtypes::DEPTH 1], imps);
+			imps = make_gc_imps([xt::DEPTH 1], imps);
 
 			SCREEN_INFO {
 			    xscreen,

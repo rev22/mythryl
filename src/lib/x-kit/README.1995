@@ -9,7 +9,7 @@ the CHANGES file).
 
 
 -------------------------------------------------------------------
-AUTHENTICATION
+XAUTHENTICATION
 
 X-Kit now has hooks for authentication, which at least work with
 the xdm protocol that many X terminals use.  Look at the files

@@ -111,7 +111,7 @@ herein
 	# Handle initial handshake stuff with xserver via a
 	# freshly opened unix- or internet-domain socket:
 	# 
-	fun say_hello_to_xserver (socket, auth, canonical_display_name, screen_number)
+	fun say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen_number)
 	    =
 	    {
 # +DEBUG
@@ -121,10 +121,10 @@ herein
 
 		connect_msg
 		    =
-		    v2w::encode_connection_req
+		    v2w::encode_xserver_connection_request
 		      {
 			minor_version => 0,
-			auth
+			xauthentication
 		      };
 
 		trace  .{  "display.pkg: say_hello_to_xserver: connect_msg x=" + (xsocket::bytes_to_hex connect_msg) + " s='" + (xsocket::bytes_to_ascii connect_msg) + "'";  };
@@ -270,7 +270,7 @@ herein
 	#
 	fun connect_to_xserver
             ( raw_display_name: String,						# ":0.0" or "192.168.0.1:0.0" or such, often from unix DISPLAY environment variable.
-              authentication:   Null_Or( xt::Authentication )
+              xauthentication:  Null_Or( xt::Xauthentication )			# Ultimately ~/.Xauthority
             )
 	    =
 	    {   # Digest a user-level X server spec
@@ -344,7 +344,7 @@ herein
 			};
 
 		        trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Calling say_hello_to_xserver...";  };
-			say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
+			say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
 		    };
 
 
@@ -359,7 +359,7 @@ herein
 				sok::connect (socket, unix_socket::to_address path);
 			    };
 
-			    say_hello_to_xserver (socket, authentication, canonical_display_name, screen);
+			    say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
 			};
 
 		    cxa::INET_ADDRESS (host, port)
@@ -493,8 +493,8 @@ herein
 	#     src/lib/x-kit/xclient/src/window/xsession.pkg
 	#
 	fun open_xdisplay
-            { display_name:    String,				# ":0.0" or unix:0.0" or "foo.com:0.0" or "192.168.0.1:0.0" or such.
-              authentication:  Null_Or( xt::Authentication )
+            { display_name:     String,				# ":0.0" or unix:0.0" or "foo.com:0.0" or "192.168.0.1:0.0" or such.
+              xauthentication:  Null_Or( xt::Xauthentication )	# Ultimately from ~/.Xauthority
             }
 	    =
 	    {   # Open unix- or internet-domain
@@ -507,7 +507,7 @@ herein
                       screen_number				# Almost always zero.
                     )
 		    =
-		    connect_to_xserver (display_name, authentication);
+		    connect_to_xserver (display_name, xauthentication);
 
 		# Arrange to have xserver socket cleanly
 		# closed upon application exit:

@@ -25,7 +25,7 @@ stipulate
     package sc  =  scene;				# scene				is from   src/lib/x-kit/tut/add/scene.pkg
 herein
 
-    package add:  api {	add:  (String, Null_Or(xc::Authentication)) -> Int; }{
+    package add:  api {	add:  (String, Null_Or(xc::Xauthentication)) -> Int; }{
 
 
 	# Added this because it was coming up undefined.

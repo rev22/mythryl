@@ -41,7 +41,7 @@ herein
 	      display:  String
 	    }
 	    ->
-	    Null_Or( xc::Authentication );
+	    Null_Or( xc::Xauthentication );
 	    #
 	    # Search the default xauthority file for the first entry that
 	    # matches the family, network address and display number.  If no
@@ -58,7 +58,7 @@ herein
 	      acceptable_authentication_methods:  List( String )
 	    }
 	    ->
-	    Null_Or( xc::Authentication );
+	    Null_Or( xc::Xauthentication );
 	    #
 	    # This is like get_xauthority_file_entry_by_address
             # except that a list of acceptable authentication methods is
@@ -70,11 +70,11 @@ herein
 
 	get_selected_xauthority_file_entries
 	    :
-	    (xc::Authentication -> Bool)
+	    (xc::Xauthentication -> Bool)
 	    ->
 	    String
 	    ->
-	    List( xc::Authentication );
+	    List( xc::Xauthentication );
 	    #
 	    # Read the specified authentication file
 	    # (usually ~/.Xauthority) and return a list
@@ -103,7 +103,7 @@ herein
 	    :
 	    Null_Or( String )
 	    ->
-	    (String, Null_Or( xc::Authentication ));
+	    (String, Null_Or( xc::Xauthentication ));
 
     };
 

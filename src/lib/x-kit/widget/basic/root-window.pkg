@@ -64,9 +64,12 @@ herein
 	      (quark::quark "gray",      standard_cs_pixmaps::gray      )
 	    ];
 
-	fun make_root_window (server, auth)
+	fun make_root_window
+            ( server,
+              xauthentication: Null_Or( xc::Xauthentication )		# Ultimately from ~/.Xauthority.
+            )
 	    =
-	    {   screen = xc::default_screen_of (xc::open_xsession (server, auth));
+	    {   screen = xc::default_screen_of (xc::open_xsession (server, xauthentication));
 
 		id_slot = make_mailslot ();
 

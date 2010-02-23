@@ -71,7 +71,8 @@ herein
 
 				    xdisplay
 					=	
-				        dy::open_xdisplay { display_name, authentication => NULL };
+# XXX BUGGO FIXME need non-NULL xauthentication here:
+				        dy::open_xdisplay { display_name, xauthentication => NULL };
 
 				    ();
 

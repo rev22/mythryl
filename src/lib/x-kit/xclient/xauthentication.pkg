@@ -162,7 +162,7 @@ herein
 			family = get16 (contents, offset);
 
 			THE (
-			    xc::AUTHENTICATION {
+			    xc::XAUTHENTICATION {
 				 # modified by ddeboer: 
 				 # entries of family=familyInternet are stored as 4-byte ip addresses.
 				 # it seems that we must convert these into hostnames for comparison...?!?
@@ -241,7 +241,7 @@ herein
 		    compare_string (a, b)    =>   (a == b);
 		end;
 
-		fun check_auth (xc::AUTHENTICATION { family=>f, display=>d, address=>a, ... } )
+		fun check_auth (xc::XAUTHENTICATION { family=>f, display=>d, address=>a, ... } )
 		    =
 		    (   # tracing added ddeboer, Jan 2005. 
 			#  (file::print ("chkAuth seeking family=" + (int::to_string (family)) + ", display="
@@ -274,10 +274,10 @@ herein
 
 		    case rv
 			#
-			THE (xc::AUTHENTICATION { address, display, name, data, ... } )
+			THE (xc::XAUTHENTICATION { address, display, name, data, ... } )
 			    =>
 			    file::print (
-			       "get_xauthority_file_entry_by_address returns THE xd::AUTHENTICATION { address="
+			       "get_xauthority_file_entry_by_address returns THE xd::XAUTHENTICATION { address="
 			     + address
 			     + ", display="
 			     + display
@@ -333,7 +333,7 @@ herein
 		    compare_string (a,  b) =>   (a == b);
 		end;
 
-		fun check_auth (xc::AUTHENTICATION { family=>f, display=>d, address=>a, ... } )
+		fun check_auth (xc::XAUTHENTICATION { family=>f, display=>d, address=>a, ... } )
 		    =
 		    (   (   family == family_wild   or
 			    f      == family_wild   or
@@ -349,7 +349,7 @@ herein
 			#
 			NULL => best;
 			#
-			THE (auth as xc::AUTHENTICATION { name, ... }, next)
+			THE (auth as xc::XAUTHENTICATION { name, ... }, next)
 			     =>
 			     if (check_auth auth)
 

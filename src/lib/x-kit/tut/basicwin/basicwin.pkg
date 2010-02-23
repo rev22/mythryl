@@ -43,6 +43,7 @@ herein
 	    =
 	    {   print_if .{ "open display " + display_name; };
 
+# XXX BUGGO FIXME need xauthentication here:
 		xsession =   xc::open_xsession (display_name, NULL)
 			    except
 				xc::BAD_ADDRESS s

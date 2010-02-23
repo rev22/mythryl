@@ -68,11 +68,31 @@ api  Xcore {
 				      >= : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
 				  };
 
-    # Authentication information 
+    # Xauthentication information. 
+    # This type actually gets defined in:
     #
-    Authentication
+    #     src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    #
+    # At runtime this information gets extracted from
+    #
+    #     ~/.Xauthority
+    #
+    # by code in
+    #
+    #     src/lib/x-kit/xclient/xauthentication.pkg
+    #
+    # and then passed successively to:
+    #
+    #     root_window::make_root_window                     in    src/lib/x-kit/widget/basic/root-window.pkg
+    #     xession::open_xsession                            in    src/lib/x-kit/xclient/src/window/xsession.pkg
+    #     display::open_xdisplay                            in    src/lib/x-kit/xclient/src/wire/display.pkg
+    #     value_to_wire::encode_xserver_connection_request  in    src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    #
+    # and ultimately to the X server.	
+    #
+    Xauthentication
 	=
-        AUTHENTICATION
+        XAUTHENTICATION
 	  {
 	    family:   Int,
 	    address:  String,
@@ -111,7 +131,7 @@ api  Xcore {
     #
     exception BAD_ADDRESS  String;
     #
-    open_xsession:     (String, Null_Or(Authentication)) -> Xsession;	# open_xsession			def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+    open_xsession:     (String, Null_Or(Xauthentication)) -> Xsession;	# open_xsession			def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     close_xsession:     Xsession -> Void;				# close_xesession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     default_screen_of:  Xsession -> Screen;				# default_screen_of		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     screens_of:         Xsession -> List( Screen );			# screens_of			def in    src/lib/x-kit/xclient/src/window/xsession.pkg

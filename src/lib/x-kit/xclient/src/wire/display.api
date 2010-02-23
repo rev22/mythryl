@@ -133,8 +133,8 @@ herein
 	#   o Decode the resulting info on available screes, visuals etc.
 	#   o Set up a thread to read and report on errors from the X server.
 	#
-	open_xdisplay: { display_name:    String,			# ":0.0" or "192.168.0.1:0.0" or such, often from unix DISPLAY environment variable.
-			 authentication:  Null_Or( xt::Authentication )
+	open_xdisplay: { display_name:     String,			# ":0.0" or "192.168.0.1:0.0" or such, often from unix DISPLAY environment variable.
+			 xauthentication:  Null_Or( xt::Xauthentication )
 		       }
 		       ->
 		       Xdisplay;

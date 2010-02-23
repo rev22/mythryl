@@ -18,11 +18,14 @@ herein
 
     package xtypes {
 
-	# X authentication information 
+	# X authentication information.
+	# This gets exported via duplication in:
+	# 
+	#     src/lib/x-kit/xclient/xcore.api
 	#
-	Authentication
+	Xauthentication
 	    =
-	    AUTHENTICATION
+	    XAUTHENTICATION
 	      {
 		family:   Int,
 		address:  String,

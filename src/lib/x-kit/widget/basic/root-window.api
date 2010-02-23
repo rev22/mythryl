@@ -33,7 +33,7 @@ herein
 	Root_Window;
 	Style;
 
-	make_root_window:  (String,  Null_Or( xc::Authentication )) -> Root_Window;
+	make_root_window:  (String,  Null_Or( xc::Xauthentication )) -> Root_Window;
 
 	delete_root_window:  Root_Window -> Void;
 	    #

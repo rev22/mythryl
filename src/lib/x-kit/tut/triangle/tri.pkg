@@ -58,6 +58,7 @@ herein
 	    =
 	    (screen, window, in_dictionary)
 	    where
+# XXX BUGGO FIXME need xauthentication here:
 		xsession =  xc::open_xsession (display_name, NULL);
 
 		screen   =  xc::default_screen_of  xsession;
