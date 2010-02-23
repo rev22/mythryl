@@ -1,7 +1,8 @@
-## x11-authentication.pkg
+## xauthentication.pkg
 
 # Compiled by:
 #     src/lib/x-kit/draw/xkit-draw.make6
+#     src/lib/x-kit/xclient/xclient.make6 
 
 # Support for X11 authentication.  The authentication file, which is
 # specified by the XAUTHORITY variable (default $HOME/.Xauthority),
@@ -30,7 +31,7 @@ stipulate
     package bio =  binary_io;								# binary_io		is from   src/lib/std/src/unix/posix-binary-io.pkg
 herein
 
-    package x11_authentication: (weak)  X11_Authentication {				# X11_Authentication	is from   src/lib/x-kit/draw/x11-authentication.api
+    package xauthentication: (weak)  Xauthentication {				# Xauthentication	is from   src/lib/x-kit/xclient/xauthentication.api
 
 	w8vextract = unt8_vector_slice::to_vector  o  unt8_vector_slice::make_slice;
 

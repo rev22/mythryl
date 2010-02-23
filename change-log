@@ -1,3 +1,4 @@
+2010-02-22-22.44.25: src/lib/x-kit/draw/x11-authentication.api: For clarity, renamed auth_file_name -> get_xauthority_filename, get_auth_by_addr -> get_xauthority_file_entry_by_address, get_best_auth_by_addr -> get_best_xauthority_file_entry_by_address, read_authentication_file -> get_selected_xauthority_file_entries, auth_names -> acceptable_authentication_methods.
 2010-02-22-22.03.28: src/lib/x-kit/draw/: For clarity renamed xauth.api,xauth.pkg -> x11-authentication.api,x11-authentication.pkg.
 2010-02-22-02.39.44: src/runtime/c-libs/lib7-socket/: sendbuf.c, recv.c: More tracelog print_if stuff.
 2010-02-22-00.20.26: src/runtime/c-libs/lib7-socket/socket.c: Added much tracelog support. src/lib/std/src/socket/socket-guts.pkg: ctl_rcvbuf was bound to ctlSNDBUF instead of ctlRCVBUF. (Should maybe fix this in SML/NJ.) src/runtime/c-libs/lib7-socket/*.c: Commenting.

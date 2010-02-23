@@ -36,7 +36,7 @@ LIBRARY_EXPORTS
 	api Cartouche
 	api Spline
 	api Region
-	api X11_Authentication
+	api Xauthentication
 	api Color_Space
 	api Get_Display
 
@@ -45,7 +45,7 @@ LIBRARY_EXPORTS
 	pkg cartouche
 	pkg spline
 	pkg region
-	pkg x11_authentication
+	pkg xauthentication
 	pkg color_space
 	pkg get_display
 

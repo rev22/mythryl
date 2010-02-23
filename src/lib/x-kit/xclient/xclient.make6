@@ -19,6 +19,7 @@ LIBRARY_GROUP_EXPORTS
 	api Xinput
 	api Xwindow
 	api Xcursors
+	api Xauthentication
 
 	pkg xgeometry
 	pkg xcore
@@ -28,6 +29,7 @@ LIBRARY_GROUP_EXPORTS
 	pkg xinput
 	pkg xwindow
 	pkg xcursors
+	pkg xauthentication
 
 	pkg xtracing
 	pkg xgripe
@@ -38,6 +40,9 @@ LIBRARY_GROUP_COMPONENTS
 
 	$ROOT/src/lib/std/stdlib.make6
 	xclient-internals.make6
+
+	xauthentication.api
+	xauthentication.pkg
 
 	xdraw.pkg
 	xfont.pkg

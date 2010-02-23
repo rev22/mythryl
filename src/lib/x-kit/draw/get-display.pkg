@@ -11,7 +11,7 @@
 
 stipulate
     package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
-    package xau =  x11_authentication;		# x11_authentication	is from   src/lib/x-kit/draw/x11-authentication.pkg
+    package xau =  xauthentication;		# xauthentication	is from   src/lib/x-kit/xclient/xauthentication.pkg
     package ss  =  substring;			# substring		is from   src/lib/std/substring.pkg
     package dns =  dns_host_lookup;		# dns_host_lookup	is from   src/lib/std/src/socket/dns-host-lookup.pkg
 herein

@@ -31,9 +31,11 @@ api Get_Display {
 	  screen:  String
 	};
 
-    # Given an optional display name, return the display and authentication
-    # information.  If the argument is NULL, then we use the DISPLAY dictionary
-    # variable if it is defined, and "" if it is not defined.
+    # Given an optional display name, return
+    # the display and authentication information.
+    #
+    # If the argument is NULL we use the unix DISPLAY
+    # environment variable if defined else  "".
     #
     get_display
         :

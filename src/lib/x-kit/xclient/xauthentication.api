@@ -1,9 +1,9 @@
-# x11-authentication.api
+# xauthentication.api
 #
 # Support for X11 authentication.
 
 # Compiled by:
-#     src/lib/x-kit/draw/xkit-draw.make6
+#     src/lib/x-kit/xclient/xclient.make6
 
 ###         "The right word may be effective,
 ###          but no word was ever as effective
@@ -16,7 +16,7 @@ stipulate
     package xc =  xcore;								# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
-    api X11_Authentication {
+    api Xauthentication {
 
 	# The different network protocol families:
 	#
