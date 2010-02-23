@@ -32,7 +32,9 @@ lib7_val_t _lib7_P_FileSys_readdir (lib7_state_t *lib7_state, lib7_val_t arg)
     
     while (TRUE) {
 	errno = 0;
+
 	dirent = readdir(PTR_LIB7toC(DIR, arg));
+
 	if (dirent == NULL) {
 	    if (errno != 0)     /* Error occurred */
 	        return RAISE_SYSERR(lib7_state, -1, __LINE__);

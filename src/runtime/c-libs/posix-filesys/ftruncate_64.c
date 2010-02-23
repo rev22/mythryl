@@ -6,6 +6,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-unixdep.h"
 #include "runtime-heap.h"
 #include "lib7-c.h"
@@ -34,7 +36,10 @@ lib7_val_t _lib7_P_FileSys_ftruncate_64 (lib7_state_t *lib7_state, lib7_val_t ar
       : ((off_t)(WORD_LIB7toC(REC_SEL(arg, 2))));
     int		    status;
 
-    status = ftruncate (fd, len);
+    do {
+        status = ftruncate (fd, len);
+
+    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN_UNIT(lib7_state, status)
 

@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-unixdep.h"
 
 #if HAVE_FCNTL_H
@@ -21,15 +23,19 @@
  */
 lib7_val_t _lib7_P_FileSys_openf (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    lib7_val_t	    path  = REC_SEL(arg, 0);
+    lib7_val_t	    path  = REC_SEL(    arg, 0);
     int		    flags = REC_SELWORD(arg, 1);
     int		    mode  = REC_SELWORD(arg, 2);
 
-    int		    fd    = open (STR_LIB7toC(path), flags, mode);
+    int		    fd;
+
+    do {
+        fd    = open (STR_LIB7toC(path), flags, mode);
+
+    } while (fd == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN(lib7_state, fd)
-
-} /* end of _lib7_P_FileSys_openf */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

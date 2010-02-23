@@ -45,8 +45,7 @@
 static lib7_val_t mkStatRep (lib7_state_t *lib7_state, struct stat *buf)
 {
     int		    ftype;
-    lib7_val_t        mode, ino, dev, uid, gid, nlink, sr, atime, mtime, ctime,
-                    szhi, szlo;
+    lib7_val_t      mode, ino, dev, uid, gid, nlink, sr, atime, mtime, ctime, szhi, szlo;
 
 #if ((S_IFDIR != 0x4000) || (S_IFCHR != 0x2000) || (S_IFBLK != 0x6000) || (S_IFREG != 0x8000) || (S_IFIFO != 0x1000) || (S_IFLNK != 0xA000) || (S_IFSOCK != 0xC000))
     if (S_ISDIR(buf->st_mode)) ftype = 0x4000;
@@ -98,8 +97,7 @@ static lib7_val_t mkStatRep (lib7_state_t *lib7_state, struct stat *buf)
     sr = LIB7_Alloc(lib7_state, 12);
 
     return sr;
-
-} /* end of mkStatRep */
+}
 
 /* _lib7_P_FileSys_stat_64 : String -> statrep
  *

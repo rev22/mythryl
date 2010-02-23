@@ -80,16 +80,14 @@ static name_val_t values [] = {
  */
 lib7_val_t _lib7_P_FileSys_osval (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    name_val_t      *res;
-    
-    res = _lib7_posix_nv_lookup (STR_LIB7toC(arg), values, NUMELMS);
-    if (res)
-	return INT_CtoLib7(res->val);
-    else {
-      return RAISE_ERROR(lib7_state, "system constant not defined", __LINE__);
+    name_val_t  *result  =  _lib7_posix_nv_lookup (STR_LIB7toC(arg), values, NUMELMS);
+
+    if (result) {
+	return INT_CtoLib7(result->val);
     }
 
-} /* end of _lib7_P_FileSys_osval */
+    return RAISE_ERROR(lib7_state, "system constant not defined", __LINE__);
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

@@ -24,15 +24,13 @@
  */
 lib7_val_t _lib7_P_FileSys_rename (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int		status;
     lib7_val_t	oldname = REC_SEL(arg, 0);
     lib7_val_t	newname = REC_SEL(arg, 1);
 
-    status = rename(STR_LIB7toC(oldname), STR_LIB7toC(newname));
+    int status = rename(STR_LIB7toC(oldname), STR_LIB7toC(newname));
 
     CHECK_RETURN_UNIT (lib7_state, status)
-
-} /* end of _lib7_P_FileSys_rename */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

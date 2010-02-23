@@ -72,12 +72,15 @@ static lib7_val_t mkValue (lib7_state_t *lib7_state, int val)
 lib7_val_t _lib7_P_FileSys_pathconf (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     int		val;
+
     lib7_val_t	mlPathname = REC_SEL(arg, 0);
-    lib7_val_t	mlAttr = REC_SEL(arg, 1);
+    lib7_val_t	mlAttr     = REC_SEL(arg, 1);
+
     char	*pathname = STR_LIB7toC(mlPathname);
     name_val_t	*attribute;
 
     attribute = _lib7_posix_nv_lookup (STR_LIB7toC(mlAttr), values, NUMELMS);
+
     if (!attribute) {
 	errno = EINVAL;
 	return RAISE_SYSERR(lib7_state, -1, __LINE__);
@@ -101,11 +104,14 @@ lib7_val_t _lib7_P_FileSys_pathconf (lib7_state_t *lib7_state, lib7_val_t arg)
 lib7_val_t _lib7_P_FileSys_fpathconf (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     int		val;
-    int         fd = REC_SELINT(arg, 0);
+
+    int         fd  = REC_SELINT(arg, 0);
     lib7_val_t	mlAttr = REC_SEL(arg, 1);
+
     name_val_t  *attribute;
 
     attribute = _lib7_posix_nv_lookup (STR_LIB7toC(mlAttr), values, NUMELMS);
+
     if (!attribute) {
 	errno = EINVAL;
 	return RAISE_SYSERR(lib7_state, -1, __LINE__);

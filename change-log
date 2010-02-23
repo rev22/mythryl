@@ -1,3 +1,4 @@
+2010-02-23-03.21.54: src/runtime/c-libs/lib7-socket/connect.c: Added a select() loop to handle EINTR during connect(), per Unix Network Programming p452.
 2010-02-23-02.10.44: src/runtime/c-libs/lib7-socket/: Proactively add retries on EINTR to various calls because with a 50HZ SIGALRM running to support concurrency, interrupted calls are a significant potential problem.
 2010-02-23-00.23.14: src/lib/x-kit/xclient/xcore.api: For clarity, renamed Authentication,AUTHENTICATION -> Xauthentication,XAUTHENTICATION, similar renamings elsewhere.
 2010-02-22-23.36.17: src/lib/x-kit/: draw/get-display(api,pkg) had nothing to do with drawing and no real distinction from xclient/xauthentication(api,pkg) functionality, so merged former into latter to reduce clutter and rationalize. For clarity, renamed fn parse_display -> parse_xdisplay_string, fn get_display -> get_xdisplay_string_and_xauthentication.
