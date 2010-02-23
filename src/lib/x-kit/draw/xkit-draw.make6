@@ -14,7 +14,6 @@ LIBRARY_GROUP_EXPORTS
 	api Spline
 	api Region
 	api Color_Space
-	api Get_Display
 
 	pkg bitmap_io
 	pkg ellipse
@@ -22,7 +21,6 @@ LIBRARY_GROUP_EXPORTS
 	pkg spline
 	pkg region
 	pkg color_space
-	pkg get_display
 
 LIBRARY_GROUP_COMPONENTS
 
@@ -44,8 +42,6 @@ LIBRARY_GROUP_COMPONENTS
 	region.pkg
 	color-space.api
 	color-space.pkg
-	get-display.api
-	get-display.pkg
 
 
 

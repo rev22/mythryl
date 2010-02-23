@@ -79,6 +79,32 @@ herein
 	    # Read the specified authentication file
 	    # (usually ~/.Xauthority) and return a list
 	    # of the entries that satisfy the given predicate.
+
+
+	# Parse a string specifying an
+	# X display into its components:
+	#
+	parse_xdisplay_string
+	    :
+	    String
+	    ->
+	    { host:    String,
+	      display: String,
+	      screen:  String
+	    };
+
+	# Given an optional display name, return
+	# the display and authentication information.
+	#
+	# If the argument is NULL we use the unix DISPLAY
+	# environment variable if defined else  "".
+	#
+	get_xdisplay_string_and_xauthentication
+	    :
+	    Null_Or( String )
+	    ->
+	    (String, Null_Or( xc::Authentication ));
+
     };
 
 end;

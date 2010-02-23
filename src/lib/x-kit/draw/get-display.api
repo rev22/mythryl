@@ -9,39 +9,9 @@
 
 
 
-###            "Adam and Eve had many advantages, but the
-###             principal one was that they escaped teething."
-###
-###                            -- Pudd'nhead Wilson's Calendar
-
-
-
 api Get_Display {
 
 
-    # Parse a string specifying an
-    # X display into its components:
-    #
-    parse_display
-        :
-        String
-        ->
-        { host:    String,
-	  display: String,
-	  screen:  String
-	};
-
-    # Given an optional display name, return
-    # the display and authentication information.
-    #
-    # If the argument is NULL we use the unix DISPLAY
-    # environment variable if defined else  "".
-    #
-    get_display
-        :
-        Null_Or( String )
-        ->
-        (String, Null_Or( xcore::Authentication ));
 
 };
 

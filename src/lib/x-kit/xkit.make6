@@ -38,7 +38,6 @@ LIBRARY_EXPORTS
 	api Region
 	api Xauthentication
 	api Color_Space
-	api Get_Display
 
 	pkg bitmap_io
 	pkg ellipse
@@ -47,7 +46,6 @@ LIBRARY_EXPORTS
 	pkg region
 	pkg xauthentication
 	pkg color_space
-	pkg get_display
 
         # From widgets:
 	#

@@ -16,7 +16,7 @@
 
 stipulate
     package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
-    package gd  =  get_display;					# get_display			is from   src/lib/x-kit/draw/get-display.pkg
+    package xau =  xauthentication;				# xauthentication		is from   src/lib/x-kit/xclient/xauthentication.pkg
     package w   =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc  =  xcore;					# xcore				is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
@@ -27,9 +27,11 @@ herein
 
 	fun make_root_window  display_or_null
 	    =
-	    {   my (display, auth)
+	    {   my  ( display,
+                      auth
+                    )
 		    =
-		    gd::get_display  display_or_null;
+		    xau::get_xdisplay_string_and_xauthentication  display_or_null;
 
 		w::make_root_window (display, auth)
 		except
