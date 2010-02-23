@@ -19,6 +19,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-unixdep.h"
 #if defined(HAS_SELECT)
 
@@ -123,7 +125,13 @@ static lib7_val_t LIB7_Poll (lib7_state_t *lib7_state, lib7_val_t poll_list, str
 	if ((flag & OOBDABLE_BIT) != 0)  fdp->events |= POLL_ERROR;
     }
 
-    {   int status = poll (fds, nfds, tout);
+    {   int status;
+
+
+        do {
+            status = poll (fds, nfds, tout);
+
+        } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
 	if (status < 0) {
 	    FREE(fds);
@@ -167,7 +175,7 @@ static lib7_val_t LIB7_Poll (lib7_state_t *lib7_state, lib7_val_t poll_list, str
     int		maxFD, status, fd, flag;
     lib7_val_t	l, item;
 
-printf("src/runtime/c-libs/posix-os/poll.c: Using 'select' implementation\n");
+/*printf("src/runtime/c-libs/posix-os/poll.c: Using 'select' implementation\n");*/
     rfds = wfds = efds = NULL;
     maxFD = 0;
     for (l = poll_list;  l != LIST_nil;  l = LIST_tl(l)) {
@@ -175,12 +183,12 @@ printf("src/runtime/c-libs/posix-os/poll.c: Using 'select' implementation\n");
 	fd	= REC_SELINT(item, 0);
 	flag	= REC_SELINT(item, 1);
 	if ((flag & READABLE_BIT) != 0) {
-int fd_flags = fcntl(fd,F_GETFL,0);
+/*int fd_flags = fcntl(fd,F_GETFL,0);*/
 	    if (rfds == NULL) {
 		rfds = &rset;
 		FD_ZERO(rfds);
 	    }
-printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for readability. fd flags x=%x O_NONBLOCK x=%x\n",fd,fd_flags,O_NONBLOCK);
+/*printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for readability. fd flags x=%x O_NONBLOCK x=%x\n",fd,fd_flags,O_NONBLOCK);*/
 	    FD_SET (fd, rfds);
 	}
 	if ((flag & WRITABLE_BIT) != 0) {
@@ -188,7 +196,7 @@ printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for readability. fd
 		wfds = &wset;
 		FD_ZERO(wfds);
 	    }
-printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for writability.\n",fd);
+/*printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for writability.\n",fd);*/
 	    FD_SET (fd, wfds);
 	}
 	if ((flag & OOBDABLE_BIT) != 0) {
@@ -196,15 +204,19 @@ printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for writability.\n"
 		efds = &eset;
 		FD_ZERO(efds);
 	    }
-printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for oobdability.\n",fd);
+/*printf("src/runtime/c-libs/posix-os/poll.c: Will check fd %d for oobdability.\n",fd);*/
 	    FD_SET (fd, efds);
 	}
 	if (fd > maxFD) maxFD = fd;
     }
 
-printf("src/runtime/c-libs/posix-os/poll.c: maxFD d=%d timeout x=%x.\n",maxFD,timeout);
-    status = select (maxFD+1, rfds, wfds, efds, timeout);
-printf("src/runtime/c-libs/posix-os/poll.c: result status d=%d.\n",status);
+/*printf("src/runtime/c-libs/posix-os/poll.c: maxFD d=%d timeout x=%x.\n",maxFD,timeout);*/
+    do {
+        status = select (maxFD+1, rfds, wfds, efds, timeout);
+
+    } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+
+/*printf("src/runtime/c-libs/posix-os/poll.c: result status d=%d.\n",status);*/
 
     if (status < 0)
         return RAISE_SYSERR(lib7_state, status,__LINE__);
@@ -221,16 +233,16 @@ printf("src/runtime/c-libs/posix-os/poll.c: result status d=%d.\n",status);
 	    flag	= REC_SELINT(item, 1);
 	    resFlag	= 0;
 	    if (((flag & READABLE_BIT) != 0) && FD_ISSET(fd, rfds)) {
-int fd_flags = fcntl(fd,F_GETFL,0);
-printf("src/runtime/c-libs/posix-os/poll.c: fd d=%d is in fact readable. fd flags x=%x O_NONBLOCK x=%x\n",fd,fd_flags,O_NONBLOCK);
+/*int fd_flags = fcntl(fd,F_GETFL,0);*/
+/*printf("src/runtime/c-libs/posix-os/poll.c: fd d=%d is in fact readable. fd flags x=%x O_NONBLOCK x=%x\n",fd,fd_flags,O_NONBLOCK);*/
 		resFlag |= READABLE_BIT;
             }
 	    if (((flag & WRITABLE_BIT) != 0) && FD_ISSET(fd, wfds)) {
-printf("src/runtime/c-libs/posix-os/poll.c: fd d=%d is in fact writable.\n",fd);
+/*printf("src/runtime/c-libs/posix-os/poll.c: fd d=%d is in fact writable.\n",fd);*/
 		resFlag |= WRITABLE_BIT;
             }
 	    if (((flag & OOBDABLE_BIT) != 0) && FD_ISSET(fd, efds)) {
-printf("src/runtime/c-libs/posix-os/poll.c: fd d=%d is in fact oobdable.\n",fd);
+/*printf("src/runtime/c-libs/posix-os/poll.c: fd d=%d is in fact oobdable.\n",fd);*/
 		resFlag |= OOBDABLE_BIT;
             }
 	    if (resFlag != 0) {

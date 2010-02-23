@@ -32,7 +32,7 @@ lib7_val_t _lib7_P_FileSys_openf (lib7_state_t *lib7_state, lib7_val_t arg)
     do {
         fd    = open (STR_LIB7toC(path), flags, mode);
 
-    } while (fd == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+    } while (fd < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     CHECK_RETURN(lib7_state, fd)
 }

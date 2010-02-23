@@ -82,7 +82,7 @@ lib7_val_t _lib7_Sock_sendbuf (lib7_state_t *lib7_state, lib7_val_t arg)
         do {
             n = send (socket, data, nbytes, flgs);
 
-        } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+        } while (n < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
         print_if( "sendbuf.c/bot: n d=%d errno d=%d\n", n, errno );
 

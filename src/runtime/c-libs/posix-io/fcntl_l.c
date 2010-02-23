@@ -39,7 +39,7 @@ lib7_val_t _lib7_P_IO_fcntl_l (lib7_state_t *lib7_state, lib7_val_t arg)
     do {
         status = fcntl(fd, cmd, &flock);
 
-    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+    } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     if (status < 0)
         return RAISE_SYSERR(lib7_state, status, __LINE__);

@@ -78,7 +78,7 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
      *     for connect() we cannot just retry on EINTR.
      *     On p452 it says we must instead do a select(),
      *     which will wait until the three-way TCP
-     *     handshake either succeeds or fails:  To Be Coded.	XXX BUGGO FIXME
+     *     handshake either succeeds or fails:
      */
     if (status < 0 && errno == EINTR) {
 
@@ -117,7 +117,7 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
          */
 	if (status == 2) {
 	    status = -1;
-	    errno  = EINTR;	/* Possibly ENETUNREACH or ETIMEDOUT would be better?	*/
+	    errno  = ENETUNREACH;	/* Possibly ETIMEDOUT would be better?	*/
 	}
     }
 

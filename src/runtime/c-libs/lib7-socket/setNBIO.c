@@ -50,7 +50,7 @@ lib7_val_t _lib7_Sock_setNBIO (lib7_state_t *lib7_state, lib7_val_t arg)
     do {
         status = fcntl(F_SETFL, socket, n);
 
-    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+    } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
 #else
     n = (REC_SEL(arg, 1) == LIB7_true);
@@ -58,7 +58,7 @@ lib7_val_t _lib7_Sock_setNBIO (lib7_state_t *lib7_state, lib7_val_t arg)
     do {
         status = ioctl (socket, FIONBIO, (char *)&n);
 
-    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+    } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 #endif
 
     CHECK_RETURN_UNIT(lib7_state, status);

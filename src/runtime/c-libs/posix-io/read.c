@@ -41,7 +41,7 @@ lib7_val_t _lib7_P_IO_read (lib7_state_t *lib7_state, lib7_val_t arg)
         do {
             n = read (fd, PTR_LIB7toC(char, vec), nbytes);
 
-        } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+        } while (n < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
 	if (n < 0)
 	    return RAISE_SYSERR(lib7_state, n, __LINE__);

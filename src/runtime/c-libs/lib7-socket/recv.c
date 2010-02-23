@@ -51,7 +51,7 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
     do {
         n = recv (socket, PTR_LIB7toC(char, vec), nbytes, flag);
 
-    } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+    } while (n < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     print_if("recv.c/after: n d=%d errno d=%d\n",n,errno);
 

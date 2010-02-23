@@ -67,7 +67,7 @@ lib7_val_t _lib7_Sock_sendbufto (lib7_state_t *lib7_state, lib7_val_t arg)
 		    GET_SEQ_LEN(addr)
 		);
 
-        } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+        } while (n < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
         CHECK_RETURN (lib7_state, n);
     }
