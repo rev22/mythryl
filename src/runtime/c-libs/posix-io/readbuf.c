@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -27,7 +29,10 @@ lib7_val_t _lib7_P_IO_readbuf (lib7_state_t *lib7_state, lib7_val_t arg)
     char	*start = STR_LIB7toC(buf) + REC_SELINT(arg, 3);
     int		n;
 
-    n = read (fd, start, nbytes);
+    do {
+        n = read (fd, start, nbytes);
+
+    } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN (lib7_state, n)
 

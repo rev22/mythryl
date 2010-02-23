@@ -3,6 +3,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-unixdep.h"
 
 #if HAVE_UNISTD_H
@@ -34,7 +36,13 @@ lib7_val_t _lib7_P_IO_read (lib7_state_t *lib7_state, lib7_val_t arg)
      */
     {   lib7_val_t vec = LIB7_AllocRaw32 (lib7_state, BYTES_TO_WORDS(nbytes));
 
-        int n = read (fd, PTR_LIB7toC(char, vec), nbytes);
+        int n;
+
+        do {
+            n = read (fd, PTR_LIB7toC(char, vec), nbytes);
+
+        } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+
 	if (n < 0)
 	    return RAISE_SYSERR(lib7_state, n, __LINE__);
 	else if (n == 0)

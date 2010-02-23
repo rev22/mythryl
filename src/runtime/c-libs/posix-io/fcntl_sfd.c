@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-unixdep.h"
 
 #if HAVE_FCNTL_H
@@ -24,11 +26,13 @@ lib7_val_t _lib7_P_IO_fcntl_sfd (lib7_state_t *lib7_state, lib7_val_t arg)
     int             fd0 = REC_SELINT(arg, 0);
     Word_t          flag = REC_SELWORD(arg, 1);
 
-    status = fcntl(fd0, F_SETFD, flag);
+    do {
+        status = fcntl(fd0, F_SETFD, flag);
+
+    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN_UNIT(lib7_state,status)
-
-} /* end of _lib7_P_IO_fcntl_sfd */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-base.h"
 #include "runtime-values.h"
 #include "runtime-heap.h"
@@ -23,7 +25,10 @@ lib7_val_t _lib7_P_IO_dup (lib7_state_t *lib7_state, lib7_val_t arg)
     int             fd0 = INT_LIB7toC(arg);
     int             fd1;
 
-    fd1 = dup(fd0);
+    do {
+        fd1 = dup(fd0);
+
+    } while (fd1 == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN(lib7_state, fd1)
 

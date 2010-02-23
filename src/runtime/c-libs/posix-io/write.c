@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-unixdep.h"
 
 #if HAVE_UNISTD_H
@@ -28,11 +30,13 @@ lib7_val_t _lib7_P_IO_write (lib7_state_t *lib7_state, lib7_val_t arg)
     size_t	nbytes = REC_SELINT(arg, 2);
     ssize_t    	n;
 
-    n = write (fd, STR_LIB7toC(data), nbytes);
+    do {
+        n = write (fd, STR_LIB7toC(data), nbytes);
+
+    } while (n == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN (lib7_state, n)
-
-} /* end of _lib7_P_IO_write */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

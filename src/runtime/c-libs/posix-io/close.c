@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-base.h"
 #include "runtime-values.h"
 #include "runtime-heap.h"
@@ -20,13 +22,17 @@
  */
 lib7_val_t _lib7_P_IO_close (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int         status, fd = INT_LIB7toC(arg);
+    int  fd = INT_LIB7toC(arg);
 
-    status = close(fd);
+    int  status;
+
+    do {
+        status = close(fd);
+
+    } while (status == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN_UNIT(lib7_state, status)
-
-} /* end of _lib7_P_IO_close */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

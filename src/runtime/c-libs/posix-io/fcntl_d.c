@@ -4,6 +4,8 @@
 
 #include "../../config.h"
 
+#include <errno.h>
+
 #include "runtime-unixdep.h"
 
 #if HAVE_FCNTL_H
@@ -26,7 +28,10 @@ lib7_val_t _lib7_P_IO_fcntl_d (lib7_state_t *lib7_state, lib7_val_t arg)
     int             fd0 = REC_SELINT(arg, 0);
     int             fd1 = REC_SELINT(arg, 1);
 
-    fd = fcntl(fd0, F_DUPFD, fd1);
+    do {
+        fd = fcntl(fd0, F_DUPFD, fd1);
+
+    } while (fd == -1 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     CHECK_RETURN(lib7_state, fd)
 
