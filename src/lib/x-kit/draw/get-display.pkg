@@ -5,6 +5,9 @@
 # Compiled by:
 #     src/lib/x-kit/draw/xkit-draw.make6
 
+# This package is (only) used in:
+#
+#     src/lib/x-kit/widget/lib/run-xkit.pkg
 
 stipulate
     package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
@@ -13,14 +16,14 @@ stipulate
     package dns =  dns_host_lookup;		# dns_host_lookup	is from   src/lib/std/src/socket/dns-host-lookup.pkg
 herein
 
-    package get_display: (weak)  Get_Display {	# Get_Display	is from   src/lib/x-kit/draw/get-display.api
+    package get_display: (weak)  Get_Display {	# Get_Display		is from   src/lib/x-kit/draw/get-display.api
 
 	fun get_display_name NULL
 		=>
 		case (threadkit_winix::process::get_env  "DISPLAY")
-
-		     NULL        =>  "";
-		     THE display =>  display;
+		    #
+		    THE display =>  display;
+		    NULL        =>  "";
 		esac;
 
 	    get_display_name (THE display)
@@ -77,7 +80,7 @@ herein
 
 		auth =  case display
 			    #                        
-			    "" =>   xau::get_auth_by_addr
+			    "" =>   xau::get_xauthority_file_entry_by_address
 				      {
 					family  =>  xau::family_wild,
 					address =>  dns::get_host_name (),	# Necessary to look up xrdb record -- ddeboer, 110.59.
@@ -91,11 +94,11 @@ herein
 
 				    fun make_xa  family  address				# "xa" may be "x-window authentication (string)"
 					=
-					xau::get_auth_by_addr { family, address, display };
+					xau::get_xauthority_file_entry_by_address { family, address, display };
 
 
 				    # We must obtain the string to be used for comparison
-				    # in get_auth_by_addr for family_local.  This is the local hostname.
+				    # in get_xauthority_file_entry_by_address for family_local.  This is the local hostname.
 				    # For family_internet, this is the IP address (as a string). -- ddeboer, 110.59
 				    #	
 				    case host

@@ -26,7 +26,7 @@ herein
 	family_local:     Int;
 	family_wild:      Int;
 
-	auth_file_name:  Void -> String;
+	get_xauthority_filename:  Void -> String;
 	    #
 	    # Return the default name of the authentication file (either
 	    # specified by the XAUTHORITY dictionary variable, or the
@@ -34,7 +34,7 @@ herein
 	    # are defined, then ".Xauthority" is returned.
 
 
-	get_auth_by_addr
+	get_xauthority_file_entry_by_address
 	    :
 	    { family:   Int,
 	      address:  String,
@@ -43,29 +43,32 @@ herein
 	    ->
 	    Null_Or( xc::Authentication );
 	    #
-	    # Search the default authentication file for the first entry that
+	    # Search the default xauthority file for the first entry that
 	    # matches the family, network address and display number.  If no
 	    # such match is found, then NULL is returned.  The * value family_wild
 	    # matches anything, as do the empty strings when given for address or display.
 
 
-	get_best_auth_by_addr
+	get_best_xauthority_file_entry_by_address
 	    :
 	    { family:      Int,
 	      address:     String,
 	      display:     String,
-	      auth_names:  List( String )
+	      # 	
+	      acceptable_authentication_methods:  List( String )
 	    }
 	    ->
 	    Null_Or( xc::Authentication );
 	    #
-	    # This similar to get_auth_by_addr, except that a list of acceptable
-	    # authentication methods is specified by the list auth_names.
-	    # We return the matching authentication info that matches the earliest
-	    # name on the list, or NULL is returned if no match is found.
+	    # This is like get_xauthority_file_entry_by_address
+            # except that a list of acceptable authentication methods is
+            # specified by the list acceptable_authentication_methods.
+	    #
+	    # We return the authentication info that matches the earliest
+	    # name on the list, or NULL if no match is found.
 
 
-	read_authentication_file
+	get_selected_xauthority_file_entries
 	    :
 	    (xc::Authentication -> Bool)
 	    ->
@@ -74,8 +77,8 @@ herein
 	    List( xc::Authentication );
 	    #
 	    # Read the specified authentication file
-	    # and return a list of entries that
-	    # satisfy the given predicate.
+	    # (usually ~/.Xauthority) and return a list
+	    # of the entries that satisfy the given predicate.
     };
 
 end;

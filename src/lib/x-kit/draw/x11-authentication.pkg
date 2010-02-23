@@ -17,6 +17,8 @@
 #      2 bytes         data length (always MSB first)
 #      D bytes         authorization data string
 #
+# For more information see the README in the libxau sourcetree.
+#
 # This implementation is partially based on code contributed by Juergen Buntrock.
 
 # This code gets used in:
@@ -24,7 +26,8 @@
 #     src/lib/x-kit/draw/get-display.pkg
 
 stipulate
-    package xc =  xcore;								# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package xc  =  xcore;								# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package bio =  binary_io;								# binary_io		is from   src/lib/std/src/unix/posix-binary-io.pkg
 herein
 
     package x11_authentication: (weak)  X11_Authentication {				# X11_Authentication	is from   src/lib/x-kit/draw/x11-authentication.api
@@ -55,20 +58,23 @@ herein
 	#
 	fun get_address_string (s, i, n)
 	    =
-	    case ( n,
-		   (unt8_vector_slice::fold_right
-		       (fn (e, a)
-			   = 
-			   (int::to_string (char::to_int (byte::byte_to_char e))) ! a
-		       )
-		       []
-		       (unt8_vector_slice::make_slice (s, i, THE n))
-		   )
-		 )
-		#
-		(4, [a, b, c, d]) =>   a + "." + b + "." + c + "." + d;
-		_                 =>   "";
-	    esac;
+	    {   address_parts
+		    = 
+		    (unt8_vector_slice::fold_right
+			(fn (e, a)
+			    = 
+			    (int::to_string (char::to_int (byte::byte_to_char e))) ! a
+			)
+			[]
+			(unt8_vector_slice::make_slice (s, i, THE n))
+		    );
+
+		case (n, address_parts)
+		    #
+		    (4, [a, b, c, d]) =>   a + "." + b + "." + c + "." + d;
+		    _                 =>   "";
+		esac;
+	    };
 
 	# The different family codes
 	# (from X.h and xc/lib/Xau/Xauth.h)
@@ -84,7 +90,7 @@ herein
 	# file $HOME/.Xauthority.  If neither XAUTHORITY or HOME 
 	# are defined, then ".Xauthority" is returned.
 	#
-	fun auth_file_name ()
+	fun get_xauthority_filename ()
 	    =
 	    case (threadkit_winix::process::get_env "XAUTHORITY")
 		#
@@ -104,10 +110,11 @@ herein
 	# 
 	fun read_file file
 	    = 
-	    {   instrm =   binary_io::open_for_read file;
-		contents = binary_io::read_all instrm;
+	    {   stream   =   binary_io::open_for_read  file;
+		contents =   binary_io::read_all  stream;
 
-		binary_io::close_input instrm;
+		binary_io::close_input  stream;
+
 		contents;
 	    };
 
@@ -196,10 +203,10 @@ herein
 	# matches the family, network address and display number.  If no
 	# such match is found, return NULL.  The * value family_wild
 	# matches anything, as do the empty strings when given for address or display.
-
-	fun get_auth_by_addr { family, display, address }
+	#
+	fun get_xauthority_file_entry_by_address { family, display, address }
 	    = 
-	    {   extract_auth =   extract_auth (read_file (auth_file_name()));
+	    {   extract_auth =   extract_auth (read_file (get_xauthority_filename()));
 
 		# hack by ddeboer, Feb 2005 - this is surely not the right way to do this...?? 	XXX BUGGO FIXME
 		# if family is internet and address is local_host, change to the local hostname
@@ -258,7 +265,7 @@ herein
 			THE (xc::AUTHENTICATION { address, display, name, data, ... } )
 			    =>
 			    file::print (
-			       "get_auth_by_addr returns THE xd::AUTHENTICATION { address="
+			       "get_xauthority_file_entry_by_address returns THE xd::AUTHENTICATION { address="
 			     + address
 			     + ", display="
 			     + display
@@ -269,7 +276,7 @@ herein
 
 			NULL =>
 			    file::print (
-				"get_auth_by_addr returns NULL (address="
+				"get_xauthority_file_entry_by_address returns NULL (address="
 			      + address
 			      + ", display="
 			      + display
@@ -284,15 +291,15 @@ herein
 	    except
 		_ = NULL;
 
-	# This is similar to get_auth_by_addr, except that a list of acceptable
-	# authentication methods is specified by the list auth_names.
+	# This is similar to get_xauthority_file_entry_by_address, except that a list of acceptable
+	# authentication methods is specified by the list acceptable_authentication_methods.
 	#
 	# It returns the matching authentication info that matches the earliest
 	# name on the list.  NULL is returned if no match is found.
 	#
-	fun get_best_auth_by_addr { family, address, display, auth_names }
+	fun get_best_xauthority_file_entry_by_address { family, address, display, acceptable_authentication_methods }
 	    =
-	    {   extract_auth =   extract_auth (read_file (auth_file_name()));
+	    {   extract_auth =   extract_auth (read_file (get_xauthority_filename()));
 
 		#  hack by ddeboer, Feb 2005 - this is surely not the right way to do this...?? 
 		#  if family is internet and address is localhost, change to the local hostname
@@ -350,7 +357,7 @@ herein
 					 fi;
 				 end;
 
-				 check_name (auth_names, 0);
+				 check_name (acceptable_authentication_methods, 0);
 
 			     else
 				 get (next, best_rank, best);
@@ -358,7 +365,7 @@ herein
 		    esac;
 
 
-		get (0, length auth_names, NULL);
+		get (0, length acceptable_authentication_methods, NULL);
 	    }
 	    except _ = NULL;
 
@@ -367,7 +374,7 @@ herein
 	# and return a list of the entries that
 	# satisfy the given predicate.
 	#
-	fun read_authentication_file check_auth file
+	fun get_selected_xauthority_file_entries  check_auth  file
 	    =
 	    filter (0, [])
 	    where
@@ -376,9 +383,9 @@ herein
 		fun filter (offset, l)
 		    =
 		    case (extract_auth offset)
-
+			#
 			NULL => reverse l;
-
+			#
 			THE (auth, next)
 			     =>
 			     if (check_auth auth)
