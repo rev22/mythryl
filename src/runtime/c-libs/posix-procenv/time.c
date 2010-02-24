@@ -18,14 +18,14 @@
 lib7_val_t _lib7_P_ProcEnv_time (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     time_t      t;
-    lib7_val_t	res;
+    lib7_val_t	result;
 
     t = time (NULL);
 
-    INT32_ALLOC(lib7_state, res, t);
-    return res;
+    INT32_ALLOC(lib7_state, result, t);
 
-} /* end of _lib7_P_ProcEnv_time */
+    return result;
+}
 
 
 

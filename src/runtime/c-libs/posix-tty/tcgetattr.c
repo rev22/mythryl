@@ -27,8 +27,8 @@
 lib7_val_t _lib7_P_TTY_tcgetattr (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     int             fd = INT_LIB7toC(arg);
-    lib7_val_t        iflag, oflag, cflag, lflag;
-    lib7_val_t        cc, ispeed, ospeed, chunk;
+    lib7_val_t      iflag, oflag, cflag, lflag;
+    lib7_val_t      cc, ispeed, ospeed, chunk;
     struct termios  data;
 
     int status = tcgetattr(fd, &data);
@@ -62,7 +62,6 @@ lib7_val_t _lib7_P_TTY_tcgetattr (lib7_state_t *lib7_state, lib7_val_t arg)
     chunk = LIB7_Alloc(lib7_state, 7);
 
     return chunk;
-
 }
 
 

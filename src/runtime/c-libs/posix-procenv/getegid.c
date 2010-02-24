@@ -20,9 +20,9 @@ lib7_val_t _lib7_P_ProcEnv_getegid (lib7_state_t *lib7_state, lib7_val_t arg)
     lib7_val_t	p;
 
     WORD_ALLOC (lib7_state, p, (Word_t)(getegid()));
-    return p;
 
-} /* end of _lib7_P_ProcEnv_getegid */
+    return p;
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

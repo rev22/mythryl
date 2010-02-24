@@ -20,15 +20,12 @@
  *
  * Discard data that is written but not sent, or received but not read.
  */
-lib7_val_t _lib7_P_TTY_tcflush (lib7_state_t *lib7_state, lib7_val_t arg)
+lib7_val_t  _lib7_P_TTY_tcflush  (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int         status;
-
-    status = tcflush(REC_SELINT(arg, 0),REC_SELINT(arg, 1));
+    int status =  tcflush(REC_SELINT(arg, 0),REC_SELINT(arg, 1));
 
     CHECK_RETURN_UNIT(lib7_state, status)
-
-} /* end of _lib7_P_TTY_tcflush */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

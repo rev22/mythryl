@@ -20,9 +20,8 @@
  */
 lib7_val_t _lib7_P_Process_sleep (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    return INT_CtoLib7(sleep(INT_LIB7toC(arg)));
-
-} /* end of _lib7_P_Process_sleep */
+    return INT_CtoLib7( sleep(INT_LIB7toC(arg)) );
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

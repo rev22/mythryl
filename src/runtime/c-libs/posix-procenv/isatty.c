@@ -19,8 +19,7 @@
 lib7_val_t _lib7_P_ProcEnv_isatty (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     return (isatty(INT_LIB7toC(arg)) ? LIB7_true : LIB7_false);
-
-} /* end of _lib7_P_ProcEnv_isatty */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

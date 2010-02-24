@@ -18,9 +18,9 @@
  */
 lib7_val_t
 
-_lib7_P_ProcEnv_getpid (lib7_state_t *lib7_state, lib7_val_t arg)
+_lib7_P_ProcEnv_getpid  (lib7_state_t *lib7_state,  lib7_val_t arg)
 {
-    return INT_CtoLib7(getpid());
+    return INT_CtoLib7( getpid() );
 }
 
 

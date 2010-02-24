@@ -47,8 +47,7 @@ lib7_val_t _lib7_P_Process_exece (lib7_state_t *lib7_state, lib7_val_t arg)
     status = execve(STR_LIB7toC(path), argv, envp);
 
     CHECK_RETURN (lib7_state, status)
-
-} /* end of _lib7_P_Process_exece */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

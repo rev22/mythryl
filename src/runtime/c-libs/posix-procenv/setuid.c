@@ -18,13 +18,10 @@
  */
 lib7_val_t _lib7_P_ProcEnv_setuid (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    int         status;
-
-    status = setuid(WORD_LIB7toC(arg));
+    int status = setuid(WORD_LIB7toC(arg));
 
     CHECK_RETURN_UNIT(lib7_state, status)
-
-} /* end of _lib7_P_ProcEnv_setuid */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

@@ -15,8 +15,7 @@ lib7_val_t _lib7_P_ProcEnv_environ (lib7_state_t *lib7_state, lib7_val_t arg)
     extern char         **environ;
 
     return LIB7_CStringList (lib7_state, environ);
-
-} /* end of _lib7_P_ProcEnv_environ */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

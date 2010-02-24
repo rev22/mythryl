@@ -23,8 +23,7 @@ lib7_val_t _lib7_P_Process_pause (lib7_state_t *lib7_state, lib7_val_t arg)
     pause();
 
     return LIB7_void;
-
-} /* end of _lib7_P_Process_pause */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.
