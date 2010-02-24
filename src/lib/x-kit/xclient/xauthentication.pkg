@@ -1,9 +1,9 @@
 ## xauthentication.pkg
-
-# Compiled by:
-#     src/lib/x-kit/draw/xkit-draw.make6
-#     src/lib/x-kit/xclient/xclient.make6 
-
+#
+# For motivation and overview see top-of-file comments in:
+#
+#     src/lib/x-kit/xclient/xauthentication.api
+#
 # Support for X11 authentication.  The authentication file, which is
 # specified by the XAUTHORITY variable (default $HOME/.Xauthority),
 # consists of a sequence of entries with the following format:
@@ -18,9 +18,14 @@
 #      2 bytes         data length (always MSB first)
 #      D bytes         authorization data string
 #
-# For more information see the README in the libxau sourcetree.
+# For more information see the README in the libxau sourcetree from X.org.
 #
 # This implementation is partially based on code contributed by Juergen Buntrock.
+
+# Compiled by:
+#     src/lib/x-kit/draw/xkit-draw.make6
+#     src/lib/x-kit/xclient/xclient.make6 
+
 
 # This package is (only) used in:
 #
@@ -156,6 +161,9 @@ herein
 		    =
 		    get16 (file_contents, start - 2);
 
+		# Extract one .Xauthority file record from
+		# given offset within 'file_contents' bytestring:
+		#
 		fun extract offset
 		    =
 		    if (offset < len)
@@ -177,41 +185,46 @@ herein
 			#  Added following line, Feb 2005, ddeboer 
 			family = get16 (file_contents, offset);
 
+			# modified by ddeboer: 
+			# entries of family=familyInternet are stored as 4-byte ip addresses.
+			# it seems that we must convert these into hostnames for comparison...?!?
+			# original:
+			# family = get16 (file_contents, offset),
+			# address = get_string (file_contents, addrStart, addrLen),
+			#
+			address
+			    =
+			    if (family == family_internet)
+
+			        string =   get_address_string (file_contents, addr_start, addr_len);
+
+				# For 110.59, Dusty Deboer replaced the below by just
+				#
+				string;
+
+#				string =   get_address_string (file_contents, addr_start, addr_len);
+#
+#				case (dns_host_lookup::from_string string)   
+#
+#				    NULL   => "";
+#
+#				    THE ia => case (dns_host_lookup::get_by_address ia)    
+#					  	  NULL  => ""; 
+#						  THE e => (dns_host_lookup::name e);
+#                                             esac;
+#                               esac;
+
+			    else
+				get_string (file_contents, addr_start, addr_len);
+			    fi;
+
+			    #  end modification 
+
+
 			THE (
 			    xc::XAUTHENTICATION {
-				 # modified by ddeboer: 
-				 # entries of family=familyInternet are stored as 4-byte ip addresses.
-				 # it seems that we must convert these into hostnames for comparison...?!?
-				 # original:
-				 # family = get16 (file_contents, offset),
-				 # address = get_string (file_contents, addrStart, addrLen),
 				 family,
-				 address => if (family == family_internet)
-
-						string =   get_address_string (file_contents, addr_start, addr_len);
-
-						# For 110.59, Dusty Deboer replaced the below by just
-						#
-						string;
-
-    #					        string =   get_address_string (file_contents, addr_start, addr_len);
-    #
-    #					        case (dns_host_lookup::from_string string)   
-    #
-    #						     NULL   => "";
-    #
-    #						     THE ia => case (dns_host_lookup::get_by_address ia)    
-    #							  	   NULL  => ""; 
-    #								   THE e => (dns_host_lookup::name e);
-    #                                                          esac;
-    #                                           esac;
-
-					    else
-						get_string (file_contents, addr_start, addr_len);
-					    fi,
-
-				 #  end modification 
-
+				 address,
 				 display =>  get_string (file_contents, display_start,  display_len ),
 				 name    =>  get_string (file_contents, name_start,     name_len),
 				 data    =>  get_data   (file_contents, data_start,     data_len)
@@ -240,7 +253,9 @@ herein
               display:   String		# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
             }
 	    = 
-	    {   extract_authentication_entry =   extract_authentication_entry (read_file (get_xauthority_filename()));
+	    {   extract_authentication_entry
+		    =
+		    extract_authentication_entry (read_file (get_xauthority_filename()));
 
 		# hack by ddeboer, Feb 2005 - this is surely not the right way to do this...?? 	XXX BUGGO FIXME
 		# if family is internet and address is local_host, change to the local hostname
@@ -258,12 +273,12 @@ herein
 
 		#  end hack 
 
-		fun compare_string ("", _)   =>   TRUE;
-		    compare_string (_, "")   =>   TRUE;
-		    compare_string (a, b)    =>   (a == b);
+		fun strings_match ("", _)   =>   TRUE;
+		    strings_match (_, "")   =>   TRUE;
+		    strings_match (a, b)    =>   (a == b);
 		end;
 
-		fun check_auth (xc::XAUTHENTICATION { family=>f, display=>d, address=>a, ... } )
+		fun entry_is_acceptable (xc::XAUTHENTICATION { family=>f, display=>d, address=>a, ... } )
 		    =
 		    (   # tracing added ddeboer, Jan 2005. 
 			#  (file::print ("chkAuth seeking family=" + (int::to_string (family)) + ", display="
@@ -273,26 +288,29 @@ herein
 			    (f      == family_wild)   or
 			    (family == f)
 			)
-			and compare_string (display, d)
-			and compare_string (address, a)
+			and strings_match (display, d)
+			and strings_match (address, a)
 		    );
 
-		fun get offset
+		fun get_entry  offset
 		    =
 		    case (extract_authentication_entry offset)
 			#
-			THE (auth, next) => if (check_auth auth)   THE auth;
-					    else                 get next;
-					    fi;
+			THE (entry, next_offset)
+                            =>
+                            if (entry_is_acceptable entry)   THE entry;
+			    else                             get_entry  next_offset;
+			    fi;
+
 			NULL => NULL;
 		    esac;
 
 
-    #	    get 0 ;
+    #	    get_entry 0 ;
 
     #	    modified ddeboer, Jan 2005 for testing. 
 
-		{   rv = get 0;
+		{   rv = get_entry 0;
 
 		    case rv
 			#
@@ -375,9 +393,9 @@ herein
 
 		#  end hack 
 
-		fun compare_string ("", _) =>   TRUE;
-		    compare_string (_, "") =>   TRUE;
-		    compare_string (a,  b) =>   (a == b);
+		fun strings_match ("", _) =>   TRUE;
+		    strings_match (_, "") =>   TRUE;
+		    strings_match (a,  b) =>   (a == b);
 		end;
 
 		fun check_auth (xc::XAUTHENTICATION { family=>f, display=>d, address=>a, ... } )
@@ -386,8 +404,8 @@ herein
 			    f      == family_wild   or
 			    family == f
 			)
-			and compare_string (display, d)
-			and compare_string (address, a)
+			and strings_match (display, d)
+			and strings_match (address, a)
 		    );
 
 		fun get (offset, best_rank, best)
@@ -522,60 +540,62 @@ herein
 	    = 
 	    {   display =   get_display_name  display_option;
 
-		auth =  case display
-			    #                        
-			    "" =>   get_xauthority_file_entry_by_address
-				      {
-					family  =>  family_wild,
-					address =>  dns::get_host_name (),	# Necessary to look up xrdb record -- ddeboer, 110.59.
-					display =>  "0"
-				      };
+		xauthentication
+		    =
+		    case display
+			#                        
+			"" =>   get_xauthority_file_entry_by_address
+				  {
+				    family  =>  family_wild,
+				    address =>  dns::get_host_name (),	# Necessary to look up xrdb record -- ddeboer, 110.59.
+				    display =>  "0"
+				  };
 
-			    d => {  my { host, display, ... }
-					=
-					parse_xdisplay_string d;
-
-
-				    fun make_xa  family  address				# "xa" may be "x-window authentication (string)"
-					=
-					get_xauthority_file_entry_by_address { family, address, display };
+			d => {  my { host, display, ... }
+				    =
+				    parse_xdisplay_string d;
 
 
-				    # We must obtain the string to be used for comparison
-				    # in get_xauthority_file_entry_by_address.
-                                    # For family_local this is the local hostname.
-				    # For family_internet, this is the IP address as a string: "128.74.13.14" or such.
-                                    #     -- ddeboer, 110.59
-				    #	
-				    case host
-					#
-					("" | "localhost")
-					    =>
-					    make_xa   family_local   (dns::get_host_name ());
+				fun make_xa  family  address				# "xa" may be "x-window authentication (string)"
+				    =
+				    get_xauthority_file_entry_by_address { family, address, display };
 
-					_   =>
-					    {   address
-						    =
-						    # This should more properly be set to the
-						    # peer address of the connection, *after*
-						    # the connection has been made.  However,
-						    # that would be a bit difficult with this
-						    # architecture. -- ddeboer 110.59
+
+				# We must obtain the string to be used for comparison
+				# in get_xauthority_file_entry_by_address.
+				# For family_local this is the local hostname.
+				# For family_internet, this is the IP address as a string: "128.74.13.14" or such.
+				#     -- ddeboer, 110.59
+				#	
+				case host
+				    #
+				    ("" | "localhost")
+					=>
+					make_xa   family_local   (dns::get_host_name ());
+
+				    _   =>
+					{   address
+						=
+						# This should more properly be set to the
+						# peer address of the connection, *after*
+						# the connection has been made.  However,
+						# that would be a bit difficult with this
+						# architecture. -- ddeboer 110.59
+						#
+						case (dns::get_by_name  host)
 						    #
-						    case (dns::get_by_name  host)
-							#
-							THE entry =>  dns::to_string (dns::address  entry);
-							NULL      =>  "";
-						    esac;
+						    THE entry =>  dns::to_string (dns::address  entry);
+						    NULL      =>  "";
+						esac;
 
-						make_xa  family_internet  address;
-					    };
-				    esac;
-				 };
-			 esac;
+					    make_xa  family_internet  address;
+					};
+				esac;
+			     };
+		     esac;
 
 
-		(display, auth);
+		(display, xauthentication);
 	    };
 
 

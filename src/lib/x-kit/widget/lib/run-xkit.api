@@ -21,7 +21,7 @@ herein
 
 	Options
 	    =
-	    { display:  		     Null_Or( String ),		# Connect to this display.
+	    { display:  		     Null_Or( String ),		# Connect to this display. String is as in DISPLAY environment var: "127.0.0.1:0.0" or such.
 	      time_quantum_in_milliseconds:  Null_Or( large_int::Int )	# Threadkit time quantum in ms. 
 	    };
 

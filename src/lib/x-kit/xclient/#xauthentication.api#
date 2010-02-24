@@ -1,6 +1,55 @@
 # xauthentication.api
 #
-# Support for X11 authentication.
+# Motivation
+# ----------
+#
+# When I started programming in the 1970s workstations were shipped
+# with X configured to accept all client connections and most people
+# left them that way;  consequently, in general anyone anywhere on
+# the ARPANET could in open up an X window on any other machine
+# connected to the ARPANET.  Requiring passwords to log onto a machine
+# was considered by many people to be anti-social;  Stallman used to
+# advertise that he used an accountname of "rms" and password also "rms"
+# as protest against the imposition of passwords.  As late as 1990 muds
+# were resisting the use of passwords. 
+#
+# That was a different era;  such openness is not very practical on
+# today's savage Internet.  Consequently some way must be found to
+# restrict the set of people/machines allowed to connect to a given
+# X server.  The typical X authentication scheme used these days is
+# MIT-MAGIC-COOKIE-1, which works roughly so:
+#
+#  o When an X server is started, it is given a list of
+#    128-bit random numbers ("cookies"); it will accept
+#    any X client presenting one of those cookies.
+#
+#  o At user login XDM stores the cookie for the machine in the
+#    user's ~/.Xauthority file, keyed by machine address.  This
+#    file may contain multiple cookies to allow connection to
+#    multiple X servers.
+#
+#  o When an X client program is run, it looks up the X server
+#    (typically obtained from the DISPLAY environment variable)
+#    in ~/.Xauthority, locates the corresponding cookie, and
+#    forwards it as part of the X connection request message to
+#    the X server.  For X clients written in C this is usually
+#    handled transparently by xlib.
+#
+# (xlib and the X server do no encryption themselves, consequently it
+# is best to use ssh X forwarding to avoid sending cookies in the clear.)
+#
+# In this file we define an API to functionality for fetching cookies
+# from ~/.Xauthority, plus related functionality for parsing X server
+# addresses obtained from DISPLAY environment variables.  Typical usage:
+#
+#     my (display, cookie) = get_xdisplay_string_and_xauthentication NULL;
+#
+#     root_window = make_root_window (display, cookie);
+#
+# or simply
+#
+#     root_window = make_root_window (
+
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient.make6
@@ -53,9 +102,9 @@ herein
 	    :
 	    { family:      Int,			# family_wild, family_local, family_internet ...
 	      address:     String,		# Identity of our workstation, from gethostname(2) or such.
-	      display:     String,	# E.g.  [ "MIT-MAGIC-COOKIE-1" ]
+	      display:     String,		# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
 	      # 	
-	      acceptable_authentication_methods:  List( String )
+	      acceptable_authentication_methods:  List( String )	# E.g.  [ "MIT-MAGIC-COOKIE-1" ]
 	    }
 	    ->
 	    Null_Or( xc::Xauthentication );

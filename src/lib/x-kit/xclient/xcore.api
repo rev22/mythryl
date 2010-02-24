@@ -77,7 +77,7 @@ api  Xcore {
     #
     #     ~/.Xauthority
     #
-    # by code in
+    # by code (e.g. get_xdisplay_string_and_xauthentication) in
     #
     #     src/lib/x-kit/xclient/xauthentication.pkg
     #
@@ -94,11 +94,11 @@ api  Xcore {
 	=
         XAUTHENTICATION
 	  {
-	    family:   Int,
-	    address:  String,
-	    display:  String,
-	    name:     String,						# E.g., "MIT-MAGIC-COOKIE-1"
-	    data:     unt8_vector::Vector				# For    MIT-MAGIC-COOKIE-1 this is 16 bytes (128 bits) of random data.
+	    family:   Int,						# E.g. xauthentication::family_internet
+	    address:  String,						# E.g. "127.0.0.1"
+	    display:  String,						# E.g. "0"
+	    name:     String,						# E.g. "MIT-MAGIC-COOKIE-1"
+	    data:     unt8_vector::Vector				# For   MIT-MAGIC-COOKIE-1 this is 16 bytes (128 bits) of random data.
 	  };
 
     # Identity tests:
