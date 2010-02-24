@@ -53,9 +53,9 @@ herein
 	    :
 	    { family:      Int,			# family_wild, family_local, family_internet ...
 	      address:     String,		# Identity of our workstation, from gethostname(2) or such.
-	      display:     String,		# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
+	      display:     String,	# E.g.  [ "MIT-MAGIC-COOKIE-1" ]
 	      # 	
-	      acceptable_authentication_methods:  List( String )	# E.g.  [ "MIT-MAGIC-COOKIE-1" ]
+	      acceptable_authentication_methods:  List( String )
 	    }
 	    ->
 	    Null_Or( xc::Xauthentication );

@@ -32,12 +32,10 @@ lib7_val_t
 
 _lib7_NetDB_gethostname (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    char	hostname[MAXHOSTNAMELEN];
+    char hostname[ MAXHOSTNAMELEN ];
 
-    if (gethostname (hostname, MAXHOSTNAMELEN) == -1)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
-    else
-	return LIB7_CString(lib7_state, hostname);
+    if (gethostname (hostname, MAXHOSTNAMELEN) == -1)  return RAISE_SYSERR(lib7_state, status, __LINE__);
+    else	                                       return LIB7_CString(lib7_state, hostname);
 }
 
 

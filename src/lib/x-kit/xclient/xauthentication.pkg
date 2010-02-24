@@ -61,12 +61,17 @@ herein
 	    =
 	    w8vextract (s, i, THE n);
 
+        # Extract n bytes at offset i within s,
+        # return as a String:
+        #
 	fun get_string (s, i, n)
 	    =
 	    byte::unpack_string_vector (unt8_vector_slice::make_slice (s, i, THE n));
 
 
-	# Added ddeboer: ip addresses are encoded as raw bytes not a string. 
+	# Extract 4-byte IP address from offset 'i'
+        # in string 's' and return as a "127.0.0.1"
+        # style dotted ascii String:
 	#
 	fun get_address_string (s, i, n)
 	    =
@@ -84,7 +89,7 @@ herein
 		case (n, address_parts)
 		    #
 		    (4, [a, b, c, d]) =>   a + "." + b + "." + c + "." + d;
-		    _                 =>   "";
+		    _                 =>   "";					# XXX BUGGO FIXME This can't be optimal.
 		esac;
 	    };
 
@@ -131,15 +136,25 @@ herein
 		contents;
 	    };
 
-	# Extract an authentication entry from a data string:
+	# Extract an authentication entry from
+        # given offset in given file_contents.
 	#
-	fun extract_authentication_entry contents
+ 	# Our effective type here is
+	#
+        #     file_contents -> offset -> entry
+	#
+        # where file_contents is a bytestring (unt8_vector)
+	# holding the contents of a ~/.Xauathority file or
+        # such and 'offset' is an Int giving a byte offset
+        # within file_contents.
+	#
+	fun extract_authentication_entry  file_contents
 	    =
-	    {   len =   unt8_vector::length contents;
+	    {   len =   unt8_vector::length  file_contents;
 
 		fun get_len start
 		    =
-		    get16 (contents, start - 2);
+		    get16 (file_contents, start - 2);
 
 		fun extract offset
 		    =
@@ -148,10 +163,10 @@ herein
 			addr_start =   4 + offset;
 			addr_len   =   get_len addr_start;
 
-			dpy_start  =   addr_start + addr_len + 2;
-			dpy_len    =   get_len dpy_start;
+			display_start  =   addr_start + addr_len + 2;
+			display_len    =   get_len display_start;
 
-			name_start =   dpy_start + dpy_len + 2;
+			name_start =   display_start + display_len + 2;
 			name_len   =   get_len name_start;
 
 			data_start =   name_start + name_len + 2;
@@ -160,7 +175,7 @@ herein
 			next       =   data_start + data_len;
 
 			#  Added following line, Feb 2005, ddeboer 
-			family = get16 (contents, offset);
+			family = get16 (file_contents, offset);
 
 			THE (
 			    xc::XAUTHENTICATION {
@@ -168,18 +183,18 @@ herein
 				 # entries of family=familyInternet are stored as 4-byte ip addresses.
 				 # it seems that we must convert these into hostnames for comparison...?!?
 				 # original:
-				 # family = get16 (contents, offset),
-				 # address = get_string (contents, addrStart, addrLen),
+				 # family = get16 (file_contents, offset),
+				 # address = get_string (file_contents, addrStart, addrLen),
 				 family,
 				 address => if (family == family_internet)
 
-						string =   get_address_string (contents, addr_start, addr_len);
+						string =   get_address_string (file_contents, addr_start, addr_len);
 
 						# For 110.59, Dusty Deboer replaced the below by just
 						#
 						string;
 
-    #					        string =   get_address_string (contents, addr_start, addr_len);
+    #					        string =   get_address_string (file_contents, addr_start, addr_len);
     #
     #					        case (dns_host_lookup::from_string string)   
     #
@@ -192,14 +207,14 @@ herein
     #                                           esac;
 
 					    else
-						get_string (contents, addr_start, addr_len);
+						get_string (file_contents, addr_start, addr_len);
 					    fi,
 
 				 #  end modification 
 
-				 display =>  get_string (contents, dpy_start,  dpy_len ),
-				 name    =>  get_string (contents, name_start, name_len),
-				 data    =>  get_data   (contents, data_start, data_len)
+				 display =>  get_string (file_contents, display_start,  display_len ),
+				 name    =>  get_string (file_contents, name_start,     name_len),
+				 data    =>  get_data   (file_contents, data_start,     data_len)
 			    },
 			    next
 			);
@@ -211,11 +226,19 @@ herein
 	    };
 
 	# Search the default authentication file for the first entry that
-	# matches the family, network address and display number.  If no
-	# such match is found, return NULL.  The * value family_wild
-	# matches anything, as do the empty strings when given for address or display.
+	# matches the family, network address and display number.
 	#
-	fun get_xauthority_file_entry_by_address { family, display, address }
+        # If no such match is found, return NULL.
+	#
+        # The * value family_wild matches anything, as do the
+        # empty strings when given for address or display.
+	#
+	fun get_xauthority_file_entry_by_address
+            {
+              family:    Int,		# family_wild, family_local, family_internet ...
+              address:   String,	# From gethostname(2) or such.
+              display:   String		# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
+            }
 	    = 
 	    {   extract_authentication_entry =   extract_authentication_entry (read_file (get_xauthority_filename()));
 
@@ -302,13 +325,38 @@ herein
 	    except
 		_ = NULL;
 
-	# This is similar to get_xauthority_file_entry_by_address, except that a list of acceptable
-	# authentication methods is specified by the list acceptable_authentication_methods.
+	# This is similar to get_xauthority_file_entry_by_address,
+        # except that a list of acceptable authentication methods
+        # is specified by the list acceptable_authentication_methods.
+        # This contains one or more strings like
 	#
-	# It returns the matching authentication info that matches the earliest
-	# name on the list.  NULL is returned if no match is found.
+        #     "MIT-MAGIC-COOKIE-1"
+        #     "XDM-AUTHORIZATION-1"
+        #     "SUN-DES-1"
+        #     "MIT-KERBEROS-5"
 	#
-	fun get_best_xauthority_file_entry_by_address { family, address, display, acceptable_authentication_methods }
+	# to match literally against the contents of ~/.Xauthority entries.
+	#
+	# Not all of these are available everywhere; the de facto standard
+	# method is MIT-MAGIC-COOKIE-1.  For more information about the
+	# various authentication methods see (e.g.):
+	#
+	#     man 7 Xsecurity
+	#     http://manpages.ubuntu.com/manpages/jaunty/man7/Xsecurity.7.html
+	#
+	# We return the matching authentication info that matches the earliest
+	# name on the list.
+	#
+	# We return NULL if no match is found.
+	#
+	fun get_best_xauthority_file_entry_by_address
+            {
+              family:    Int,			# family_wild, family_local, family_internet ...
+              address:   String,		# From gethostname(2) or such.
+              display:   String,		# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
+	      #	
+              acceptable_authentication_methods: List(String)	# E.g.  [ "MIT-MAGIC-COOKIE-1" ]
+            }
 	    =
 	    {   extract_authentication_entry =   extract_authentication_entry (read_file (get_xauthority_filename()));
 
@@ -483,7 +531,7 @@ herein
 					display =>  "0"
 				      };
 
-			    d => {  my { display, host, ... }
+			    d => {  my { host, display, ... }
 					=
 					parse_xdisplay_string d;
 
@@ -494,31 +542,34 @@ herein
 
 
 				    # We must obtain the string to be used for comparison
-				    # in get_xauthority_file_entry_by_address for family_local.  This is the local hostname.
-				    # For family_internet, this is the IP address (as a string). -- ddeboer, 110.59
+				    # in get_xauthority_file_entry_by_address.
+                                    # For family_local this is the local hostname.
+				    # For family_internet, this is the IP address as a string: "128.74.13.14" or such.
+                                    #     -- ddeboer, 110.59
 				    #	
 				    case host
-
+					#
 					("" | "localhost")
 					    =>
 					    make_xa   family_local   (dns::get_host_name ());
 
 					_   =>
-					    make_xa
-
-                                                family_internet
-
-						# This should more properly be set to the
-						# peer address of the connection, *after*
-						# the connection has been made.  However,
-						# that would be a bit difficult with this
-						# architecture. -- ddeboer 110.59
-						#
-						case (dns::get_by_name  host)
+					    {   address
+						    =
+						    # This should more properly be set to the
+						    # peer address of the connection, *after*
+						    # the connection has been made.  However,
+						    # that would be a bit difficult with this
+						    # architecture. -- ddeboer 110.59
 						    #
-						    THE entry =>  dns::to_string (dns::address  entry);
-						    NULL      =>  "";
-						esac;
+						    case (dns::get_by_name  host)
+							#
+							THE entry =>  dns::to_string (dns::address  entry);
+							NULL      =>  "";
+						    esac;
+
+						make_xa  family_internet  address;
+					    };
 				    esac;
 				 };
 			 esac;

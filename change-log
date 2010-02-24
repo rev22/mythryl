@@ -1,3 +1,4 @@
+2010-02-23-22.26.32: src/runtime/c-libs/: More proactive EINTR retries. NB: JHReppy emailed that not retrying on EINTR at the C level was a deliberate SML/NJ design decision. Fair enough, although it makes my hair stand on end.
 2010-02-23-12.33.18: src/runtime/c-libs/posix-os/poll.c: Proactively handle EINTR. Change wahtever -> whatever in previous fixes, also status == -1 to status < 0, which seems traditional for some reason.
 2010-02-23-04.18.29: src/runtime/c-libs/posix-io/: Proactively handle EINTR in close.c, dup2.c, dup.c, fcntl_d.c, fcntl_gfd.c, fcntl_gfl.c, fcntl_l_64.c, fcntl_l.c, fcntl_sfd.c, fcntl_sfl.c, readbuf.c, read.c, writebuf.c, write.c.
 2010-02-23-03.51.55: src/runtime/c-libs/posix-filesys/: Proactively handle EINTR errors in openf.c, ftruncate.c, ftruncate_64.c.
