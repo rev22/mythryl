@@ -373,9 +373,27 @@ package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threa
 				      file::write (stream, "# You can enable all the messages via:   tracing::enable tracing::all_tracing\n");
 				      file::write (stream, "# See also:  Comments in src/lib/src/lib/thread-kit/src/lib/tracing.api\n");
 
-				      trace_cleanup
-					  :=
-					  (fn () = file::close_output  stream);
+				      # Closing the trace logfile at shutdown seems
+				      # at first blush like the tidy and proper thing
+				      # to do, but in practice it seems a dubious idea:
+				      #	
+                                      #   o The exact order of events such as cleanup calls
+                                      #     during shutdown is not well-defined, so we may
+				      #     easily wind up trying to log trace stuff after
+				      #     the tracelog has already been closed.
+				      #	
+				      #	  o Unix will close all open files at program exit()
+				      #     anyhow, and since we're doing unbuffered I/O on
+				      #     the tracelog fd, there is not even any buffer
+				      #     flushing needing to be done.
+				      #	
+				      # In short, there seems to be a significant downside to
+				      # closing the stream at SHUTDOWN but no upside to speak
+				      # of, so	I've commented it out:       -- 2010-02-26 CrT
+				      #	
+				      # trace_cleanup
+				      #	  :=
+				      #	  (fn () = file::close_output  stream);
 
 				      TO_STREAM stream;
 				  }

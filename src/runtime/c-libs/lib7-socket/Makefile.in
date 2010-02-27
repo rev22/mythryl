@@ -80,7 +80,8 @@ UTIL_OBJS =	util-mkhostent.o \
 		tbl-addr-family.o \
 		tbl-socket-type.o \
 		setprintiffd.o \
-		print-if.o
+		print-if.o \
+		hexdump-if.o
 
 OBJS =		lib7-socket-lib.o \
 		$(NETDB_OBJS) $(CTL_OBJS) $(SOCK_OBJS) $(MISC_OBJS) \

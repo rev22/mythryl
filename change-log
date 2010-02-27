@@ -1,3 +1,4 @@
+2010-02-24-03.11.51: src/lib/x-kit/xclient/xauthentication.(api,pkg): Commenting.
 2010-02-23-23.44.26: src/lib/x-kit/xclient/xauthentication.(api,pkg): Commenting.
 2010-02-23-22.26.32: src/runtime/c-libs/: More proactive EINTR retries. NB: JHReppy emailed that not retrying on EINTR at the C level was a deliberate SML/NJ design decision. Fair enough, although it makes my hair stand on end.
 2010-02-23-12.33.18: src/runtime/c-libs/posix-os/poll.c: Proactively handle EINTR. Change wahtever -> whatever in previous fixes, also status == -1 to status < 0, which seems traditional for some reason.

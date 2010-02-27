@@ -45,14 +45,17 @@
 stipulate
     package w8  =  unt8;
     package w8v =  unt8_vector;
-    package xg  =  geometry;			# geometry		is from   src/lib/x-kit/xclient/window/geometry.pkg
-    package xt  =  xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    package et  =  event_types;			# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
-    package ts  =  xserver_timestamp;		# xserver_timestamp	is from   src/lib/x-kit/xclient/src/wire/xserver-timestamp.pkg
-    package xe  =  xerrors;			# xerrors		is from   src/lib/x-kit/xclient/src/wire/xerrors.pkg
+    package xg  =  geometry;						# geometry		is from   src/lib/x-kit/xclient/window/geometry.pkg
+    package xt  =  xtypes;						# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package et  =  event_types;						# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
+    package ts  =  xserver_timestamp;					# xserver_timestamp	is from   src/lib/x-kit/xclient/src/wire/xserver-timestamp.pkg
+    package xe  =  xerrors;						# xerrors		is from   src/lib/x-kit/xclient/src/wire/xerrors.pkg
+    package xtr =  xtracing;						# xtracing		is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
 herein
 
     package wire_to_value_core: Wire_To_Value {
+
+	trace =  xtr::print_if  xtr::io_tracing;			# Conditionally write strings to tracing.log or whatever.
 
 	stipulate
 
@@ -134,7 +137,11 @@ herein
 
 	    fun get_list (f, size:  Int) (buf, i, n)
 		=
-		get (i, n, [])
+		{
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/TOP";  }; result =
+		    get (i, n, []);
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";  }; result;
+		}
 		where
 		    fun get (_, 0, l) =>  list::reverse l;
 			get (i, n, l) =>  get (i+size, n - 1, f (buf, i) ! l);
@@ -489,11 +496,21 @@ herein
 		       );
 		  };
 
-		get_pixmap_formats = get_list (get_pixmap_format, 8);
+		fun get_pixmap_formats (buf, i, n)
+		    =
+		    {
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_pixmap_formats/TOP";  }; result =
+			get_list (get_pixmap_format, 8) (buf, i, n);
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_pixmap_formats/BOT";  }; result;
+		    };
 
 		fun get_screens (buf, i, nscreens)
 		    =
-		    get (nscreens, i, [])
+		    {
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_screens/TOP";  }; result =
+			get (nscreens, i, []);
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_screens/BOT";  }; result;
+		    }
 		    where
 			fun get (0, _, l)
 				=>
@@ -512,14 +529,20 @@ herein
 		fun decode_connect_request_reply (prefix, msg)
 		    =
 		    {
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply/TOP";  };
 			vendor_len    =  get_int16               (msg, 16);
 
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply/AAA";  };
 			nscreens      =  get_int8                (msg, 20);
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply/BBB";  };
 			nformats      =  get_int8                (msg, 21);
 
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply/CCC";  };
 			format_offset =  pad (32 + vendor_len);
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply/DDD";  };
 			screen_offset =  format_offset + 8*nformats;
-
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply/EEE";  };
+result =
 			{ protocol_version => { major => get_int16 (prefix, 2),
 						minor => get_int16 (prefix, 4)
 					      },
@@ -545,6 +568,8 @@ herein
 			  pixmap_formats => get_pixmap_formats   (msg, format_offset, nformats),
 			  screens        => get_screens          (msg, screen_offset, nscreens)
 			};
+trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply/BOTTOM";  };
+result;
 		    };
 	    end;			# stipulate
 

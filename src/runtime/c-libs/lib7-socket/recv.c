@@ -5,6 +5,9 @@
 #include "../../config.h"
 
 #include <errno.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
@@ -15,8 +18,9 @@
 #include "cfun-proto-list.h"
 
 #include "print-if.h"
+#include "hexdump-if.h"
 
-/* _lib7_Sock_recv : (socket * int * Bool * Bool) -> int
+/* _lib7_Sock_recv : (Socket, Int, Bool, Bool) -> unt8_vector::Vector
  *
  * The arguments are: socket, number of bytes, OOB flag and peek flag; the
  * result is the vector of bytes received.
@@ -48,12 +52,13 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
     print_if("recv.c/before: socket d=%d nbytes d=%d oob=%s peek=%s\n",socket,nbytes,(oob == LIB7_true)?"TRUE":"FALSE",(peek == LIB7_true)?"TRUE":"FALSE");
     errno = 0;
 
-    do {
+/*  do { */
         n = recv (socket, PTR_LIB7toC(char, vec), nbytes, flag);
 
-    } while (n < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*    } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
-    print_if("recv.c/after: n d=%d errno d=%d\n",n,errno);
+    print_if(   "recv.c/after: n d=%d errno d=%d\n", n, errno);
+    hexdump_if( "recv.c/after: Received data: ", PTR_LIB7toC(unsigned char, vec), n );
 
     if (n < 0)
         return RAISE_SYSERR(lib7_state, status, __LINE__);
@@ -68,8 +73,7 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
     SEQHDR_ALLOC (lib7_state, result, DESC_string, vec, n);
 
     return result;
-
-} /* end of _lib7_Sock_recv */
+}
 
 
 

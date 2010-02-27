@@ -10,6 +10,7 @@ stipulate
     package pc  =  parser_combinator;				# parser_combinator	is from   src/lib/src/parser-combinator.pkg
     package sok =  socket;					# socket		is from   src/lib/std/socket.pkg
     package is  =  internet_socket;				# internet_socket	is from   src/lib/std/src/socket/internet-socket.pkg
+    package tr  =   tracing;					# tracing		is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
 herein
 
     package socket_stuff: (weak)  Socket_Stuff {		# Socket_Stuff		is from   src/lib/internet/socket-stuff.api
@@ -24,6 +25,9 @@ herein
 	Hostname = HOST_NAME     String
 		 | HOST_ADDRESS  dns_host_lookup::Internet_Address
 		 ;
+
+        socket_tracing = tr::make_trace_tree_leaf { parent => tr::all_tracing, name => "socket_tracing" };
+	trace =  tr::print_if  socket_tracing;			# Conditionally write strings to tracing.log or whatever.
 
 	# This belongs in a null_or package:   XXX BUGGO FIXME
 	#
@@ -173,11 +177,18 @@ herein
 	    =
 	    {   fun get (0, data)
 			=>
-			unt8_vector::cat (reverse data);
+			{
+trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: Done reading all %d bytes" n;  };
+			    unt8_vector::cat (reverse data);
+			};
 
 		    get (n, data)
 			=>
-			{   v = sok::receive_vector (socket, n);
+			{
+trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: %d bytes left to read" n;  };
+trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: Now  calling sok::receive_vector";  };
+			    v = sok::receive_vector (socket, n);
+trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: Done calling sok::receive_vector, got %d bytes" (unt8_vector::length v);  };
 
 			    if (unt8_vector::length v == 0)
 				#
@@ -187,6 +198,8 @@ herein
 			    fi;
 			};
 		end;
+
+trace  .{  sprintf "socket-stuff.pkg: receive_vector: bytes-to-read d=%d" n;  };
 
 		if (n < 0)   raise exception SIZE;
 		else         get(n, []);

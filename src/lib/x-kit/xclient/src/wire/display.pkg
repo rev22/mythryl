@@ -23,13 +23,13 @@ stipulate
     package xtr =  xtracing;						# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     package dns =  dns_host_lookup;					# dns_host_lookup		is from   src/lib/std/src/socket/dns-host-lookup.pkg
     package w8v =  unt8_vector;						# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
+    #
+    trace =  xtr::print_if  xtr::io_tracing;				# Conditionally write strings to tracing.log or whatever.
 herein
 
     package display: (weak) Display {					# Display			is from   src/lib/x-kit/xclient/src/wire/display.api
 
 	exception BAD_ADDRESS = cxa::BAD_ADDRESS;
-
-	trace =  xtr::print_if  xtr::io_tracing;			# Conditionally write strings to tracing.log or whatever.
 
 	Xdisplay
 	    =
@@ -133,7 +133,7 @@ herein
 		sox::send_vector (socket, connect_msg);
 
 # +DEBUG
-		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, sleeping for 2 seconds"; };
+#		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, sleeping for 2 seconds"; };
 # -DEBUG
 
 		# ddeboer, fall 2004: error in ssh tunnelling happens in following line 
@@ -147,9 +147,9 @@ herein
                 #            before the remote X server has a chance to respond;  this should give it that chance,
 		#            so that the reply is already in the kernel socket buffer when we issue the socket read.
 		#	     This is a diagnostic test, not a fix:	
-		sleep 2;	#	Result: no change.
+#		sleep 2;	#	Result: no change.
 
-		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, slept 2 seconds, now reading back connection reply header"; };
+		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, now reading back connection reply header"; };
 
 
 											# exceptions			is from   src/lib/std/exceptions.pkg
@@ -188,7 +188,7 @@ herein
 		    # "4 * ..." because X reports packet lengths in multiples of 32 bits.
 
 # +DEBUG
-                trace .{ sprintf "Reading connection reply body (%d bytes)..." len; };
+		trace  .{ sprintf "display.pkg: say_hello_to_xserver: reply length extracted from header d=%d" len; };
 # -DEBUG
 
     #        /* following lines rewritten, ddeboer, Jan 2005:
@@ -217,7 +217,12 @@ herein
 
 		fun get_reply len
 		    =
-		    sox::receive_vector (socket, len);
+		    {
+trace .{ sprintf "display.pkg: say_hello_to_xserver: get_reply: Now  calling sox::receive_vector to read connection reply body (%d bytes)..." len; };
+			reply =  sox::receive_vector (socket, len);
+trace .{ sprintf "display.pkg: say_hello_to_xserver: get_reply: DONE calling sox::receive_vector to read connection reply body (%d bytes)..." len; };
+			reply;
+		    };
 
 		fun get_msg reply
 		    =
@@ -242,18 +247,27 @@ herein
 			error ("connection refused: " + get_msg (get_reply len));
 
 		    0u1 =>
-			{   xserver_info
+			{
+trace  .{ "display.pkg: say_hello_to_xserver: header byte #0 is 1 (Success)"; };
+trace  .{ "display.pkg: say_hello_to_xserver: Now  calling get_reply to read complete reply"; };
+			    reply =  get_reply  len;
+trace  .{ "display.pkg: say_hello_to_xserver: Done calling get_reply to read complete reply"; };
+				 
+trace  .{ "display.pkg: say_hello_to_xserver: Now  calling w2v::decode_connect_request_reply"; };
+			    xserver_info
 				=
-				w2v::decode_connect_request_reply
-				    #
-                                    (header, get_reply len);
+				w2v::decode_connect_request_reply  (header, reply);
+trace  .{ "display.pkg: say_hello_to_xserver: Done calling w2v::decode_connect_request_reply"; };
 
 # +DEBUG
                             trace  .{ "Connect request reply info:"; };
                             trace  .{ i2s::xserver_info_to_string  xserver_info; };
 # -DEBUG
-			    xsocket = xok::make_xsocket  socket;
+trace  .{ "display.pkg: say_hello_to_xserver: Now  calling xok::make_xsocket"; };
+			    xsocket =  xok::make_xsocket  socket;
+trace  .{ "display.pkg: say_hello_to_xserver: Done calling xok::make_xsocket"; };
 
+trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 			    (xsocket, xserver_info, canonical_display_name, screen_number);
 			};
 
@@ -343,11 +357,13 @@ herein
                             sok::connect (socket, internet_socket::to_address (address, port));
 			};
 
-		        trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Calling say_hello_to_xserver...";  };
+trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Now  calling say_hello_to_xserver...";  }; result =
 			say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
+trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Done calling say_hello_to_xserver.";  }; result;
 		    };
 
 
+result =
 		case address
 		    #
 		    cxa::UNIX path
@@ -379,6 +395,7 @@ herein
 			    NULL      =>  raise exception BAD_ADDRESS "Host not found";
 			esac;
 		esac;
+trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 	    };				# fun connect_to_xserver
 
 	# Spawn an xid-factory thread, return

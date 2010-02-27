@@ -21,6 +21,9 @@ stipulate
     package tr  =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
     package xtr =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package au  =  authentication;				# authentication		is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
+    #
     tracefile   =  "xclient-unit-test-trace.log";
 herein
 
@@ -57,28 +60,28 @@ herein
 		   .{
 			assert  (ctl::thread_scheduler_is_running ());
 
-			case (posix::getenv "DISPLAY")
-			    #
-			    NULL =>
-				{    fprintf file::stderr "xclient-unit-test.pkg: DISPLAY environment variable not set, skipping unit tests.\n";
-				     assert FALSE;	# To alert anyone just looking at the final run statistics.
-				};
+		        my  ( display_name:     String,						# Typically from $DISPLAY environment variable.
+			      xauthentication:  Null_Or(xt::Xauthentication)			# Typically from ~/.Xauthority
+			    )
+			    =
+			    au::get_xdisplay_string_and_xauthentication  NULL;
 
-			    THE display_name
-				=>
-				{
-                                    trace .{ sprintf "xclient-unit-test.pkg: DISPLAY variable is set to '%s'" display_name; };
+			trace .{ sprintf "xclient-unit-test.pkg: DISPLAY variable is set to '%s'" display_name; };
 
-				    xdisplay
-					=	
-# XXX BUGGO FIXME need non-NULL xauthentication here:
-				        dy::open_xdisplay { display_name, xauthentication => NULL };
+			trace .{ sprintf "xclient-unit-test.pkg: Now  calling dy::open_xdisplay"; };
 
-				    ();
+			xdisplay
+			    =	
+			    dy::open_xdisplay { display_name, xauthentication };
 
-#                                   do_it (make_root_window NULL);
-				};
-			esac;
+			trace .{ sprintf "xclient-unit-test.pkg: Done calling dy::open_xdisplay"; };
+
+			();
+
+#                       do_it (make_root_window NULL);
+
+
+			trace .{ sprintf "xclient-unit-test.pkg: Now  calling ctl::shut_down_thread_scheduler"; };
 
 			ctl::shut_down_thread_scheduler  winix::process::success;
 		    };

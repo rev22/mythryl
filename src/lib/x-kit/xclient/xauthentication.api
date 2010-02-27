@@ -1,4 +1,4 @@
-# xauthentication.api
+# authentication.api
 #
 # Motivation
 # ----------
@@ -67,118 +67,115 @@
 
 # This api is implemented in:
 # 
-#     src/lib/x-kit/xclient/xauthentication.pkg
+#     src/lib/x-kit/xclient/src/stuff/authentication.pkg
 
-stipulate
-    package xc =  xcore;								# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
-herein
 
-    api Xauthentication {
+api Xauthentication {
 
-	# The different network protocol families:
+    package xc:  Xcore;		# Xcore	is from   src/lib/x-kit/xclient/xcore.api
+
+    # The different network protocol families:
+    #
+    family_internet:  Int;
+    family_decnet:    Int;
+    family_chaos:     Int;
+    family_local:     Int;
+    family_wild:      Int;
+
+    get_xauthority_filename:  Void -> String;
 	#
-	family_internet:  Int;
-	family_decnet:    Int;
-	family_chaos:     Int;
-	family_local:     Int;
-	family_wild:      Int;
-
-	get_xauthority_filename:  Void -> String;
-	    #
-	    # Return the default name of the authentication file (either
-	    # specified by the XAUTHORITY dictionary variable, or the
-	    # file $HOME/.Xauthority.  If neither XAUTHORITY or HOME 
-	    # are defined, then ".Xauthority" is returned.
+	# Return the default name of the authentication file (either
+	# specified by the XAUTHORITY dictionary variable, or the
+	# file $HOME/.Xauthority.  If neither XAUTHORITY or HOME 
+	# are defined, then ".Xauthority" is returned.
 
 
-	get_xauthority_file_entry_by_address
-	    :
-	    { family:   Int,			# family_wild, family_local, family_internet ...
-	      address:  String,			# Identity of our workstation, from gethostname(2) or such.
-	      display:  String			# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
-	    }
-	    ->
-	    Null_Or( xc::Xauthentication );
-	    #
-	    # Search the default xauthority file for the first entry that
-	    # matches the family, network address and display number.  If no
-	    # such match is found, then NULL is returned.  The * value family_wild
-	    # matches anything, as do the empty strings when given for address or display.
-
-
-	get_best_xauthority_file_entry_by_address
-	    :
-	    { family:      Int,			# family_wild, family_local, family_internet ...
-	      address:     String,		# Identity of our workstation, from gethostname(2) or such.
-	      display:     String,		# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
-	      # 	
-	      acceptable_authentication_methods:  List( String )	# E.g.  [ "MIT-MAGIC-COOKIE-1" ]
-	    }
-	    ->
-	    Null_Or( xc::Xauthentication );
-	    #
-	    # This is similar to get_xauthority_file_entry_by_address,
-	    # except that a list of acceptable authentication methods
-	    # is specified by the list acceptable_authentication_methods.
-	    # This contains one or more strings like
-	    #
-	    #     "MIT-MAGIC-COOKIE-1"
-	    #     "XDM-AUTHORIZATION-1"
-	    #     "SUN-DES-1"
-	    #     "MIT-KERBEROS-5"
-	    #
-	    # to match literally against the contents of ~/.Xauthority entries.
-	    #
-	    # Not all of these are available everywhere; the de facto standard
-	    # method is MIT-MAGIC-COOKIE-1.  For more information about the
-	    # various authentication methods see (e.g.):
-	    #
-	    #     man 7 Xsecurity
-	    #     http://manpages.ubuntu.com/manpages/jaunty/man7/Xsecurity.7.html
-	    #
-	    # We return the matching authentication info that matches the earliest
-	    # name on the list.
-	    #
-	    # We return NULL if no match is found.
-
-
-	get_selected_xauthority_file_entries
-	    :
-	    (xc::Xauthentication -> Bool)
-	    ->
-	    String
-	    ->
-	    List( xc::Xauthentication );
-	    #
-	    # Read the specified authentication file
-	    # (usually ~/.Xauthority) and return a list
-	    # of the entries that satisfy the given predicate.
-
-
-	# Parse a string specifying an
-	# X display into its components:
+    get_xauthority_file_entry_by_address
+	:
+	{ family:   Int,			# family_wild, family_local, family_internet ...
+	  address:  String,			# Identity of our workstation, from gethostname(2) or such.
+	  display:  String			# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
+	}
+	->
+	Null_Or( xc::Xauthentication );
 	#
-	parse_xdisplay_string
-	    :
-	    String
-	    ->
-	    { host:    String,
-	      display: String,
-	      screen:  String
-	    };
+	# Search the default xauthority file for the first entry that
+	# matches the family, network address and display number.  If no
+	# such match is found, then NULL is returned.  The * value family_wild
+	# matches anything, as do the empty strings when given for address or display.
 
-	# Given an optional display name, return
-	# the display and authentication information.
+
+    get_best_xauthority_file_entry_by_address
+	:
+	{ family:      Int,			# family_wild, family_local, family_internet ...
+	  address:     String,		# Identity of our workstation, from gethostname(2) or such.
+	  display:     String,		# E.g. "0" -- from "localhost:0.1" DISPLAY string or such.
+	  # 	
+	  acceptable_authentication_methods:  List( String )	# E.g.  [ "MIT-MAGIC-COOKIE-1" ]
+	}
+	->
+	Null_Or( xc::Xauthentication );
 	#
-	# If the argument is NULL we use the unix DISPLAY
-	# environment variable if defined else  "".
+	# This is similar to get_xauthority_file_entry_by_address,
+	# except that a list of acceptable authentication methods
+	# is specified by the list acceptable_authentication_methods.
+	# This contains one or more strings like
 	#
-	get_xdisplay_string_and_xauthentication
-	    :
-	    Null_Or( String )
-	    ->
-	    (String, Null_Or( xc::Xauthentication ));
+	#     "MIT-MAGIC-COOKIE-1"
+	#     "XDM-AUTHORIZATION-1"
+	#     "SUN-DES-1"
+	#     "MIT-KERBEROS-5"
+	#
+	# to match literally against the contents of ~/.Xauthority entries.
+	#
+	# Not all of these are available everywhere; the de facto standard
+	# method is MIT-MAGIC-COOKIE-1.  For more information about the
+	# various authentication methods see (e.g.):
+	#
+	#     man 7 Xsecurity
+	#     http://manpages.ubuntu.com/manpages/jaunty/man7/Xsecurity.7.html
+	#
+	# We return the matching authentication info that matches the earliest
+	# name on the list.
+	#
+	# We return NULL if no match is found.
 
-    };
 
-end;
+    get_selected_xauthority_file_entries
+	:
+	(xc::Xauthentication -> Bool)
+	->
+	String
+	->
+	List( xc::Xauthentication );
+	#
+	# Read the specified authentication file
+	# (usually ~/.Xauthority) and return a list
+	# of the entries that satisfy the given predicate.
+
+
+    # Parse a string specifying an
+    # X display into its components:
+    #
+    parse_xdisplay_string
+	:
+	String
+	->
+	{ host:    String,
+	  display: String,
+	  screen:  String
+	};
+
+    # Given an optional display name, return
+    # the display and authentication information.
+    #
+    # If the argument is NULL we use the unix DISPLAY
+    # environment variable if defined else  "".
+    #
+    get_xdisplay_string_and_xauthentication
+	:
+	Null_Or( String )
+	->
+	(String, Null_Or( xc::Xauthentication ));
+
+};

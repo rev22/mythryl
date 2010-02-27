@@ -132,6 +132,7 @@ herein
 	      else raise exception exceptions::OVERFLOW;   fi;
 
 	  # Scan a sequence of numbers separated by '.' 
+	  #
 	  fun scan getc stream
 	      =
 	      (case (to_w (getc, stream))

@@ -25,7 +25,7 @@ herein
 	Datagram;
 	Stream( A_mode );
 	Passive;		#  for passive streams 
-	Active;		#  for active (connected) streams 
+	Active;			#  for active (connected) streams 
 
 	# Address families 
 	#

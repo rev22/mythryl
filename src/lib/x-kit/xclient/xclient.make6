@@ -39,11 +39,12 @@ LIBRARY_GROUP_EXPORTS
 LIBRARY_GROUP_COMPONENTS
 
 	$ROOT/src/lib/std/stdlib.make6
+	$ROOT/src/lib/core/make7/make7.make6
 	xclient-internals.make6
 
-	xauthentication.api
-	xauthentication.pkg
+        src/stuff/xclient-unit-test.pkg
 
+	xauthentication.pkg
 	xdraw.pkg
 	xfont.pkg
 	xgeometry.pkg

@@ -51,7 +51,8 @@ LIBRARY_GROUP_COMPONENTS
 	src/stuff/xserver-info-to-string.pkg
 	src/stuff/xtracing.pkg
 	src/stuff/xtype-to-string.pkg
-        src/stuff/xclient-unit-test.pkg
+	src/stuff/authentication.pkg
+
 
 	src/window/color-imp.api
 	src/window/color-imp.pkg
@@ -109,6 +110,7 @@ LIBRARY_GROUP_COMPONENTS
 	src/iccc/window-property.pkg
 
 	xclient-sharing.pkg
+	xauthentication.api
 	xcore.api
 	xcursors.api
 	xdraw.api

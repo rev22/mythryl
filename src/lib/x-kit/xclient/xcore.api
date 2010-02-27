@@ -79,7 +79,7 @@ api  Xcore {
     #
     # by code (e.g. get_xdisplay_string_and_xauthentication) in
     #
-    #     src/lib/x-kit/xclient/xauthentication.pkg
+    #     src/lib/x-kit/xclient/src/stuff/xauthentication.pkg
     #
     # and then passed successively to:
     #

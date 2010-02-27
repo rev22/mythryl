@@ -5,6 +5,9 @@
 #include "../../config.h"
 
 #include <errno.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <stdio.h>
 
 #include "sockets-osdep.h"
 #include INCLUDE_SOCKET_H
@@ -14,6 +17,7 @@
 #include "cfun-proto-list.h"
 
 #include "print-if.h"
+#include "hexdump-if.h"
 
 
 /*
@@ -54,12 +58,12 @@
 lib7_val_t _lib7_Sock_sendbuf (lib7_state_t *lib7_state, lib7_val_t arg)
 {
 
-    int		socket    = REC_SELINT(                   arg, 0);
-    lib7_val_t	buf       = REC_SEL(                      arg, 1);
-    char*	data      = STR_LIB7toC(buf) + REC_SELINT(arg, 2);
-    int		nbytes    = REC_SELINT(                   arg, 3);
-    lib7_val_t  oob       = REC_SEL(                      arg, 4);
-    lib7_val_t  dontroute = REC_SEL(                      arg, 5);
+    int		   socket    = REC_SELINT(                   arg, 0);
+    lib7_val_t	   buf       = REC_SEL(                      arg, 1);
+    unsigned char* data      = STR_LIB7toC(buf) + REC_SELINT(arg, 2);
+    int		   nbytes    = REC_SELINT(                   arg, 3);
+    lib7_val_t     oob       = REC_SEL(                      arg, 4);
+    lib7_val_t     dontroute = REC_SEL(                      arg, 5);
 
     /* Compute flags parameter:
     */
@@ -67,14 +71,9 @@ lib7_val_t _lib7_Sock_sendbuf (lib7_state_t *lib7_state, lib7_val_t arg)
     if (oob       == LIB7_true) flgs |= MSG_OOB;
     if (dontroute == LIB7_true) flgs |= MSG_DONTROUTE;
 
-    {   char text[ 1024 ];
-	int i;
-	text[0] = '\0';
-	for (i = 0; i < nbytes; ++i) {
-	    sprintf (text+strlen(text), "%02x.", data[i]);
-	}
-        print_if( "sendbuf.c/top: socket d=%d nbytes d=%d OOB=%s DONTROUTE=%s data s='%s'\n", socket, nbytes, (oob == LIB7_true) ? "TRUE" : "FALSE", (dontroute == LIB7_true) ? "TRUE" : "FALSE", text );
-    }
+    print_if(   "sendbuf.c/top: socket d=%d nbytes d=%d OOB=%s DONTROUTE=%s\n", socket, nbytes, (oob == LIB7_true) ? "TRUE" : "FALSE", (dontroute == LIB7_true) ? "TRUE" : "FALSE" );
+    hexdump_if( "sendbuf.c/top: Data to send: ", data, nbytes );
+
     errno = 0;
 
     {   int n;

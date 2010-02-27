@@ -80,6 +80,9 @@ stipulate
     package v8  = unt8_vector;				# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
     #
     package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xtr =  xtracing;				# xtracing		is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    #
+    trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 herein
 
     package xsocket: (weak)  Xsocket {			# Xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.api
@@ -407,9 +410,9 @@ herein
 			    [] =>
 				case (print_msg (take  in_slot))
 				    #
-				    OUTBUF_FLUSH =>  loop([], 0);
+				    OUTBUF_FLUSH  =>  loop([], 0);
 				    OUTBUF_MAIL s =>  loop([s], v8::length s);
-				    OUTBUF_QUIT  =>  quit ();
+				    OUTBUF_QUIT   =>  quit ();
 				esac;
 
 			    strs =>
@@ -424,8 +427,8 @@ herein
 
 				    (take' in_slot ==> print_msg)
 					==>
-					fn OUTBUF_FLUSH => {  flush_buf strs;  loop([], 0);  };
-					   OUTBUF_QUIT  => {  flush_buf strs;  quit();       };
+					fn OUTBUF_FLUSH  => {  flush_buf strs;  loop([], 0);  };
+					   OUTBUF_QUIT   => {  flush_buf strs;  quit();       };
 					   OUTBUF_MAIL s => loop (insert (s, (buf, 0)));
 					end
 				];
@@ -1074,13 +1077,20 @@ herein
 	#
 	fun make_xsocket  socket
 	    =
-	    {   inbuf_to_sequencer_slot  = make_mailslot ();
+	    {
+trace  .{  "xsocket.pkg: make_xsocket/TOP";  };
+                inbuf_to_sequencer_slot  = make_mailslot ();
+trace  .{  "xsocket.pkg: make_xsocket/AAA";  };
 		sequencer_to_outbuf_slot = make_mailslot ();
 
+trace  .{  "xsocket.pkg: make_xsocket/BBB";  };
 		xbuf_to_client_slot      = make_mailslot ();
+trace  .{  "xsocket.pkg: make_xsocket/CCC";  };
 		sequencer_to_xbuf_slot   = make_mailslot ();
 
+trace  .{  "xsocket.pkg: make_xsocket/DDD";  };
 		client_to_sequencer_slot = make_mailslot ();
+trace  .{  "xsocket.pkg: make_xsocket/EEE";  };
 		xerror_slot              = make_mailslot ();
 
     #	    expose_strm = make_mailslot ();
@@ -1099,37 +1109,43 @@ herein
 		    };
 
     /******
-			make_thread "xok seq"  (sequencer (reqStrm, inStrm, outStrm, xevtMsgStrm, errStrm));
-			make_thread "xok in"   (inbuf (inStrm, socket));
-			make_thread "xok out"  (outbuf (outStrm, socket));
-			make_thread "xok buf"  (xeventBuffer (xevtMsgStrm, xevtStrm));
+		make_thread "xok seq"  (sequencer (reqStrm, inStrm, outStrm, xevtMsgStrm, errStrm));
+		make_thread "xok in"   (inbuf (inStrm, socket));
+		make_thread "xok out"  (outbuf (outStrm, socket));
+		make_thread "xok buf"  (xeventBuffer (xevtMsgStrm, xevtStrm));
     ******/
-    /* DEBUG */         xtracing::xspawn
-			  ( "Sequencer",
-			    sequencer
-			      ( client_to_sequencer_slot,
-				inbuf_to_sequencer_slot,
-				sequencer_to_outbuf_slot,
-				sequencer_to_xbuf_slot,
-				xerror_slot
-			      )
-			  );
+trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
+    /* DEBUG */
+                xtracing::xspawn
+		  ( "Sequencer",
+		    sequencer
+		      ( client_to_sequencer_slot,
+			inbuf_to_sequencer_slot,
+			sequencer_to_outbuf_slot,
+			sequencer_to_xbuf_slot,
+			xerror_slot
+		      )
+		  );
 
-    /* DEBUG */         xtracing::xspawn ("Inbuf",        inbuf  ( inbuf_to_sequencer_slot, socket));
-    /* DEBUG */         xtracing::xspawn ("Outbuf",       outbuf (sequencer_to_outbuf_slot, socket));
-    /* DEBUG */         xtracing::xspawn ("XEventBuffer", xbuf   (  sequencer_to_xbuf_slot, xbuf_to_client_slot));
+trace  .{  "xsocket.pkg: make_xsocket/GGG";  };
+		xtracing::xspawn ("Inbuf",        inbuf  ( inbuf_to_sequencer_slot, socket));
+trace  .{  "xsocket.pkg: make_xsocket/HHH";  };
+		xtracing::xspawn ("Outbuf",       outbuf (sequencer_to_outbuf_slot, socket));
+trace  .{  "xsocket.pkg: make_xsocket/III";  };
+		xtracing::xspawn ("XEventBuffer", xbuf   (  sequencer_to_xbuf_slot, xbuf_to_client_slot));
 
-			XSOCKET
-			  { xsocket_id => REF (),
+trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
+		XSOCKET
+		  { xsocket_id => REF (),
 
-			    xevent_slot  => xbuf_to_client_slot,
-			    plea_slot => client_to_sequencer_slot,
-			    xerror_slot,
+		    xevent_slot  => xbuf_to_client_slot,
+		    plea_slot => client_to_sequencer_slot,
+		    xerror_slot,
 
-			    flush   => flush_fn,
-			    close   => close_fn
-			  };
-	      };
+		    flush   => flush_fn,
+		    close   => close_fn
+		  };
+	    };
 
 	fun close_xsocket (XSOCKET { close, ... } )
 	    =

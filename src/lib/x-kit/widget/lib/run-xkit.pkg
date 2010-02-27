@@ -16,7 +16,7 @@
 
 stipulate
     package ctl =  thread_scheduler_control;						# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
-    package xau =  xauthentication;							# xauthentication		is from   src/lib/x-kit/xclient/xauthentication.pkg
+    package xau =  xauthentication;							# xauthentication		is from   src/lib/x-kit/xclient/src/stuff/xauthentication.pkg
     package w   =  widget;								# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc  =  xcore;								# xcore				is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein

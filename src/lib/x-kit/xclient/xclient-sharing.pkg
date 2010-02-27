@@ -29,6 +29,7 @@
 
 package xclient_sharing: api {
 
+    package xauthentication:	Xauthentication;	# Xauthentication	is from   src/lib/x-kit/xclient/xauthentication.api
     package xcore:   		Xcore;			# Xcore			is from   src/lib/x-kit/xclient/xcore.api
     package xcursors:           Xcursors;		# Xcursors		is from   src/lib/x-kit/xclient/xcursors.api
     package xdraw:	     	Xdraw;			# Xdraw			is from   src/lib/x-kit/xclient/xdraw.api
@@ -38,24 +39,28 @@ package xclient_sharing: api {
     package xselection:        	Xselection;		# Xselection		is from   src/lib/x-kit/xclient/xselection.api
     package xwindow:    	Xwindow;		# Xwindow		is from   src/lib/x-kit/xclient/xwindow.api
 
-    sharing xgeometry   ==       xcore::xg
-                        ==       xdraw::xg
-                        ==  xselection::xg
-                        ==      xinput::xg
-                        ==     xwindow::xg;
+    sharing xgeometry   ==            xcore::xg
+                        ==            xdraw::xg
+                        ==       xselection::xg
+                        ==           xinput::xg
+                        ==          xwindow::xg;
 
-    sharing xcore       ==       xfont::xc
-                        ==       xdraw::xc
-                        ==  xselection::xc
-                        ==      xinput::xc
-		        ==     xwindow::xc
-                        ==    xcursors::xc;
+    sharing xcore       ==            xfont::xc
+                        ==            xdraw::xc
+                        ==       xselection::xc
+                        ==           xinput::xc
+		        ==          xwindow::xc
+                        ==         xcursors::xc
+                        == xauthentication::xc;
 
     sharing              xselection
          ==     xwindow::xselection;
 
     sharing              xinput
          ==     xwindow::xinput;
+
+#    sharing                 xcore::Xauthentication
+#         ==       xauthentication::Xauthentication;
 
     sharing       xfont::Font
          ==       xcore::Font;
@@ -84,7 +89,7 @@ package xclient_sharing: api {
 }{
 
 
-    package xgeometry: (weak)  Xgeometry		# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.api
+    package xgeometry: (weak)  Xgeometry		# Xgeometry		is from   src/lib/x-kit/xclient/xgeometry.api
         =
 	geometry;					# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
 
@@ -123,7 +128,14 @@ package xclient_sharing: api {
 
 	end;
 
-      };
+    };
+
+    package xauthentication: (weak)  Xauthentication {	# Xauthentication	is from   src/lib/x-kit/xclient/xauthentication.api
+
+	package xc = xcore;				# Declared above.
+
+	include authentication;				# authentication	is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
+    };
 
     package xfont: (weak)  Xfont {			# Xfont			is from   src/lib/x-kit/xclient/xfont.api
 
