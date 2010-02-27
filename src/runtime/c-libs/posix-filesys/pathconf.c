@@ -124,8 +124,7 @@ lib7_val_t _lib7_P_FileSys_fpathconf (lib7_state_t *lib7_state, lib7_val_t arg)
     }
 
     return mkValue (lib7_state, val);
-
-} /* end of _lib7_P_FileSys_fpathconf */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

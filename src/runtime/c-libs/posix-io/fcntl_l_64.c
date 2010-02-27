@@ -53,10 +53,11 @@ lib7_val_t _lib7_P_IO_fcntl_l_64 (lib7_state_t *lib7_state, lib7_val_t arg)
       flock.l_len =
 	(off_t)(WORD_LIB7toC(REC_SEL(flock_rep, 5)));
    
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         status = fcntl(fd, cmd, &flock);
 
-    } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (status < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     if (status < 0)
         return RAISE_SYSERR(lib7_state, status, __LINE__);

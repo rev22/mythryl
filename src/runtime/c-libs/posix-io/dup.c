@@ -25,10 +25,11 @@ lib7_val_t _lib7_P_IO_dup (lib7_state_t *lib7_state, lib7_val_t arg)
     int             fd0 = INT_LIB7toC(arg);
     int             fd1;
 
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         fd1 = dup(fd0);
 
-    } while (fd1 < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (fd1 < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     CHECK_RETURN(lib7_state, fd1)
 

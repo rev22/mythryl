@@ -26,11 +26,11 @@ lib7_val_t _lib7_Sock_accept (lib7_state_t *lib7_state, lib7_val_t arg)
     int		addrLen = MAX_SOCK_ADDR_SZB;
     int		newSock;
 
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
 
         newSock = accept (socket, (struct sockaddr *)addrBuf, &addrLen);
 
-    } while (newSock < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (newSock < 0 && errno == EINTR);	*/		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     if (newSock == -1) {
         return RAISE_SYSERR(lib7_state, newSock, __LINE__);

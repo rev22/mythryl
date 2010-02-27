@@ -36,10 +36,11 @@ lib7_val_t _lib7_P_FileSys_ftruncate_64 (lib7_state_t *lib7_state, lib7_val_t ar
       : ((off_t)(WORD_LIB7toC(REC_SEL(arg, 2))));
     int		    status;
 
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         status = ftruncate (fd, len);
 
-    } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (status < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     CHECK_RETURN_UNIT(lib7_state, status)
 

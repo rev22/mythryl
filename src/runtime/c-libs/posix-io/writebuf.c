@@ -32,10 +32,11 @@ lib7_val_t _lib7_P_IO_writebuf (lib7_state_t *lib7_state, lib7_val_t arg)
 
     ssize_t    	n;
 
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         n = write (fd, data, nbytes);
 
-    } while (n < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     CHECK_RETURN (lib7_state, n)
 }

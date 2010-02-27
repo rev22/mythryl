@@ -29,14 +29,14 @@ lib7_val_t _lib7_P_IO_readbuf (lib7_state_t *lib7_state, lib7_val_t arg)
     char	*start = STR_LIB7toC(buf) + REC_SELINT(arg, 3);
     int		n;
 
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         n = read (fd, start, nbytes);
 
-    } while (n < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     CHECK_RETURN (lib7_state, n)
-
-} /* end of _lib7_P_IO_readbuf */
+}
 
 
 

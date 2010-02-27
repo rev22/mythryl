@@ -123,7 +123,7 @@ typedef struct heap heap_t;
 
 
 /* In C, system constants are usually integers.  We represent these in the Lib7
- * system as (int * String) pairs, where the integer is the C constant, and the
+ * system as (Int, String) pairs, where the integer is the C constant, and the
  * string is a short version of the symbolic name used in C (e.g., the constant
  * EINTR might be represented as (4, "INTR")).
  */

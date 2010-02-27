@@ -128,10 +128,11 @@ static lib7_val_t LIB7_Poll (lib7_state_t *lib7_state, lib7_val_t poll_list, str
     {   int status;
 
 
-        do {
+/*      do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
             status = poll (fds, nfds, tout);
 
-        } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*      } while (status < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
 	if (status < 0) {
 	    FREE(fds);
@@ -211,10 +212,12 @@ static lib7_val_t LIB7_Poll (lib7_state_t *lib7_state, lib7_val_t poll_list, str
     }
 
 /*printf("src/runtime/c-libs/posix-os/poll.c: maxFD d=%d timeout x=%x.\n",maxFD,timeout);*/
-    do {
+
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         status = select (maxFD+1, rfds, wfds, efds, timeout);
 
-    } while (status < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (status < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
 /*printf("src/runtime/c-libs/posix-os/poll.c: result status d=%d.\n",status);*/
 

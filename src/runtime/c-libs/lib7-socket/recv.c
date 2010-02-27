@@ -52,10 +52,11 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
     print_if("recv.c/before: socket d=%d nbytes d=%d oob=%s peek=%s\n",socket,nbytes,(oob == LIB7_true)?"TRUE":"FALSE",(peek == LIB7_true)?"TRUE":"FALSE");
     errno = 0;
 
-/*  do { */
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         n = recv (socket, PTR_LIB7toC(char, vec), nbytes, flag);
 
-/*    } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     print_if(   "recv.c/after: n d=%d errno d=%d\n", n, errno);
     hexdump_if( "recv.c/after: Received data: ", PTR_LIB7toC(unsigned char, vec), n );

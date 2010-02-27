@@ -24,12 +24,15 @@ lib7_val_t _lib7_P_IO_fcntl_gfl (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     int             fd = INT_LIB7toC(arg);
     int             flag;
-    lib7_val_t        flags, mode, chunk;
+    lib7_val_t      flags;
+    lib7_val_t      mode;
+    lib7_val_t      chunk;
 
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         flag = fcntl(fd, F_GETFD);
 
-    } while (flag < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
+/*  } while (flag < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     if (flag < 0)
         return RAISE_SYSERR(lib7_state, flag, __LINE__);

@@ -29,10 +29,11 @@ lib7_val_t _lib7_P_Process_waitpid (lib7_state_t *lib7_state, lib7_val_t arg)
 
     int  pid;
 
-    do {
+/*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
+
         pid = waitpid(REC_SELINT(arg, 0), &status, REC_SELWORD(arg, 1));
 
-    } while (pid < 0 && errno == EINTR);		/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
+/*  } while (pid < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     if (pid < 0)
         return RAISE_SYSERR(lib7_state, pid, __LINE__);
