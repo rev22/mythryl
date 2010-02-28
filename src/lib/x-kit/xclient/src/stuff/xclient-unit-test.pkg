@@ -66,20 +66,30 @@ herein
 			    =
 			    au::get_xdisplay_string_and_xauthentication  NULL;
 
-			trace .{ sprintf "xclient-unit-test.pkg: DISPLAY variable is set to '%s'" display_name; };
+			trace .{ sprintf "xclient_unit_test: DISPLAY variable is set to '%s'" display_name; };
 
-			trace .{ sprintf "xclient-unit-test.pkg: Now  calling dy::open_xdisplay"; };
+			trace .{ sprintf "xclient_unit_test: Now  calling dy::open_xdisplay"; };
 
-			xdisplay
-			    =	
-			    dy::open_xdisplay { display_name, xauthentication };
+			{   xdisplay =  dy::open_xdisplay { display_name, xauthentication };
+				
 
-			trace .{ sprintf "xclient-unit-test.pkg: Done calling dy::open_xdisplay"; };
+			    trace .{ sprintf "xclient_unit_test: Done calling dy::open_xdisplay"; };
 
-			();
+			    ();
 
-#                       do_it (make_root_window NULL);
+#                           do_it (make_root_window NULL);
 
+			} except
+			    dy::BAD_ADDRESS string
+				=
+				{   fprintf file::stderr "xclient_unit_test: Could not connect to X server: %s\n" string;
+				    fprintf file::stderr "xclient_unit_test: *** OMITTING XCLIENT UNIT TESTS. ***\n";
+
+			            trace .{ sprintf "xclient_unit_test: Could not connect to X server: %s" string; };
+			            trace .{         "xclient_unit_test: *** OMITTING XCLIENT UNIT TESTS. ***";     };
+
+		                    assert FALSE;
+				};
 
 			trace .{ sprintf "xclient-unit-test.pkg: Now  calling ctl::shut_down_thread_scheduler"; };
 

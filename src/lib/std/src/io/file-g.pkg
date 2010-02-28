@@ -1425,7 +1425,7 @@ herein
 
 		include posix;
 
-		fd=  createf ("mythryl.COMPILE_LOG", O_WRONLY, o::append, mode_0600 );
+		fd=  createf ("mythryl.compile.log", O_WRONLY, o::append, mode_0600 );
 		log_fd := THE fd;
 
 		log ["Started...\n"];

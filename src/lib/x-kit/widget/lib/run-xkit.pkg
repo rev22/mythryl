@@ -25,7 +25,8 @@ herein
 
 											# thread_scheduler_control_g	is from   src/lib/src/lib/thread-kit/src/glue/thread-scheduler-control-g.pkg
 
-	fun make_root_window  display_or_null
+	fun make_root_window
+                display_or_null								# Allow overriding of the DISPLAY environment variable setting.
 	    =
 	    {   my  ( xdisplay,								# Typically from $DISPLAY environment variable.
                       xauthentication:  Null_Or(xc::Xauthentication)			# Typically from ~/.Xauthority
@@ -68,11 +69,11 @@ herein
 	      time_quantum_in_milliseconds:  Null_Or( large_int::Int )	# Threadkit time quantum in ms. 
 	    };
 
-	fun run_xkit' do_it (options:  Options)
+	fun run_xkit' app (options:  Options)
 	    =
 	    {   fun run_it ()
 		    =
-		    do_it (make_root_window options.display);
+		    app (make_root_window options.display);
 
 		time_quantum
 		    =

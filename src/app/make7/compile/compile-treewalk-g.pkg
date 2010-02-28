@@ -1675,7 +1675,7 @@ string::is_suffix  "rewrite-raw-syntax-expression.pkg"          filename    or
 
 								  unparse_filename
 								      =
-								      cat [  source_file_name, ".COMPILE_LOG" ];
+								      cat [  source_file_name, ".compile.log" ];
 
 
 								  pp  = prettyprinter::make_file_prettyprinter  unparse_filename;

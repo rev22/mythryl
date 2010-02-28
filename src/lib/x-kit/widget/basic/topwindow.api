@@ -55,7 +55,7 @@
 #  o They provide an application gateway to X window
 #    manager services.
 #
-# Graphically, a Topwindow widget is entirely overload
+# Graphically, a Topwindow widget is entirely overlaid
 # by its child widget;  it has no graphical presence
 # of its own.
 #

@@ -1,6 +1,9 @@
 ## display.pkg
 #
-
+# Opening and closing a given screen
+# on a given X server.  See overview comments in:
+#
+#     src/lib/x-kit/xclient/src/wire/display.api
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -299,35 +302,42 @@ trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 
 		trace .{ sprintf "display.pkg: connect_to_xserver: address s='%s' screen d=%d canonical_display_name s='%s'" (cxa::to_string address) screen canonical_display_name; };
 
-		fun repeat connection_fn
-		    =
-		    loop 4			# Try up to five times.
-		    where
-			fun loop 0
-                                =>
-                                connection_fn ();
-
-			    loop n
-                                =>
-                                {   connection_fn ()
-                                    except x
-                                        =
-                                        {   trace  .{
-						#
-                                                sprintf "display.pkg: connect_to_xserver: repeat %d: Caught exception '%s', retrying..."
-						    n
-						    (exceptions::exception_message  x);
-					    };
-	
-                                            loop (n - 1);
-					};
-				};
-			end;
-		    end
-		    except
-			threadkit_winix::SYSTEM_ERROR (s, _)
-			    =
-			    raise exception BAD_ADDRESS s;
+# 2010-02-28 CrT:  Dusty Deboer hammered this code in;
+#                  I'm not comfortable having it here without
+#                  establishing a better understanding of the
+#                  root cause, so I've commented it out for now.
+#                  maybe it fixed a problem with ssh that no longer
+#                  exists or something...
+#
+#		fun repeat connection_fn
+#		    =
+#		    loop 4			# Try up to five times.
+#		    where
+#			fun loop 0
+#                                =>
+#                                connection_fn ();
+#
+#			    loop n
+#                                =>
+#                                {   connection_fn ()
+#                                    except x
+#                                        =
+#                                        {   trace  .{
+#						#
+#                                                sprintf "display.pkg: connect_to_xserver: repeat %d: Caught exception '%s', retrying..."
+#						    n
+#						    (exceptions::exception_message  x);
+#					    };
+#	
+#                                            loop (n - 1);
+#					};
+#				};
+#			end;
+#		    end
+#		    except
+#			threadkit_winix::SYSTEM_ERROR (s, _)
+#			    =
+#			    raise exception BAD_ADDRESS s;
 
 		fun open_internet_domain_socket
                     (
@@ -351,11 +361,19 @@ trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 
 			trace .{  sprintf "display.pkg: connect_to_xserver: open_internet_domain_socket: socket s='%s'"  (internet_socket::to_string  socket);  };
 
-			repeat .{
-			    #
-			    trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Calling sok::connect...";  };
-                            sok::connect (socket, internet_socket::to_address (address, port));
-			};
+# if dusty deboers repeat stuff:
+#			repeat .{
+#			    #
+#			    trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Calling sok::connect...";  };
+#                            sok::connect (socket, internet_socket::to_address (address, port));
+#			};
+# else
+                        sok::connect (socket, internet_socket::to_address (address, port))
+			except
+			threadkit_winix::SYSTEM_ERROR (s, _)
+			    =
+			    raise exception BAD_ADDRESS s;
+# endif
 
 trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Now  calling say_hello_to_xserver...";  }; result =
 			say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
@@ -370,10 +388,18 @@ result =
 			=>
 			{   socket = unix_socket::stream::socket ();
 
-			    repeat .{
-				#
-				sok::connect (socket, unix_socket::to_address path);
-			    };
+# if dusty deboers repeat stuff:
+#			    repeat .{
+#				#
+#				sok::connect (socket, unix_socket::to_address path);
+#			    };
+# else
+			    sok::connect (socket, unix_socket::to_address path)
+			    except
+			    threadkit_winix::SYSTEM_ERROR (s, _)
+				=
+				raise exception BAD_ADDRESS s;
+# endif
 
 			    say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
 			};
@@ -505,9 +531,15 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 	    end;
 
 								# xsocket	is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-	# See comments to fun make_xsession in
+	# This is the main entrypoint into this file.
+	# Aside from unit testing, it is called only from
+	#
+	#     fun make_xsession
+        # in
 	#
 	#     src/lib/x-kit/xclient/src/window/xsession.pkg
+	#
+	# -- see comments there.
 	#
 	fun open_xdisplay
             { display_name:     String,				# ":0.0" or unix:0.0" or "foo.com:0.0" or "192.168.0.1:0.0" or such.

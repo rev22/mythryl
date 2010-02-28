@@ -139,7 +139,7 @@
 
 
 stipulate
-    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package br  = xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
     #
@@ -149,7 +149,7 @@ stipulate
     package ai  = atom_imp;				# atom_imp		is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
     package ci  = color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
     package di  = draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
-    package f_i = font_imp;				# font_imp		is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
+    package fti = font_imp;	# "fi" is taken! :-)	# font_imp		is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
     package gci = graphics_context_imp;			# graphics_context_imp	is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
     package ki  = keymap_imp;				# keymap_imp		is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
     package xt  = xtypes;				# xtypes		is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
@@ -167,7 +167,7 @@ herein
 
 		xbuf_to_widgettree_xevent_router:   br::Xbuf_To_Widgettree_Xevent_Router,          # Feeds X events to appropriate toplevel window.
 
-		font_imp:          	f_i::Font_Imp,
+		font_imp:          	fti::Font_Imp,
 		atom_imp:          	ai::Atom_Imp,
 
 		window_property_imp:    window_property_imp::Window_Property_Imp,
@@ -402,7 +402,7 @@ herein
 		    screens,
 		    xbuf_to_widgettree_xevent_router,
 		    atom_imp,
-		    font_imp =>  f_i::make_font_imp  display,
+		    font_imp =>  fti::make_font_imp  display,
 		    window_property_imp,
 		    selection_imp,
 		    keymap_imp
@@ -528,7 +528,8 @@ herein
 		_     => xgripe::impossible "[xsession::display_class_of_screen: bogus root visual]";
 	    esac;
 
-	# Extract the GC server for the given depth 
+	# Extract the graphics-context imp
+        # for a given depth:
 	#
 	fun servers_of_screen_depth (SCREEN { screen=>SCREEN_INFO { imps, ... }, ... }, d)
 	    =
@@ -546,7 +547,7 @@ herein
 
 
     };		# package display 
-end;	# stipulate.
+end;		# stipulate.
 
 
 ##########################################################################

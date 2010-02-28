@@ -13,8 +13,7 @@ clean:
 	@find . -type f -name '*[a-z].version' -print | xargs rm -rf;
 	@find . -type f -name '*.INDEX' -print | xargs rm -f;
 	@find . -type f -name '*.LOAD_LOG' -print | xargs rm -f;
-	@find . -type f -name '*.COMPILE_LOG' -print | xargs rm -f;
-	@find . -type f -name '*.COMPILE_LOG2' -print | xargs rm -f;
+	@find . -type f -name '*.compile.log' -print | xargs rm -f;
 	@find . -type f -name '*.EDIT_REQUESTS' -print | xargs rm -f;
 	@find . -type f -name '*.UNEDITED' -print | xargs rm -f;
 	@find . -type f -name '*.EDITED' -print | xargs rm -f;

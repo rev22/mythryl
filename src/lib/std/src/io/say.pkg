@@ -36,7 +36,7 @@ package say: Say {
         =
         {   server_name := THE name;
 
-            log_stream  := THE (file::open_for_write  (name + ".COMPILE_LOG"));
+            log_stream  := THE (file::open_for_write  (name + ".compile.log"));
         };
 
 

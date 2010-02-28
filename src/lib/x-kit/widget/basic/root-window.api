@@ -120,7 +120,7 @@ herein
 
 	# A utility function that returns a string
 	# outlining the valid command line arguments
-	# in opt_ppec.
+	# in opt_spec.
 	#
 	help_string_from_opt_spec:  Opt_Spec -> String;
     };

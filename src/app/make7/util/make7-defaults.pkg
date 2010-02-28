@@ -175,7 +175,7 @@ package make7_defaults {
 	make_compile_logs
             =
             make_control (convert_boolean, "make_compile_logs",
-				  "whether make7 generates foo.COMPILE_LOG files",
+				  "whether make7 generates foo.compile.log files",
 				  TRUE);
 
 	#  Controls for make tool 

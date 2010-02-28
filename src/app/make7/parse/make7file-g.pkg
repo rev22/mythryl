@@ -385,7 +385,7 @@ Make7file
         {
 	    ad::sync ();
 
-            # Write per-makefile .COMPILE_LOG files.
+            # Write per-makefile .compile.log files.
             # We don't currently put anything interesting
             # in them, but just creating them distinguishes
             # live .make6 files from deadwood:
@@ -394,9 +394,9 @@ Make7file
                 =
                 ad::os_string  make7_file_to_read;
 
-	    unparse_filename	# Construct      "/pub/home/.../root.make6.COMPILE_LOG"
+	    unparse_filename	# Construct      "/pub/home/.../root.make6.compile.log"
 		=
-		makefile_filename + ".COMPILE_LOG";
+		makefile_filename + ".compile.log";
 
 	    pp  = prettyprinter::make_file_prettyprinter  unparse_filename;
 
