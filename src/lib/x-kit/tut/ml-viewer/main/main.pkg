@@ -95,9 +95,9 @@ herein
 
 		    mainloop ();
 		}
-		except (dg::SUBGRAPH_TREE_ERROR    s) =>  uncaught_exception_shutdown ("dot_subgraph_tree::SUBGRAPH_TREE_ERROR",    s);
-		       (pg::SUBGRAPH_TREE_ERROR    s) =>  uncaught_exception_shutdown ("planar_subgraph_tree::GRAPH", s);
-		       (xc::BAD_ADDRESS            s) =>  uncaught_exception_shutdown ("xcore::BAD_ADDRESS",      s);
+		except (dg::SUBGRAPH_TREE_ERROR    s) =>  uncaught_exception_shutdown ("dot_subgraph_tree::SUBGRAPH_TREE_ERROR", s);
+		       (pg::SUBGRAPH_TREE_ERROR    s) =>  uncaught_exception_shutdown ("planar_subgraph_tree::GRAPH",            s);
+		       (xc::XSERVER_CONNECT_ERROR  s) =>  uncaught_exception_shutdown ("xcore::XSERVER_CONNECT_ERROR",           s);
 		       #	
 		       e                                             =>  shut_down_thread_scheduler  winix::process::failure;
 		end;
@@ -114,9 +114,9 @@ herein
 
 		    0;
 		}
-		except (dg::SUBGRAPH_TREE_ERROR  s) =>  uncaught_exception_shutdown ("dot_subgraph_tree::GRAPH",    s);
-		       (pg::SUBGRAPH_TREE_ERROR  s) =>  uncaught_exception_shutdown ("planar_subgraph_tree::GRAPH", s);
-		       (xc::BAD_ADDRESS          s) =>  uncaught_exception_shutdown ("xcore::BAD_ADDRESS",      s);
+		except (dg::SUBGRAPH_TREE_ERROR   s) =>  uncaught_exception_shutdown ("dot_subgraph_tree::GRAPH",     s);
+		       (pg::SUBGRAPH_TREE_ERROR   s) =>  uncaught_exception_shutdown ("planar_subgraph_tree::GRAPH",  s);
+		       (xc::XSERVER_CONNECT_ERROR s) =>  uncaught_exception_shutdown ("xcore::XSERVER_CONNECT_ERROR", s);
 		       #
 		       e                            =>  shut_down_thread_scheduler  winix::process::failure;
 		end;

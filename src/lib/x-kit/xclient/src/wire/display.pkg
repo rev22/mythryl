@@ -32,7 +32,7 @@ herein
 
     package display: (weak) Display {					# Display			is from   src/lib/x-kit/xclient/src/wire/display.api
 
-	exception BAD_ADDRESS = cxa::BAD_ADDRESS;
+	exception XSERVER_CONNECT_ERROR = cxa::XSERVER_CONNECT_ERROR;
 
 	Xdisplay
 	    =
@@ -337,7 +337,7 @@ trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 #		    except
 #			threadkit_winix::SYSTEM_ERROR (s, _)
 #			    =
-#			    raise exception BAD_ADDRESS s;
+#			    raise exception XSERVER_CONNECT_ERROR s;
 
 		fun open_internet_domain_socket
                     (
@@ -372,7 +372,7 @@ trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 			except
 			threadkit_winix::SYSTEM_ERROR (s, _)
 			    =
-			    raise exception BAD_ADDRESS s;
+			    raise exception XSERVER_CONNECT_ERROR s;
 # endif
 
 trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Now  calling say_hello_to_xserver...";  }; result =
@@ -398,7 +398,7 @@ result =
 			    except
 			    threadkit_winix::SYSTEM_ERROR (s, _)
 				=
-				raise exception BAD_ADDRESS s;
+				raise exception XSERVER_CONNECT_ERROR s;
 # endif
 
 			    say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
@@ -409,7 +409,7 @@ result =
 			case (dns::from_string  host)
 			    #
 			    THE address =>  open_internet_domain_socket (address, port);
-			    NULL        =>  raise exception BAD_ADDRESS "Bad IP address format";
+			    NULL        =>  raise exception XSERVER_CONNECT_ERROR "Bad IP address format";
 			esac;
 
 
@@ -418,7 +418,7 @@ result =
 			case (dns::get_by_name  host)
 			    #
 			    THE entry =>  open_internet_domain_socket (dns::address entry, port);
-			    NULL      =>  raise exception BAD_ADDRESS "Host not found";
+			    NULL      =>  raise exception XSERVER_CONNECT_ERROR "Host not found";
 			esac;
 		esac;
 trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;

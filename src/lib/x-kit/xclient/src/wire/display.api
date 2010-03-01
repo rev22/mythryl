@@ -67,7 +67,7 @@ herein
 
     api Display {
 
-	exception BAD_ADDRESS  String;
+	exception XSERVER_CONNECT_ERROR  String;
 
 	Xdisplay
 	    =

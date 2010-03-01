@@ -481,11 +481,11 @@ herein
 
 		    if (ss::size display < 2)
 			#
-			raise exception cxa::BAD_ADDRESS "No display field";
+			raise exception cxa::XSERVER_CONNECT_ERROR "No display field";
 		    else
 			if (ss::size screen == 1)
 			    #
-			    raise exception cxa::BAD_ADDRESS "No screen number";
+			    raise exception cxa::XSERVER_CONNECT_ERROR "No screen number";
 			else
 			    { host    =>   ss::to_string host,
 			      display =>   ss::to_string (ss::drop_first 1 display),

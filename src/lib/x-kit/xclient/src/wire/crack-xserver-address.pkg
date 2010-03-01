@@ -26,7 +26,7 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
       | INET_ADDRESS   (String, Int)		#  "ddd.ddd.ddd.ddd: display.screen" 
       ;
 
-    exception BAD_ADDRESS  String;
+    exception XSERVER_CONNECT_ERROR  String;
 
     x_tcpport  =  6000;
     x_unixpath =  "/tmp/.X11-unix/X";
@@ -63,16 +63,16 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
     fun make_internet_address (host, display_number, screen)
         =
         if  (char::is_digit (string::get (host, 0)))
-
-	     { address                =>  INET_ADDRESS (host, x_tcpport+display_number),
-	       canonical_display_name =>  f::sprintf' "%s:%d.%d" [f::STRING host, f::INT display_number, f::INT screen],
-	       screen
-             };
+	    #
+	    { address                =>  INET_ADDRESS (host, x_tcpport+display_number),
+	      canonical_display_name =>  f::sprintf' "%s:%d.%d" [f::STRING host, f::INT display_number, f::INT screen],
+	      screen
+	    };
 	else
-	     { address                =>  INET_HOSTNAME (host, x_tcpport+display_number),
-	       canonical_display_name =>  f::sprintf' "%s:%d.%d" [f::STRING host, f::INT display_number, f::INT screen],
-	       screen
-             };
+	    { address                =>  INET_HOSTNAME (host, x_tcpport+display_number),
+	      canonical_display_name =>  f::sprintf' "%s:%d.%d" [f::STRING host, f::INT display_number, f::INT screen],
+	      screen
+	    };
 	fi;
 
 
@@ -88,7 +88,7 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
                     case (int::scan  number_string::DECIMAL  substring::getc  substring)
 			#		      
 			THE (n, _) =>  n;
-		        NULL       =>  raise exception BAD_ADDRESS "expected integer";
+		        NULL       =>  raise exception XSERVER_CONNECT_ERROR "expected integer";
                     esac;
 
 		# Split "127.0.0.1:0.0"  ->  ("127.0.0.1", "0.0")
@@ -129,8 +129,8 @@ package crack_xserver_address: (weak) Crack_Xserver_Address {	# Crack_Xserver_Ad
 			[display]         =>  (convert_int display, 0);
 			[display, screen] =>  (convert_int display, convert_int screen);
 			#
-			[]         =>  raise exception BAD_ADDRESS "missing display";
-			_          =>  raise exception BAD_ADDRESS "badly formed address";
+			[]         =>  raise exception XSERVER_CONNECT_ERROR "missing display";
+			_          =>  raise exception XSERVER_CONNECT_ERROR "badly formed address";
                     esac;
 
 

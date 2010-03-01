@@ -46,7 +46,7 @@ herein
 # XXX BUGGO FIXME need xauthentication here:
 		xsession =   xc::open_xsession (display_name, NULL)
 			    except
-				xc::BAD_ADDRESS s
+				xc::XSERVER_CONNECT_ERROR s
 				    =
 				    {   file::print s;
 					file::print "\n";

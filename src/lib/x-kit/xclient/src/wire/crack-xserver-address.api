@@ -31,7 +31,7 @@
 #    INET_ADDR      address if the hostname starts with a digit
 #    INET_HOSTNAME  address otherwise.
 #
-# We raise BAD_ADDRESS if display or screen values are not integers,
+# We raise XSERVER_CONNECT_ERROR if display or screen values are not integers,
 # or are otherwise malformed.
 
 # Compiled by:
@@ -49,7 +49,7 @@ api Crack_Xserver_Address {
       | INET_ADDRESS   (String, Int)		#  "ddd.ddd.ddd.ddd: display.screen" 	E.g., "192.168.0.1:0.0"
       ;
 	
-    exception BAD_ADDRESS  String;
+    exception XSERVER_CONNECT_ERROR  String;
 
     crack_xserver_address
 	:

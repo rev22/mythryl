@@ -129,7 +129,7 @@ api  Xcore {
 
     # Xsession operations
     #
-    exception BAD_ADDRESS  String;
+    exception XSERVER_CONNECT_ERROR  String;
     #
     open_xsession:     (String, Null_Or(Xauthentication)) -> Xsession;	# open_xsession			def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     close_xsession:     Xsession -> Void;				# close_xesession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg

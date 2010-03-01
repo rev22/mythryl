@@ -80,7 +80,7 @@ herein
 #                           do_it (make_root_window NULL);
 
 			} except
-			    dy::BAD_ADDRESS string
+			    dy::XSERVER_CONNECT_ERROR string
 				=
 				{   fprintf file::stderr "xclient_unit_test: Could not connect to X server: %s\n" string;
 				    fprintf file::stderr "xclient_unit_test: *** OMITTING XCLIENT UNIT TESTS. ***\n";

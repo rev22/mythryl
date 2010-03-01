@@ -100,7 +100,7 @@ package xclient_sharing: api {
 	package xserver_timestamp = xserver_timestamp;	# xserver_timestamp	is from   src/lib/x-kit/xclient/src/wire/xserver-timestamp.pkg
 
 
-	exception BAD_ADDRESS = display::BAD_ADDRESS;
+	exception XSERVER_CONNECT_ERROR = display::XSERVER_CONNECT_ERROR;
 
 	include xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
         include draw_types;				# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
