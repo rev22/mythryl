@@ -204,7 +204,9 @@ end;
 #  o  A size_preference_of fn
 #  o  A realize fn.
 #
-# The Root_Window gives the display with which the widget is associated.
+# The Root_Window gives the display with which
+# the widget is associated; more generally it
+# gives the entire relevant Xsession.
 #
 # The widget's size, position and visibility are
 # controlled by its parent window.  That parent

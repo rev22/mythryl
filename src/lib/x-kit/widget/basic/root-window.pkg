@@ -57,7 +57,7 @@ herein
 		mktile:   String -> xc::Ro_Pixmap,
 		#
 		style:    Style,
-		id_fn:    Void -> Int
+		make_id:  Void -> Int
 	      };
 
 	init_images
@@ -100,7 +100,7 @@ herein
 
 		    mkshade =>  si::get_shades  shade_imp,
 
-		    id_fn   =>  fn () =  take  id_slot
+		    make_id =>  fn () =  take  id_slot
 		  };
 	      };
 
