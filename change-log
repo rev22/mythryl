@@ -1,3 +1,4 @@
+2010-02-28-22.36.46: src/lib/x-kit/xclient/xcore.api and elsewhere: Renamed BAD_ADDRESS -> XSERVER_CONNECT_ERROR for clarity.
 2010-02-28-20.58.03: Changed *.LOAD_LOG -> *.load.log to further reduce the shouting.
 2010-02-28-20.34.43: Generate foo.make6.index files instead of foo.make6.INDEX files, to reduce the shouting.
 2010-02-28-16.34.25: For improved clarity, globally changed foo.make6.a7 freezefile names to foo.make6.frozen.

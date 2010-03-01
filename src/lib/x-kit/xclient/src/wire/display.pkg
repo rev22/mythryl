@@ -146,45 +146,62 @@ herein
 		    =
 		    do_mailop (timeout_in' (time::from_seconds (large_int::from_int n)));
 
-	        # 2010-02-20 Debug hack on hypothesis that the problem is SIGALRM is interrupting the socket read
-                #            before the remote X server has a chance to respond;  this should give it that chance,
-		#            so that the reply is already in the kernel socket buffer when we issue the socket read.
-		#	     This is a diagnostic test, not a fix:	
-#		sleep 2;	#	Result: no change.
 
 		trace  .{ "display.pkg: say_hello_to_xserver: connect_msg sent to socket, now reading back connection reply header"; };
 
 
 											# exceptions			is from   src/lib/std/exceptions.pkg
-		fun retry 0 ts
-			=>
-			sox::receive_vector (socket, 8);
-
-		    retry n ts
-			=>
-			{
-		            trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Calling sox::receive_vector (socket, 8)..." n; };
-			    sox::receive_vector (socket, 8)
-                            except x
-                                =
-                                { 
-		                    trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Caught exception '%s', sleeping %d seconds..."
-                                        n
-					(exceptions::exception_message  x)
-                                        ts;
-                                    };
-
-                                    sleep ts;
-
-                                    (retry (n - 1) (ts*2));
-                                };
-			};
-		end;
-
+# Again, I'm not comfortable leaving this in without
+# a clear idea of the root cause of the problem, so
+# I've commented it out -- 2010-02-28 CrT
+#
+# if dusty deboer retry logic
+#		fun retry 0 ts
+#			=>
+#			sox::receive_vector (socket, 8);
+#
+#		    retry n ts
+#			=>
+#			{
+#		            trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Calling sox::receive_vector (socket, 8)..." n; };
+#			    sox::receive_vector (socket, 8)
+#                            except x
+#                                =
+#                                { 
+#		                    trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Caught exception '%s', sleeping %d seconds..."
+#                                        n
+#					(exceptions::exception_message  x)
+#                                        ts;
+#                                    };
+#
+#                                    sleep ts;
+#
+#                                    (retry (n - 1) (ts*2));
+#                                };
+#			};
+#		end;
+#
+#		header = retry 2 1;
 											# large_unt			is from   src/lib/std/large-unt.pkg
 											# pack_big_endian_unt16		is from   src/lib/std/src/pack-big-endian-unt16.pkg
-		header = retry 2 1;
-		#  original: header = sox::receive_vector (socket, 8);
+
+		header = sox::receive_vector (socket, 8)
+                         except
+                             winix::SYSTEM_ERROR("closed socket", NULL)
+                                 =
+				 # I was getting this error when I failed to supply
+				 # authentication -- you'd think the server would
+				 # return a 0u2 "additional authentication required"
+				 # reply, but apparently not.
+                                 #
+                                 # Anyhow, we can at least generate an error more
+                                 # informative than "I/O to closed socket":      -- 2010-02-28 CrT
+				 #
+				 case xauthentication
+				     #
+                                     NULL => raise exception XSERVER_CONNECT_ERROR (sprintf "X server %s closed connection without replying, perhaps because we supplied no authentication." canonical_display_name);
+                                     _    => raise exception XSERVER_CONNECT_ERROR (sprintf "X server %s closed connection without replying."                                                canonical_display_name);
+                                 esac; 
 
 		len = 4 * large_unt::to_int_x (pack_big_endian_unt16::get_vec (header, 3));
 		    #
@@ -238,17 +255,8 @@ trace .{ sprintf "display.pkg: say_hello_to_xserver: get_reply: DONE calling sox
 		    );
 										# socket		is from   src/lib/std/socket.pkg
 
-		fun error msg
-		    =
-		    {   sok::close  socket;
-			xgripe::xerror  msg;
-		    };
-
 		case (w8v::get (header, 0))
 		    #
-		    0u0 =>
-			error ("connection refused: " + get_msg (get_reply len));
-
 		    0u1 =>
 			{
 trace  .{ "display.pkg: say_hello_to_xserver: header byte #0 is 1 (Success)"; };
@@ -274,8 +282,20 @@ trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 			    (xsocket, xserver_info, canonical_display_name, screen_number);
 			};
 
-		    0u2 => error "connection requires more authentication";
-		    _   => error "unknown connection reply";
+		    0u0 =>
+			{   sok::close  socket;
+			    raise exception XSERVER_CONNECT_ERROR ("X server refused connection: " + get_msg (get_reply len));
+			};
+
+		    0u2 =>
+			{   sok::close  socket;
+			    raise exception XSERVER_CONNECT_ERROR "X server demanded additional authentication";
+			};
+
+		    x   =>
+			{   sok::close  socket;
+			    raise exception XSERVER_CONNECT_ERROR (sprintf "X server returned unknown reply op %d" (unt8::to_int x));
+			};
 		esac; 
 	    };
 
@@ -418,7 +438,7 @@ result =
 			case (dns::get_by_name  host)
 			    #
 			    THE entry =>  open_internet_domain_socket (dns::address entry, port);
-			    NULL      =>  raise exception XSERVER_CONNECT_ERROR "Host not found";
+			    NULL      =>  raise exception XSERVER_CONNECT_ERROR (sprintf "Host '%s' not found" host);
 			esac;
 		esac;
 trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
