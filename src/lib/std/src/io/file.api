@@ -17,7 +17,7 @@ api  File {
     Element = Char;
 
     # XXX BUGGO FIXME
-    # Should implement vanilla/conventional/expected
+    # (?) Should maybe implement vanilla/conventional/expected
     #    io_stream = fopen ("foo.txt", "r");
     #    io_stream = fopen ("foo.txt", "w");
     #    io_stream = fopen ("foo.txt", "a");
@@ -63,19 +63,26 @@ api  File {
     # attempts to write to a read-only file &tc.
     # This does mean that we can't have fopen("foo.txt", "r") &tc,
     # since the Mythryl return type cannot vary according to argument value. Owell.
+    #
+    # STILL LATER:  Jeffrey Lau was getting unpleasant type errors when using
+    #               phantom-typed sockets at scripting top level where type
+    #               generalization is not (and cannot be) done;  maybe using
+    #               phantom types here is not such a cool idea after all.
+    #
+    #               Hrm...
 
     Input_Stream;
     Output_Stream;
 
-    read:        Input_Stream -> Vector;
-    read_one:    Input_Stream -> Null_Or( Element );
-    read_n:     (Input_Stream, Int) -> Vector;
-    read_all:    Input_Stream -> Vector;
+    read:            Input_Stream -> Vector;
+    read_one:        Input_Stream -> Null_Or( Element );
+    read_n:         (Input_Stream, Int) -> Vector;
+    read_all:        Input_Stream -> Vector;
 
-    can_read:      (Input_Stream, Int)  ->  Null_Or( Int );
-    lookahead:      Input_Stream -> Null_Or( Element );
-    close_input:    Input_Stream -> Void;
-    end_of_stream:  Input_Stream -> Bool;
+    can_read:       (Input_Stream, Int)  ->  Null_Or( Int );
+    lookahead:       Input_Stream -> Null_Or( Element );
+    close_input:     Input_Stream -> Void;
+    end_of_stream:   Input_Stream -> Bool;
 
     write:          (Output_Stream, Vector) -> Void;
     write_one:      (Output_Stream, Element) -> Void;

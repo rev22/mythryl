@@ -1,7 +1,9 @@
 ## root-window.pkg
 #
 # This widget represents the root window on an X screen
-# -- the one on which the wallpaper is drawn.
+# -- the one on which the wallpaper is drawn.  X stores
+# various things like the X resource database as properties
+# on the root window.
 
 # Compiled by:
 #     src/lib/x-kit/widget/xkit-widget.make6
@@ -36,9 +38,9 @@ herein
 
 	# Root chunk, corresponding to display/screen pair.
 	#  server = ""          => "unix:0.0"
-	#         = ":d"        => "unix: d.0"
-	#         = "host: d"    => "host: d.0"
-	#         = "host: d.s"  => "host: d.s"
+	#         = ":d"        => "unix:d.0"
+	#         = "host:d"    => "host:d.0"
+	#         = "host:d.s"  => "host:d.s"
 	# where host is an internet address (e.g., "128.84.254.97") or "unix".
 	#
 	# At present, screen is always the default screen.

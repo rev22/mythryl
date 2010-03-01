@@ -48,8 +48,13 @@ herein
 		    unlink tracefile;
 		fi;
 
+		# Open tracelog file and
+                # select tracing level:
+		#
 		{   include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+		    #
 		    log_trace_messages  (TO_FILE tracefile);
+		    #
 		    enable all_tracing;				# Gross overkill.
 #		    enable xtr::xkit_tracing;			# Lesser overkill.
 #		    enable xtr::io_tracing;			# Saner yet.	
@@ -95,6 +100,22 @@ herein
 
 			ctl::shut_down_thread_scheduler  winix::process::success;
 		    };
+
+		# Close tracelog file:
+		#
+		{   include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+
+		    tracing_to =  currently_tracing_to ();
+
+		    log_trace_messages  TO_STDERR;
+
+		    case tracing_to
+			#
+			TO_STREAM stream =>  file::close_output stream;
+			#
+			_                =>  ();
+                    esac;
+		};
 
 		assert TRUE;
 

@@ -50,7 +50,7 @@ api Tracing {
 	#
 	#     log_trace_messages TO_STDERR;
 	#
-	#     case tracing_to  TO_STREAM stream => file::close stream;  _ => ();   esac;
+	#     case tracing_to  TO_STREAM stream => file::close_output stream;  _ => ();   esac;
 	#
 	# to close the logstream cleanly.
 	#
