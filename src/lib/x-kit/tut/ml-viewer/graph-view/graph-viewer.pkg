@@ -744,8 +744,8 @@ herein
 
 		pix2pts
 		    =
-		    {   my xg::SIZE { high=>htpx, ... } =  w::size_of_screen    root_window;
-			my xg::SIZE { high=>htmm, ... } =  w::size_mmof_screen  root_window;
+		    {   my xg::SIZE { high=>htpx, ... } =  w::size_of_screen     root_window;
+			my xg::SIZE { high=>htmm, ... } =  w::mm_size_of_screen  root_window;
 
 			fact = (((float::from_int htmm)//(float::from_int htpx))//25.4) * 72.0;
 

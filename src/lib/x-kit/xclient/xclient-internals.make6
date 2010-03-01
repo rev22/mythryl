@@ -95,6 +95,7 @@ LIBRARY_GROUP_COMPONENTS
 	src/window/window.api
 	src/window/window.pkg
 	src/window/xbuf-to-widgettree-xevent-router.pkg
+	src/window/xsession.api
 	src/window/xsession.pkg
 
 	src/iccc/atom-imp.api

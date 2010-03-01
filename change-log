@@ -1,3 +1,4 @@
+2010-03-01-14.52.35: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Cleanly close tracelog at end, using new tracing::currently_tracing_to() fn.
 2010-03-01-12.54.56: src/lib/src/lib/thread-kit/src/lib/tracing.api: Added currently_tracing_to () fn.
 2010-02-28-23.38.55: src/lib/x-kit/xclient/src/wire/display.pkg: Consistently report X server connection failures via XSERVER_CONNECT_ERROR exception, and attempt to be more clear about the problem.  src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Trap XSERVER_CONNECT_ERROR cleanly, report it, and abort all remaining xclient unit tests.
 2010-02-28-22.36.46: src/lib/x-kit/xclient/xcore.api and elsewhere: Renamed BAD_ADDRESS -> XSERVER_CONNECT_ERROR for clarity.

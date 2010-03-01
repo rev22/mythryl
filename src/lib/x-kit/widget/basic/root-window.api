@@ -3,6 +3,15 @@
 # This widget represents the root window on an X screen
 # -- the one on which the wallpaper is drawn.
 #
+# This widget also serves as the top-level representative
+# of a running X server session.  For example, run_xkit in
+#
+#     src/lib/x-kit/widget/lib/run-xkit.pkg
+#
+# creates a Root_Window and passes it to the user-provided
+# application function as the sole representative of the
+# running X session.
+#
 # Other widgets use Root_Window instances to access display
 # resources such as fonts; the Root_Window to use is usually
 # supplied to them at creation time.
@@ -57,13 +66,13 @@ herein
 
 	ring_bell:	      Root_Window -> Int -> Void;	# Generate beep. Int volume argument must be in range [-100,100].
 
-	size_of_screen:   Root_Window -> xg::Size;
-	size_mmof_screen: Root_Window -> xg::Size;
-	depth_of_screen:  Root_Window -> Int;
+	size_of_screen:    Root_Window -> xg::Size;
+	mm_size_of_screen: Root_Window -> xg::Size;
+	depth_of_screen:   Root_Window -> Int;
 
-	is_monochrome:    Root_Window -> Bool;
+	is_monochrome:     Root_Window -> Bool;
 
-	style_of:         Root_Window -> Style;
+	style_of:          Root_Window -> Style;
 	style_from_strings:  (Root_Window, List( String )) -> Style;
 
 	/* was/is included for testing purposes: disabled because can be unreliable.

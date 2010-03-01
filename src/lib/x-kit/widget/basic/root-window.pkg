@@ -67,7 +67,7 @@ herein
 	    ];
 
 	fun make_root_window
-            ( server,
+            ( server:          String,					# Typically from DISPLAY environment variable.
               xauthentication: Null_Or( xc::Xauthentication )		# Ultimately from ~/.Xauthority.
             )
 	    =
@@ -115,7 +115,7 @@ herein
 	    =
 	    id == id';
 
-	fun shades          (ROOT_WINDOW { mkshade, ... } ) c =  mkshade c;
+	fun shades    (ROOT_WINDOW { mkshade, ... } ) c =  mkshade c;
 	fun ro_pixmap (ROOT_WINDOW { mktile,  ... } ) s =  mktile s;
 
 	fun color_of
@@ -128,12 +128,12 @@ herein
 	    =
 	    xf::open_font (xc::xsession_of_screen screen);
 
-	fun get_standard_xcursor       (ROOT_WINDOW { screen, ... } ) = xc::get_standard_xcursor (xc::xsession_of_screen screen);
-	fun ring_bell        (ROOT_WINDOW { screen, ... } ) = xc::ring_bell  (xc::xsession_of_screen screen);
+	fun get_standard_xcursor (ROOT_WINDOW { screen, ... } ) = xc::get_standard_xcursor (xc::xsession_of_screen screen);
+	fun ring_bell            (ROOT_WINDOW { screen, ... } ) = xc::ring_bell  (xc::xsession_of_screen screen);
 
-	fun size_of_screen   (ROOT_WINDOW { screen, ... } ) = xc::size_of_screen screen;
-	fun size_mmof_screen (ROOT_WINDOW { screen, ... } ) = xc::size_mmof_screen screen;
-	fun depth_of_screen  (ROOT_WINDOW { screen, ... } ) = xc::depth_of_screen screen;
+	fun size_of_screen       (ROOT_WINDOW { screen, ... } ) = xc::size_of_screen screen;
+	fun mm_size_of_screen    (ROOT_WINDOW { screen, ... } ) = xc::mm_size_of_screen screen;
+	fun depth_of_screen      (ROOT_WINDOW { screen, ... } ) = xc::depth_of_screen screen;
 
 	fun style_of (ROOT_WINDOW { style, ... } ) = style;
 

@@ -143,7 +143,7 @@ api  Xcore {
     #
     xsession_of_screen: Screen -> Xsession;				# xsession_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     size_of_screen:     Screen -> xg::Size;				# size_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    size_mmof_screen:   Screen -> xg::Size;				# size_mmof_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+    mm_size_of_screen:  Screen -> xg::Size;				# mm_size_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     depth_of_screen:    Screen -> Int;					# depth_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     
   

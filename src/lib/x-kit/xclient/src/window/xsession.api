@@ -1,0 +1,236 @@
+## xsession.api
+#
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/xclient/src/window/xsession.pkg
+
+stipulate
+    include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package br  = xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+    #
+    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package ai  = atom_imp;				# atom_imp		is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
+    package ci  = color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
+    package di  = draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package fb  = font_base;				# font_base		is from   src/lib/x-kit/xclient/src/window/font-base.pkg
+    package fti = font_imp;	# "fi" is taken! :-)	# font_imp		is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
+    package gci = graphics_context_imp;			# graphics_context_imp	is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package ki  = keymap_imp;				# keymap_imp		is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+    package xt  = xtypes;				# xtypes		is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+
+    api Xsession {
+
+	Xsession
+	    =
+	    XSESSION  {
+		xdisplay:          	dy::Xdisplay,          		#  
+		screens:           	List( Screen_Info ),
+
+		default_screen:    	Screen_Info,
+
+		xbuf_to_widgettree_xevent_router:   br::Xbuf_To_Widgettree_Xevent_Router,          # Feeds X events to appropriate toplevel window.
+
+		font_imp:          	fti::Font_Imp,
+		atom_imp:          	ai::Atom_Imp,
+
+		window_property_imp:    window_property_imp::Window_Property_Imp,
+		selection_imp:     	selection_imp::Selection_Imp,
+
+		keymap_imp:             ki::Keymap_Imp
+	    }
+
+	also
+	Screen_Info
+	    =
+	    SCREEN_INFO
+	      {
+		xscreen:    dy::Xscreen,			# Xscreen	def in    src/lib/x-kit/xclient/src/wire/display.pkg
+		color_imp:  ci::Color_Imp,			# The colormap imp for this screen.
+		imps:       List( Screen_Depth_Imps ),		# The graphics-context and draw imps for the allowed depths.
+				  				# of this screen.
+		root_imps:  Screen_Depth_Imps
+	      }
+
+	also
+	Screen_Depth_Imps
+	    =
+	    # For each combination of visual and depth
+	    # we allocate a pair of imps, one to draw,
+	    # one to manage graphics contexts.  This
+	    # is forced because X requires that each
+	    # gc and pixmap be associated with a
+	    # particular screen, visual and depth:
+	    #
+	    SCREEN_DEPTH_IMPS  {			# The graphics context imp and draw_imp
+							# for a given  depth of a screen.
+		depth:      Int,    
+
+		gc_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
+
+		draw_fn:    di::Draw_Mail -> Void	# The draw-imp connection for
+							# the root  window of the screen. 
+	    }
+
+	also
+	Screen						# A screen handle for users.
+	    =
+	    SCREEN  {
+		xsession:   Xsession,
+		screen:     Screen_Info
+	    }; 
+
+	# Identity tests:
+	#
+	same_xsession: (Xsession, Xsession) -> Bool;
+	same_screen:   (Screen,   Screen  ) -> Bool;
+
+	open_xsession: (/* DISPLAY:*/ String, Null_Or( xt::Xauthentication )) -> Xsession;
+	    #
+	    # Start an X session with some X server.
+	    # 
+	    # Parameters:
+	    # 
+	    #     display_name:  "128.84.254.97:0.0" or such.
+	    #    
+	    #         General display_name format is:
+	    #    
+	    #             <host>:<display_number><screen_number>.
+	    #    
+	    #         display_number:
+	    #         screen_number:
+	    #             In practice these are almost always zero,
+	    #             since most home computers have a single
+	    #             display subsystem with a single logical
+	    #             screen, even if using two physical monitors.
+	    #    	  (My xserver box has six monitors and three
+	    #    	  graphics cards, but still gets addressed
+	    #             as the single screen 0.0)
+	    #    
+	    #         host:
+	    #    	  This can be "unix" to open a unix domain
+	    #             socket instead of the usual internet domain socket.
+	    #    
+	    #         Supported display_name abbreviations include:
+	    #             ""               == "unix:0.0"
+	    #             ":3"             == "unix:3.0"
+	    #             ":3.4"           == "unix:3.4"
+	    #             "128.84.254.97:0 == "128.84.254.97:0.0
+	    #
+	    #         Any failure to connect to the given display
+	    #	  results in raising of the exception
+	    #
+	    #	      display::BAD_ADDRESS "somestring";
+	    #
+	    #     xauthentication:
+	    #	  See Xauthentication comments in
+	    #               src/lib/x-kit/xclient/xcore.api.
+
+
+	# X-server I/O. 
+	#
+	# These just forward to the
+        # Xsocket embedded in the Xsession:
+	#
+	request:           Xsession -> unt8_vector::Vector -> Void;
+	request_and_check: Xsession -> unt8_vector::Vector -> Mailop( Void );
+	#
+	request_reply:     Xsession -> unt8_vector::Vector -> Mailop( unt8_vector::Vector );
+	request_replies:   Xsession -> (unt8_vector::Vector, (unt8_vector::Vector -> Int)) -> Mailop( unt8_vector::Vector );
+	#
+	flush_out:         Xsession -> Void;
+
+
+
+	close_xsession:    Xsession -> Void;
+
+
+
+	# Return the maximum request size
+	# supported by the display. This
+	# information comes ultimately from
+	# the connect-request reply supplied
+	# by the X server:
+	#
+	max_request_length:  Xsession -> Int;
+
+
+
+	# Atom operations:
+	#
+	# These just forward to the
+        # Atom_Imp embedded in the Xsession:
+	#
+	make_atom:       Xsession -> String -> ai::Atom;
+	find_atom:       Xsession -> String -> Null_Or( ai::Atom );
+	atom_to_string:  Xsession -> ai::Atom -> String;
+
+
+
+	# Font operations:
+	#
+	# These just forward to the
+        # Font_Imp embedded in the Xsession:
+	#
+	open_font:	    Xsession -> String -> fb::Font;
+
+
+	default_screen_of:  Xsession -> Screen;
+	screens_of:         Xsession -> List(Screen);
+
+
+	ring_bell:          Xsession -> Int -> Void;
+
+
+	# Screen functions:
+	#
+	color_of_screen:          Screen -> ci::Color_Spec -> ci::Color;
+	black_of_screen:          Screen                   -> ci::Color;
+	white_of_screen:          Screen                   -> ci::Color;
+
+	xsession_of_screen:       Screen -> Xsession;
+	root_window_of_screen:    Screen -> xt::Window_Id;
+
+	   size_of_screen:        Screen -> g::Size;
+	mm_size_of_screen:        Screen -> g::Size;
+
+	depth_of_screen:          Screen -> Int;
+
+	display_class_of_screen:  Screen -> xt::Display_Class;
+
+	# Extract the graphics-context imp
+        # for a given depth:
+	#
+	servers_of_screen_depth:  (Screen, Int) ->  Screen_Depth_Imps;
+    };									# api Xsession
+end;									# stipulate.
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

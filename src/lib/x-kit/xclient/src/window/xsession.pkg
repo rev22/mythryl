@@ -155,7 +155,7 @@ stipulate
     package xt  = xtypes;				# xtypes		is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
-    package xsession {
+    package xsession: Xsession {			# Xsession		is from   src/lib/x-kit/xclient/src/window/xsession.api
 
 	Xsession
 	    =
@@ -183,7 +183,7 @@ herein
 	      {
 		xscreen:    dy::Xscreen,			# Xscreen	def in    src/lib/x-kit/xclient/src/wire/display.pkg
 		color_imp:  ci::Color_Imp,			# The colormap imp for this screen.
-		imps:       List( Screen_Depth_Imps ),		# The GC-imps for the allowed depths
+		imps:       List( Screen_Depth_Imps ),		# The graphics-context and draw imps for the allowed depths.
 				  				# of this screen.
 		root_imps:  Screen_Depth_Imps
 	      }
@@ -234,44 +234,9 @@ herein
 	    same_xsession (xsession1, xsession2);
 
 
-	# fun open_xsession:  Start an X session with some X server.
-	# 
-	# Parameters:
-	# 
-	#     display_name:  "128.84.254.97:0.0" or such.
-	#    
-	#         General display_name format is:
-        #    
-        #             <host>:<display_number><screen_number>.
-	#    
-        #         display_number:
-	#         screen_number:
-	#             In practice these are almost always zero,
-        #             since most home computers have a single
-	#             display subsystem with a single logical
-        #             screen, even if using two physical monitors.
-	#    	  (My xserver box has six monitors and three
-	#    	  graphics cards, but still gets addressed
-	#             as the single screen 0.0)
-	#    
-        #         host:
-	#    	  This can be "unix" to open a unix domain
-	#             socket instead of the usual internet domain socket.
-	#    
-	#         Supported display_name abbreviations include:
-	#             ""               == "unix:0.0"
-	#             ":3"             == "unix:3.0"
-	#             ":3.4"           == "unix:3.4"
-	#             "128.84.254.97:0 == "128.84.254.97:0.0
+	# See overview comments in
 	#
-	#         Any failure to connect to the given display
-	#	  results in raising of the exception
-	#
-	#	      display::BAD_ADDRESS "somestring";
-	#
-	#     xauthentication:
-	#	  See Xauthentication comments in
-	#               src/lib/x-kit/xclient/xcore.api.
+	#     src/lib/x-kit/xclient/src/window/xsession.api
 	#
 	fun open_xsession
             ( display_name:     String,
@@ -511,9 +476,9 @@ herein
 
 	fun size_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_pixels, ... }, ... }, ... } )
 	    =
-	   size_in_pixels;
+	    size_in_pixels;
 
-	fun size_mmof_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_mm, ... }, ... }, ... } )
+	fun mm_size_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_mm, ... }, ... }, ... } )
 	    =
 	    size_in_mm;
 
@@ -546,8 +511,8 @@ herein
 	    end;
 
 
-    };		# package display 
-end;		# stipulate.
+    };									# package xsession
+end;									# stipulate.
 
 
 ##########################################################################
