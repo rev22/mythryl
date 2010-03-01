@@ -1,8 +1,5 @@
 ## tracing.api
-
-# Compiled by:
-#     src/lib/std/stdlib.make6
-
+#
 # (Overview comments are at bottom of file.)
 #
 # This version of this module is adapted from
@@ -13,6 +10,10 @@
 #     src/lib/src/lib/thread-kit/src/lib/thread-deathwatch.api
 #     src/lib/src/lib/thread-kit/src/lib/threadkit-uncaught-exception-reporting.api
 
+# Compiled by:
+#     src/lib/std/stdlib.make6
+
+
 api Tracing {
 
     Trace_Tree_Node;
@@ -20,10 +21,11 @@ api Tracing {
     # Where trace output goes:
     #
     Trace_To
+      #
       = TO_STDOUT
       | TO_STDERR
       | TO_NULL
-      | TO_FILE  String
+      | TO_FILE    String
       | TO_STREAM  file::Output_Stream
       ;
 
@@ -33,12 +35,35 @@ api Tracing {
 	#
 	# TO_STREAM can only be specified
 	# as a destination if threadkit is running.
+	#
+	# NOTE: This call does NOT close the previous
+	#       output stream, if any, since the caller
+	#       may not want that.  If you want the
+	#       previous tracelog stream closed, do it
+	#       yourself (see next).
+
+    currently_tracing_to:    Void -> Trace_To;
+	#
+	# Mainly so caller can do
+	#
+	#     tracing_to =  currently_tracing_to ();
+	#
+	#     log_trace_messages TO_STDERR;
+	#
+	#     case tracing_to  TO_STREAM stream => file::close stream;  _ => ();   esac;
+	#
+	# to close the logstream cleanly.
+	#
+	# NOTE: It is a poor idea to close the current
+        #       logstream before switching trace logging to
+        #       another stream, since there may be threads
+        #       tracelogging at unexpected moments!
 
     all_tracing:  Trace_Tree_Node;
 	#
 	# Root node of the trace tree.  Doing
 	#     enable all_tracing;
-	# will enable all registered print_trace calls.
+	# will enable all registered print_if calls.
 
     exception NO_SUCH_NODE;
 
@@ -247,10 +272,11 @@ api Tracing {
 #      (Personally, I use an xemacs shell buffer for the
 #      interactive command window for convenience, and
 #      a vanilla xterm or such for tracelog display,
-#      because that's much faster than an xemacs shell
-#      buffer.)
+#      because that scrolls much faster than an xemacs
+#      shell buffer.)
 #
 #   o  In the tracelog window do
+#
 #          linux% touch trace.log                 # Create trace.log file if it doesn't exist.
 #          linux% tail -f trace.log               # Set up to display everything written to file.
 #

@@ -70,7 +70,7 @@ herein
 
 			trace .{ sprintf "xclient_unit_test: Now  calling dy::open_xdisplay"; };
 
-			{   xdisplay =  dy::open_xdisplay { display_name, xauthentication };
+			{   xdisplay =  dy::open_xdisplay { display_name, xauthentication };	# Raises dy::XSERVER_CONNECT_ERROR on failure.
 				
 
 			    trace .{ sprintf "xclient_unit_test: Done calling dy::open_xdisplay"; };
