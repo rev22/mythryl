@@ -43,10 +43,10 @@ herein
 
     api Window {
 
-	#  x-kit windows 
 	Window = dt::Window;
 
-	#  user-level window attributes 
+	# User-level window attributes:
+	#
 	Window_Attribute
 	  = WA_BACKGROUND_NONE
 	  | WA_BACKGROUND_PARENT_RELATIVE
@@ -66,7 +66,8 @@ herein
 	  | WA_CURSOR                        xr::Xcursor
 	  ;
 
-	#  window configuration values 
+	# Window configuration values:
+	#
 	Window_Config
 	  = WC_ORIGIN      g::Point
 	  | WC_SIZE        g::Size

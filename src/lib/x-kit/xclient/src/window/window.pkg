@@ -189,13 +189,13 @@ herein
 	    else                    raise  exception  BAD_WINDOW_FOOTPRINT;
 	    fi;
 
-	fun make_simple_top_window (screen as sn::SCREEN { screen=>scrinfo, xsession } )
+	fun make_simple_top_window (screen as sn::SCREEN { screen=>screen_info, xsession } )
 	    =
 	    create_fn
 	    where 
-		scrinfo   ->  sn::SCREEN_INFO       { xscreen  => dy::XSCREEN { root, ... }, root_imps, ... };
-		root_imps ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
-		xsession  ->  sn::XSESSION          { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
+		screen_info ->  sn::SCREEN_INFO       { xscreen  => dy::XSCREEN { root, ... }, root_imps, ... };
+		root_imps   ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
+		xsession    ->  sn::XSESSION          { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
 		window_id = next_xid();
 

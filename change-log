@@ -1,3 +1,4 @@
+2010-03-01-17.13.47: src/lib/x-kit/widget/basic/root-window.pkg: For clarity rename ROOT_WINDOW.id_fn -> ROOT_WINDOW.make_id, since that is what it does.
 2010-03-01-16.14.36: src/lib/x-kit/xclient/src/window/: Created xsession.api -- kinda crazy for a module as big as xsession.pkg to have no explicit API definition.
 2010-03-01-14.52.35: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Cleanly close tracelog at end, using new tracing::currently_tracing_to() fn.
 2010-03-01-12.54.56: src/lib/src/lib/thread-kit/src/lib/tracing.api: Added currently_tracing_to () fn.

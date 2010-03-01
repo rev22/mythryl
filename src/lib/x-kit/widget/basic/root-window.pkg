@@ -57,7 +57,7 @@ herein
 		mktile:   String -> xc::Ro_Pixmap,
 		#
 		style:    Style,
-		make_id:  Void -> Int
+		next_id:  Void -> Int
 	      };
 
 	init_images
@@ -100,7 +100,7 @@ herein
 
 		    mkshade =>  si::get_shades  shade_imp,
 
-		    make_id =>  fn () =  take  id_slot
+		    next_id =>  fn () =  take  id_slot		# Gets used (only) in widget::make_widget, in  src/lib/x-kit/widget/basic/widget.pkg
 		  };
 	      };
 
