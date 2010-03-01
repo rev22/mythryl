@@ -197,7 +197,7 @@ herein
 		root_imps   ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
 		xsession    ->  sn::XSESSION          { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
-		window_id = next_xid();
+		window_id = next_xid ();
 
 		my (kidplug, window, delete_slot)
 		    =

@@ -50,14 +50,14 @@ herein
 	Root_Window
 	    =
 	    ROOT_WINDOW
-	      { id:       Ref( Void ),
-		screen:   xc::Screen,
+	      { screen:          xc::Screen,
+		id:              Ref( Void ),			# Here we are just taking advantage of
+		#						# the fact that all REFs are distinct.
+		mkshade:         xc::Color -> si::Shades,
+		mktile:          String -> xc::Ro_Pixmap,
 		#
-		mkshade:  xc::Color -> si::Shades,
-		mktile:   String -> xc::Ro_Pixmap,
-		#
-		style:    Style,
-		next_id:  Void -> Int
+		style:           Style,
+		next_widget_id:  Void -> Int
 	      };
 
 	init_images
@@ -73,13 +73,13 @@ herein
 	    =
 	    {   screen = xc::default_screen_of (xc::open_xsession (server, xauthentication));
 
-		id_slot = make_mailslot ();
+		widget_id_slot = make_mailslot ();
 
-		fun id_loop i
+		fun widget_id_loop i
 		    =
-		    {   give  (id_slot,  i);
+		    {   give  (widget_id_slot,  i);
 
-			id_loop (i+1);
+			widget_id_loop (i+1);
 		    };
 
 		is =  ii::make_image_imp  init_images;
@@ -90,7 +90,7 @@ herein
 
 		tilef = pxc::get_ro_pixmap ts;
 
-		make_thread "root" .{  id_loop 0;  };
+		make_thread "widget_id factory" .{  widget_id_loop 0;  };
 
 		ROOT_WINDOW
 		  { id => REF (), 
@@ -100,7 +100,7 @@ herein
 
 		    mkshade =>  si::get_shades  shade_imp,
 
-		    next_id =>  fn () =  take  id_slot		# Gets used (only) in widget::make_widget, in  src/lib/x-kit/widget/basic/widget.pkg
+		    next_widget_id =>  fn () =  take  widget_id_slot		# Gets used (only) in widget::make_widget, in  src/lib/x-kit/widget/basic/widget.pkg
 		  };
 	      };
 
