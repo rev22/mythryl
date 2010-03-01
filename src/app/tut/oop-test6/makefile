@@ -12,7 +12,7 @@ clean:
 	@find . -type f -name '*.module-dependencies-summary' -print | xargs rm -rf;
 	@find . -type f -name '*[a-z].version' -print | xargs rm -rf;
 	@find . -type f -name '*.index' -print | xargs rm -f;
-	@find . -type f -name '*.LOAD_LOG' -print | xargs rm -f;
+	@find . -type f -name '*.load.log' -print | xargs rm -f;
 	@find . -type f -name '*.compile.log' -print | xargs rm -f;
 	@find . -type f -name '*.EDIT_REQUESTS' -print | xargs rm -f;
 	@find . -type f -name '*.UNEDITED' -print | xargs rm -f;

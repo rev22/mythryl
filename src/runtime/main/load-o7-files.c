@@ -109,7 +109,7 @@ static int hex(int c)
 
 #undef  MAX_FILENAME
 #define MAX_FILENAME 1024
-#define LOGFILE_EXTENSION  ".LOAD_LOG"
+#define LOGFILE_EXTENSION  ".load.log"
 
 
 
