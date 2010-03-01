@@ -62,14 +62,14 @@
 #
 #       In the usual   lone_primary   case we pass this
 #       function a FREEZE_ALL arg which forces it to make
-#       .a7 freezefiles for all (real) libraries lacking them,
+#       .frozen freezefiles for all (real) libraries lacking them,
 #       which in turn forces all .pkg and .api sourcefiles to
 #       compile if they have not already done so.
 #
 #       In the (common) limiting case this requires
 #       recompiling all the relevant .api and .pkg
 #       sourcefiles and packing the resulting .o7
-#       files into .a7 library freezefiles.
+#       files into .frozen library freezefiles.
 #
 #
 #  5)   Write out two diskfiles named

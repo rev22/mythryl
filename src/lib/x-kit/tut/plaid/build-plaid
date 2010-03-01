@@ -4,18 +4,18 @@
 #
 # We will normally be run as a result of a toplevel "make rest".
 #
-# Our main result is the freezefile src/lib/x-kit/tut/plaid/plaid.make6.a7.
+# Our main result is the freezefile src/lib/x-kit/tut/plaid/plaid.make6.frozen.
 
 bin/mythryld <<EOF
     make7::freeze "src/lib/x-kit/tut/plaid/plaid.make6";
 EOF
 
-if   [ -f "src/lib/x-kit/tut/plaid/plaid.make6.a7" ]
+if   [ -f "src/lib/x-kit/tut/plaid/plaid.make6.frozen" ]
 then
-     echo " src/lib/x-kit/tut/plaid/build-plaid:   Successfully created: src/lib/x-kit/tut/plaid/plaid.make6.a7"
-     echo " src/lib/x-kit/tut/plaid/build-plaid:   `ls -l src/lib/x-kit/tut/plaid/plaid.make6.a7`"
+     echo " src/lib/x-kit/tut/plaid/build-plaid:   Successfully created: src/lib/x-kit/tut/plaid/plaid.make6.frozen"
+     echo " src/lib/x-kit/tut/plaid/build-plaid:   `ls -l src/lib/x-kit/tut/plaid/plaid.make6.frozen`"
 else
-     echo " src/lib/x-kit/tut/plaid/build-plaid:   Failed to create src/lib/x-kit/tut/plaid/plaid.make6.a7"
+     echo " src/lib/x-kit/tut/plaid/build-plaid:   Failed to create src/lib/x-kit/tut/plaid/plaid.make6.frozen"
      exit 1
 fi
 

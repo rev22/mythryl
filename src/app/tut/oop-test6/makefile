@@ -7,7 +7,7 @@ clean:
 	@-rm -f LIBRARY_CONTENTS
 	@find . -name '*~' -print | xargs rm -f;
 	@find . -name '#*#' -print | xargs rm -f;
-	@find . -type f -name '*.a7' -print | xargs rm -rf;
+	@find . -type f -name '*.frozen' -print | xargs rm -rf;
 	@find . -type f -name '*.o7' -print | xargs rm -rf;
 	@find . -type f -name '*.module-dependencies-summary' -print | xargs rm -rf;
 	@find . -type f -name '*[a-z].version' -print | xargs rm -rf;

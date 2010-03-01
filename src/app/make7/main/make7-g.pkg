@@ -2469,7 +2469,7 @@ fi;
                     "    # Load hello lib into ram, first re/compiling as needed:\n",
                     "    make \"src/app/tut/hello/hello.make6\";\n",
                     "\n",
-                    "    # Make hello.make6 library freezefile 'hello.make6.a7':\n",
+                    "    # Make hello.make6 library freezefile 'hello.make6.frozen':\n",
                     "    freeze \"src/app/tut/hello/hello.make6\";\n",
                     "\n",
                     "Type <Ctrl>-D to exit.  (<Ctrl>-Q <Ctrl>-D in emacs.)\n"

@@ -4,18 +4,18 @@
 #
 # We will normally be run as a result of a toplevel "make rest".
 #
-# Our main result is the freezefile src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7.
+# Our main result is the freezefile src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen.
 
 bin/mythryld <<EOF
     make7::freeze "src/lib/x-kit/tut/ml-viewer/ml-viewer.make6";
 EOF
 
-if   [ -f "src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7" ]
+if   [ -f "src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen" ]
 then
-     echo " x-kit/tut/ml-viewer/build-ml-viewer:   Successfully created: src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7"
-     echo " x-kit/tut/ml-viewer/build-ml-viewer:   `ls -l src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7`"
+     echo " x-kit/tut/ml-viewer/build-ml-viewer:   Successfully created: src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen"
+     echo " x-kit/tut/ml-viewer/build-ml-viewer:   `ls -l src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen`"
 else
-     echo " x-kit/tut/ml-viewer/build-ml-viewer:   Failed to create src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7"
+     echo " x-kit/tut/ml-viewer/build-ml-viewer:   Failed to create src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen"
      exit 1
 fi
 

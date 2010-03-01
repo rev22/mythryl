@@ -1,3 +1,4 @@
+2010-02-28-15.30.34: Generate .compile.log files instead of .COMPILE_LOG files -- got tired of the shouting.
 2010-02-28-14.42.34: Makefile: Added rest-a7-clean target to remove the freezefiles (.a7 files) created by doing make rest.
 2010-02-26-22.31.12: Backed out all those proactive EINTR retries pending better understanding -- see discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c
 2010-02-26-21.30.16: Quite a bit of fiddling. In particular: src/runtime/c-libs/lib7-socket/hexdump-if.c: Wrote this to provide classic hex+ascii tracelogging of socket traffic.  src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Changed this to pass authentication info to open_xdisplay; now succeeds in contacting X server and decoding connect request reply. Also did some fiddling to make authentication.pkg visible and usable both inside and outside xclient library, and to get type sharing right.

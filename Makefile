@@ -198,37 +198,37 @@ rest3:	bin/mythryl-yacc \
 	bin/lexgen \
 	bin/ml-burg \
 	bin/heap2asm \
-	src/lib/unix/unix-lib.make6.a7 \
-	src/lib/reactive/reactive-lib.make6.a7 \
-	src/app/make7/pgraph/pgraph-util.make6.a7 \
-	src/lib/x-kit/x-kit.make6.a7 \
-	src/lib/compiler/lower/make7/ra.make6.a7 \
-	src/lib/compiler/lower/make7/peephole.make6.a7 \
-	src/lib/compiler/lower/make7/ia32-peephole.make6.a7 \
-	src/lib/c-kit/src/c-kit-lib.make6.a7 \
-	src/lib/c-glue-lib/memory/memory.make6.a7 \
-	src/lib/c-glue-lib/internals/c-internals.make6.a7 \
-	src/lib/c-glue-lib/c.make6.a7 \
-	src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.a7 \
-	src/lib/compiler/lower/tools/source-map.make6.a7 \
-	src/lib/compiler/lower/tools/sml-ast.make6.a7 \
-	src/lib/compiler/lower/tools/prec-parser.make6.a7 \
-	src/lib/compiler/lower/tools/parser.make6.a7 \
-	src/lib/compiler/lower/tools/Match-Compiler.make6.a7 \
+	src/lib/unix/unix-lib.make6.frozen \
+	src/lib/reactive/reactive-lib.make6.frozen \
+	src/app/make7/pgraph/pgraph-util.make6.frozen \
+	src/lib/x-kit/x-kit.make6.frozen \
+	src/lib/compiler/lower/make7/ra.make6.frozen \
+	src/lib/compiler/lower/make7/peephole.make6.frozen \
+	src/lib/compiler/lower/make7/ia32-peephole.make6.frozen \
+	src/lib/c-kit/src/c-kit-lib.make6.frozen \
+	src/lib/c-glue-lib/memory/memory.make6.frozen \
+	src/lib/c-glue-lib/internals/c-internals.make6.frozen \
+	src/lib/c-glue-lib/c.make6.frozen \
+	src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.frozen \
+	src/lib/compiler/lower/tools/source-map.make6.frozen \
+	src/lib/compiler/lower/tools/sml-ast.make6.frozen \
+	src/lib/compiler/lower/tools/prec-parser.make6.frozen \
+	src/lib/compiler/lower/tools/parser.make6.frozen \
+	src/lib/compiler/lower/tools/Match-Compiler.make6.frozen \
 	bin/c-glue-maker \
 	bin/nowhere \
-	src/lib/x-kit/tut/add/add.make6.a7 \
-	src/lib/x-kit/tut/basicwin/basicwin.make6.a7 \
-	src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.a7 \
-	src/lib/x-kit/tut/bounce/bounce.make6.a7 \
-	src/lib/x-kit/tut/bricks/bricks.make6.a7 \
-	src/lib/x-kit/tut/calc/calc.make6.a7 \
-	src/lib/x-kit/tut/mixer/mixer.make6.a7 \
-	src/lib/x-kit/tut/nbody/nbody.make6.a7 \
-	src/lib/x-kit/tut/plaid/plaid.make6.a7 \
-	src/lib/x-kit/tut/triangle/tri.make6.a7 \
-	src/lib/x-kit/tut/widget/widgets.make6.a7 \
-	src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7
+	src/lib/x-kit/tut/add/add.make6.frozen \
+	src/lib/x-kit/tut/basicwin/basicwin.make6.frozen \
+	src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
+	src/lib/x-kit/tut/bounce/bounce.make6.frozen \
+	src/lib/x-kit/tut/bricks/bricks.make6.frozen \
+	src/lib/x-kit/tut/calc/calc.make6.frozen \
+	src/lib/x-kit/tut/mixer/mixer.make6.frozen \
+	src/lib/x-kit/tut/nbody/nbody.make6.frozen \
+	src/lib/x-kit/tut/plaid/plaid.make6.frozen \
+	src/lib/x-kit/tut/triangle/tri.make6.frozen \
+	src/lib/x-kit/tut/widget/widgets.make6.frozen \
+	src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
 
 
 summary:
@@ -252,34 +252,34 @@ summary:
 	@echo
 	@echo "Non-core Mythryl freezefiles (compiled libraries):"
 	@ls -l \
-		src/app/make7/pgraph/pgraph-util.make6.a7 \
-		src/lib/c-glue-lib/c.make6.a7 \
-		src/lib/c-glue-lib/internals/c-internals.make6.a7 \
-		src/lib/c-glue-lib/memory/memory.make6.a7 \
-		src/lib/c-kit/src/c-kit-lib.make6.a7 \
-		src/lib/compiler/lower/make7/ia32-peephole.make6.a7 \
-		src/lib/compiler/lower/make7/peephole.make6.a7 \
-		src/lib/compiler/lower/make7/ra.make6.a7 \
-		src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.a7 \
-		src/lib/compiler/lower/tools/Match-Compiler.make6.a7 \
-		src/lib/compiler/lower/tools/parser.make6.a7 \
-		src/lib/compiler/lower/tools/prec-parser.make6.a7 \
-		src/lib/compiler/lower/tools/sml-ast.make6.a7 \
-		src/lib/compiler/lower/tools/source-map.make6.a7 \
-		src/lib/reactive/reactive-lib.make6.a7 \
-		src/lib/unix/unix-lib.make6.a7 \
-		src/lib/x-kit/tut/add/add.make6.a7 \
-		src/lib/x-kit/tut/basicwin/basicwin.make6.a7 \
-		src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.a7 \
-		src/lib/x-kit/tut/bounce/bounce.make6.a7 \
-		src/lib/x-kit/tut/bricks/bricks.make6.a7 \
-		src/lib/x-kit/tut/calc/calc.make6.a7 \
-		src/lib/x-kit/tut/mixer/mixer.make6.a7 \
-		src/lib/x-kit/tut/nbody/nbody.make6.a7 \
-		src/lib/x-kit/tut/plaid/plaid.make6.a7 \
-		src/lib/x-kit/tut/triangle/tri.make6.a7 \
-		src/lib/x-kit/tut/widget/widgets.make6.a7 \
-		src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7
+		src/app/make7/pgraph/pgraph-util.make6.frozen \
+		src/lib/c-glue-lib/c.make6.frozen \
+		src/lib/c-glue-lib/internals/c-internals.make6.frozen \
+		src/lib/c-glue-lib/memory/memory.make6.frozen \
+		src/lib/c-kit/src/c-kit-lib.make6.frozen \
+		src/lib/compiler/lower/make7/ia32-peephole.make6.frozen \
+		src/lib/compiler/lower/make7/peephole.make6.frozen \
+		src/lib/compiler/lower/make7/ra.make6.frozen \
+		src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.frozen \
+		src/lib/compiler/lower/tools/Match-Compiler.make6.frozen \
+		src/lib/compiler/lower/tools/parser.make6.frozen \
+		src/lib/compiler/lower/tools/prec-parser.make6.frozen \
+		src/lib/compiler/lower/tools/sml-ast.make6.frozen \
+		src/lib/compiler/lower/tools/source-map.make6.frozen \
+		src/lib/reactive/reactive-lib.make6.frozen \
+		src/lib/unix/unix-lib.make6.frozen \
+		src/lib/x-kit/tut/add/add.make6.frozen \
+		src/lib/x-kit/tut/basicwin/basicwin.make6.frozen \
+		src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
+		src/lib/x-kit/tut/bounce/bounce.make6.frozen \
+		src/lib/x-kit/tut/bricks/bricks.make6.frozen \
+		src/lib/x-kit/tut/calc/calc.make6.frozen \
+		src/lib/x-kit/tut/mixer/mixer.make6.frozen \
+		src/lib/x-kit/tut/nbody/nbody.make6.frozen \
+		src/lib/x-kit/tut/plaid/plaid.make6.frozen \
+		src/lib/x-kit/tut/triangle/tri.make6.frozen \
+		src/lib/x-kit/tut/widget/widgets.make6.frozen \
+		src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
 
 # Stuff related to src/lib/src/make-gtk-glue:
 
@@ -307,102 +307,102 @@ bin/heap2asm:
 bin/mythryl-gtk-slave:
 	(cd src/runtime/o; make mythryl-gtk-slave)
 
-src/lib/unix/unix-lib.make6.a7:
+src/lib/unix/unix-lib.make6.frozen:
 	@src/lib/unix/build
 
-src/lib/reactive/reactive-lib.make6.a7:
+src/lib/reactive/reactive-lib.make6.frozen:
 	@src/lib/reactive/build
 
-src/app/make7/pgraph/pgraph-util.make6.a7:
+src/app/make7/pgraph/pgraph-util.make6.frozen:
 	@src/app/make7/pgraph/build
 
-src/lib/x-kit/x-kit.make6.a7:
+src/lib/x-kit/x-kit.make6.frozen:
 	@src/lib/x-kit/build
 
-src/lib/compiler/lower/make7/ra.make6.a7:
+src/lib/compiler/lower/make7/ra.make6.frozen:
 	@src/lib/compiler/lower/make7/build-ra
 
-src/lib/compiler/lower/make7/peephole.make6.a7:
+src/lib/compiler/lower/make7/peephole.make6.frozen:
 	@src/lib/compiler/lower/make7/build-peephole
 
-src/lib/compiler/lower/make7/ia32-peephole.make6.a7:
+src/lib/compiler/lower/make7/ia32-peephole.make6.frozen:
 	@src/lib/compiler/lower/make7/build-ia32-peephole
 
-src/lib/c-kit/src/c-kit-lib.make6.a7:
+src/lib/c-kit/src/c-kit-lib.make6.frozen:
 	@src/lib/c-kit/src/build
 
-src/lib/c-glue-lib/memory/memory.make6.a7:
+src/lib/c-glue-lib/memory/memory.make6.frozen:
 	@src/lib/c-glue-lib/memory/build
 
-src/lib/c-glue-lib/internals/c-internals.make6.a7:   src/lib/c-glue-lib/memory/memory.make6.a7
+src/lib/c-glue-lib/internals/c-internals.make6.frozen:   src/lib/c-glue-lib/memory/memory.make6.frozen
 	@src/lib/c-glue-lib/internals/build
 
-src/lib/c-glue-lib/c.make6.a7:   src/lib/c-glue-lib/internals/c-internals.make6.a7
+src/lib/c-glue-lib/c.make6.frozen:   src/lib/c-glue-lib/internals/c-internals.make6.frozen
 	@src/lib/c-glue-lib/build
 
-src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.a7:
+src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.frozen:
 	@src/lib/compiler/lower/tools/build-prettyprinter
 
-src/lib/compiler/lower/tools/source-map.make6.a7:
+src/lib/compiler/lower/tools/source-map.make6.frozen:
 	@src/lib/compiler/lower/tools/build-source-map
 
-src/lib/compiler/lower/tools/sml-ast.make6.a7:
+src/lib/compiler/lower/tools/sml-ast.make6.frozen:
 	@src/lib/compiler/lower/tools/build-sml-ast
 
-src/lib/compiler/lower/tools/prec-parser.make6.a7:
+src/lib/compiler/lower/tools/prec-parser.make6.frozen:
 	@src/lib/compiler/lower/tools/build-prec-parser
 
-src/lib/compiler/lower/tools/parser.make6.a7:
+src/lib/compiler/lower/tools/parser.make6.frozen:
 	@src/lib/compiler/lower/tools/build-parser
 
-src/lib/compiler/lower/tools/Match-Compiler.make6.a7:
+src/lib/compiler/lower/tools/Match-Compiler.make6.frozen:
 	@src/lib/compiler/lower/tools/build-match-compiler
 
-bin/c-glue-maker: src/lib/c-kit/src/c-kit-lib.make6.a7
+bin/c-glue-maker: src/lib/c-kit/src/c-kit-lib.make6.frozen
 	(cd src/app/c-glue-maker; ./build)
 
-src/lib/x-kit/tut/add/add.make6.a7:
+src/lib/x-kit/tut/add/add.make6.frozen:
 	@src/lib/x-kit/tut/add/build-add
 
-src/lib/x-kit/tut/basicwin/basicwin.make6.a7:
+src/lib/x-kit/tut/basicwin/basicwin.make6.frozen:
 	@src/lib/x-kit/tut/basicwin/build-basicwin
 
-src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.a7:
+src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen:
 	@src/lib/x-kit/tut/bitmap-editor/build-bitmap-editor
 
-src/lib/x-kit/tut/bounce/bounce.make6.a7:
+src/lib/x-kit/tut/bounce/bounce.make6.frozen:
 	@src/lib/x-kit/tut/bounce/build-bounce
 
-src/lib/x-kit/tut/bricks/bricks.make6.a7:
+src/lib/x-kit/tut/bricks/bricks.make6.frozen:
 	@src/lib/x-kit/tut/bricks/build-bricks
 
-src/lib/x-kit/tut/calc/calc.make6.a7:
+src/lib/x-kit/tut/calc/calc.make6.frozen:
 	@src/lib/x-kit/tut/calc/build-calc
 
-src/lib/x-kit/tut/mixer/mixer.make6.a7:
+src/lib/x-kit/tut/mixer/mixer.make6.frozen:
 	@src/lib/x-kit/tut/mixer/build-mixer
 
-src/lib/x-kit/tut/nbody/nbody.make6.a7:
+src/lib/x-kit/tut/nbody/nbody.make6.frozen:
 	@src/lib/x-kit/tut/nbody/build-nbody
 
-src/lib/x-kit/tut/plaid/plaid.make6.a7:
+src/lib/x-kit/tut/plaid/plaid.make6.frozen:
 	@src/lib/x-kit/tut/plaid/build-plaid
 
-src/lib/x-kit/tut/triangle/tri.make6.a7:
+src/lib/x-kit/tut/triangle/tri.make6.frozen:
 	@src/lib/x-kit/tut/triangle/build-tri
 
-src/lib/x-kit/tut/widget/widgets.make6.a7:
+src/lib/x-kit/tut/widget/widgets.make6.frozen:
 	@src/lib/x-kit/tut/widget/build-widgets
 
-src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7:
+src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen:
 	@src/lib/x-kit/tut/ml-viewer/build-ml-viewer
 
-bin/nowhere: src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.a7 \
-	     src/lib/compiler/lower/tools/source-map.make6.a7 \
-	     src/lib/compiler/lower/tools/sml-ast.make6.a7 \
-	     src/lib/compiler/lower/tools/prec-parser.make6.a7 \
-	     src/lib/compiler/lower/tools/parser.make6.a7 \
-	     src/lib/compiler/lower/tools/Match-Compiler.make6.a7
+bin/nowhere: src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.frozen \
+	     src/lib/compiler/lower/tools/source-map.make6.frozen \
+	     src/lib/compiler/lower/tools/sml-ast.make6.frozen \
+	     src/lib/compiler/lower/tools/prec-parser.make6.frozen \
+	     src/lib/compiler/lower/tools/parser.make6.frozen \
+	     src/lib/compiler/lower/tools/Match-Compiler.make6.frozen
 	(cd src/lib/compiler/lower/tools/nowhere; ./build)
 
 
@@ -522,7 +522,7 @@ somewhat-clean:	ppless
 	@-rm -rf glue;
 	@-rm -rf .config config.sh UU;
 	@find . -name '*~' -print | xargs rm -f;
-	@find . -type f -name '*.a7' -print | xargs rm -rf;
+	@find . -type f -name '*.frozen' -print | xargs rm -rf;
 	@find . -type f -name '*.o7' -print | xargs rm -rf;
 	@find . -type f -name '*.module-dependencies-summary' -print | xargs rm -rf;
 	@find . -type f -name '*[a-z].version' -print | xargs rm -rf;
@@ -635,43 +635,43 @@ dist-clean:	clean
 	@-rm -f src/runtime/config.log
 	@-rm -f src/runtime/config.status
 
-# 'make rest' builds a lot of .a7 freezefiles (libraries), and consequently doing
+# 'make rest' builds a lot of .frozen freezefiles (libraries), and consequently doing
 # 'make rest' again does nothing even if the source files have been updated, because
 # that is how freezefile semantics are specified.  This is a nuisance during development,
-# so we define this make target to remove those .a7 files, allowing
+# so we define this make target to remove those .frozen files, allowing
 # 'make rest' to recompile all changed (and dependent) sourcefiles:
 #
 rest-a7-clean:
-	@-rm -f src/app/make7/pgraph/pgraph-util.make6.a7
-	@-rm -f src/lib/c-glue-lib/c.make6.a7
-	@-rm -f src/lib/c-glue-lib/internals/c-internals.make6.a7
-	@-rm -f src/lib/c-glue-lib/memory/memory.make6.a7
-	@-rm -f src/lib/c-kit/src/c-kit-lib.make6.a7
-	@-rm -f src/lib/compiler/lower/make7/ia32-peephole.make6.a7
-	@-rm -f src/lib/compiler/lower/make7/peephole.make6.a7
-	@-rm -f src/lib/compiler/lower/make7/ra.make6.a7
-	@-rm -f src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.a7
-	@-rm -f src/lib/compiler/lower/tools/Match-Compiler.make6.a7
-	@-rm -f src/lib/compiler/lower/tools/parser.make6.a7
-	@-rm -f src/lib/compiler/lower/tools/prec-parser.make6.a7
-	@-rm -f src/lib/compiler/lower/tools/sml-ast.make6.a7
-	@-rm -f src/lib/compiler/lower/tools/source-map.make6.a7
-	@-rm -f src/lib/compiler/lower/tools/source-map.make6.a7
-	@-rm -f src/lib/reactive/reactive-lib.make6.a7
-	@-rm -f src/lib/unix/unix-lib.make6.a7
-	@-rm -f src/lib/x-kit/tut/add/add.make6.a7
-	@-rm -f src/lib/x-kit/tut/basicwin/basicwin.make6.a7
-	@-rm -f src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.a7
-	@-rm -f src/lib/x-kit/tut/bounce/bounce.make6.a7
-	@-rm -f src/lib/x-kit/tut/bricks/bricks.make6.a7
-	@-rm -f src/lib/x-kit/tut/calc/calc.make6.a7
-	@-rm -f src/lib/x-kit/tut/mixer/mixer.make6.a7
-	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.a7
-	@-rm -f src/lib/x-kit/tut/nbody/nbody.make6.a7
-	@-rm -f src/lib/x-kit/tut/plaid/plaid.make6.a7
-	@-rm -f src/lib/x-kit/tut/triangle/tri.make6.a7
-	@-rm -f src/lib/x-kit/tut/widget/widgets.make6.a7
-	@-rm -f src/lib/x-kit/xkit.make6.a7
+	@-rm -f src/app/make7/pgraph/pgraph-util.make6.frozen
+	@-rm -f src/lib/c-glue-lib/c.make6.frozen
+	@-rm -f src/lib/c-glue-lib/internals/c-internals.make6.frozen
+	@-rm -f src/lib/c-glue-lib/memory/memory.make6.frozen
+	@-rm -f src/lib/c-kit/src/c-kit-lib.make6.frozen
+	@-rm -f src/lib/compiler/lower/make7/ia32-peephole.make6.frozen
+	@-rm -f src/lib/compiler/lower/make7/peephole.make6.frozen
+	@-rm -f src/lib/compiler/lower/make7/ra.make6.frozen
+	@-rm -f src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.frozen
+	@-rm -f src/lib/compiler/lower/tools/Match-Compiler.make6.frozen
+	@-rm -f src/lib/compiler/lower/tools/parser.make6.frozen
+	@-rm -f src/lib/compiler/lower/tools/prec-parser.make6.frozen
+	@-rm -f src/lib/compiler/lower/tools/sml-ast.make6.frozen
+	@-rm -f src/lib/compiler/lower/tools/source-map.make6.frozen
+	@-rm -f src/lib/compiler/lower/tools/source-map.make6.frozen
+	@-rm -f src/lib/reactive/reactive-lib.make6.frozen
+	@-rm -f src/lib/unix/unix-lib.make6.frozen
+	@-rm -f src/lib/x-kit/tut/add/add.make6.frozen
+	@-rm -f src/lib/x-kit/tut/basicwin/basicwin.make6.frozen
+	@-rm -f src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen
+	@-rm -f src/lib/x-kit/tut/bounce/bounce.make6.frozen
+	@-rm -f src/lib/x-kit/tut/bricks/bricks.make6.frozen
+	@-rm -f src/lib/x-kit/tut/calc/calc.make6.frozen
+	@-rm -f src/lib/x-kit/tut/mixer/mixer.make6.frozen
+	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
+	@-rm -f src/lib/x-kit/tut/nbody/nbody.make6.frozen
+	@-rm -f src/lib/x-kit/tut/plaid/plaid.make6.frozen
+	@-rm -f src/lib/x-kit/tut/triangle/tri.make6.frozen
+	@-rm -f src/lib/x-kit/tut/widget/widgets.make6.frozen
+	@-rm -f src/lib/x-kit/xkit.make6.frozen
 
 # As above, but also remove the stuff generated by doing
 #
@@ -738,16 +738,16 @@ love:
 	@# In fond memory of the TOPS-10 'make' command. :)
 # START: makedepend7 (src/app/debug/coverage.make6:poohbear); DO NOT DELETE!
 poohbear: \
-    src/app/debug/coverage.make6.a7
+    src/app/debug/coverage.make6.frozen
 # END  : makedepend7 (src/app/debug/coverage.make6:poohbear); DO NOT DELETE!
 # START: makedepend7 (src/etc/root.make6:eeyore); DO NOT DELETE!
 eeyore: \
     src/etc/root.make6 \
     /pub/home/cynbe/src/mythryl/mythryl7/mythryl7.110.58/mythryl7.110.58/src/lib/tk/src/sources.make6 \
-    /pub/home/cynbe/src/mythryl/mythryl7/mythryl7.110.58/mythryl7.110.58/src/lib/core/internal/interactive-system.make6.a7 \
-    /pub/home/cynbe/src/mythryl/mythryl7/mythryl7.110.58/mythryl7.110.58/src/lib/core/init/init.cmi.a7
+    /pub/home/cynbe/src/mythryl/mythryl7/mythryl7.110.58/mythryl7.110.58/src/lib/core/internal/interactive-system.make6.frozen \
+    /pub/home/cynbe/src/mythryl/mythryl7/mythryl7.110.58/mythryl7.110.58/src/lib/core/init/init.cmi.frozen
 # END  : makedepend7 (src/etc/root.make6:eeyore); DO NOT DELETE!
 # START: makedepend7 (src/lib/core/internal/srcpath-lib.make6:boojum); DO NOT DELETE!
 boojum: \
-    src/lib/core/internal/srcpath-lib.make6.a7
+    src/lib/core/internal/srcpath-lib.make6.frozen
 # END  : makedepend7 (src/lib/core/internal/srcpath-lib.make6:boojum); DO NOT DELETE!

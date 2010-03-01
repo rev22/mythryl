@@ -4,18 +4,18 @@
 #
 # We will normally be run as a result of a toplevel "make rest".
 #
-# Our main result is the freezefile src/lib/compiler/lower/tools/parser.make6.a7.
+# Our main result is the freezefile src/lib/compiler/lower/tools/parser.make6.frozen.
 
 bin/mythryld <<EOF
     make7::freeze "src/lib/compiler/lower/tools/parser.make6";
 EOF
 
-if   [ -f "src/lib/compiler/lower/tools/parser.make6.a7" ]
+if   [ -f "src/lib/compiler/lower/tools/parser.make6.frozen" ]
 then
-     echo "   .../compiler/lower/tools/build-parser:   Successfully created src/lib/compiler/lower/tools/parser.make6.a7:"
-     echo "   .../compiler/lower/tools/build-parser:   `ls -l src/lib/compiler/lower/tools/parser.make6.a7`"
+     echo "   .../compiler/lower/tools/build-parser:   Successfully created src/lib/compiler/lower/tools/parser.make6.frozen:"
+     echo "   .../compiler/lower/tools/build-parser:   `ls -l src/lib/compiler/lower/tools/parser.make6.frozen`"
 else
-     echo "   .../compiler/lower/tools/build-parser:   Failed to create src/lib/compiler/lower/tools/parser.make6.a7"
+     echo "   .../compiler/lower/tools/build-parser:   Failed to create src/lib/compiler/lower/tools/parser.make6.frozen"
      exit 1
 fi
 

@@ -31,7 +31,7 @@ api Filename_Policy {
     #     one Mythryl sourcefile: They correspond to
     #     unix .o files.
     #
-    # .a7 files (freezefiles -- Mythryl code libraries)
+    # .frozen files (freezefiles -- Mythryl code libraries)
     #     contain all the .o7 files compiled by one
     #     .make6 file:  They correspond to unix .a or .so files.
     #
@@ -47,7 +47,7 @@ api Filename_Policy {
     # .version files are internal bookkeeping devices
     #     of no interest to the application programmer;
     #     they distinguish different versions of the
-    #     same .o7 or .a7 file.
+    #     same .o7 or .frozen file.
     #
     make_oh7_file_name:         Policy -> anchor_dictionary::File -> String;
     make_freezefile_name:     Policy -> anchor_dictionary::File -> String;
@@ -100,7 +100,7 @@ Filename_Policy		# Filename_Policy	is from   src/app/make7/main/filename-policy.
 	    version    => name "." ".version"                      o   anchor_dictionary::os_string,
 	    oh7_file   => name ""  ".o7"                           o   anchor_dictionary::os_string,
 	    index      => name ""  ".INDEX"                        o   anchor_dictionary::os_string,
-	    freeze     => name ""  ".a7"                           o   anchor_dictionary::os_string
+	    freeze     => name ""  ".frozen"                       o   anchor_dictionary::os_string
 	};
 
 

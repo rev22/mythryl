@@ -36,7 +36,7 @@
 # An instance of type o7_exports::Oh7_Exports contains
 # everything which a thawed library is allowed
 # to know about an Iced_O7 -- a .o7 objectfile
-# within a .a7 freezefile.
+# within a .frozen freezefile.
 #
 # In detail, this consists of:
 #

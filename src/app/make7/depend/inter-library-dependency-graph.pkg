@@ -190,7 +190,7 @@ package inter_library_dependency_graph {
 										# symbol_set				is from   src/app/make7/util/symbolset.pkg
     # The library specified by a .make6 file can be
     # "frozen" (via make7::freeze())
-    # to produce a concrete .a7 freezefile physically
+    # to produce a concrete .frozen freezefile physically
     # containing images of all the .o7 files compiled
     # from all the .pkg and .api sourcefiles going into
     # the library.
@@ -201,12 +201,12 @@ package inter_library_dependency_graph {
     #
     # However, the Mythryl library specified by a
     # .make6 file can also be used (linked against)
-    # in the "thawed" state, when no .a7 file exists.
+    # in the "thawed" state, when no .frozen file exists.
     #
     # In this situation, the needed .o7 files are
     # read directly off disk as needed.  This arrangement
     # can be useful during active development, since the
-    # rebuild-the-.a7-file step can be omitted from the
+    # rebuild-the-.frozen-file step can be omitted from the
     # edit-compile-run development cycle, saving some time.
     #
     # Also, in a thawed library, all necessary re/compiles
@@ -228,7 +228,7 @@ package inter_library_dependency_graph {
                      sublibraries:       Sublibrarylist
                    }
 
-    # A "Real" library can be frozen to produce a .a7 freezefile;
+    # A "Real" library can be frozen to produce a .frozen freezefile;
     # a "Virtual" library cannot, it is just a bookkeeping abstraction.
     # Virtual sublibraries are useful for imposing a hierarchical
     # structure upon the mass of .o7 files in a large Real library:

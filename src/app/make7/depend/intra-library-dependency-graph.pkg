@@ -23,7 +23,7 @@
 # a single objectcode file "foo.o7".
 #
 # That .o7 file may then be combined with the other .o7
-# in its library to make up a .a7 freezefile.
+# in its library to make up a .frozen freezefile.
 #
 # We refer to the contents of an .o7 file as an "o7",
 # whether it is actually stored in a .o7 file,
@@ -80,7 +80,7 @@ package intra_library_dependency_graph {
 
 
     # An Iced_O7 is an .o7 packed within
-    # a .a7 library freezefile.  This is
+    # a .frozen library freezefile.  This is
     # a lot like a unix .o file packed
     # within a .a or .so file:
     #

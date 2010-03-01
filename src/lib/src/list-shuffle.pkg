@@ -1,9 +1,19 @@
-## listsort.sml
+## list-shuffle.pkg
+#
+# list-mergesort.pkg hacked to sort pseudo-randomly.
+#
+# 2010-02-28: The algorithm I use here turns out to suck because
+#             the comparison function used does not correspond to
+#             any consistent ordering.  See:
+#                 http://www.robweir.com/blog/2010/02/microsoft-random-browser-ballot.html
+#             Improvements Rob Weir offers include:
+#                 Generating a random number for each list element, then sorting the list per those numbers. O(n*logn)
+#                 Fisher-Yates shuffle (Algorithm P from Knuth Vol 2 S 3.4.2. (O(N)).
+#             XXX BUGGO FIXME.
 
 # Compiled by:
 #     src/lib/src/lib7.make6
 
-# list-mergesort.pkg hacked to sort pseudo-randomly.
 
 
 

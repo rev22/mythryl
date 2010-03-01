@@ -1462,7 +1462,7 @@ herein
 				make_final_freezefile_name  library_path
 			        where
 				    #
-				    fun make_final_freezefile_name  path			# "foo.make6" -> "foo.make6.a7"
+				    fun make_final_freezefile_name  path			# "foo.make6" -> "foo.make6.frozen"
 					=
 					filename_policy::make_freezefile_name
 					    policy
@@ -1474,7 +1474,7 @@ herein
 				make_temporary_freezefile_name  final_freezefile_name
                                 where
 				    #
-				    fun make_temporary_freezefile_name  filename		# "foo.make6.a7" -> "foo.make6.a7.12345.tmp"
+				    fun make_temporary_freezefile_name  filename		# "foo.make6.frozen" -> "foo.make6.frozen.12345.tmp"
 					=
 					{   pid =  winix::process::get_process_id ();
 					    include sfprintf;

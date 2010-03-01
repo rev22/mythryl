@@ -32,25 +32,25 @@ print out.
 
 
 When you're done debugging and want to generate
-a .a7 freezefile for your library, you can do
+a .frozen freezefile for your library, you can do
 
     freeze "hello.make6";;
 
 This will generate a
 
-    hello.make6.a7
+    hello.make6.frozen
 
 freezefile containing all the .o7 object code
 files for your library.  The next time you do
 
     make "hello.make6";;
 
-Mythryl will load your  hello.make6.a7  file without
+Mythryl will load your  hello.make6.frozen  file without
 even looking at any of your .pkg .api .o7 or .make6
 files -- they do not even need to still exist at
 that point.
 
-Removing the   hello.make6.a7   file will return
+Removing the   hello.make6.frozen   file will return
 your library to "thawed" (development mode), where
 doing
 

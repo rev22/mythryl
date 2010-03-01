@@ -4,18 +4,18 @@
 #
 # We will normally be run as a result of a toplevel "make rest".
 #
-# Our main result is the freezefile src/lib/x-kit/tut/triangle/tri.make6.a7.
+# Our main result is the freezefile src/lib/x-kit/tut/triangle/tri.make6.frozen.
 
 bin/mythryld <<EOF
     make7::freeze "src/lib/x-kit/tut/triangle/tri.make6";
 EOF
 
-if   [ -f "src/lib/x-kit/tut/triangle/tri.make6.a7" ]
+if   [ -f "src/lib/x-kit/tut/triangle/tri.make6.frozen" ]
 then
-     echo "    lib/x-kit/tut/triangle/build-tri:   Successfully created: src/lib/x-kit/tut/triangle/tri.make6.a7"
-     echo "    lib/x-kit/tut/triangle/build-tri:   `ls -l src/lib/x-kit/tut/triangle/tri.make6.a7`"
+     echo "    lib/x-kit/tut/triangle/build-tri:   Successfully created: src/lib/x-kit/tut/triangle/tri.make6.frozen"
+     echo "    lib/x-kit/tut/triangle/build-tri:   `ls -l src/lib/x-kit/tut/triangle/tri.make6.frozen`"
 else
-     echo "    lib/x-kit/tut/triangle/build-tri:   Failed to create src/lib/x-kit/tut/triangle/tri.make6.a7"
+     echo "    lib/x-kit/tut/triangle/build-tri:   Failed to create src/lib/x-kit/tut/triangle/tri.make6.frozen"
      exit 1
 fi
 

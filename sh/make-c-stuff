@@ -23,7 +23,7 @@
 #    (The runtime provides compiled Mythryl code with various
 #    low-level services such as garbage collection,
 #    basic Unix I/O, and loading of compiled Mythryl code
-#    from .o7 and .a7 files.)
+#    from .o7 and .frozen files.)
 #
 # o  Unpack the precompiled Mythryl code in seed-libraries.tgz.
 #    (This gets us around the chicken-and-egg problem of how to

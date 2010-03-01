@@ -29,7 +29,7 @@
 #
 #     src/app/make7/make-compiler/make-compiler-g.pkg
 #
-# file, then we recursively build .a7 freezefiles for
+# file, then we recursively build .frozen freezefiles for
 # all real libraries, which of course requires first
 # compiling all their .api and .pkg sourcefiles down
 # to .o7 object-code files.  (In this case, the actual
