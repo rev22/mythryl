@@ -1,3 +1,4 @@
+2010-02-28-16.34.25: For improved clarity, globally changed foo.make6.a7 freezefile names to foo.make6.frozen.
 2010-02-28-15.30.34: Generate .compile.log files instead of .COMPILE_LOG files -- got tired of the shouting.
 2010-02-28-14.42.34: Makefile: Added rest-a7-clean target to remove the freezefiles (.a7 files) created by doing make rest.
 2010-02-26-22.31.12: Backed out all those proactive EINTR retries pending better understanding -- see discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c

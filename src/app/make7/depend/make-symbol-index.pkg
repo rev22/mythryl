@@ -4,9 +4,9 @@
 # Compiled by:
 #     src/app/make7/Make7.make6
 
-# For a given library (makefile), generate a
-# .INDEX file for human consumption which lists
-# for each top-level symbol (which in practice
+# For a given library (foo.make6), generate a
+# foo.make6.index file for human consumption which
+# lists for each top-level symbol (which in practice
 # means for each package or generic) the file
 # which defines it.
 #

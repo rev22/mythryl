@@ -35,7 +35,7 @@ api Filename_Policy {
     #     contain all the .o7 files compiled by one
     #     .make6 file:  They correspond to unix .a or .so files.
     #
-    # .INDEX files summarize what the compiler learned while
+    # .index files summarize what the compiler learned while
     #     compiling one .make6 file.  They are purely for
     #     human consumption.
     #
@@ -49,11 +49,12 @@ api Filename_Policy {
     #     they distinguish different versions of the
     #     same .o7 or .frozen file.
     #
-    make_oh7_file_name:         Policy -> anchor_dictionary::File -> String;
+    make_oh7_file_name:       Policy -> anchor_dictionary::File -> String;
     make_freezefile_name:     Policy -> anchor_dictionary::File -> String;
     make_indexfile_name:      Policy -> anchor_dictionary::File -> String;
-    make_module_dependencies_summaryfile_name:   Policy -> anchor_dictionary::File -> String;
     make_versionfile_name:    Policy -> anchor_dictionary::File -> String;
+    #
+    make_module_dependencies_summaryfile_name:   Policy -> anchor_dictionary::File -> String;
 
     os_kind_to_string:        host_info::Os_Kind -> String;
 
@@ -99,7 +100,7 @@ Filename_Policy		# Filename_Policy	is from   src/app/make7/main/filename-policy.
 	{   depends    => name "." ".module-dependencies-summary"  o   anchor_dictionary::os_string,
 	    version    => name "." ".version"                      o   anchor_dictionary::os_string,
 	    oh7_file   => name ""  ".o7"                           o   anchor_dictionary::os_string,
-	    index      => name ""  ".INDEX"                        o   anchor_dictionary::os_string,
+	    index      => name ""  ".index"                        o   anchor_dictionary::os_string,
 	    freeze     => name ""  ".frozen"                       o   anchor_dictionary::os_string
 	};
 
@@ -108,14 +109,14 @@ Filename_Policy		# Filename_Policy	is from   src/app/make7/main/filename-policy.
 
 							# anchor_dictionary	is from   src/app/make7/paths/anchor-dictionary.pkg
 							# winix			is from   src/lib/std/winix.pkg
-							# winix_path_g	def in    src/lib/std/src/winix/winix-path-g.pkg
+							# winix_path_g		def in    src/lib/std/src/winix/winix-path-g.pkg
 							# version		is from   src/app/make7/semant/version.pkg
 
-    fun make_oh7_file_name        (p: Policy) path =   p.oh7_file  path;
-    fun make_module_dependencies_summaryfile_name  (p: Policy) path =   p.depends   path;
+    fun make_oh7_file_name      (p: Policy) path =   p.oh7_file  path;
     fun make_versionfile_name   (p: Policy) path =   p.version path;
     fun make_indexfile_name     (p: Policy) path =   p.index   path;
     fun make_freezefile_name    (p: Policy) path =   p.freeze  path;
+    fun make_module_dependencies_summaryfile_name  (p: Policy) path =   p.depends   path;
 
 };
 
