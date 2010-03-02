@@ -78,15 +78,15 @@ herein
 		size_in_pixels:		g::Size,		# Width and height in pixels.
 		size_in_mm:		g::Size,		# Width and height in millimeters.
 
-		root_visual:		xt::Visual_Depth,
+		root_visual:		xt::Visual,
 		backing_store:		xt::Backing_Store,
 
-		visualdepths:		List( xt::Visual_Depth ),
+		visuals:		List( xt::Visual ),
 
 		save_unders:		Bool,
 
-		min_installed_cmaps:  Int,
-		max_installed_cmaps:  Int
+		min_installed_cmaps:    Int,
+		max_installed_cmaps:    Int
 	      };
 
 	# Return index of first bit set (starting at 1),
@@ -495,7 +495,7 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 	      backing_store,
               save_unders,
               root_depth,
-              visualdepths
+              visuals
 	    }
 
 	    =
@@ -504,11 +504,11 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 			=>
 			xgripe::xerror  "cannot find root visual";
 
-		    get_root_visual ((xt::DEPTH _) ! r)
+		    get_root_visual ((xt::NO_VISUAL_FOR_THIS_DEPTH _) ! r)
 			=>
 			get_root_visual r;
 
-		    get_root_visual ((v as xt::VISUAL_DEPTH { id, depth, ... } ) ! r)
+		    get_root_visual ((v as xt::VISUAL { id, depth, ... } ) ! r)
 			=>
 			if (id    == root_visualid   and
 			    depth == root_depth)
@@ -534,10 +534,10 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 		    min_installed_cmaps => min,
 		    max_installed_cmaps => max,
 
-		    root_visual => get_root_visual visualdepths,
+		    root_visual =>  get_root_visual  visuals,
 		    backing_store,
 		    save_unders,
-		    visualdepths
+		    visuals
 		  };
 	    };				# fun make_screen 
 
@@ -654,12 +654,12 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 		socket_closer_imp::forget_xsocket xsocket;
 	    };
 
-	fun depth_of_visual (xt::DEPTH d) => d;
-	    depth_of_visual (xt::VISUAL_DEPTH { depth, ... } ) => depth;
+	fun depth_of_visual (xt::NO_VISUAL_FOR_THIS_DEPTH d) =>  d;
+	    depth_of_visual (xt::VISUAL { depth, ... } )     =>  depth;
 	end;
 
-	fun display_class_of_visual (xt::DEPTH _) => NULL;
-	    display_class_of_visual (xt::VISUAL_DEPTH { ilk, ... } ) => THE ilk;
+	fun display_class_of_visual (xt::NO_VISUAL_FOR_THIS_DEPTH _) =>  NULL;
+	    display_class_of_visual (xt::VISUAL { ilk, ... } )       =>  THE ilk;
 	end;
 
     };			# package xdisplay 

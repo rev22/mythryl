@@ -9,7 +9,7 @@
 # module implements mechanisms to protect against this problem.
 
 
-package Syscall:  api
+package syscall:  api
 
     my isIntr:  winix::System_Error -> Bool
 

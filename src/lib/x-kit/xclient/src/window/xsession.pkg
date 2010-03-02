@@ -268,7 +268,7 @@ herein
 			sel_event_slot  => selection_slot
 		      };
 
-		fun make_screen_info (xscreen as dy::XSCREEN { root_window_id, root_visual, visualdepths, ... } )
+		fun make_screen_info (xscreen as dy::XSCREEN { root_window_id, root_visual, visuals, ... } )
 		    =
 		    {   fun make_screen_depth (depth, gc_imp)
 			    =
@@ -344,8 +344,8 @@ herein
 				gci::make_graphics_context_imp  (display, root_window_id)
 			      );
 
-			imps = make_gc_imps (visualdepths, [root_imps]);
-			imps = make_gc_imps([xt::DEPTH 1], imps);
+			imps = make_gc_imps (visuals, [root_imps]);
+			imps = make_gc_imps([xt::NO_VISUAL_FOR_THIS_DEPTH 1], imps);
 
 			SCREEN_INFO {
 			    xscreen,

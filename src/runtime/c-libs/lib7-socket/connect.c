@@ -29,6 +29,8 @@
 
 #include "print-if.h"
 
+
+
 /*
 ###        "How often, or on what system, the Thought Police
 ###         plugged in any individual wire was guesswork.
@@ -41,6 +43,8 @@
 ###
 ###                             -- George Orwell, 1984
  */
+
+
 
 /* _lib7_Sock_connect: (Socket, Address) -> Void
  *
@@ -143,6 +147,10 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
  * John H Reppy tells me in email that not retrying on EINTR
  * was a deliberate CML design decision, in part to maintain
  * responsiveness to ^C.
+ *
+ * The mooted retry logic appears to be that in:
+ *
+ *     src/lib/std/src/threadkit/unix/retry-syscall-in-eintr.pkg
  *
  * I don't understand the relevant code, but it seems to me
  * this implies that the system must be spending significant

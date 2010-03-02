@@ -109,10 +109,10 @@ herein
 
 		root_input_mask:  xt::Event_Mask,			# Initial root input mask.
 
-		root_visual:      xt::Visual_Depth,
+		root_visual:      xt::Visual,
 		backing_store:    xt::Backing_Store,
 
-		visualdepths:     List( xt::Visual_Depth ),
+		visuals:          List( xt::Visual ),
 		save_unders:      Bool,
 
 		size_in_pixels:   g::Size,				# Width and height in pixels.
@@ -141,8 +141,8 @@ herein
 
 	close_display:  Xdisplay -> Void;
 
-	depth_of_visual:        xt::Visual_Depth -> Int;
-	display_class_of_visual:  xt::Visual_Depth -> Null_Or( xt::Display_Class );
+	depth_of_visual:          xt::Visual -> Int;
+	display_class_of_visual:  xt::Visual -> Null_Or( xt::Display_Class );
 
     };			# api Xdisplay 
 

@@ -78,15 +78,15 @@ herein
 		    pixmap_formats_to_string (formats, pixmap_format_to_string format ! result_so_far);
 	    end;
 
-	    fun visual_depth_to_string  (v: xt::Visual_Depth)
+	    fun visual_to_string  (v: xt::Visual)
 		=
 		case v
 		    #
-		    xt::DEPTH i
+		    xt::NO_VISUAL_FOR_THIS_DEPTH i
 			=>
 			sprintf "%d (no visuals for this depth)" i;
 
-		    xt::VISUAL_DEPTH v
+		    xt::VISUAL v
 			=>
 			{   result
 				=
@@ -108,13 +108,13 @@ herein
 			};
 		esac;
 
-	    fun visual_depths_to_string ([], result_so_far)
+	    fun visuals_to_string ([], result_so_far)
 		    =>
 		    cat (reverse result_so_far);
 
-	        visual_depths_to_string (depth ! depths, result_so_far)
+	        visuals_to_string (depth ! depths, result_so_far)
 		    =>
-		    visual_depths_to_string (depths, visual_depth_to_string depth ! result_so_far);
+		    visuals_to_string (depths, visual_to_string depth ! result_so_far);
 	    end;
 
 	    fun screen_to_string  (s: xt::Xserver_Screen)
@@ -141,7 +141,7 @@ herein
 			  sprintf  "input_masks d=%d"      (event_mask_to_int s.input_masks),
 
 			           "Visual depths:",
-			  visual_depths_to_string          (s.visualdepths, [])
+			  visuals_to_string          (s.visuals, [])
 			];
 		    
 		    result =  "" ! reverse result;					# Restore natural order and prepend a blank linke.

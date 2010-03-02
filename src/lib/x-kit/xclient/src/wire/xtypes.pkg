@@ -466,13 +466,14 @@ herein
 	  | DIRECT_COLOR
 	  ;
 
-	# This is a merging of the protocol types of depth and visuals 
+	# Our type "Visual" here is actually a merging of
+        # the X protocol types of "depth" and "visual":
 	#
-	Visual_Depth
+	Visual
 	  #
-	  = DEPTH  Int				# A depth with no visuals.
+	  = NO_VISUAL_FOR_THIS_DEPTH  Int		# A depth with no visuals.
 	  #
-	  | VISUAL_DEPTH
+	  | VISUAL
 	      {
 		id:            Visual_Id,		# The associated visual id.
 		depth:         Int,			# The depth.
@@ -526,7 +527,7 @@ herein
 	      root_window:      Xid,
 	      #
 	      save_unders:      Bool,
-	      visualdepths:     List( Visual_Depth )
+	      visuals:          List( Visual )
 	    };
 
 	Xserver_Info

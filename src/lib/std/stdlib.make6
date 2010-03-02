@@ -610,7 +610,7 @@ LIBRARY_EXPORTS
 	pkg threadkit_winix_io
 	pkg threadkit_posix_binary_primitive_io
 	pkg threadkit_binary_primitive_io
-	pkg syscall
+	pkg retry_syscall_on_eintr
 	generic threadkit_primitive_io_g
 
 	api Threadkit_Winix_Io
@@ -1025,7 +1025,7 @@ LIBRARY_COMPONENTS
 	$ROOT/src/lib/std/src/io/threadkit-binary-primitive-io.pkg
 	$ROOT/src/lib/std/src/unix/threadkit-posix-binary-primitive-io.pkg
 	$ROOT/src/lib/std/src/io/threadkit-primitive-io-g.pkg
-	$ROOT/src/lib/std/src/threadkit/unix/unix-syscall.pkg
+	$ROOT/src/lib/std/src/threadkit/unix/retry-syscall-on-eintr.pkg
 
 	$ROOT/src/lib/std/src/io/threadkit-pure-io.api
 	$ROOT/src/lib/std/src/io/threadkit-binary-io.api

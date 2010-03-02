@@ -23,13 +23,14 @@ stipulate
     package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package au  =  authentication;				# authentication		is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
+    package v2w =  value_to_wire;				# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     #
     tracefile   =  "xclient-unit-test-trace.log";
 herein
 
     package xclient_unit_test {
 
-	my name = "src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg";
+	name = "src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg";
 
 	trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 
@@ -37,17 +38,39 @@ herein
 	    =
 	    time::from_milliseconds 20;
 
-	fun do_window_checks  (xdisplay:  dy::Xdisplay)
+	fun exercise_window_stuff  (xdisplay:  dy::Xdisplay)
 	    =
 	    {   xdisplay -> dy::XDISPLAY { default_screen, screens, next_xid, ... };
 
 		screen =  list::nth  (screens, default_screen);
 
-		screen -> dy::XSCREEN { root_window_id => parent_id, ... };
+		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, ... };
 
 		window_id =  next_xid ();
 
-#	create_window
+		case root_visual
+		    #
+		    xt::NO_VISUAL_FOR_THIS_DEPTH int  => print "root_visual is NO_VISUAL_FOR_THIS_DEPTH?!\n";
+		    xt::VISUAL _ => print "root_visual is VISUAL as expected.\n";
+		esac;
+
+#		request
+#		    =
+#		    v2w::encode_create_window
+#			  {
+#			    window => window_id,
+#			    parent => parent_id,
+#			    input_only => THE FALSE,
+#			    depth,
+#			    visual,
+#			    geometry,
+#			    vals => do_window_val_list attributes
+#			  };
+
+
+#		window
+#		    =
+#	            create_window
 #	    :
 #	    xok::Xsocket
 #	    ->
@@ -110,7 +133,7 @@ herein
 
 			    trace .{ sprintf "xclient_unit_test: Done calling dy::open_xdisplay"; };
 
-			    do_window_checks  xdisplay;
+			    exercise_window_stuff  xdisplay;
 
 #                           do_it (make_root_window NULL);
 

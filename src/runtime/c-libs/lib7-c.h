@@ -44,20 +44,26 @@
 					/* RaiseSysError	is in     src/runtime/c-libs/unix-raise-syserr.c
 					*/
 
+/* Snarfed this trick from
+ *     http://www.decompile.com/cpp/faq/file_and_line_error_string.htm
+ */
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 #ifdef SYSCALL_RET_ERR
 
 lib7_val_t RaiseSysError (lib7_state_t *lib7_state, int err, const char *alt_msg, const char *at);
-#define RAISE_SYSERR(lib7_state, status,line)	\
-	RaiseSysError((lib7_state), (status), NULL, "<" __FILE__ ":" #line ">")
+#define RAISE_SYSERR(lib7_state, status,line)				\
+	RaiseSysError((lib7_state), (status), NULL, "<" __FILE__ ":" TOSTRING(__LINE__) ">")
 #define RAISE_ERROR(lib7_state, msg,line)	\
-	RaiseSysError((lib7_state), 0, (msg), "<" __FILE__  ":" #line ">")
+	RaiseSysError((lib7_state), 0, (msg), "<" __FILE__  ":" TOSTRING(__LINE__) ">")
 
 #else
 lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *alt_msg, const char *at);
 #define RAISE_SYSERR(lib7_state, status,line)	\
-	RaiseSysError((lib7_state), NULL, "<" __FILE__  ":" #line ">")
+	RaiseSysError((lib7_state), NULL, "<" __FILE__  ":" TOSTRING(__LINE__) ">")
 #define RAISE_ERROR(lib7_state, msg,line)	\
-	RaiseSysError((lib7_state), (msg), "<" __FILE__  ":" #line ">")
+	RaiseSysError((lib7_state), (msg), "<" __FILE__  ":" TOSTRING(__LINE__) ">")
 
 #endif
 
