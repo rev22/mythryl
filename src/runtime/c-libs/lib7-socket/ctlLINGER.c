@@ -61,7 +61,7 @@ _lib7_Sock_ctlLINGER (lib7_state_t *lib7_state, lib7_val_t arg)
     }
 
     if (status < 0)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
     else if (optVal.l_onoff == 0)
 	return OPTION_NONE;
     else {

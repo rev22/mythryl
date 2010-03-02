@@ -26,7 +26,7 @@ lib7_val_t _lib7_Sock_getTYPE (lib7_state_t *lib7_state, lib7_val_t arg)
     status = getsockopt (socket, SOL_SOCKET, SO_TYPE, (sockoptval_t)&flag, &optSz);
 
     if (status < 0)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
     else
 	return LIB7_SysConst (lib7_state, &_Sock_Type, flag);
 

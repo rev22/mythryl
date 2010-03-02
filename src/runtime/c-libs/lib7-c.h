@@ -4,13 +4,13 @@
  * a number of macros for checking return results and for raising the SYSTEM_ERROR
  * exception:
  *
- *	RAISE_SYSERR(lib7_state, status, line)
+ *	RAISE_SYSERR(lib7_state, status)
  *          #
  *	    Raise the SYSTEM_ERROR exception using the
  *	    appropriate system error message (on
  *	    some systems, status may be an error code).
  *
- *	RAISE_ERROR(lib7_state, msg, line)
+ *	RAISE_ERROR(lib7_state, msg)
  *          #
  *          Raise the SYSTEM_ERROR exception using the
  *	    given message (with NULL for the system
@@ -53,16 +53,16 @@
 #ifdef SYSCALL_RET_ERR
 
 lib7_val_t RaiseSysError (lib7_state_t *lib7_state, int err, const char *alt_msg, const char *at);
-#define RAISE_SYSERR(lib7_state, status,line)				\
+#define RAISE_SYSERR(lib7_state, status)				\
 	RaiseSysError((lib7_state), (status), NULL, "<" __FILE__ ":" TOSTRING(__LINE__) ">")
-#define RAISE_ERROR(lib7_state, msg,line)	\
+#define RAISE_ERROR(lib7_state, msg)	\
 	RaiseSysError((lib7_state), 0, (msg), "<" __FILE__  ":" TOSTRING(__LINE__) ">")
 
 #else
 lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *alt_msg, const char *at);
-#define RAISE_SYSERR(lib7_state, status,line)	\
+#define RAISE_SYSERR(lib7_state, status)	\
 	RaiseSysError((lib7_state), NULL, "<" __FILE__  ":" TOSTRING(__LINE__) ">")
-#define RAISE_ERROR(lib7_state, msg,line)	\
+#define RAISE_ERROR(lib7_state, msg)	\
 	RaiseSysError((lib7_state), (msg), "<" __FILE__  ":" TOSTRING(__LINE__) ">")
 
 #endif
@@ -72,7 +72,7 @@ lib7_val_t RaiseSysError (lib7_state_t *lib7_state, const char *alt_msg, const c
  */
 #define CHECK_RETURN_VAL(lib7_state,status,val)	{			\
 	if ((status) < 0)						\
-	    return RAISE_SYSERR(lib7_state, status,__LINE__);		\
+	    return RAISE_SYSERR(lib7_state, status);			\
 	else								\
 	    return (val);						\
     }

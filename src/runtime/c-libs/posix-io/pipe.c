@@ -24,7 +24,7 @@ lib7_val_t _lib7_P_IO_pipe (lib7_state_t *lib7_state, lib7_val_t arg)
 
     if (pipe(fds) == -1) {
 
-        return RAISE_SYSERR(lib7_state, -1, __LINE__);
+        return RAISE_SYSERR(lib7_state, -1);
 
     } else {
 

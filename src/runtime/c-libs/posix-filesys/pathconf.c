@@ -57,7 +57,7 @@ static lib7_val_t mkValue (lib7_state_t *lib7_state, int val)
     } else if (errno == 0) {
 	chunk = OPTION_NONE;
     } else {
-        chunk = RAISE_SYSERR(lib7_state, val, __LINE__);
+        chunk = RAISE_SYSERR(lib7_state, val);
     }
 
     return chunk;
@@ -83,7 +83,7 @@ lib7_val_t _lib7_P_FileSys_pathconf (lib7_state_t *lib7_state, lib7_val_t arg)
 
     if (!attribute) {
 	errno = EINVAL;
-	return RAISE_SYSERR(lib7_state, -1, __LINE__);
+	return RAISE_SYSERR(lib7_state, -1);
     }
  
     errno = 0;
@@ -114,7 +114,7 @@ lib7_val_t _lib7_P_FileSys_fpathconf (lib7_state_t *lib7_state, lib7_val_t arg)
 
     if (!attribute) {
 	errno = EINVAL;
-	return RAISE_SYSERR(lib7_state, -1, __LINE__);
+	return RAISE_SYSERR(lib7_state, -1);
     }
  
     errno = 0;

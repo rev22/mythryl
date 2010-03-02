@@ -53,7 +53,7 @@ lib7_val_t _lib7_Sock_recvbuffrom (lib7_state_t *lib7_state, lib7_val_t arg)
 /*  } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     if (n < 0)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
     else {
 	lib7_val_t	data = LIB7_CData (lib7_state, addrBuf, addrLen);
 	lib7_val_t	addr, res;

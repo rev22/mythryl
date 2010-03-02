@@ -39,7 +39,7 @@ static fe_rnd_mode_t ModeMap[4] = {
 lib7_val_t _lib7_Math_ctlrndmode (lib7_state_t *lib7_state, lib7_val_t arg)
 {
 #ifdef NO_ROUNDING_MODE_CTL
-  return RAISE_ERROR(lib7_state, "Rounding mode control not supported", __LINE__);
+  return RAISE_ERROR(lib7_state, "Rounding mode control not supported");
 
 #else
     if (arg == OPTION_NONE) {

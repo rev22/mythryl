@@ -62,7 +62,7 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
     hexdump_if( "recv.c/after: Received data: ", PTR_LIB7toC(unsigned char, vec), n );
 
     if (n < 0)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
     else if (n == 0)
 	return LIB7_string0;
 

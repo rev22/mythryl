@@ -37,7 +37,7 @@ _lib7_Sock_getpeername (lib7_state_t *lib7_state, lib7_val_t arg)
 
     if (getpeername (INT_LIB7toC(arg), (struct sockaddr *)addr, &addrLen) < 0) {
 
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
 
     } else {
 

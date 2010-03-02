@@ -45,7 +45,7 @@ lib7_val_t _lib7_P_IO_read (lib7_state_t *lib7_state, lib7_val_t arg)
 /*      } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
 	if (n < 0)
-	    return RAISE_SYSERR(lib7_state, n, __LINE__);
+	    return RAISE_SYSERR(lib7_state, n);
 	else if (n == 0)
 	    return LIB7_string0;
 

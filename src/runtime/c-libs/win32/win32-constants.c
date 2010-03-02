@@ -134,9 +134,9 @@ lib7_val_t _lib7_win32_get_const(lib7_state_t *lib7_state, lib7_val_t arg)
       WORD_ALLOC(lib7_state,v,res->data);
       return v;
     }
-    return RAISE_ERROR(lib7_state,"win32_cconst: unknown constant", __LINE__);
+    return RAISE_ERROR(lib7_state,"win32_cconst: unknown constant");
   }
-  return RAISE_ERROR(lib7_state,"win32_cconst: unknown constant ilk", __LINE__);
+  return RAISE_ERROR(lib7_state,"win32_cconst: unknown constant ilk");
 }
 
 /* end of win32-constants.c */

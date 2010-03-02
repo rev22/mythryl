@@ -41,7 +41,7 @@ lib7_val_t _lib7_Sock_setNBIO (lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef USE_FCNTL_FOR_NBIO
     n = fcntl(F_GETFL, socket);
     if (n < 0)
-        return RAISE_SYSERR (lib7_state, n, __LINE__);
+        return RAISE_SYSERR (lib7_state, n);
     if (REC_SEL(arg, 1) == LIB7_true)
 	n |= O_NONBLOCK;
     else

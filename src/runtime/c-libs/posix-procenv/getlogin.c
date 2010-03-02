@@ -23,7 +23,7 @@ lib7_val_t   _lib7_P_ProcEnv_getlogin   (lib7_state_t *lib7_state, lib7_val_t ar
     char* name = getlogin ();
 
     if (name == NULL)
-        return RAISE_ERROR(lib7_state, "no login name", __LINE__);
+        return RAISE_ERROR(lib7_state, "no login name");
   
     return LIB7_CString (lib7_state, name);
 }

@@ -37,7 +37,7 @@ lib7_val_t _lib7_P_IO_lseek_64 (lib7_state_t *lib7_state, lib7_val_t arg)
     pos = lseek(fd, offset, whence);
 
     if (pos < 0)
-        RAISE_SYSERR (lib7_state, (int)pos, __LINE__);
+        RAISE_SYSERR (lib7_state, (int)pos);
 
     if (sizeof(off_t) > 4) {
       WORD_ALLOC (lib7_state, poshi, (Unsigned32_t) (pos >> 32));

@@ -24,7 +24,7 @@ lib7_val_t   _lib7_runtime_blast_in   (   lib7_state_t*   lib7_state,
 
     lib7_val_t chunk = BlastIn (lib7_state, PTR_LIB7toC(Byte_t, arg), CHUNK_LEN(arg), &seen_error);
 
-    if (seen_error)  	return RAISE_ERROR( lib7_state, "blast_in", __LINE__ );
+    if (seen_error)  	return RAISE_ERROR( lib7_state, "blast_in");
     else         	return chunk;
 }
 

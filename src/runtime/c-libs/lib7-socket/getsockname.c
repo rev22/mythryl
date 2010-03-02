@@ -37,7 +37,7 @@ lib7_val_t _lib7_Sock_getsockname (lib7_state_t *lib7_state, lib7_val_t arg)
 
     if (status == -1) {
 
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
 
     } else {
 	lib7_val_t	data = LIB7_CData (lib7_state, addrBuf, addrLen);

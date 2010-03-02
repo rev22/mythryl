@@ -40,7 +40,7 @@ lib7_val_t _lib7_P_Process_osval (lib7_state_t *lib7_state, lib7_val_t arg)
     name_val_t *result = _lib7_posix_nv_lookup (STR_LIB7toC(arg), values, NUMELMS);
 
     if (result)   return INT_CtoLib7(result->val);
-    else          return RAISE_ERROR(lib7_state, "system constant not defined", __LINE__);
+    else          return RAISE_ERROR(lib7_state, "system constant not defined");
 }
 
 

@@ -46,25 +46,25 @@ lib7_val_t _lib7_P_FileSys_getcwd (lib7_state_t *lib7_state, lib7_val_t arg)
 	return LIB7_CString (lib7_state, path);
 
     if (errno != ERANGE)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
 
     buflen = 2*MAXPATHLEN;
     buf = MALLOC(buflen);
     if (buf == NULL)
-      return RAISE_ERROR(lib7_state, "no malloc memory", __LINE__);
+      return RAISE_ERROR(lib7_state, "no malloc memory");
 
     while ((status = getcwd(buf, buflen)) == NULL) {
         FREE (buf);
         if (errno != ERANGE) {
 
-	    return RAISE_SYSERR(lib7_state, status, __LINE__);
+	    return RAISE_SYSERR(lib7_state, status);
 
         } else {
 
             buflen = 2*buflen;
             buf = MALLOC(buflen);
             if (buf == NULL)
-	      return RAISE_ERROR(lib7_state, "no malloc memory", __LINE__);
+	      return RAISE_ERROR(lib7_state, "no malloc memory");
         }
     }
       

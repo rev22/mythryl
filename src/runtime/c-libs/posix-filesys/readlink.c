@@ -55,7 +55,7 @@ lib7_val_t _lib7_P_FileSys_readlink (lib7_state_t *lib7_state, lib7_val_t arg)
     len = readlink(path, buf, MAXPATHLEN);
 
     if (len < 0)
-        return RAISE_SYSERR(lib7_state, len, __LINE__);
+        return RAISE_SYSERR(lib7_state, len);
     else if (len < MAXPATHLEN) {
 	buf[len] = '\0';
 	return LIB7_CString (lib7_state, buf);
@@ -70,20 +70,20 @@ lib7_val_t _lib7_P_FileSys_readlink (lib7_state_t *lib7_state, lib7_val_t arg)
       /* Determine how big the link text is and allocate a buffer */
 	res = lstat (path, &sbuf);
 	if (res < 0)
-  	    return RAISE_SYSERR(lib7_state, res, __LINE__);
+  	    return RAISE_SYSERR(lib7_state, res);
 	nlen = sbuf.st_size + 1;
 	nbuf = MALLOC(nlen);
 	if (nbuf == 0)
-	  return RAISE_ERROR(lib7_state, "out of malloc memory", __LINE__);
+	  return RAISE_ERROR(lib7_state, "out of malloc memory");
 
         /* Try the readlink again. Give up on error or if len is still bigger
          * than the buffer size.
          */
 	len = readlink(path, buf, len);
 	if (len < 0)
-	    return RAISE_SYSERR(lib7_state, len, __LINE__);
+	    return RAISE_SYSERR(lib7_state, len);
 	else if (len >= nlen)
-	  return RAISE_ERROR(lib7_state, "readlink failure", __LINE__);
+	  return RAISE_ERROR(lib7_state, "readlink failure");
 
 	nbuf[len] = '\0';
 	chunk = LIB7_CString (lib7_state, nbuf);

@@ -39,7 +39,7 @@ lib7_val_t _lib7_Prof_setptimer (lib7_state_t *lib7_state, lib7_val_t arg)
 	new_itv.it_value.tv_usec	= 0;
     }
     else if (ProfCntArray == LIB7_void) {
-        return RAISE_ERROR(lib7_state, "no count array set", __LINE__ );
+        return RAISE_ERROR(lib7_state, "no count array set");
     }
     else {
 	new_itv.it_interval.tv_sec	=
@@ -53,7 +53,7 @@ lib7_val_t _lib7_Prof_setptimer (lib7_state_t *lib7_state, lib7_val_t arg)
     CHECK_RETURN_UNIT(lib7_state, status);
 
 #else
-    return RAISE_ERROR(lib7_state, "time profiling not supported", __LINE__);
+    return RAISE_ERROR(lib7_state, "time profiling not supported");
 #endif
 
 } /* end of _lib7_Prof_setptimer */

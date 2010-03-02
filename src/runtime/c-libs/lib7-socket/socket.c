@@ -159,7 +159,7 @@ lib7_val_t _lib7_Sock_socket (lib7_state_t *lib7_state, lib7_val_t arg)
     print_if( "socket.c/bot: socket d=%d errno d=%d\n", sock, errno );
 
 
-    if (sock < 0)   return RAISE_SYSERR(lib7_state, status, __LINE__);	/* RAISE_SYSERR is defined in src/runtime/c-libs/lib7-c.h */
+    if (sock < 0)   return RAISE_SYSERR(lib7_state, status);	/* RAISE_SYSERR is defined in src/runtime/c-libs/lib7-c.h */
     else	    return INT_CtoLib7(sock);
 }
 

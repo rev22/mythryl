@@ -44,7 +44,7 @@ lib7_val_t _lib7_Date_strftime (lib7_state_t *lib7_state, lib7_val_t arg)
 	strncpy (STR_LIB7toC(result), buf, size);
 	return result;
     } else {
-        return RAISE_ERROR(lib7_state, "strftime failed",__LINE__);
+        return RAISE_ERROR(lib7_state, "strftime failed");
     }
 }
 

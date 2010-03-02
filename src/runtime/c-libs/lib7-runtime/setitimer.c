@@ -70,21 +70,21 @@ lib7_val_t   _lib7_runtime_setitimer   (   lib7_state_t*   lib7_state,
     if (arg == OPTION_NONE) {
 
 	if (win32StopTimer())	  return LIB7_void;
-	else                      return RAISE_ERROR( lib7_state, "win32 setitimer: couldn't stop timer", __LINE__);
+	else                      return RAISE_ERROR( lib7_state, "win32 setitimer: couldn't stop timer");
 
     } else {
 
 	lib7_val_t	tmp = OPTION_get(arg);
 	int		mSecs = REC_SELINT32(tmp,0) * 1000 + REC_SELINT(tmp,1) / 1000;
 
-	if (mSecs <= 0)   return RAISE_ERROR( lib7_state, "win32 setitimer: invalid resolution", __LINE__);
+	if (mSecs <= 0)   return RAISE_ERROR( lib7_state, "win32 setitimer: invalid resolution");
 	else {
 	    if (win32StartTimer(mSecs))	   return LIB7_void;
-	    else                           return RAISE_ERROR( lib7_state, "win32 setitimer: couldn't start timer", __LINE__);
+	    else                           return RAISE_ERROR( lib7_state, "win32 setitimer: couldn't start timer");
 	}
     }
 #else
-    return RAISE_ERROR( lib7_state, "setitimer not supported", __LINE__);
+    return RAISE_ERROR( lib7_state, "setitimer not supported");
 #endif
 
 }

@@ -25,7 +25,7 @@ lib7_val_t _lib7_P_ProcEnv_times (lib7_state_t *lib7_state, lib7_val_t arg)
     t = times (&ts);
 
     if (t == -1)
-        return RAISE_SYSERR(lib7_state, -1, __LINE__);
+        return RAISE_SYSERR(lib7_state, -1);
 
     INT32_ALLOC(lib7_state, e, t);
     INT32_ALLOC(lib7_state, u, ts.tms_utime);

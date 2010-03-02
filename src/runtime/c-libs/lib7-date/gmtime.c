@@ -23,7 +23,7 @@ lib7_val_t _lib7_Date_gmtime (lib7_state_t *lib7_state, lib7_val_t arg)
 
     tm = gmtime (&t);
 
-    if (tm == NULL) return RAISE_SYSERR(lib7_state,0, __LINE__);
+    if (tm == NULL) return RAISE_SYSERR(lib7_state,0);
 
     LIB7_AllocWrite(lib7_state, 0, MAKE_DESC(DTAG_record, 9));
     LIB7_AllocWrite(lib7_state, 1, INT_CtoLib7(tm->tm_sec));

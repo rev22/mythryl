@@ -34,7 +34,7 @@ _lib7_OpenCV_cvLoadImage (lib7_state_t *lib7_state, lib7_val_t arg)
     char*      filename  =  STR_LIB7toC( arg );
     IplImage*  ipl_image =  cvLoadImage( filename, CV_LOAD_IMAGE_UNCHANGED );
 
-    if (!ipl_image)   RAISE_ERROR(lib7_state, "cvLoadImage returned NULL", __LINE__);
+    if (!ipl_image)   RAISE_ERROR(lib7_state, "cvLoadImage returned NULL");
 
     {   
 	/* Copy image into heap, so that it can be
@@ -65,7 +65,7 @@ _lib7_OpenCV_cvLoadImage (lib7_state_t *lib7_state, lib7_val_t arg)
 #else
 
     extern char* no_opencv_support_in_runtime;
-    return RAISE_ERROR(lib7_state, no_opencv_support_in_runtime, __LINE__);
+    return RAISE_ERROR(lib7_state, no_opencv_support_in_runtime);
 
 #endif
 }

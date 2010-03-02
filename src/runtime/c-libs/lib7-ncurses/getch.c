@@ -30,7 +30,7 @@ _lib7_Ncurses_getch (lib7_state_t *lib7_state, lib7_val_t arg)
 	return result;
 #else
     extern char* no_ncurses_support_in_runtime;
-    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime, __LINE__);
+    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime);
 #endif
 }
 

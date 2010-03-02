@@ -136,7 +136,7 @@ static lib7_val_t LIB7_Poll (lib7_state_t *lib7_state, lib7_val_t poll_list, str
 
 	if (status < 0) {
 	    FREE(fds);
-	    return RAISE_SYSERR(lib7_state, status,__LINE__);
+	    return RAISE_SYSERR(lib7_state, status);
 	}
 	else {
 	    for (i = nfds-1, l = LIST_nil;  i >= 0;  i--) {
@@ -222,7 +222,7 @@ static lib7_val_t LIB7_Poll (lib7_state_t *lib7_state, lib7_val_t poll_list, str
 /*printf("src/runtime/c-libs/posix-os/poll.c: result status d=%d.\n",status);*/
 
     if (status < 0)
-        return RAISE_SYSERR(lib7_state, status,__LINE__);
+        return RAISE_SYSERR(lib7_state, status);
     else if (status == 0)
 	return LIST_nil;
     else {

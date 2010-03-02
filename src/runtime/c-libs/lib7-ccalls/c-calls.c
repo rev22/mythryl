@@ -527,7 +527,7 @@ static char errbuf[100];
 static lib7_val_t RaiseError(lib7_state_t *lib7_state,int err)
 {
     sprintf(errbuf,"Lib7-C-Interface: %s",errtable[err]);
-    return RAISE_ERROR(lib7_state, errbuf,__LINE__);
+    return RAISE_ERROR(lib7_state, errbuf);
 }
 
 

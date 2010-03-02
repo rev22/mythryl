@@ -35,7 +35,7 @@ lib7_val_t _lib7_P_IO_fcntl_gfl (lib7_state_t *lib7_state, lib7_val_t arg)
 /*  } while (flag < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     if (flag < 0)
-        return RAISE_SYSERR(lib7_state, flag, __LINE__);
+        return RAISE_SYSERR(lib7_state, flag);
 
     WORD_ALLOC (lib7_state, flags, (flag & (~O_ACCMODE)));
     WORD_ALLOC (lib7_state, mode, (flag & O_ACCMODE));

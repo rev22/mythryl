@@ -36,7 +36,7 @@ lib7_val_t   _lib7_runtime_export_heap   (   lib7_state_t*   lib7_state,
     fprintf(stderr,"------------------------------------------------------------------------------------------------------\n");
 
     if (!(file = fopen(fname, "wb"))) {
-      return RAISE_ERROR(lib7_state, "unable to open file for writing", __LINE__);
+      return RAISE_ERROR(lib7_state, "unable to open file for writing");
     }
 
     lib7_state->lib7_argument = LIB7_true;
@@ -45,7 +45,7 @@ lib7_val_t   _lib7_runtime_export_heap   (   lib7_state_t*   lib7_state,
         fclose (file);
 
 	if (status == SUCCESS)   return LIB7_false;
-	else                     return RAISE_ERROR( lib7_state, "export failed", __LINE__);
+	else                     return RAISE_ERROR( lib7_state, "export failed");
     }
 }
 

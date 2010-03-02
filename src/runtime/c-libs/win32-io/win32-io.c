@@ -49,7 +49,7 @@ lib7_val_t _lib7_win32_IO_close(lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef WIN32_DEBUG
   SayDebug("_lib7_win32_IO_close: failing\n");
 #endif
-  return RAISE_SYSERR(lib7_state,-1, __LINE__);
+  return RAISE_SYSERR(lib7_state,-1);
 }
 
 
@@ -155,7 +155,7 @@ lib7_val_t _lib7_win32_IO_read_vec(lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef WIN32_DEBUG
         SayDebug("_lib7_win32_IO_read_vec: failing %d %d\n",n,nbytes);
 #endif
-        return RAISE_SYSERR(lib7_state,-1, __LINE__);
+        return RAISE_SYSERR(lib7_state,-1);
     }
 }
 
@@ -244,7 +244,7 @@ lib7_val_t _lib7_win32_IO_read_vec_txt(lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef WIN32_DEBUG
     SayDebug("_lib7_win32_IO_read_vec_txt: failing on handle %x\n",h);
 #endif
-    return RAISE_SYSERR(lib7_state,-1, __LINE__);
+    return RAISE_SYSERR(lib7_state,-1);
   }
 }
 
@@ -276,7 +276,7 @@ lib7_val_t _lib7_win32_IO_read_arr(lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef WIN32_DEBUG
   SayDebug("_lib7_win32_IO_read_arr: failing\n");
 #endif
-  return RAISE_SYSERR(lib7_state,-1, __LINE__);
+  return RAISE_SYSERR(lib7_state,-1);
 }
 
 /* _lib7_win32_IO_read_arr_txt : (word32*char8array.Rw_Vector*int*int) -> int
@@ -327,7 +327,7 @@ lib7_val_t _lib7_win32_IO_read_arr_txt(lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef WIN32_DEBUG
   SayDebug("_lib7_win32_IO_read_arr_txt: failing\n");
 #endif
-  return RAISE_SYSERR(lib7_state,-1, __LINE__);
+  return RAISE_SYSERR(lib7_state,-1);
 }
 
 
@@ -382,7 +382,7 @@ lib7_val_t _lib7_win32_IO_write_buf(lib7_state_t *lib7_state, lib7_val_t arg)
 #ifdef WIN32_DEBUG
   SayDebug("_lib7_win32_IO_write_buf: failing\n");
 #endif
-  return RAISE_SYSERR(lib7_state,-1, __LINE__);
+  return RAISE_SYSERR(lib7_state,-1);
 }
 
 lib7_val_t _lib7_win32_IO_write_vec(lib7_state_t *lib7_state, lib7_val_t arg)

@@ -52,7 +52,7 @@ lib7_val_t   _lib7_runtime_export_fun   (   lib7_state_t*   lib7_state,
     );
 
     if (!(file = fopen(filename, "wb"))) {
-      return RAISE_ERROR( lib7_state, "Unable to open file for writing", __LINE__);
+      return RAISE_ERROR( lib7_state, "Unable to open file for writing");
     }
 
     status = ExportFnImage (lib7_state, funct, file);
@@ -64,7 +64,7 @@ lib7_val_t   _lib7_runtime_export_fun   (   lib7_state_t*   lib7_state,
     /* NB: It would be nice to raise a SYSTEM_ERROR exception here,
      * but the Lib7 state has been trashed as a side-effect of
      * the export operation.
-     *	    return RAISE_ERROR(lib7_state, "export failed", __LINE__);
+     *	    return RAISE_ERROR(lib7_state, "export failed");
      */
 }
 

@@ -28,11 +28,11 @@ _lib7_Ncurses_move (lib7_state_t *lib7_state, lib7_val_t arg)
 
     int result = move( y, x );
 
-    if (result == ERR)     return RAISE_ERROR(lib7_state, "move", __LINE__);
+    if (result == ERR)     return RAISE_ERROR(lib7_state, "move");
     return LIB7_void;
 #else
     extern char* no_ncurses_support_in_runtime;
-    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime, __LINE__);
+    return RAISE_ERROR(lib7_state, no_ncurses_support_in_runtime);
 #endif
 }
 

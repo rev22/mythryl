@@ -57,7 +57,7 @@ lib7_val_t _lib7_P_ProcEnv_sysconf (lib7_state_t *lib7_state, lib7_val_t arg)
     attribute = _lib7_posix_nv_lookup (STR_LIB7toC(arg), values, NUMELMS);
     if (!attribute) {
         errno = EINVAL;
-        return RAISE_SYSERR(lib7_state, -1, __LINE__);
+        return RAISE_SYSERR(lib7_state, -1);
     }
  
     errno = 0;
@@ -71,9 +71,9 @@ lib7_val_t _lib7_P_ProcEnv_sysconf (lib7_state_t *lib7_state, lib7_val_t arg)
       return p;
     }
     else if (errno == 0)
-        return RAISE_ERROR(lib7_state, "unsupported POSIX feature", __LINE__);
+        return RAISE_ERROR(lib7_state, "unsupported POSIX feature");
     else
-        return RAISE_SYSERR(lib7_state, -1, __LINE__);
+        return RAISE_SYSERR(lib7_state, -1);
 
 } /* end of _lib7_P_ProcEnv_sysconf */
 

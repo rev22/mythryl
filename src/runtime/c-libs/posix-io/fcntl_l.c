@@ -43,7 +43,7 @@ lib7_val_t _lib7_P_IO_fcntl_l (lib7_state_t *lib7_state, lib7_val_t arg)
 /*  } while (status < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
     if (status < 0)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
 
     REC_ALLOC5(lib7_state, chunk,
 	INT_CtoLib7(flock.l_type),

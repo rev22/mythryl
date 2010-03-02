@@ -41,12 +41,12 @@ lib7_val_t _lib7_P_TTY_tcsetattr (lib7_state_t *lib7_state, lib7_val_t arg)
     {   int status = cfsetispeed (&data, REC_SELWORD(termio_rep, 5));
 
 	if (status < 0)
-	    return RAISE_SYSERR(lib7_state, status, __LINE__);
+	    return RAISE_SYSERR(lib7_state, status);
 
 	status = cfsetospeed (&data, REC_SELWORD(termio_rep, 6));
 
 	if (status < 0) {
-	    return RAISE_SYSERR(lib7_state, status, __LINE__);
+	    return RAISE_SYSERR(lib7_state, status);
         }
 	status = tcsetattr(fd, action, &data);
 

@@ -1,3 +1,4 @@
+2010-03-02-02.30.30: src/lib/std/src/threadkit/unix/: Renamed syscall.pkg -> retry-syscall-on-eintr.pkg -- because that is what it does. :-) 
 2010-03-01-18.23.35: src/lib/std/src/threadkit/unix/: Renamed syscall.pkg -> retry-syscall-on-eintr.pkg -- because that is what it does. :-) 
 2010-03-01-18.23.35: src/lib/x-kit/xclient/src/wire/display.api: For clarity, renamed XSCREEN.root -> XSCREEN.root_window_id.
 2010-03-01-17.37.55: src/lib/x-kit/widget/basic/root-window.pkg: For clarity rename ROOT_WINDOW.next_id -> ROOT_WINDOW.next_widget_id.

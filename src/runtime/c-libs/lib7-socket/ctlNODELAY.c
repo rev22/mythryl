@@ -38,7 +38,7 @@ lib7_val_t _lib7_Sock_ctlNODELAY (lib7_state_t *lib7_state, lib7_val_t arg)
     }
 
     if (status < 0)
-        return RAISE_SYSERR(lib7_state, status, __LINE__);
+        return RAISE_SYSERR(lib7_state, status);
     else
 	return (flag ? LIB7_true : LIB7_false);
 

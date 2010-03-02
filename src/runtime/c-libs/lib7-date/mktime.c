@@ -35,7 +35,7 @@ lib7_val_t _lib7_Date_mktime (lib7_state_t *lib7_state, lib7_val_t arg)
     t = mktime (&tm);
 
     if (t < 0) {
-        return RAISE_ERROR(lib7_state, "Invalid date",__LINE__);
+        return RAISE_ERROR(lib7_state, "Invalid date");
     }
     else {
 	lib7_val_t result;

@@ -36,7 +36,7 @@ lib7_val_t _lib7_P_Process_waitpid (lib7_state_t *lib7_state, lib7_val_t arg)
 /*  } while (pid < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or wahtever.	*/
 
     if (pid < 0)
-        return RAISE_SYSERR(lib7_state, pid, __LINE__);
+        return RAISE_SYSERR(lib7_state, pid);
 
     if (WIFEXITED(status)) {
 	how = 0;
@@ -51,7 +51,7 @@ lib7_val_t _lib7_P_Process_waitpid (lib7_state_t *lib7_state, lib7_val_t arg)
 	val = WSTOPSIG(status);
     }
     else
-        return RAISE_ERROR(lib7_state, "unknown child status", __LINE__);
+        return RAISE_ERROR(lib7_state, "unknown child status");
 
     REC_ALLOC3(lib7_state, r, INT_CtoLib7(pid), INT_CtoLib7(how), INT_CtoLib7(val));
 
