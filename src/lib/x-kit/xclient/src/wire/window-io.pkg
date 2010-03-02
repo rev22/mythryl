@@ -22,25 +22,32 @@ herein
     package window_io: (weak) Window_Io {		# Window_Io		is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
 
 	# Window configuration values:
+	#
 	Xwin_Val
 	  = BACKGROUND_PIXMAP_NONE
 	  | BACKGROUND_PIXMAP_PARENT_RELATIVE
-	  | BACKGROUND_PIXMAP		xt::Pixmap_Id
-	  | BACKGROUND_PIXEL		xt::Pixel
+	  | BACKGROUND_PIXMAP			xt::Pixmap_Id
+	  | BACKGROUND_PIXEL			xt::Pixel
+	  #
 	  | BORDER_PIXMAP_COPY_FROM_PARENT
 	  | BORDER_PIXMAP			xt::Pixmap_Id
 	  | BORDER_PIXEL			xt::Pixel
-	  | BIT_GRAVITY			xt::Gravity
+	  #
+	  | BIT_GRAVITY				xt::Gravity
 	  | WINDOW_GRAVITY			xt::Gravity
+	  #
 	  | BACKING_STORE			xt::Backing_Store
 	  | BACKING_PLANES			xt::Plane_Mask
 	  | BACKING_PIXEL			xt::Pixel
-	  | EVENT_MASK			xt::Event_Mask
+	  #
+	  | EVENT_MASK				xt::Event_Mask
 	  | DO_NOT_PROPAGATE_MASK		xt::Event_Mask
-	  | SAVE_UNDER  	   Bool
-	  | OVERRIDE_REDIRECT  Bool
+	  #
+	  | SAVE_UNDER  	   		Bool
+	  | OVERRIDE_REDIRECT  			Bool
+	  #
 	  | COLOR_MAP_COPY_FROM_PARENT
-	  | COLOR_MAP  			xt::Colormap_Id
+	  | COLOR_MAP  				xt::Colormap_Id
 	  | CURSOR_NONE
 	  | CURSOR				xt::Cursor_Id
 	  ;

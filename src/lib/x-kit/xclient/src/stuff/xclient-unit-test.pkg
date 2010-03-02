@@ -37,6 +37,36 @@ herein
 	    =
 	    time::from_milliseconds 20;
 
+	fun do_window_checks  (xdisplay:  dy::Xdisplay)
+	    =
+	    {   xdisplay -> dy::XDISPLAY { default_screen, screens, next_xid, ... };
+
+		screen =  list::nth  (screens, default_screen);
+
+		screen -> dy::XSCREEN { root_window_id => parent_id, ... };
+
+		window_id =  next_xid ();
+
+#	create_window
+#	    :
+#	    xok::Xsocket
+#	    ->
+#	     { id:      xt::Window_Id,
+#	       parent:  xt::Window_Id,
+#	       #
+#	       in_only: Null_Or( Bool ),
+#	       depth:   Int,
+#	       visual:  Null_Or( xt::Visual_Id ),
+#	       #
+#	       geometry:    g::Window_Footprint,
+#	       attributes:  List( Xwin_Val )
+#	     }
+#	    ->
+#	    Void;
+
+		();
+	    };
+
 	fun run ()
 	    =
 	    {   printf "\nDoing %s:\n" name;   
@@ -80,7 +110,7 @@ herein
 
 			    trace .{ sprintf "xclient_unit_test: Done calling dy::open_xdisplay"; };
 
-			    ();
+			    do_window_checks  xdisplay;
 
 #                           do_it (make_root_window NULL);
 

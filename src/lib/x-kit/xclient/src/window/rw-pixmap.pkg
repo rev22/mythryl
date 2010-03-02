@@ -45,7 +45,7 @@ herein
             =
             {   screen -> sn::SCREEN
                             {
-			      screen   => sn::SCREEN_INFO { xscreen  => dy::XSCREEN { root, ... }, ... },
+			      screen   => sn::SCREEN_INFO { xscreen  => dy::XSCREEN { root_window_id, ... }, ... },
 			      xsession => sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }
 		            };
 
@@ -63,8 +63,8 @@ herein
 		xok::request  xsocket
 		  ( value_to_wire::encode_create_pixmap
 		      {
-		        pixmap => id,
-                        drawable => root,
+		        pixmap   =>  id,
+                        drawable =>  root_window_id,
                         size,
                         depth
 		      }

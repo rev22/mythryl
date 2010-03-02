@@ -101,7 +101,7 @@ herein
 	      {
 		id:  Int,						# Number of this screen -- almost always zero.
 
-		root:             xt::Window_Id,			# Root window id of this screen.
+		root_window_id:   xt::Window_Id,			# Root window id of this screen.
 		default_colormap: xt::Colormap_Id,			# Default colormap.
 
 		white:            xt::Pixel,				# White and Black pixel values.

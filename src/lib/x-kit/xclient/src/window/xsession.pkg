@@ -268,7 +268,7 @@ herein
 			sel_event_slot  => selection_slot
 		      };
 
-		fun make_screen_info (xscreen as dy::XSCREEN { root, root_visual, visualdepths, ... } )
+		fun make_screen_info (xscreen as dy::XSCREEN { root_window_id, root_visual, visualdepths, ... } )
 		    =
 		    {   fun make_screen_depth (depth, gc_imp)
 			    =
@@ -310,7 +310,7 @@ herein
 					    xok::request xsocket
 					      ( value_to_wire::encode_create_pixmap
 						  { pixmap => xid,
-						    drawable => root,
+						    drawable => root_window_id,
 						    size => g::SIZE { wide=>1, high=>1 },
 						    depth => d
 				                  }
@@ -341,7 +341,7 @@ herein
 			    make_screen_depth
 			      (
 				dy::depth_of_visual  root_visual,
-				gci::make_graphics_context_imp  (display, root)
+				gci::make_graphics_context_imp  (display, root_window_id)
 			      );
 
 			imps = make_gc_imps (visualdepths, [root_imps]);
@@ -468,9 +468,9 @@ herein
 	# This is needed in obtaining strings from xrdb,
 	# as they are stored in a property of the root window:
 	#
-	fun root_window_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root, ... }, ... }, ... } )
+	fun root_window_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... } )
             =
-            root;
+            root_window_id;
 
 	# End additions by ddeboer 
 

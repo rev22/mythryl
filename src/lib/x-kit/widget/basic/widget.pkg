@@ -71,7 +71,7 @@ herein
 		args,
 		#
 		realized =>  make_oneshot_maildrop (),
-		id       =>  next_widget_id (),
+		id       =>  next_widget_id (),			# Is there any reason not to make this just a Ref(Void) as usual?	XXX BUGGO FIXME.
 		#
 		size_preference_thunk_of,
 		realize

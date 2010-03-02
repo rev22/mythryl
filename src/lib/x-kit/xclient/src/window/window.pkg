@@ -153,7 +153,9 @@ herein
 	end;
 
 
-	map_attributes = list::map user_window_attribute_to_internal_window_attribute;
+	map_attributes
+	    =
+	    list::map  user_window_attribute_to_internal_window_attribute;
 
 	std_xevent_mask
 	    =
@@ -193,7 +195,7 @@ herein
 	    =
 	    create_fn
 	    where 
-		screen_info ->  sn::SCREEN_INFO       { xscreen  => dy::XSCREEN { root, ... }, root_imps, ... };
+		screen_info ->  sn::SCREEN_INFO       { xscreen  => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
 		root_imps   ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
 		xsession    ->  sn::XSESSION          { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
@@ -212,7 +214,7 @@ herein
 			    depth,
 			    #
 			    id      => window_id,
-			    parent  => root,
+			    parent  => root_window_id,
 			    #
 			    in_only => THE FALSE,
 			    visual  => NULL,
@@ -307,7 +309,7 @@ herein
 	    =
 	    (window, kidplug)
 	    where 
-		screen    ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root, ... }, root_imps, ... };
+		screen    ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
 		root_imps ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
 		xsession  ->  sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
@@ -322,7 +324,7 @@ herein
 
 		wio::create_window  xsocket  {
 		    id => window_id,
-		    parent => root,
+		    parent => root_window_id,
 		    in_only => THE FALSE,
 		    depth,
 		    visual => NULL,
@@ -345,7 +347,7 @@ herein
 	    where 
 
 		prop_window ->  dt::WINDOW { id, screen=>scrn as sn::SCREEN { screen, xsession }, ... };
-		screen      ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root, ... }, root_imps, ... };
+		screen      ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
 
 		root_imps   ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
 		xsession    ->  sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
@@ -361,7 +363,7 @@ herein
 
 		wio::create_window  xsocket  {
 		    id => window_id,
-		    parent => root,
+		    parent => root_window_id,
 		    in_only => THE FALSE,
 		    depth,
 		    visual => NULL,
@@ -592,15 +594,15 @@ herein
 
 	    fun withdraw_window (dt::WINDOW { id, screen => sn::SCREEN { screen=> sn::SCREEN_INFO { xscreen, ... }, xsession }, ... } )
 		=
-		{   xscreen ->  dy::XSCREEN { root, ... };
+		{   xscreen ->  dy::XSCREEN { root_window_id, ... };
 
 		    sn::request  xsession
 			#
 			(s2w::encode_send_unmap_notify
-			  { to => xt::SEND_EVENT_TO_WINDOW root,
+			  { to => xt::SEND_EVENT_TO_WINDOW root_window_id,
 			    propagate => FALSE,
 			    event_mask => mask, 
-			    event      => root,
+			    event      => root_window_id,
 			    window     => id,
 			    from_configure => FALSE
 			  }
@@ -624,7 +626,7 @@ herein
 	#
 	fun window_pt_to_screen_pt (dt::WINDOW { id, screen, ... } ) pt
 	    =
-	    {   screen ->  sn::SCREEN { xsession, screen=> sn::SCREEN_INFO { xscreen => dy::XSCREEN { root, ... }, ... }, ... };
+	    {   screen ->  sn::SCREEN { xsession, screen=> sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... };
 
 		my { to_point, ... }
 		    =
@@ -633,7 +635,7 @@ herein
 			do_mailop
 			  (sn::request_reply
 			      xsession
-			      (v2w::encode_translate_coords { from_window=>id, to_window=>root, from_point=>pt } )
+			      (v2w::encode_translate_coords { from_window=>id, to_window=>root_window_id, from_point=>pt } )
 			  )
 		      );
 

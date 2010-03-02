@@ -67,7 +67,7 @@ herein
 	      {
 		id:			Int,			# Number of this screen.
 
-		root:  			xt::Window_Id,		# Root window id of this screen.
+		root_window_id:		xt::Window_Id,		# Root window id of this screen.
 		default_colormap:	xt::Colormap_Id,	# 
 
 		white:			xt::Pixel,		# White and Black pixel values.
@@ -522,7 +522,7 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 		XSCREEN
 		  {
 		    id => screen_number,
-		    root => root_window,
+		    root_window_id => root_window,
 		    default_colormap,
 		    white,
 		    black,
