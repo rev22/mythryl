@@ -410,7 +410,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 		    =
 		    xt::VISUAL
 		      {
-			id => get_visual_id (buf, i),
+			visual_id    => get_visual_id (buf, i),
 			depth,
 
 			bits_per_rgb => get_int8 (buf, i+5),

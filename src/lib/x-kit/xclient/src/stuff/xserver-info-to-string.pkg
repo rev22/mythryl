@@ -90,7 +90,7 @@ herein
 			=>
 			{   result
 				=
-				[ sprintf "id               d=%d" (visual_id_to_int v.id),
+				[ sprintf "id               d=%d" (visual_id_to_int v.visual_id),
 				  sprintf "depth            d=%d" v.depth,
 				  sprintf "colormap entries d=%d" v.cmap_entries,
 				  sprintf "colobits_per_rgb d=%d" v.bits_per_rgb,

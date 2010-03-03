@@ -1,3 +1,4 @@
+2010-03-03-01.29.58: src/lib/x-kit/xclient/src/wire/display.pkg: Dusty Deboer had ad-hoc retry logic hammered in on X-server connect and read-reply. Removed the former; naive retry will not work for connect() anyhow.  Replaced the latter (which is in fact needed due to 50Hz SIGALRM generating EINTRs in recv.c) with better-written pre-existing retry_syscall_on_eintr code.
 2010-03-02-03.14.36: src/runtime/c-libs/lib7-c.h: Tweaked RAISE_SYSERR and RAISE_ERROR to correctly report both file and line number (e.g., foo.c:13 instead of just foo.c) for C-originated Mythryl exceptions.
 2010-03-02-02.30.30: src/lib/std/src/threadkit/unix/: Renamed syscall.pkg -> retry-syscall-on-eintr.pkg -- because that is what it does. :-) 
 2010-03-01-18.23.35: src/lib/std/src/threadkit/unix/: Renamed syscall.pkg -> retry-syscall-on-eintr.pkg -- because that is what it does. :-) 

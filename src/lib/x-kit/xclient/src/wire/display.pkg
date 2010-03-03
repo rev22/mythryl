@@ -407,10 +407,10 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 			=>
 			get_root_visual r;
 
-		    get_root_visual ((v as xt::VISUAL { id, depth, ... } ) ! r)
+		    get_root_visual ((v as xt::VISUAL { visual_id, depth, ... } ) ! r)
 			=>
-			if (id    == root_visualid   and
-			    depth == root_depth)
+			if (visual_id == root_visualid   and
+			    depth     == root_depth)
 			    #
 			    v;
 			else

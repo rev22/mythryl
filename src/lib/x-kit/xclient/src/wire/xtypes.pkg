@@ -475,7 +475,7 @@ herein
 	  #
 	  | VISUAL
 	      {
-		id:            Visual_Id,		# The associated visual id.
+		visual_id:     Visual_Id,		# The associated visual id.
 		depth:         Int,			# The depth.
 		ilk:           Display_Class,
 		cmap_entries:  Int,
