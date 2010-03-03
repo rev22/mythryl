@@ -65,13 +65,13 @@ api  Xwindow {
 
     # Window operations
 
-    exception BAD_WINDOW_FOOTPRINT;
+    exception BAD_WINDOW_SITE;
 
     make_simple_top_window
 	:
 	xc::Screen
 	->
-	{ geometry:    xg::Window_Footprint,
+	{ geometry:    xg::Window_Site,
 	  border:      xc::Color,
 	  background:  xc::Color
         }
@@ -82,7 +82,7 @@ api  Xwindow {
 	:
 	Window
 	->
-	{ geometry:    xg::Window_Footprint,
+	{ geometry:    xg::Window_Site,
 	  border:      Null_Or( xc::Color ),
 	  background:  Null_Or( xc::Color )
         }
@@ -93,7 +93,7 @@ api  Xwindow {
         :
         xc::Window
         ->
-        { geometry:    xg::Window_Footprint,
+        { geometry:    xg::Window_Site,
 	  border:      xc::Color,
 	  background:  xc::Color
         }
@@ -104,7 +104,7 @@ api  Xwindow {
         :
         xc::Screen
         ->
-        { geometry:    xg::Window_Footprint,
+        { geometry:    xg::Window_Site,
 	  border:      xc::Color,
 	  background:  xc::Color
         }

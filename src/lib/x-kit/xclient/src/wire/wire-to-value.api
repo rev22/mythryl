@@ -47,7 +47,7 @@ herein
 	decode_get_atom_name_reply:   v8::Vector -> String;
 	decode_get_font_path_reply:   v8::Vector -> List(String);
 
-	decode_get_geometry_reply:    v8::Vector -> { depth: Int,             geometry:  g::Window_Footprint, root:     xt::Xid };
+	decode_get_geometry_reply:    v8::Vector -> { depth: Int,             geometry:  g::Window_Site, root:     xt::Xid };
 	decode_get_image_reply:       v8::Vector -> { data:  v8s::Vector,     depth:     Int,                 visualid: Null_Or(xt::Visual_Id) };
 	decode_get_input_focus_reply: v8::Vector -> { focus: xt::Input_Focus, revert_to: xt::Focus_Revert };
 

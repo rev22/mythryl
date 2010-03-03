@@ -117,7 +117,7 @@ herein
 		  {
 		    background =>  args.background,
 		    border     =>  NULL,		# Not used.
-		    geometry   =>  xg::WINDOW_FOOTPRINT
+		    geometry   =>  xg::WINDOW_SITE
 				     { upperleft    =>  xg::upperleft_of_box  box,
 				       size         =>  xg::size_of_box  box,
 				       border_width =>  0

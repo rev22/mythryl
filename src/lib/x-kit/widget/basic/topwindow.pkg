@@ -206,7 +206,7 @@ herein
 			    =
                             make_window_fn  widget
                               {
-                                geometry   =>  xg::WINDOW_FOOTPRINT { upperleft, size, border_width=>0 },
+                                geometry   =>  xg::WINDOW_SITE { upperleft, size, border_width=>0 },
 			        background =>  color,
 			        border     =>  color   #  not used 
 			      };

@@ -237,7 +237,7 @@ herein
 		    put_signed16 (buf, i+10, angle2);
 		};
 
-	    fun put_wgeom (buf, i, g::WINDOW_FOOTPRINT { upperleft, size, border_width } )
+	    fun put_wgeom (buf, i, g::WINDOW_SITE { upperleft, size, border_width } )
 		=
 		{   put_pt       (buf, i,   upperleft   );
 		    put_size     (buf, i+4, size        );
@@ -327,126 +327,165 @@ herein
 			size:  Int
 		      };
 
-	    req_create_window		= { code =>   0u1, size => 8 }: Reqinfo;
+	    req_create_window			= { code =>   0u1, size => 8 }: Reqinfo;
 	    req_change_window_attributes	= { code =>   0u2, size => 3 }: Reqinfo;
-	    req_get_window_attributes	= { code =>   0u3, size => 2 }: Reqinfo;
-	    req_destroy_window		= { code =>   0u4, size => 2 }: Reqinfo;
+	    req_get_window_attributes		= { code =>   0u3, size => 2 }: Reqinfo;
+
+	    req_destroy_window			= { code =>   0u4, size => 2 }: Reqinfo;
 	    req_destroy_subwindows		= { code =>   0u5, size => 2 }: Reqinfo;
-	    req_change_save_set		= { code =>   0u6, size => 2 }: Reqinfo;
-	    req_reparent_window		= { code =>   0u7, size => 4 }: Reqinfo;
+	    req_change_save_set			= { code =>   0u6, size => 2 }: Reqinfo;
+
+	    req_reparent_window			= { code =>   0u7, size => 4 }: Reqinfo;
 	    req_map_window			= { code =>   0u8, size => 2 }: Reqinfo;
-	    req_map_subwindows		= { code =>   0u9, size => 2 }: Reqinfo;
-	    req_unmap_window		= { code =>  0u10, size => 2 }: Reqinfo;
+	    req_map_subwindows			= { code =>   0u9, size => 2 }: Reqinfo;
+
+	    req_unmap_window			= { code =>  0u10, size => 2 }: Reqinfo;
 	    req_unmap_subwindows		= { code =>  0u11, size => 2 }: Reqinfo;
 	    req_configure_window		= { code =>  0u12, size => 3 }: Reqinfo;
+
 	    req_circulate_window		= { code =>  0u13, size => 2 }: Reqinfo;
-	    req_get_geometry		= { code =>  0u14, size => 2 }: Reqinfo;
+	    req_get_geometry			= { code =>  0u14, size => 2 }: Reqinfo;
 	    req_query_tree			= { code =>  0u15, size => 2 }: Reqinfo;
+
 	    req_intern_atom			= { code =>  0u16, size => 2 }: Reqinfo;
-	    req_get_atom_name		= { code =>  0u17, size => 2 }: Reqinfo;
-	    req_change_property		= { code =>  0u18, size => 6 }: Reqinfo;
-	    req_delete_property		= { code =>  0u19, size => 3 }: Reqinfo;
-	    req_get_property		= { code =>  0u20, size => 6 }: Reqinfo;
-	    req_list_properties		= { code =>  0u21, size => 2 }: Reqinfo;
+	    req_get_atom_name			= { code =>  0u17, size => 2 }: Reqinfo;
+	    req_change_property			= { code =>  0u18, size => 6 }: Reqinfo;
+
+	    req_delete_property			= { code =>  0u19, size => 3 }: Reqinfo;
+	    req_get_property			= { code =>  0u20, size => 6 }: Reqinfo;
+	    req_list_properties			= { code =>  0u21, size => 2 }: Reqinfo;
+
 	    req_set_selection_owner		= { code =>  0u22, size => 4 }: Reqinfo;
 	    req_get_selection_owner		= { code =>  0u23, size => 2 }: Reqinfo;
 	    req_convert_selection		= { code =>  0u24, size => 6 }: Reqinfo;
+
 	    req_push_event			= { code =>  0u25, size => 11}: Reqinfo;
-	    req_grab_pointer		= { code =>  0u26, size => 6 }: Reqinfo;
-	    req_ungrab_pointer		= { code =>  0u27, size => 2 }: Reqinfo;
+	    req_grab_pointer			= { code =>  0u26, size => 6 }: Reqinfo;
+	    req_ungrab_pointer			= { code =>  0u27, size => 2 }: Reqinfo;
+
 	    req_grab_button			= { code =>  0u28, size => 6 }: Reqinfo;
-	    req_ungrab_button		= { code =>  0u29, size => 3 }: Reqinfo;
+	    req_ungrab_button			= { code =>  0u29, size => 3 }: Reqinfo;
 	    req_change_active_pointer_grab	= { code =>  0u30, size => 4 }: Reqinfo;
-	    req_grab_keyboard		= { code =>  0u31, size => 4 }: Reqinfo;
-	    req_ungrab_keyboard		= { code =>  0u32, size => 2 }: Reqinfo;
+
+	    req_grab_keyboard			= { code =>  0u31, size => 4 }: Reqinfo;
+	    req_ungrab_keyboard			= { code =>  0u32, size => 2 }: Reqinfo;
 	    req_grab_key			= { code =>  0u33, size => 4 }: Reqinfo;
+
 	    req_ungrab_key			= { code =>  0u34, size => 3 }: Reqinfo;
-	    req_allow_events		= { code =>  0u35, size => 2 }: Reqinfo;
+	    req_allow_events			= { code =>  0u35, size => 2 }: Reqinfo;
 	    req_grab_server			= { code =>  0u36, size => 1 }: Reqinfo;
-	    req_ungrab_server		= { code =>  0u37, size => 1 }: Reqinfo;
-	    req_query_pointer		= { code =>  0u38, size => 2 }: Reqinfo;
+
+	    req_ungrab_server			= { code =>  0u37, size => 1 }: Reqinfo;
+	    req_query_pointer			= { code =>  0u38, size => 2 }: Reqinfo;
 	    req_get_motion_events		= { code =>  0u39, size => 4 }: Reqinfo;
+
 	    req_translate_coords		= { code =>  0u40, size => 4 }: Reqinfo;
-	    req_warp_pointer		= { code =>  0u41, size => 6 }: Reqinfo;
-	    req_set_input_focus		= { code =>  0u42, size => 3 }: Reqinfo;
-	    req_get_input_focus		= { code =>  0u43, size => 1 }: Reqinfo;
-	    req_query_keymap		= { code =>  0u44, size => 1 }: Reqinfo;
+	    req_warp_pointer			= { code =>  0u41, size => 6 }: Reqinfo;
+	    req_set_input_focus			= { code =>  0u42, size => 3 }: Reqinfo;
+
+	    req_get_input_focus			= { code =>  0u43, size => 1 }: Reqinfo;
+	    req_query_keymap			= { code =>  0u44, size => 1 }: Reqinfo;
 	    req_open_font			= { code =>  0u45, size => 3 }: Reqinfo;
+
 	    req_close_font			= { code =>  0u46, size => 2 }: Reqinfo;
 	    req_query_font			= { code =>  0u47, size => 2 }: Reqinfo;
 	    req_query_text_extents		= { code =>  0u48, size => 2 }: Reqinfo;
+
 	    req_list_fonts			= { code =>  0u49, size => 2 }: Reqinfo;
-	    req_list_fonts_with_info	= { code =>  0u50, size => 2 }: Reqinfo;
-	    req_set_font_path		= { code =>  0u51, size => 2 }: Reqinfo;
-	    req_get_font_path		= { code =>  0u52, size => 1 }: Reqinfo;
-	    req_create_pixmap		= { code =>  0u53, size => 4 }: Reqinfo;
+	    req_list_fonts_with_info		= { code =>  0u50, size => 2 }: Reqinfo;
+	    req_set_font_path			= { code =>  0u51, size => 2 }: Reqinfo;
+
+	    req_get_font_path			= { code =>  0u52, size => 1 }: Reqinfo;
+	    req_create_pixmap			= { code =>  0u53, size => 4 }: Reqinfo;
 	    req_free_pixmap			= { code =>  0u54, size => 2 }: Reqinfo;
+
 	    req_create_gc			= { code =>  0u55, size => 4 }: Reqinfo;
 	    req_change_gc			= { code =>  0u56, size => 3 }: Reqinfo;
-	    req_copy_gc			= { code =>  0u57, size => 4 }: Reqinfo;
+	    req_copy_gc				= { code =>  0u57, size => 4 }: Reqinfo;
+
 	    req_set_dashes			= { code =>  0u58, size => 3 }: Reqinfo;
-	    req_set_clip_boxes		= { code =>  0u59, size => 3 }: Reqinfo;
-	    req_free_gc			= { code =>  0u60, size => 2 }: Reqinfo;
+	    req_set_clip_boxes			= { code =>  0u59, size => 3 }: Reqinfo;
+	    req_free_gc				= { code =>  0u60, size => 2 }: Reqinfo;
+
 	    req_clear_area			= { code =>  0u61, size => 4 }: Reqinfo;
 	    req_copy_area			= { code =>  0u62, size => 7 }: Reqinfo;
 	    req_copy_plane			= { code =>  0u63, size => 8 }: Reqinfo;
+
 	    req_poly_point			= { code =>  0u64, size => 3 }: Reqinfo;
 	    req_poly_line			= { code =>  0u65, size => 3 }: Reqinfo;
-	    req_poly_segment		= { code =>  0u66, size => 3 }: Reqinfo;
-	    req_poly_rectangle		= { code =>  0u67, size => 3 }: Reqinfo;
+	    req_poly_segment			= { code =>  0u66, size => 3 }: Reqinfo;
+
+	    req_poly_rectangle			= { code =>  0u67, size => 3 }: Reqinfo;
 	    req_poly_arc			= { code =>  0u68, size => 3 }: Reqinfo;
 	    req_fill_poly			= { code =>  0u69, size => 4 }: Reqinfo;
-	    req_poly_fill_box		= { code =>  0u70, size => 3 }: Reqinfo;
-	    req_poly_fill_arc		= { code =>  0u71, size => 3 }: Reqinfo;
+
+	    req_poly_fill_box			= { code =>  0u70, size => 3 }: Reqinfo;
+	    req_poly_fill_arc			= { code =>  0u71, size => 3 }: Reqinfo;
 	    req_put_image			= { code =>  0u72, size => 6 }: Reqinfo;
+
 	    req_get_image			= { code =>  0u73, size => 5 }: Reqinfo;
 	    req_poly_text8			= { code =>  0u74, size => 4 }: Reqinfo;
 	    req_poly_text16			= { code =>  0u75, size => 4 }: Reqinfo;
+
 	    req_image_text8			= { code =>  0u76, size => 4 }: Reqinfo;
-	    req_image_text16		= { code =>  0u77, size => 4 }: Reqinfo;
-	    req_create_colormap		= { code =>  0u78, size => 4 }: Reqinfo;
-	    req_free_colormap		= { code =>  0u79, size => 2 }: Reqinfo;
-	    req_copy_colormap_and_free	= { code =>  0u80, size => 3 }: Reqinfo;
+	    req_image_text16			= { code =>  0u77, size => 4 }: Reqinfo;
+	    req_create_colormap			= { code =>  0u78, size => 4 }: Reqinfo;
+
+	    req_free_colormap			= { code =>  0u79, size => 2 }: Reqinfo;
+	    req_copy_colormap_and_free		= { code =>  0u80, size => 3 }: Reqinfo;
 	    req_install_colormap		= { code =>  0u81, size => 2 }: Reqinfo;
+
 	    req_uninstall_colormap		= { code =>  0u82, size => 2 }: Reqinfo;
 	    req_list_installed_colormaps	= { code =>  0u83, size => 2 }: Reqinfo;
 	    req_alloc_color			= { code =>  0u84, size => 4 }: Reqinfo;
+
 	    req_alloc_named_color		= { code =>  0u85, size => 3 }: Reqinfo;
 	    req_alloc_color_cells		= { code =>  0u86, size => 3 }: Reqinfo;
 	    req_alloc_color_planes		= { code =>  0u87, size => 4 }: Reqinfo;
+
 	    req_free_colors			= { code =>  0u88, size => 3 }: Reqinfo;
-	    req_store_colors		= { code =>  0u89, size => 2 }: Reqinfo;
+	    req_store_colors			= { code =>  0u89, size => 2 }: Reqinfo;
 	    req_store_named_color		= { code =>  0u90, size => 4 }: Reqinfo;
-	    req_query_colors		= { code =>  0u91, size => 2 }: Reqinfo;
-	    req_lookup_color		= { code =>  0u92, size => 3 }: Reqinfo;
-	    req_create_cursor		= { code =>  0u93, size => 8 }: Reqinfo;
+
+	    req_query_colors			= { code =>  0u91, size => 2 }: Reqinfo;
+	    req_lookup_color			= { code =>  0u92, size => 3 }: Reqinfo;
+	    req_create_cursor			= { code =>  0u93, size => 8 }: Reqinfo;
+
 	    req_create_glyph_cursor		= { code =>  0u94, size => 8 }: Reqinfo;
 	    req_free_cursor			= { code =>  0u95, size => 2 }: Reqinfo;
-	    req_recolor_cursor		= { code =>  0u96, size => 5 }: Reqinfo;
-	    req_query_best_size		= { code =>  0u97, size => 3 }: Reqinfo;
-	    req_query_extension		= { code =>  0u98, size => 2 }: Reqinfo;
-	    req_list_extensions		= { code =>  0u99, size => 1 }: Reqinfo;
-	    req_change_keyboard_mapping	= { code => 0u100, size => 2 }: Reqinfo;
-	    req_get_keyboard_mapping	= { code => 0u101, size => 2 }: Reqinfo;
-	    req_change_keyboard_control	= { code => 0u102, size => 2 }: Reqinfo;
-	    req_get_keyboard_control	= { code => 0u103, size => 1 }: Reqinfo;
-	    req_bell			= { code => 0u104, size => 1 }: Reqinfo;
-	    req_change_pointer_control	= { code => 0u105, size => 3 }: Reqinfo;
+	    req_recolor_cursor			= { code =>  0u96, size => 5 }: Reqinfo;
+
+	    req_query_best_size			= { code =>  0u97, size => 3 }: Reqinfo;
+	    req_query_extension			= { code =>  0u98, size => 2 }: Reqinfo;
+	    req_list_extensions			= { code =>  0u99, size => 1 }: Reqinfo;
+
+	    req_change_keyboard_mapping		= { code => 0u100, size => 2 }: Reqinfo;
+	    req_get_keyboard_mapping		= { code => 0u101, size => 2 }: Reqinfo;
+	    req_change_keyboard_control		= { code => 0u102, size => 2 }: Reqinfo;
+
+	    req_get_keyboard_control		= { code => 0u103, size => 1 }: Reqinfo;
+	    req_bell				= { code => 0u104, size => 1 }: Reqinfo;
+	    req_change_pointer_control		= { code => 0u105, size => 3 }: Reqinfo;
+
 	    req_get_pointer_control		= { code => 0u106, size => 1 }: Reqinfo;
 	    req_set_screen_saver		= { code => 0u107, size => 3 }: Reqinfo;
 	    req_get_screen_saver		= { code => 0u108, size => 1 }: Reqinfo;
-	    req_change_hosts		= { code => 0u109, size => 2 }: Reqinfo;
+
+	    req_change_hosts			= { code => 0u109, size => 2 }: Reqinfo;
 	    req_list_hosts			= { code => 0u110, size => 1 }: Reqinfo;
 	    req_set_access_control		= { code => 0u111, size => 1 }: Reqinfo;
+
 	    req_set_close_down_mode		= { code => 0u112, size => 1 }: Reqinfo;
 	    req_kill_client			= { code => 0u113, size => 2 }: Reqinfo;
 	    req_rotate_properties		= { code => 0u114, size => 3 }: Reqinfo;
+
 	    req_force_screen_saver		= { code => 0u115, size => 1 }: Reqinfo;
 	    req_set_pointer_mapping		= { code => 0u116, size => 1 }: Reqinfo;
 	    req_get_pointer_mapping		= { code => 0u117, size => 1 }: Reqinfo;
-	    req_set_modifier_mapping	= { code => 0u118, size => 1 }: Reqinfo;
-	    req_get_modifier_mapping	= { code => 0u119, size => 1 }: Reqinfo;
-	    req_no_operation		= { code => 0u127, size => 1 }: Reqinfo;
+
+	    req_set_modifier_mapping		= { code => 0u118, size => 1 }: Reqinfo;
+	    req_get_modifier_mapping		= { code => 0u119, size => 1 }: Reqinfo;
+	    req_no_operation			= { code => 0u127, size => 1 }: Reqinfo;
 
 	    # Allocate a buffer for a fixed-sized message and initialize the
 	    # code and size fields.  Return the buffer.
@@ -566,7 +605,7 @@ herein
 			=
 			case visual_id
 			    #
-			    NULL                   =>  0u0;
+			    NULL                   =>  0u0;	/* This must be the documented CopyFromParent value.	*/
 			    THE (xt::VISUAL_ID id) =>   id;
 			esac;
 

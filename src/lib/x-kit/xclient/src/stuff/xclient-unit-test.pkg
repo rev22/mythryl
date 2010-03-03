@@ -62,9 +62,9 @@ herein
 #			  {
 #			    window => window_id,
 #			    parent => parent_id,
-#			    input_only => THE FALSE,
+#			    input_only => THE FALSE,		# NULL would be CopyFromParent
 #			    depth,
-#			    visual_id,
+#			    THE visual_id,			# NULL would be CopyFromParent
 #			    geometry,
 #			    vals => do_window_val_list attributes
 #			  };
@@ -83,7 +83,7 @@ herein
 #	       depth:   Int,
 #	       visual:  Null_Or( xt::Visual_Id ),
 #	       #
-#	       geometry:    g::Window_Footprint,
+#	       geometry:    g::Window_Site,
 #	       attributes:  List( Xwin_Val )
 #	     }
 #	    ->

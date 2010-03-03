@@ -78,7 +78,7 @@ herein
 			  border     => xc::black_of_screen screen,
 			  background => xc::white_of_screen screen,
 			  #	
-			  geometry   => xg::WINDOW_FOOTPRINT
+			  geometry   => xg::WINDOW_SITE
 					  { upperleft    =>  xg::POINT {  col => 0,  row => 0  },
 					    size         =>  window_size,
 					    border_width =>  1

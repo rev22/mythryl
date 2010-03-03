@@ -76,7 +76,7 @@ herein
 	  | WC_REL_STACK_MODE  (Window, xt::Stack_Mode)
 	  ;
 
-	exception BAD_WINDOW_FOOTPRINT;
+	exception BAD_WINDOW_SITE;
 
     # **** OBSOLETE ****
     #     my allocSimpleTopWin:  sn::screen
@@ -100,7 +100,7 @@ herein
 	    :
 	    sn::Screen
 	    ->
-	    { geometry:   g::Window_Footprint,
+	    { geometry:   g::Window_Site,
 	      border:     ci::Color,
 	      background: ci::Color
 	    }
@@ -114,7 +114,7 @@ herein
 	    :
 	    Window
 	    ->
-	    { geometry:   g::Window_Footprint,
+	    { geometry:   g::Window_Site,
 	      border:     Null_Or( ci::Color ),
 	      background: Null_Or( ci::Color )
 	    }
@@ -125,7 +125,7 @@ herein
 	    :
 	    Window
 	    ->
-	    { geometry:    g::Window_Footprint,
+	    { geometry:    g::Window_Site,
 	      border:      ci::Color,
 	      background:  ci::Color
 	    }
@@ -136,7 +136,7 @@ herein
 	    :
 	    sn::Screen
 	    ->
-	    { geometry:    g::Window_Footprint,
+	    { geometry:    g::Window_Site,
 	      border:      ci::Color,
 	      background:  ci::Color
 	    }

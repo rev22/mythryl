@@ -112,7 +112,7 @@ herein
 				(encode_get_geometry { drawable=>id } )
 			    );
 
-		my { depth, geometry=>g::WINDOW_FOOTPRINT { upperleft, size, border_width }, ... }
+		my { depth, geometry=>g::WINDOW_SITE { upperleft, size, border_width }, ... }
 		    =
 		    decode_get_geometry_reply reply;
 

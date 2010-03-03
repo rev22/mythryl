@@ -72,9 +72,9 @@ api Xgeometry {
     # Note that position does not take
     # border_width into account.
     #
-    Window_Footprint
+    Window_Site
 	=
-	WINDOW_FOOTPRINT
+	WINDOW_SITE
 	  {
 	    upperleft:     Point,
 	    size:          Size,

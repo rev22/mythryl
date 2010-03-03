@@ -253,7 +253,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 
 	    fun get_wgeom (s, i)
 		=
-		xg::WINDOW_FOOTPRINT
+		xg::WINDOW_SITE
 		  {
 		    upperleft    => get_pt (s, i),
 		    size         => get_size (s, i+4),
