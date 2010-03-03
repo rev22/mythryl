@@ -154,7 +154,7 @@ herein
 
 	encode_create_window: { depth:      Int,
                                 geometry:   g::Window_Site, 
-				input_only: Null_Or(Bool),		# NULL == CopyFromParent, probably.
+				io:         xt::Input_Output,
                                 parent:     xt::Xid, 
 				vals:       xt::Value_List, 
 				visual_id:  Null_Or(xt::Visual_Id), 	# NULL == CopyFromParent

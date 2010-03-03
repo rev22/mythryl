@@ -62,7 +62,7 @@ herein
 #			  {
 #			    window => window_id,
 #			    parent => parent_id,
-#			    input_only => THE FALSE,		# NULL would be CopyFromParent
+#			    io     => xt::INPUT_OUTPUT,		# More typically xt::SAME_IO_AS_PARENT.
 #			    depth,
 #			    THE visual_id,			# NULL would be CopyFromParent
 #			    geometry,

@@ -1,3 +1,4 @@
+2010-03-03-16.27.08: src/lib/x-kit/xclient/src/window/geometry.pkg: For concision renamed Window_Footprint, WINDOW_FOOTPRINT -> Window_Site, WINDOW_SITE.
 2010-03-03-12.30.50: src/lib/x-kit/xclient/src/wire/value-to-wire.api: encode_create_window: Rename id -> visual_id for clarity.
 2010-03-03-12.04.00: src/lib/x-kit/xclient/src/wire/xtypes.pkg: For clarity, change VISUAL.id -> VISUAL.visual_id.
 2010-03-03-01.29.58: src/lib/x-kit/xclient/src/wire/display.pkg: Dusty Deboer had ad-hoc retry logic hammered in on X-server connect and read-reply. Removed the former; naive retry will not work for connect() anyhow.  Replaced the latter (which is in fact needed due to 50Hz SIGALRM generating EINTRs in recv.c) with better-written pre-existing retry_syscall_on_eintr code.

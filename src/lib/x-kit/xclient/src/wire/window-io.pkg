@@ -103,7 +103,7 @@ herein
               id:           xt::Window_Id,
               parent:       xt::Window_Id,
 	      #	
-              input_only:   Null_Or( Bool ),			# NULL is CopyFromParent, THE FALSE is InputOutput, THE TRUE is InputOnly
+              io:           xt::Input_Output,
               depth:        Int,
               visual_id:    Null_Or( xt::Visual_Id ),		# NULL is CopyFromParent
               geometry:     g::Window_Site,
@@ -116,7 +116,7 @@ herein
 			  {
 			    window => id,
 			    parent,
-			    input_only,
+			    io,
 			    depth,
 			    visual_id,
 			    geometry,

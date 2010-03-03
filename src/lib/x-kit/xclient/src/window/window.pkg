@@ -216,7 +216,7 @@ herein
 			    id          => window_id,
 			    parent      => root_window_id,
 			    #
-			    input_only  => THE FALSE,
+			    io          => xt::INPUT_OUTPUT,
 			    visual_id   => NULL,		# CopyFromParent
 			    #
 			    geometry    => check_shape geometry,
@@ -277,7 +277,7 @@ herein
 			      id         => window_id,
 			      parent     => parent_id,
 			      #	
-			      input_only => THE FALSE,			# InputOutput
+			      io         => xt::INPUT_OUTPUT,
 			      depth,
 			      #	
 			      visual_id  => NULL,			# CopyFromParent
@@ -331,7 +331,7 @@ herein
 		    id         => window_id,
 		    parent     => root_window_id,
 		    #
-		    input_only => THE FALSE,			# InputOutput
+		    io         => xt::INPUT_OUTPUT,
 		    depth,
 		    #
 		    visual_id  => NULL,				# CopyFromParent
@@ -374,7 +374,7 @@ herein
 		    id         => window_id,
 		    parent     => root_window_id,
 		    #
-		    input_only => THE FALSE,				# InputOutput
+		    io         => xt::INPUT_OUTPUT,
 		    depth,
 		    #
 		    visual_id  => NULL,					# CopyFromParent
@@ -427,7 +427,7 @@ herein
 		    id         => window_id,
 		    parent     => parent_id,
 		    #	
-		    input_only => THE TRUE,					# InputOnly
+		    io         => xt::INPUT_ONLY,
 		    depth      => 0,
 		    #	
 		    visual_id  => NULL,						# CopyFromParent
