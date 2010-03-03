@@ -157,7 +157,7 @@ herein
 				input_only: Null_Or(Bool),
                                 parent:     xt::Xid, 
 				vals:       xt::Value_List, 
-				visual:     Null_Or(xt::Visual_Id), 
+				visual_id:  Null_Or(xt::Visual_Id), 
 				window:     xt::Xid
                               }
 			      -> v8::Vector;

@@ -98,7 +98,7 @@ herein
 
 	# Create a new X-window with the given xid 
 	#
-	fun create_window  connection  { id, parent, in_only, depth, visual, geometry, attributes }
+	fun create_window  connection  { id, parent, in_only, depth, visual => visual_id, geometry, attributes }
 	    =
 	    xok::request  connection  msg
 	    where 
@@ -108,7 +108,7 @@ herein
 			    parent,
 			    input_only => in_only,
 			    depth,
-			    visual,
+			    visual_id,
 			    geometry,
 			    vals => do_window_val_list attributes
 			  };

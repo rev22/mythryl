@@ -64,7 +64,7 @@ herein
 #			    parent => parent_id,
 #			    input_only => THE FALSE,
 #			    depth,
-#			    visual,
+#			    visual_id,
 #			    geometry,
 #			    vals => do_window_val_list attributes
 #			  };
