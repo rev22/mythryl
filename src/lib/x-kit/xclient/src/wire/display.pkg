@@ -26,6 +26,7 @@ stipulate
     package xtr =  xtracing;						# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     package dns =  dns_host_lookup;					# dns_host_lookup		is from   src/lib/std/src/socket/dns-host-lookup.pkg
     package w8v =  unt8_vector;						# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
+    package rse =  retry_syscall_on_eintr;				# retry_syscall_on_eintr	is from   src/lib/std/src/threadkit/unix/retry-syscall-on-eintr.pkg
     #
     trace =  xtr::print_if  xtr::io_tracing;				# Conditionally write strings to tracing.log or whatever.
 herein
@@ -151,41 +152,12 @@ herein
 
 
 											# exceptions			is from   src/lib/std/exceptions.pkg
-# Again, I'm not comfortable leaving this in without
-# a clear idea of the root cause of the problem, so
-# I've commented it out -- 2010-02-28 CrT
-#
-# if dusty deboer retry logic
-#		fun retry 0 ts
-#			=>
-#			sox::receive_vector (socket, 8);
-#
-#		    retry n ts
-#			=>
-#			{
-#		            trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Calling sox::receive_vector (socket, 8)..." n; };
-#			    sox::receive_vector (socket, 8)
-#                            except x
-#                                =
-#                                { 
-#		                    trace  .{ sprintf "display.pkg: say_hello_to_xserver: retry %d: Caught exception '%s', sleeping %d seconds..."
-#                                        n
-#					(exceptions::exception_message  x)
-#                                        ts;
-#                                    };
-#
-#                                    sleep ts;
-#
-#                                    (retry (n - 1) (ts*2));
-#                                };
-#			};
-#		end;
-#
-#		header = retry 2 1;
 											# large_unt			is from   src/lib/std/large-unt.pkg
 											# pack_big_endian_unt16		is from   src/lib/std/src/pack-big-endian-unt16.pkg
 
-		header = sox::receive_vector (socket, 8)
+		header = rse::do_syscall_retry_on_eintr					# We need this retry mechanism because our 50Hz SIGALRM
+			     #								# timer may hit before the X server reply gets back to us.
+                             sox::receive_vector (socket, 8)
                          except
                              winix::SYSTEM_ERROR("closed socket", NULL)
                                  =
@@ -211,28 +183,6 @@ herein
 		trace  .{ sprintf "display.pkg: say_hello_to_xserver: reply length extracted from header d=%d" len; };
 # -DEBUG
 
-    #        /* following lines rewritten, ddeboer, Jan 2005:
-    #         * I'm not sure that this is what is causing the problems I'm trying to fix,
-    #         * but if the reply status (w8v::sub (header, 0)) is Authenticate (0u2),
-    #         * the following previous code appears to block waiting for 
-    #         * len bytes to be received into reply:
-    #        reply = SockUtil::recvVec (socket, len)
-    #        fun getMsg () = byte::unpack_string_vector (v8s::slice(
-    #          reply,
-    #          0,
-    #          THE (unt8::toIntX (w8v::sub (header, 1)))))
-    #        fun error msg = (sok::close socket; xgripe::xerror msg)
-    #        in
-    #          case w8v::sub (header, 0)
-    #           of 0u0 => error ("connection refused: " + getMsg())
-    #        | 0u1 => let
-    #            info = w2v::decode_connect_request_reply (header, reply)
-    #            xsocket = xok::make_xsocket socket
-    #            in
-    #              (xsocket, info, canonical_display_name, scrNum)
-    #            end
-    #        | 0u2 => error "xsocket connection requires more authentication"
-    #        | _ => error "unknown connection reply"
 
 
 		fun get_reply len
@@ -322,42 +272,6 @@ trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 
 		trace .{ sprintf "display.pkg: connect_to_xserver: address s='%s' screen d=%d canonical_display_name s='%s'" (cxa::to_string address) screen canonical_display_name; };
 
-# 2010-02-28 CrT:  Dusty Deboer hammered this code in;
-#                  I'm not comfortable having it here without
-#                  establishing a better understanding of the
-#                  root cause, so I've commented it out for now.
-#                  maybe it fixed a problem with ssh that no longer
-#                  exists or something...
-#
-#		fun repeat connection_fn
-#		    =
-#		    loop 4			# Try up to five times.
-#		    where
-#			fun loop 0
-#                                =>
-#                                connection_fn ();
-#
-#			    loop n
-#                                =>
-#                                {   connection_fn ()
-#                                    except x
-#                                        =
-#                                        {   trace  .{
-#						#
-#                                                sprintf "display.pkg: connect_to_xserver: repeat %d: Caught exception '%s', retrying..."
-#						    n
-#						    (exceptions::exception_message  x);
-#					    };
-#	
-#                                            loop (n - 1);
-#					};
-#				};
-#			end;
-#		    end
-#		    except
-#			threadkit_winix::SYSTEM_ERROR (s, _)
-#			    =
-#			    raise exception XSERVER_CONNECT_ERROR s;
 
 		fun open_internet_domain_socket
                     (
@@ -381,19 +295,11 @@ trace  .{ "display.pkg: say_hello_to_xserver: Returning."; };
 
 			trace .{  sprintf "display.pkg: connect_to_xserver: open_internet_domain_socket: socket s='%s'"  (internet_socket::to_string  socket);  };
 
-# if dusty deboers repeat stuff:
-#			repeat .{
-#			    #
-#			    trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Calling sok::connect...";  };
-#                            sok::connect (socket, internet_socket::to_address (address, port));
-#			};
-# else
                         sok::connect (socket, internet_socket::to_address (address, port))
 			except
-			threadkit_winix::SYSTEM_ERROR (s, _)
-			    =
-			    raise exception XSERVER_CONNECT_ERROR s;
-# endif
+			    threadkit_winix::SYSTEM_ERROR (s, _)
+				=
+				raise exception XSERVER_CONNECT_ERROR s;
 
 trace .{  "display.pkg: connect_to_xserver: open_internet_domain_socket: Now  calling say_hello_to_xserver...";  }; result =
 			say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
@@ -408,18 +314,11 @@ result =
 			=>
 			{   socket = unix_socket::stream::socket ();
 
-# if dusty deboers repeat stuff:
-#			    repeat .{
-#				#
-#				sok::connect (socket, unix_socket::to_address path);
-#			    };
-# else
 			    sok::connect (socket, unix_socket::to_address path)
 			    except
 			    threadkit_winix::SYSTEM_ERROR (s, _)
 				=
 				raise exception XSERVER_CONNECT_ERROR s;
-# endif
 
 			    say_hello_to_xserver (socket, xauthentication, canonical_display_name, screen);
 			};

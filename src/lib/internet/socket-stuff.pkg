@@ -168,10 +168,14 @@ herein
 	    end;
 
 
-	# If the server closes the connection,
-	# do we get 0 bytes or an error???      XXX BUGGO FIXME
 
 	# Read exactly n bytes from a stream socket:
+	#
+	# If the server closes the connection cleanly
+	# we get 0 bytes back (as opposed to an error).
+	#
+	# (I've seen the X server silently close the
+	# socket when we provide no authentication info.)
 	#
 	fun receive_vector (socket, n)
 	    =
