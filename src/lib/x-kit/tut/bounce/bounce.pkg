@@ -40,10 +40,10 @@ herein
 			=
 			xw::make_simple_top_window  screen
 			  {
-			    border     =>  xc::black_of_screen  screen,
-			    background =>  xc::color0,					# To get XOR to work.
-			    geometry
-				=>
+			    border_color     =>  xc::black_of_screen  screen,
+			    background_color =>  xc::color0,					# To get XOR to work.
+
+			    site =>
 				xg::WINDOW_SITE
 				  { upperleft    =>  xg::POINT { col=>0, row=>0 },
 				    size         =>  xg::SIZE { wide=>400, high=>400 },

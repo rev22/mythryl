@@ -50,10 +50,17 @@ herein
 
 		case root_visual
 		    #
-		    xt::NO_VISUAL_FOR_THIS_DEPTH int  => print "root_visual is NO_VISUAL_FOR_THIS_DEPTH?!\n";
+		    xt::NO_VISUAL_FOR_THIS_DEPTH int
+                        =>
+                        {   # This case should never happen.
+			    assert FALSE;
+			    print "root_visual is NO_VISUAL_FOR_THIS_DEPTH?!\n";
+			};
+
 		    xt::VISUAL { depth, visual_id, ... }
                         =>
-                        printf "root_visual is VISUAL as expected, depth d=%d.\n" depth;
+                        {   printf "root_visual is VISUAL as expected, depth d=%d.\n" depth;
+			};
 		esac;
 
 #		request

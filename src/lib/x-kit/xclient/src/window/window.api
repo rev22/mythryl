@@ -100,9 +100,9 @@ herein
 	    :
 	    sn::Screen
 	    ->
-	    { geometry:   g::Window_Site,
-	      border:     ci::Color,
-	      background: ci::Color
+	    { site:             g::Window_Site,
+	      border_color:     ci::Color,
+	      background_color: ci::Color
 	    }
 	    ->
 	    ( Window,
@@ -114,9 +114,9 @@ herein
 	    :
 	    Window
 	    ->
-	    { geometry:   g::Window_Site,
-	      border:     Null_Or( ci::Color ),
-	      background: Null_Or( ci::Color )
+	    { site:             g::Window_Site,
+	      border_color:     Null_Or( ci::Color ),
+	      background_color: Null_Or( ci::Color )
 	    }
 	    ->
 	    Window;
@@ -125,9 +125,9 @@ herein
 	    :
 	    Window
 	    ->
-	    { geometry:    g::Window_Site,
-	      border:      ci::Color,
-	      background:  ci::Color
+	    { site:              g::Window_Site,
+	      border_color:      ci::Color,
+	      background_color:  ci::Color
 	    }
 	    ->
 	    (Window, wc::Kidplug);
@@ -136,9 +136,9 @@ herein
 	    :
 	    sn::Screen
 	    ->
-	    { geometry:    g::Window_Site,
-	      border:      ci::Color,
-	      background:  ci::Color
+	    { site:              g::Window_Site,
+	      border_color:      ci::Color,
+	      background_color:  ci::Color
 	    }
 	    ->
 	    (Window, wc::Kidplug);
@@ -195,7 +195,7 @@ herein
 
 	set_cursor:  Window ->  Null_Or( xr::Xcursor ) -> Void;
 
-	set_background:  Window ->  Null_Or( ci::Color ) -> Void;
+	set_background_color:  Window ->  Null_Or( ci::Color ) -> Void;
 	    #
 	    # Set the background color attribute of the window.
 	    # This does not have an immediate effect on the

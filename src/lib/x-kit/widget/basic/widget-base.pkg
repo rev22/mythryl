@@ -115,13 +115,14 @@ herein
 
 		xw::make_simple_subwindow  parent_window
 		  {
-		    background =>  args.background,
-		    border     =>  NULL,		# Not used.
-		    geometry   =>  xg::WINDOW_SITE
-				     { upperleft    =>  xg::upperleft_of_box  box,
-				       size         =>  xg::size_of_box  box,
-				       border_width =>  0
-				     }
+		    background_color =>  args.background,
+		    border_color     =>  NULL,		# Not used.
+		    #	
+		    site =>  xg::WINDOW_SITE
+			       { upperleft    =>  xg::upperleft_of_box  box,
+			         size         =>  xg::size_of_box  box,
+				 border_width =>  0
+			       }
 		  };
 	      };
 

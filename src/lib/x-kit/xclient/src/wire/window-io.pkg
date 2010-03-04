@@ -106,7 +106,7 @@ herein
               io:           xt::Input_Output,
               depth:        Int,
               visual_id:    xt::Visual_Id_Choice,
-              geometry:     g::Window_Site,
+              site:         g::Window_Site,
               attributes:   List( Xwin_Val )
             }
 	    =
@@ -119,7 +119,7 @@ herein
 			    io,
 			    depth,
 			    visual_id,
-			    geometry,
+			    site,
 			    vals => do_window_val_list attributes
 			  };
 

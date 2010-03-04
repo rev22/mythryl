@@ -27,7 +27,8 @@ herein
 	    :  Int
 	    -> (v::Rw_Vector( Null_Or(Unt) ) -> X -> Void)
 	    -> List( X )
-	    -> xt::Value_List;
+	    -> xt::Value_List
+            ;
 
 
 	encode_alloc_color:       { cmap: xt::Xid,  color: xt::Rgb }             -> v8::Vector;
@@ -153,7 +154,7 @@ herein
 			      -> v8::Vector;
 
 	encode_create_window: { depth:      Int,
-                                geometry:   g::Window_Site, 
+                                site:       g::Window_Site, 
 				io:         xt::Input_Output,
                                 parent:     xt::Xid, 
 				vals:       xt::Value_List, 

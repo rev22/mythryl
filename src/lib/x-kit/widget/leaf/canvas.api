@@ -72,13 +72,13 @@ herein
 
 	# Modify the attributes of the canvas 
 	#
-	set_background:  Canvas -> Null_Or( xc::Color ) -> Void;
+	set_background_color:  Canvas -> Null_Or( xc::Color ) -> Void;
 	    #
 	    # Set the background color attribute of the window.
-	    # Note that this does not have an immediate effect
-	    # on the window's contents, but if it is done
-	    # before the window is mapped, the window will
-	    # come up with the right color.
+	    #	
+	    # This does not immediately affect the window's contents,
+	    # but if it is done before the window is mapped the window
+	    # will come up with the right color.
 
 
 	set_cursor:  Canvas -> Null_Or( xc::Xcursor ) -> Void;

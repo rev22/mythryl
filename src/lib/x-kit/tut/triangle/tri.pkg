@@ -31,7 +31,7 @@ herein
 
 	button_corner_radius = 8;
 
-	fun button_win_geom (wide, high)
+	fun button_window_site (wide, high)
 	    =
 	    xg::WINDOW_SITE
 	      {
@@ -42,7 +42,7 @@ herein
 		border_width =>  0
 	      };
 
-	fun draw_win_geom (wide, high)
+	fun draw_window_site (wide, high)
 	    =
 	    xg::WINDOW_SITE
 	      {
@@ -69,9 +69,10 @@ herein
 		    =
 		    xw::make_simple_top_window  screen
 		      {
-			geometry   =>  xg::WINDOW_SITE { upperleft => xg::POINT { col=>0, row=>0 }, size=>win_sz, border_width=>1 },
-			border     =>  xc::black_of_screen  screen,
-			background =>  xc::white_of_screen  screen
+			site =>  xg::WINDOW_SITE { upperleft => xg::POINT { col=>0, row=>0 }, size=>win_sz, border_width=>1 },
+			#
+			border_color     =>  xc::black_of_screen  screen,
+			background_color =>  xc::white_of_screen  screen
 		      };
 
 		icon_ro_pixmap
@@ -114,19 +115,20 @@ herein
 		    =
 		    xw::make_simple_subwindow  top_win
 		      {
-			geometry   => draw_win_geom (wide, high),
+			site => draw_window_site (wide, high),
 			#
-			border     => THE (xc::black_of_screen  screen),
-			background => THE (xc::white_of_screen  screen)		
+			border_color     => THE (xc::black_of_screen  screen),
+			background_color => THE (xc::white_of_screen  screen)		
 		      };
 
 		button_win
 		    =
 		    xw::make_simple_subwindow  top_win
 		      {
-			geometry   =>  button_win_geom (wide, high),
-			border     =>  NULL,
-			background =>  THE (xc::white_of_screen  screen)		
+			site =>  button_window_site (wide, high),
+			#
+			border_color     =>  NULL,
+			background_color =>  THE (xc::white_of_screen  screen)		
 		      };
 
 		xw::show_window  draw_win;

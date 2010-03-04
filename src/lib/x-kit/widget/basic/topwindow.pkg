@@ -206,9 +206,10 @@ herein
 			    =
                             make_window_fn  widget
                               {
-                                geometry   =>  xg::WINDOW_SITE { upperleft, size, border_width=>0 },
-			        background =>  color,
-			        border     =>  color   #  not used 
+                                site =>  xg::WINDOW_SITE { upperleft, size, border_width=>0 },
+				#
+			        background_color =>  color,
+			        border_color     =>  color   #  not used 
 			      };
 
 			fun give_hint { size_hints, nonsize_hints }

@@ -71,9 +71,9 @@ api  Xwindow {
 	:
 	xc::Screen
 	->
-	{ geometry:    xg::Window_Site,
-	  border:      xc::Color,
-	  background:  xc::Color
+	{ site:              xg::Window_Site,
+	  border_color:      xc::Color,
+	  background_color:  xc::Color
         }
 	->
 	(Window, xinput::Kidplug, threadkit::Mailslot(Void));
@@ -82,9 +82,9 @@ api  Xwindow {
 	:
 	Window
 	->
-	{ geometry:    xg::Window_Site,
-	  border:      Null_Or( xc::Color ),
-	  background:  Null_Or( xc::Color )
+	{ site:              xg::Window_Site,
+	  border_color:      Null_Or( xc::Color ),
+	  background_color:  Null_Or( xc::Color )
         }
         ->
         Window;
@@ -93,9 +93,9 @@ api  Xwindow {
         :
         xc::Window
         ->
-        { geometry:    xg::Window_Site,
-	  border:      xc::Color,
-	  background:  xc::Color
+        { site:              xg::Window_Site,
+	  border_color:      xc::Color,
+	  background_color:  xc::Color
         }
         ->
         (Window, xinput::Kidplug);
@@ -104,9 +104,9 @@ api  Xwindow {
         :
         xc::Screen
         ->
-        { geometry:    xg::Window_Site,
-	  border:      xc::Color,
-	  background:  xc::Color
+        { site:              xg::Window_Site,
+	  border_color:      xc::Color,
+	  background_color:  xc::Color
         }
         ->
         (Window, xinput::Kidplug);
@@ -166,11 +166,13 @@ api  Xwindow {
 
     set_cursor:  Window ->  Null_Or( xc::Xcursor ) -> Void;
 
-    set_background:  Window -> Null_Or( xc::Color ) -> Void;
+    set_background_color:  Window -> Null_Or( xc::Color ) -> Void;
 	#
-	# Set the background color attribute of the window.  Note that this does
-	# not have an immediate affect on the window's contents, but if it is done
-	# before the window is mapped, the window will come up with the right color.
+	# Set the background color attribute of the window.
+        #
+        # This does not immediately affect the window's contents,
+        # but if it is done before the window is mapped the window
+        # will come up with the right color.
 
 
     change_window_attributes:  Window -> List( Window_Attribute ) -> Void;

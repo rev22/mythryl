@@ -185,7 +185,7 @@ herein
 
 	exception BAD_WINDOW_SITE;
 
-	fun check_shape g
+	fun check_site g
 	    =
 	    if (g::valid_shape g)   g;
 	    else                    raise  exception  BAD_WINDOW_SITE;
@@ -206,7 +206,7 @@ herein
 		    wr::make_widgettree_root_xevent_router
 			(screen, root_imps, window_id);
 
-		fun create_fn { geometry, border, background }
+		fun create_fn { site, border_color, background_color }
 		    =
 		    {
 			wio::create_window  xsocket
@@ -219,12 +219,12 @@ herein
 			    io          => xt::INPUT_OUTPUT,
 			    visual_id   => xt::SAME_VISUAL_AS_PARENT,
 			    #
-			    geometry    => check_shape geometry,
+			    site        => check_site site,
 			    #
 			    attributes
 				=>
-				[ wio::BORDER_PIXEL     (pixel_of border),
-				  wio::BACKGROUND_PIXEL (pixel_of background),
+				[ wio::BORDER_PIXEL     (pixel_of  border_color),
+				  wio::BACKGROUND_PIXEL (pixel_of  background_color),
 				  wio::EVENT_MASK       std_xevent_mask
 				]
 			  };
@@ -252,11 +252,11 @@ herein
 
 		screen_depth ->   sn::SCREEN_DEPTH_IMPS { depth, ... };
 
-		fun create_fn { geometry, border, background }
+		fun create_fn { site, border_color, background_color }
 		    =
 		    {   border_pixel
 			    =
-			    case border
+			    case border_color
 				#
 				NULL  =>   wio::BORDER_PIXMAP_COPY_FROM_PARENT;
 				THE c =>   wio::BORDER_PIXEL (pixel_of c);
@@ -265,7 +265,7 @@ herein
 
 			background_pixel
 			    =
-			    case background
+			    case background_color
 				#
 				NULL  =>   wio::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 				THE c =>   wio::BACKGROUND_PIXEL (pixel_of c);
@@ -281,7 +281,7 @@ herein
 			      depth,
 			      #	
 			      visual_id  => xt::SAME_VISUAL_AS_PARENT,
-			      geometry   => check_shape geometry,
+			      site       => check_site  site,
 			      #	
 			      attributes => [
 				  border_pixel,
@@ -309,7 +309,7 @@ herein
 	#
 	fun make_simple_popup_window
 		(scrn as sn::SCREEN { screen, xsession } )
-		{ geometry, border, background }
+		{ site, border_color, background_color }
 	    =
 	    (window, kidplug)
 	    where 
@@ -335,21 +335,21 @@ herein
 		    depth,
 		    #
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
-		    geometry   => check_shape geometry,
+		    site       => check_site  site,
 		    #
 		    attributes => [
 			wio::OVERRIDE_REDIRECT TRUE,
 			wio::SAVE_UNDER TRUE,
-			wio::BORDER_PIXEL (pixel_of border),
-			wio::BACKGROUND_PIXEL (pixel_of background),
-			wio::EVENT_MASK popup_xevent_mask
+			wio::BORDER_PIXEL      (pixel_of  border_color),
+			wio::BACKGROUND_PIXEL  (pixel_of  background_color),
+			wio::EVENT_MASK        popup_xevent_mask
 		      ]
 		  };
 	    end;
 
 	# Create a simple transient window:
 	#
-	fun make_transient_window prop_window { geometry, border, background }
+	fun make_transient_window prop_window { site, border_color, background_color }
 	    =
 	    (window, kidplug)
 	    where 
@@ -378,12 +378,12 @@ herein
 		    depth,
 		    #
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
-		    geometry   => check_shape geometry,
+		    site       => check_site  site,
 		    #
 		    attributes => [
-			wio::BORDER_PIXEL (pixel_of border),
-			wio::BACKGROUND_PIXEL (pixel_of background),
-			wio::EVENT_MASK std_xevent_mask
+			wio::BORDER_PIXEL     (pixel_of  border_color),
+			wio::BACKGROUND_PIXEL (pixel_of  background_color),
+			wio::EVENT_MASK       std_xevent_mask
 		      ]
 		};
 
@@ -433,15 +433,13 @@ herein
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
 		    attributes => [wio::EVENT_MASK std_xevent_mask],
 		    #
-		    geometry
-			=>
-			check_shape
-			    (g::WINDOW_SITE
-			      { upperleft    => g::POINT { col, row },
-				size         => g::SIZE { wide, high },
-				border_width => 0
-			      }
-			    )
+		    site => check_site
+				(g::WINDOW_SITE
+				  { upperleft    => g::POINT { col, row },
+				    size         => g::SIZE { wide, high },
+				    border_width => 0
+				  }
+				)
 		};
 	    end;
 
@@ -674,11 +672,14 @@ herein
 	    };
 
 
-	# Set the background color attribute of the window.  Note that this does
-	# not have an immediate affect on the window's contents, but if it is done
-	# before the window is mapped, the window will come up with the right color.
+	# Set the background color attribute of the window.
+        #
+        # Note that this does not immediately affect
+        # the window's contents, but if it is done
+	# before the window is mapped the window will
+        # come up with the right color.
 	#
-	fun set_background (dt::WINDOW { id, screen, ... } ) color
+	fun set_background_color (dt::WINDOW { id, screen, ... } ) color
 	    =
 	    wio::change_window_attributes  xsocket  (id, [color])
 	    where 
