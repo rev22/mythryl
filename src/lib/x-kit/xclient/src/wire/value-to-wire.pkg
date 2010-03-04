@@ -69,7 +69,7 @@ herein
 
 		list::apply  (f v)  lst;
 
-                xt::VALS  v;
+                xt::VALUE_LIST  v;
 	    };
 
 	# Used (only) in:
@@ -277,13 +277,13 @@ herein
 
 	    # Build a value list and mask from a value option rw_vector 
 	    #
-	    fun make_value_list (xt::VALS arr)
+	    fun make_value_list (xt::VALUE_LIST arr)
 		=
 		f ((rw_vector::length arr) - 1, 0, 0u0, [])
 		where
 		    fun f (-1, n, m, l)
 			    =>
-			    (n, xt::VALMASK m, l);
+			    (n, xt::VALUE_MASK m, l);
 
 			f (i, n, m, l)
 			    =>
@@ -305,13 +305,13 @@ herein
 
 	    herein
 
-		fun put_val_list (buf, i, xt::VALMASK m, vals)
+		fun put_val_list (buf, i, xt::VALUE_MASK m, vals)
 		    =
 		    {   put_word32 (buf, i,   m   );
 			put_vals   (buf, i+4, vals);
 		    };
 
-		fun put_val_list16 (buf, i, xt::VALMASK m, vals)
+		fun put_val_list16 (buf, i, xt::VALUE_MASK m, vals)
 		    =
 		    {   put_word16 (buf, i,   m   );
 			put_vals   (buf, i+4, vals);
@@ -593,12 +593,12 @@ herein
 		  depth:	Int,
                   visual_id:	xt::Visual_Id_Choice,
                   site:         g::Window_Site,
-                  vals:         xt::Value_List
+                  attributes:   xt::Value_List
                 }
 		=
-		{   my (nvals, mask, vals)
+		{   my (attribute_count, mask, attributes)
 			=
-			make_value_list vals;
+			make_value_list  attributes;
 
 		    io  = case io
 			      #
@@ -615,30 +615,30 @@ herein
 			    xt::OVERRIDE_PARENT_VISUAL (xt::VISUAL_ID id) =>   id;
 			esac;
 
-		    msg = make_extra_request (req_create_window, nvals);
+		    msg = make_extra_request (req_create_window, attribute_count);
 
-		    put_signed8  (msg,  1, depth     );
-		    put_xid      (msg,  4, window    );
-		    put_xid      (msg,  8, parent    );
-		    put_wgeom    (msg, 12, site      );
-		    put16	 (msg, 22, io        );
-		    put_word32   (msg, 24, visual_id );
-		    put_val_list (msg, 28, mask, vals);
+		    put_signed8  (msg,  1, depth           );
+		    put_xid      (msg,  4, window          );
+		    put_xid      (msg,  8, parent          );
+		    put_wgeom    (msg, 12, site            );
+		    put16	 (msg, 22, io              );
+		    put_word32   (msg, 24, visual_id       );
+		    put_val_list (msg, 28, mask, attributes);
 
 		    msg;
 		};
 
 
-	    fun encode_change_window_attributes { window, vals }
+	    fun encode_change_window_attributes { window, attributes }
 		=
-		{   my (nvals, mask, vals)
+		{   my (attribute_count, mask, attributes)
 			=
-			make_value_list  vals;
+			make_value_list  attributes;
 
-		    msg = make_extra_request (req_change_window_attributes, nvals);
+		    msg = make_extra_request (req_change_window_attributes, attribute_count);
 
-		    put_xid      (msg, 4, window    );
-		    put_val_list (msg, 8, mask, vals);
+		    put_xid      (msg, 4, window          );
+		    put_val_list (msg, 8, mask, attributes);
 
 		    msg;
 		};
@@ -1195,7 +1195,7 @@ herein
 		    msg;
 		};
 
-	    fun encode_copy_gc { from, to, mask => xt::VALMASK m }
+	    fun encode_copy_gc { from, to, mask => xt::VALUE_MASK m }
 		=
 		{   msg = make_request (req_copy_gc);
 

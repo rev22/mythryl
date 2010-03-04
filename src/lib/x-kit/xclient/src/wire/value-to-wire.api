@@ -60,7 +60,7 @@ herein
 				-> v8::Vector;
 
 	encode_change_save_set: { insert: Bool,  window: xt::Xid }                           -> v8::Vector;
-	encode_change_window_attributes: { vals: xt::Value_List,  window: xt::Xid }          -> v8::Vector;
+	encode_change_window_attributes: { attributes: xt::Value_List,  window: xt::Xid }    -> v8::Vector;
 
 	encode_circulate_window: { parent: xt::Xid,  place: xt::Stack_Pos, window: xt::Xid } -> v8::Vector;
 
@@ -157,7 +157,7 @@ herein
                                 site:       g::Window_Site, 
 				io:         xt::Input_Output,
                                 parent:     xt::Xid, 
-				vals:       xt::Value_List, 
+				attributes: xt::Value_List, 
 				visual_id:  xt::Visual_Id_Choice,
 				window:     xt::Xid
                               }

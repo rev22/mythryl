@@ -404,10 +404,14 @@ herein
 	#
 	Event_Mask = EVENT_MASK  Unt;
 
-	# Value lists:
+	# Value "lists".
 	#
-	Value_Mask = VALMASK  Unt;
-	Value_List = VALS     rw_vector::Rw_Vector( Null_Or( Unt ) );
+        # We call these lists because that is
+        # the X protocol doc terminology;
+	# they are actually vectors:
+	#
+	Value_Mask = VALUE_MASK  Unt;
+	Value_List = VALUE_LIST  rw_vector::Rw_Vector( Null_Or( Unt ) );
 
 	# Ilks for QueryBestSize:
 	#

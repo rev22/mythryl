@@ -1,3 +1,6 @@
+2010-03-03-20.27.16: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Renamed VALMASK,VALS -> VALUE_MASK, VALUE_LIST for clarity and consistency with X protocol docs.
+2010-03-03-20.27.16: src/lib/x-kit/xclient/src/wire/window-io.api: Renamed Xwin_Val -> Window_Attribute because the latter is not gibberish.
+2010-03-03-20.27.16: src/lib/x-kit/xclient/src/window/window.api: make_simple_top_window, make_simple_subwindow, make_transient_window, make_simple_popup_window: Renamed parameters geometry,border,background -> site,border_color,background_color for clarity.
 2010-03-03-19.48.31: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Add Visual_Id_Choice = SAME_VISUAL_AS_PARENT | OVERRIDE_PARENT_VISUAL Visual_Id.  src/lib/x-kit/xclient/src/wire/window-io.api: create_window: Change visual_id from Null_Or(Visual_ID) -> Visual_Id_Choice, thus changing typical argument from NULL to the more readable SAME_VISUAL_AS_PARENT.
 2010-03-03-16.49.17: src/lib/x-kit/xclient/src/wire/window-io.ap: create_window: Renamed input_only -> io; replaced gibberish values NULL/THE TRUE/THE FALSE by INPUT_ONLY/INPUT_OUTPUT/SAME_IO_AS_PARENT.
 2010-03-03-16.27.08: src/lib/x-kit/xclient/src/window/geometry.pkg: For concision renamed Window_Footprint, WINDOW_FOOTPRINT -> Window_Site, WINDOW_SITE.

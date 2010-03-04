@@ -348,7 +348,7 @@ herein
 			    init_vals (dst_mask, 0);
 
 
-			    { vals => xt::VALS gc_vals,
+			    { vals => xt::VALUE_LIST gc_vals,
 
 			      clip_boxes
 				  =>
@@ -430,7 +430,7 @@ herein
 
 			    rw_vector::set (vals, font_gcslot, THE fid);
 
-			    request (x2w::encode_change_gc { gc => gc_id, vals => xt::VALS vals } );
+			    request (x2w::encode_change_gc { gc => gc_id, vals => xt::VALUE_LIST vals } );
 			};
 
 
@@ -491,7 +491,7 @@ herein
 				      x2w::encode_copy_gc
 					  {  from =>  default_gcid,
 					     to   =>  gc_id,
-					     mask =>  xt::VALMASK (pen_mask_to_gcmask  default_mask)
+					     mask =>  xt::VALUE_MASK (pen_mask_to_gcmask  default_mask)
 					  }
 				  );
 			      fi;

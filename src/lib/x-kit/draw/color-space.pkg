@@ -1,17 +1,19 @@
 ## color-space.pkg
+#
+# Various color space utilities.
 
 # Compiled by:
 #     src/lib/x-kit/draw/xkit-draw.make6
 
 
-# Code of various color space utilities.
 
 
 
 ###         "I have never known any distress that an
 ###          hour's reading did not relieve."
 ###
-###                             -- Nontesquieu
+###                             -- Charles Louis de Secondat,
+###                                Baron de la Brede et de Montesquieu 
 
 
 
@@ -21,40 +23,54 @@ package color_space: (weak)  Color_Space {		# Color_Space	is from   src/lib/x-ki
 
     maxrgb = 65535.0;
 
-    Hsv = HSV  { hue:  Float, sat:  Float, value:  Float };
-    Yiq = YIQ  { y:  Float, i:  Float, q:  Float };
+    Hsv = HSV  { hue:    Float,
+                 sat:    Float,
+                 value:  Float
+               };
+
+    Yiq = YIQ  { y:  Float,
+                 i:  Float,
+                 q:  Float
+               };
 
     fun max (a:  Float, b) = if (a >= b) a; else b; fi;
     fun min (a:  Float, b) = if (a <= b) a; else b; fi;
 
-    fun sc r  = unt::from_int (float::truncate (maxrgb*r));
-    fun w2r w = real (unt::to_int_x w);
+    fun sc r  =  unt::from_int (float::truncate (maxrgb*r));
+    fun w2r w =  real (unt::to_int_x w);
 
     fun rgb_to_hsv (xc::RGB { red, green, blue } )
         =
         {   realr = (w2r red)//maxrgb;
 	    realg = (w2r green)//maxrgb;
 	    realb = (w2r blue)//maxrgb;
+
 	    max_v = max (realr, max (realg, realb));
 	    min_v = min (realr, min (realg, realb));
+
 	    delta = max_v - min_v;
 
-            if   (float::(====) (delta, 0.0))
-                
+            if (float::(====) (delta, 0.0))
+		#                
                  HSV { hue=>0.0, sat=>0.0, value=>max_v };
             else 
-		 sat = delta // max_v;
-		 rc = (max_v - realr)//delta;
-		 gc = (max_v - realg)//delta;
-		 bc = (max_v - realb)//delta;
-		 h1 = if   (float::(====) (realr, max_v) ) bc - gc;
-		      elif (float::(====) (realg, max_v) ) 2.0 + rc - bc;
-		      else 4.0 + gc - rc;
+		sat = delta // max_v;
+
+		rc = (max_v - realr)//delta;
+		gc = (max_v - realg)//delta;
+		bc = (max_v - realb)//delta;
+
+		h1 = if   (float::(====) (realr, max_v) ) bc - gc;
+		     elif (float::(====) (realg, max_v) ) 2.0 + rc - bc;
+		     else 4.0 + gc - rc;
+		     fi;
+		h2 = 60.0 * h1;                    #   Convert to degrees 
+
+		hue = if (h2 < 0.0)  h2 + 360.0; #  make nonnegative 
+		      else           h2;
                       fi;
-		 h2 = 60.0 * h1;                    #   Convert to degrees 
-		 hue = if (h2 < 0.0   ) h2 + 360.0; #  make nonnegative 
-				     else h2;fi;
-		 HSV { hue, sat, value=>max_v };
+
+		HSV { hue, sat, value=>max_v };
              fi;
           };
 
@@ -64,32 +80,36 @@ package color_space: (weak)  Color_Space {		# Color_Space	is from   src/lib/x-ki
 
     fun hsb_to_rgb (HSV { sat, value, hue } )
 	=
-	if   (float::(====) (sat, 0.0))
-	    
-             v = sc value;   xc::RGB { red=>v, green=>v, blue=>v }; 
+	if (float::(====) (sat, 0.0))
+	    #
+            v = sc value;   xc::RGB { red=>v, green=>v, blue=>v }; 
 	else
-	     h = if (float::(====) (hue, 360.0) ) 0.0; else hue//60.0;fi;
-	     i = floor h;
-	     ri = real i;
-	     f = h - ri;
-	     p = value*(1.0 - sat);
-	     q = value*(1.0 - (sat*f));
-	     t = value*(1.0 - (sat*(1.0 - f)));
+	    h = if (float::(====) (hue, 360.0) ) 0.0; else hue//60.0;fi;
+	    i = floor h;
 
-	     fun mkrgb (r, g, b)
-		 =
-		 xc::RGB { red=>sc r, green=>sc g, blue=>sc b };
+	    ri = real i;
+	    f = h - ri;
 
-	     case i
-	       
-		  0 => mkrgb (value, t, p);
-		  1 => mkrgb (q, value, p);
-		  2 => mkrgb (p, value, t);
-		  3 => mkrgb (p, q, value);
-		  4 => mkrgb (t, p, value);
-		  _ => mkrgb (value, p, q);
-             esac;
+	    p = value*(1.0 -  sat);
+	    q = value*(1.0 - (sat*f));
+	    t = value*(1.0 - (sat*(1.0 - f)));
 
+	    fun mkrgb (r, g, b)
+		=
+		xc::RGB { red   =>  sc r,
+                          green =>  sc g,
+                          blue  =>  sc b
+                        };
+
+	    case i
+		#
+		0 =>  mkrgb (value, t, p);
+		1 =>  mkrgb (q, value, p);
+		2 =>  mkrgb (p, value, t);
+		3 =>  mkrgb (p, q, value);
+		4 =>  mkrgb (t, p, value);
+		_ =>  mkrgb (value, p, q);
+	    esac;
 	fi;
 
     fun get_y' (xc::RGB { red, green, blue } )

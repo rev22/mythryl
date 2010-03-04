@@ -17,6 +17,20 @@
 #include "lib7-c.h"
 #include "cfun-proto-list.h"
 
+
+
+/*
+###		"Read at every wait; read at all hours;
+###              read within leisure; read in times of labor;
+###              read as one goes in; read as one goes out.
+###              The task of an educated mind is simply put:
+###                 read to lead."
+###
+###                                      -- Cicero
+*/
+
+
+
 /* _lib7_P_IO_read : (int * int) -> unt8_vector.Vector
  *                  fd    nbytes
  *

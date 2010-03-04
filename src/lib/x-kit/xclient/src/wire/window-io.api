@@ -22,7 +22,8 @@ herein
 
 	# Window configuration values:
 	#
-	Xwin_Val
+	Window_Attribute
+	  #
 	  = BACKGROUND_PIXMAP_NONE
 	  | BACKGROUND_PIXMAP_PARENT_RELATIVE
 	  | BACKGROUND_PIXMAP      		xt::Pixmap_Id
@@ -65,7 +66,7 @@ herein
 	       visual_id:   xt::Visual_Id_Choice,
 	       #
 	       site:        g::Window_Site,
-	       attributes:  List( Xwin_Val )
+	       attributes:  List( Window_Attribute )
 	     }
 	    ->
 	    Void;
@@ -78,7 +79,7 @@ herein
 
 	change_window_attributes
 	    :  xok::Xsocket
-	    -> (xt::Window_Id, List(Xwin_Val))
+	    -> (xt::Window_Id, List(Window_Attribute))
 	    -> Void;
 	    #
 	    # Change window attributes.

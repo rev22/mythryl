@@ -54,7 +54,7 @@ herein
 	Color =
 	    COLOR  {		  		#  A color in the colormap 
 		pixel:  xtypes::Pixel,		#  Its pixel value 
-		rgb:  Rgb			 	#  Its RGB value 
+		rgb:    Rgb		 	#  Its RGB value 
 	    };
 
 	# The following are used for drawing 0s or 1s on pixmaps.

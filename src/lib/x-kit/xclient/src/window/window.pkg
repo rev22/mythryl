@@ -225,7 +225,7 @@ herein
 				=>
 				[ wio::BORDER_PIXEL     (pixel_of  border_color),
 				  wio::BACKGROUND_PIXEL (pixel_of  background_color),
-				  wio::EVENT_MASK       std_xevent_mask
+				  wio::EVENT_MASK        std_xevent_mask
 				]
 			  };
 

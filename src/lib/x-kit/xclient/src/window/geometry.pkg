@@ -53,8 +53,8 @@ herein
 
 	    Arc =
 		ARC
-		  { col:       Int,
-		    row:       Int,
+		  { col:     Int,
+		    row:     Int,
 
 		    wide:    Int,
 		    high:    Int,
@@ -63,7 +63,7 @@ herein
 		    angle2:  Int
 		  };
 
-	    # The geometry of a window
+	    # The size and position of a window
 	    # with respect to its parent:
 	    #
 	    Window_Site
