@@ -467,11 +467,11 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 			    =
 			    get_visual_depth_list (buf, i+40, get_int8 (buf, i+39));
 
-			( { root_window          => get_xid (buf, i),
+			( { root_window         => get_xid (buf, i),
 			    default_colormap    => get_xid (buf, i+4),
 
-			    white               => get_pixel (buf, i+8),
-			    black               => get_pixel (buf, i+12),
+			    white_pixel         => get_pixel (buf, i+8),
+			    black_pixel         => get_pixel (buf, i+12),
 
 			    input_masks         => get_event_mask (buf, i+16),
 

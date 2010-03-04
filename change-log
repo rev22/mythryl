@@ -1,3 +1,4 @@
+2010-03-04-00.27.45: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Successful (and plausible) call to v2w::encode_create_window.
 2010-03-03-23.28.23: src/lib/x-kit/xclient/src/wire/value-to-wire.api: encode_create_window, encode_change_window_attributes: Change attributes arg from xt::Value_List -> List( xt::wa::Window_Attribute );  Make make_window_attribute_list private to value-to-wire.pkg.
 2010-03-03-22.56.00: src/lib/x-kit/xclient/src/wire/window-io.api: Move Window_Attribute to src/lib/x-kit/xclient/src/wire/xtypes.pkg, move make_window_attribute_list -> src/lib/x-kit/xclient/src/wire/value-to-wire.api.
 2010-03-03-22.17.10: src/lib/x-kit/xclient/src/window/window.pkg: Rename std_xevent_mask -> standard_xevent_mask.

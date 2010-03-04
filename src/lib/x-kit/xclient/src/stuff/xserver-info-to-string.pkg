@@ -131,8 +131,8 @@ herein
 			  sprintf  "pixels_wide d=%d"       s.pixels_wide,
 			  sprintf  "root_depth  d=%d"       s.root_depth,
 			  sprintf  "save_unders s=%s"      (s.save_unders ?? "TRUE" :: "FALSE"),
-			  sprintf  "black       x=%x"      (pixel_to_int s.black),
-			  sprintf  "white       x=%x"      (pixel_to_int s.white),
+			  sprintf  "black_pixel x=%x"      (pixel_to_int s.black_pixel),
+			  sprintf  "white_pixel x=%x"      (pixel_to_int s.white_pixel),
 			  sprintf  "backing store %s"      (backing_store_to_string s.backing_store),
 
 			           "Installed colormaps:",

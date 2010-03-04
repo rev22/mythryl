@@ -143,7 +143,7 @@ herein
 	#
 	fun make_color_imp (
 		display::XDISPLAY { xsocket, ... },
-		display::XSCREEN { default_colormap, black, white, ... }
+		display::XSCREEN { default_colormap, black_pixel, white_pixel, ... }
 	    )
 	    =
 	    {   exception NOT_FOUND;
@@ -245,8 +245,8 @@ herein
 			give  (reply_slot,  result);
 		    };
 
-		black = COLOR { pixel=>black, rgb=>black_rgb };
-		white = COLOR { pixel=>white, rgb=>white_rgb };
+		black = COLOR { pixel=>black_pixel, rgb=>black_rgb };
+		white = COLOR { pixel=>white_pixel, rgb=>white_rgb };
 
 		  rgb_ins (black_rgb, black);
 		  rgb_ins (white_rgb, white);

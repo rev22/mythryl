@@ -527,8 +527,8 @@ herein
 	    =
 	    { backing_store:    Backing_Store, 
 	      #
-	      black:            Pixel,
-	      white:            Pixel,
+	      black_pixel:      Pixel,
+	      white_pixel:      Pixel,
 	      #
 	      default_colormap: Xid, 
 	      input_masks:      Event_Mask, 

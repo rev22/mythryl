@@ -46,10 +46,10 @@ herein
 
 		screen =  list::nth  (screens, default_screen);
 
-		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, black, white, ... };
+		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, black_pixel, white_pixel, ... };
 
-		background_pixel = white;	
-		border_pixel     = black;	
+		background_pixel = white_pixel;
+		border_pixel     = black_pixel;
 
 		window_id =  next_xid ();
 
