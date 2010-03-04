@@ -13,6 +13,7 @@ stipulate
     package xok = xsocket;							# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package v2w = value_to_wire;						# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package w2v = wire_to_value;						# wire_to_value		is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
+    package xt  = xtypes;							# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     package color_imp: (weak)  Color_Imp {					# Color_Imp		is from   src/lib/x-kit/xclient/src/window/color-imp.api
@@ -53,15 +54,15 @@ herein
 
 	Color =
 	    COLOR  {		  		#  A color in the colormap 
-		pixel:  xtypes::Pixel,		#  Its pixel value 
+		pixel:  xt::Pixel,		#  Its pixel value 
 		rgb:    Rgb		 	#  Its RGB value 
 	    };
 
 	# The following are used for drawing 0s or 1s on pixmaps.
 	# Note that the rgb fields are bogus.
 
-	color0 = COLOR { pixel => xtypes::PIXEL 0, rgb => black_rgb };
-	color1 = COLOR { pixel => xtypes::PIXEL 1, rgb => black_rgb };
+	color0 = COLOR { pixel => xt::PIXEL 0, rgb => black_rgb };
+	color1 = COLOR { pixel => xt::PIXEL 1, rgb => black_rgb };
 
 	Reply_Mail
 	  = REPLY_ERROR

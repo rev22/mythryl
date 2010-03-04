@@ -30,13 +30,6 @@ herein
 	    -> xt::Value_List
             ;
 
-#	make_window_attribute_list
-#	    :
-#	    List( xt::wa::Window_Attribute )
-#	    ->
-#	    xt::Value_List
-#	    ;
-
 	encode_alloc_color:       { cmap: xt::Xid,  color: xt::Rgb }             -> v8::Vector;
 	encode_alloc_named_color: { cmap: xt::Xid,  name: String }               -> v8::Vector;
 	encode_allow_events:      { mode: xt::Event_Mode,  time: xt::Timestamp } -> v8::Vector;

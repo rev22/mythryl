@@ -24,6 +24,8 @@ stipulate
     package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package au  =  authentication;				# authentication		is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
     package v2w =  value_to_wire;				# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package w   =  window;					# window			is from   src/lib/x-kit/xclient/src/window/window.pkg
+    package g   =  geometry;					# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     #
     tracefile   =  "xclient-unit-test-trace.log";
 herein
@@ -44,7 +46,10 @@ herein
 
 		screen =  list::nth  (screens, default_screen);
 
-		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, ... };
+		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, black, white, ... };
+
+		background_pixel = white;	
+		border_pixel     = black;	
 
 		window_id =  next_xid ();
 
@@ -60,30 +65,35 @@ herein
 		    xt::VISUAL { depth, visual_id, ... }
                         =>
                         {   printf "root_visual is VISUAL as expected, depth d=%d.\n" depth;
+
+			    request
+				=
+				v2w::encode_create_window
+				      {
+					depth,
+					window    => window_id,
+					parent    => parent_id,
+					#
+					io        => xt::INPUT_OUTPUT,
+					visual_id => xt::SAME_VISUAL_AS_PARENT,
+					#
+					site =>
+                                            g::WINDOW_SITE
+					      { upperleft    =>  g::POINT { col=>100, row=>100 },
+						size         =>  g::SIZE { wide=>400, high=>400 },
+						border_width =>  1
+					      },
+
+					attributes
+					    =>
+					    [ xt::wa::BORDER_PIXEL     border_pixel,
+					      xt::wa::BACKGROUND_PIXEL background_pixel,
+					      xt::wa::EVENT_MASK        w::standard_xevent_mask
+					    ]
+				      };
 			};
 		esac;
 
-#		request
-#		    =
-#		    v2w::encode_create_window
-#			  {
-#			    window => window_id,
-#			    parent => parent_id,
-#			    io     => xt::INPUT_OUTPUT,
-#			    depth,
-#			    xt::SAME_VISUAL_AS_PARENT,
-#			    site   =>  xg::WINDOW_SITE
-#					 { upperleft    =>  xg::POINT { col=>100, row=>100 },
-#					   size         =>  xg::SIZE { wide=>400, high=>400 },
-#					   border_width =>  1
-#					 },
-#			    attributes
-#				=>
-#				[ wio::BORDER_PIXEL     (pixel_of  border_color),
-#				  wio::BACKGROUND_PIXEL (pixel_of  background_color),
-#				  wio::EVENT_MASK        standard_xevent_mask
-#				]
-#			  };
 
 
 #		window

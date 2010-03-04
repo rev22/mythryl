@@ -39,6 +39,7 @@ stipulate
     package ip =  iccc_property;		# iccc_property		is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
     package wc =  widget_cable;			# widget_cable		is from   src/lib/x-kit/xclient/src/window/widget-cable.pkg
     package wh =  window_manager_hint;		# window_manager_hint	is from   src/lib/x-kit/xclient/src/iccc/window-manager-hint.pkg
+    package et =  event_types;			# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
 herein
 
     api Window {
@@ -208,16 +209,20 @@ herein
 	    #
 	    # Set various window attributes.
 
-	show_window:        Window -> Void;		# Show ("map") window. Won't actually show unless all ancestors show.
-	hide_window:        Window -> Void;		# Opposide of show.
-	withdraw_window:    Window -> Void;
-	destroy_window:     Window -> Void;		# In X, destroying a window destroys all its subwindows also, recursively.
+	show_window:          Window -> Void;		# Show ("map") window. Won't actually show unless all ancestors show.
+	hide_window:          Window -> Void;		# Opposide of show.
+	withdraw_window:      Window -> Void;
+	destroy_window:       Window -> Void;		# In X, destroying a window destroys all its subwindows also, recursively.
 
-	screen_of_window:   Window -> sn::Screen;
-	xsession_of_window: Window -> sn::Xsession;
+	screen_of_window:     Window -> sn::Screen;
+	xsession_of_window:   Window -> sn::Xsession;
 
-	grab_keyboard:      Window -> Int;
-	ungrab_keyboard:    Window -> Int;
+	grab_keyboard:        Window -> Int;
+	ungrab_keyboard:      Window -> Int;
+
+	standard_xevent_mask: xt::Event_Mask;
+
+	pixel_of:	      ci::Color -> xt::Pixel;
     };
 
 end;

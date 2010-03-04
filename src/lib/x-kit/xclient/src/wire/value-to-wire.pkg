@@ -138,7 +138,7 @@ herein
 	#     encode_create_window
 	#     encode_change_window_attributes
 	#
-	make_window_attribute_list
+	my  make_window_attribute_list:   List( xt::wa::Window_Attribute ) -> xt::Value_List
 	    =
 	    do_val_list  15  set_window_attribute
             where
