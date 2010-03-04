@@ -1,3 +1,4 @@
+2010-03-03-21.51.16: src/lib/x-kit/xclient/src/wire/value-to-wire.api:  encode_create_window, encode_change_window_attributes: Rename vals -> attributes for clarity.
 2010-03-03-20.27.16: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Renamed VALMASK,VALS -> VALUE_MASK, VALUE_LIST for clarity and consistency with X protocol docs.
 2010-03-03-20.27.16: src/lib/x-kit/xclient/src/wire/window-io.api: Renamed Xwin_Val -> Window_Attribute because the latter is not gibberish.
 2010-03-03-20.27.16: src/lib/x-kit/xclient/src/window/window.api: make_simple_top_window, make_simple_subwindow, make_transient_window, make_simple_popup_window: Renamed parameters geometry,border,background -> site,border_color,background_color for clarity.

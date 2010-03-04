@@ -69,11 +69,15 @@ herein
 #			  {
 #			    window => window_id,
 #			    parent => parent_id,
-#			    io     => xt::INPUT_OUTPUT,		# More typically xt::SAME_IO_AS_PARENT.
+#			    io     => xt::INPUT_OUTPUT,
 #			    depth,
-#			    THE visual_id,			# NULL would be CopyFromParent
-#			    geometry,
-#			    vals => do_window_val_list attributes
+#			    xt::SAME_VISUAL_AS_PARENT,
+#			    site   =>  xg::WINDOW_SITE
+#					 { upperleft    =>  xg::POINT { col=>100, row=>100 },
+#					   size         =>  xg::SIZE { wide=>400, high=>400 },
+#					   border_width =>  1
+#					 },
+#			    attributes => do_window_val_list attributes
 #			  };
 
 

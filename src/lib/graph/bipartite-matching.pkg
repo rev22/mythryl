@@ -157,7 +157,7 @@ package bipartite_matching: (weak)  Bipartite_Matching		# Bipartite_Matching	is 
 
 
 	    # Main loop
-
+	    #
 	    fun iterate ()
 		=
 		loop 0
@@ -176,7 +176,9 @@ package bipartite_matching: (weak)  Bipartite_Matching		# Bipartite_Matching	is 
 			fi;
 		end;
 
-	    # Fold result; make sure parallel and opposite edges are handled 
+	    # Fold result; make sure parallel
+	    # and opposite edges are handled:
+	    #
 	    fun fold (f, x)
 		=
 		{   m = REF x;

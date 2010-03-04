@@ -157,7 +157,7 @@ herein
 	    =
 	    list::map  user_window_attribute_to_internal_window_attribute;
 
-	std_xevent_mask
+	standard_xevent_mask
 	    =
 	    et::mask_of_xevent_list
 	      [
@@ -225,7 +225,7 @@ herein
 				=>
 				[ wio::BORDER_PIXEL     (pixel_of  border_color),
 				  wio::BACKGROUND_PIXEL (pixel_of  background_color),
-				  wio::EVENT_MASK        std_xevent_mask
+				  wio::EVENT_MASK        standard_xevent_mask
 				]
 			  };
 
@@ -286,7 +286,7 @@ herein
 			      attributes => [
 				  border_pixel,
 				  background_pixel,
-				  wio::EVENT_MASK std_xevent_mask
+				  wio::EVENT_MASK standard_xevent_mask
 				]
 			    };
 
@@ -383,7 +383,7 @@ herein
 		    attributes => [
 			wio::BORDER_PIXEL     (pixel_of  border_color),
 			wio::BACKGROUND_PIXEL (pixel_of  background_color),
-			wio::EVENT_MASK       std_xevent_mask
+			wio::EVENT_MASK       standard_xevent_mask
 		      ]
 		};
 
@@ -431,7 +431,7 @@ herein
 		    depth      => 0,
 		    #	
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
-		    attributes => [wio::EVENT_MASK std_xevent_mask],
+		    attributes => [wio::EVENT_MASK standard_xevent_mask],
 		    #
 		    site => check_site
 				(g::WINDOW_SITE

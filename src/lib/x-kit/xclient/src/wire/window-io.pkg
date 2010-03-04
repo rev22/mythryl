@@ -65,6 +65,7 @@ herein
 		   BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
 		   
 		   BACKGROUND_PIXEL (xt::PIXEL p)		=> update (1, unt::from_int p);
+
 		   BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
 		   BORDER_PIXMAP (xt::XID p)			=> update (2, p);
 		   
