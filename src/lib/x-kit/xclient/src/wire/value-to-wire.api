@@ -157,7 +157,7 @@ herein
 				io:         xt::Input_Output,
                                 parent:     xt::Xid, 
 				vals:       xt::Value_List, 
-				visual_id:  Null_Or(xt::Visual_Id), 	# NULL == CopyFromParent
+				visual_id:  xt::Visual_Id_Choice,
 				window:     xt::Xid
                               }
 			      -> v8::Vector;

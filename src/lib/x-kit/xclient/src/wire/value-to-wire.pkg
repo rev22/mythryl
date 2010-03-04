@@ -591,7 +591,7 @@ herein
 		  parent:	xt::Xid,
 		  io:		xt::Input_Output,
 		  depth:	Int,
-                  visual_id:	Null_Or(xt::Visual_Id),
+                  visual_id:	xt::Visual_Id_Choice,
                   geometry:     g::Window_Site,
                   vals:         xt::Value_List
                 }
@@ -611,8 +611,8 @@ herein
 			=
 			case visual_id
 			    #
-			    NULL                   =>  0u0;	/* This must be the documented CopyFromParent value.	*/
-			    THE (xt::VISUAL_ID id) =>   id;
+			    xt::SAME_VISUAL_AS_PARENT                     =>  0u0;	/* X calls this CopyFromParent	*/
+			    xt::OVERRIDE_PARENT_VISUAL (xt::VISUAL_ID id) =>   id;
 			esac;
 
 		    msg = make_extra_request (req_create_window, nvals);

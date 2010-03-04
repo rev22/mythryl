@@ -217,7 +217,7 @@ herein
 			    parent      => root_window_id,
 			    #
 			    io          => xt::INPUT_OUTPUT,
-			    visual_id   => NULL,		# CopyFromParent
+			    visual_id   => xt::SAME_VISUAL_AS_PARENT,
 			    #
 			    geometry    => check_shape geometry,
 			    #
@@ -280,7 +280,7 @@ herein
 			      io         => xt::INPUT_OUTPUT,
 			      depth,
 			      #	
-			      visual_id  => NULL,			# CopyFromParent
+			      visual_id  => xt::SAME_VISUAL_AS_PARENT,
 			      geometry   => check_shape geometry,
 			      #	
 			      attributes => [
@@ -334,7 +334,7 @@ herein
 		    io         => xt::INPUT_OUTPUT,
 		    depth,
 		    #
-		    visual_id  => NULL,				# CopyFromParent
+		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
 		    geometry   => check_shape geometry,
 		    #
 		    attributes => [
@@ -377,7 +377,7 @@ herein
 		    io         => xt::INPUT_OUTPUT,
 		    depth,
 		    #
-		    visual_id  => NULL,					# CopyFromParent
+		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
 		    geometry   => check_shape geometry,
 		    #
 		    attributes => [
@@ -430,7 +430,7 @@ herein
 		    io         => xt::INPUT_ONLY,
 		    depth      => 0,
 		    #	
-		    visual_id  => NULL,						# CopyFromParent
+		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
 		    attributes => [wio::EVENT_MASK std_xevent_mask],
 		    #
 		    geometry

@@ -1,3 +1,4 @@
+2010-03-03-16.49.17: src/lib/x-kit/xclient/src/wire/window-io.ap: create_window: Renamed input_only -> io; replaced gibberish values NULL/THE TRUE/THE FALSE by INPUT_ONLY/INPUT_OUTPUT/SAME_IO_AS_PARENT.
 2010-03-03-16.27.08: src/lib/x-kit/xclient/src/window/geometry.pkg: For concision renamed Window_Footprint, WINDOW_FOOTPRINT -> Window_Site, WINDOW_SITE.
 2010-03-03-12.30.50: src/lib/x-kit/xclient/src/wire/value-to-wire.api: encode_create_window: Rename id -> visual_id for clarity.
 2010-03-03-12.04.00: src/lib/x-kit/xclient/src/wire/xtypes.pkg: For clarity, change VISUAL.id -> VISUAL.visual_id.

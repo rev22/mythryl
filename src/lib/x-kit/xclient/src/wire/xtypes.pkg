@@ -426,13 +426,23 @@ herein
 	  | RETAIN_TEMPORARY
 	  ;
 
-	# io arg for create_window and encode_create_window:
+	# 'io' arg for create_window
+        # and  encode_create_window:
 	#
 	Input_Output
 	  #
 	  = SAME_IO_AS_PARENT
 	  | INPUT_OUTPUT
 	  | INPUT_ONLY
+	  ;
+
+	# 'visual_id' arg for create_window
+	# and          encode_create_window:
+	#
+	Visual_Id_Choice
+	  #
+	  = SAME_VISUAL_AS_PARENT
+	  | OVERRIDE_PARENT_VISUAL Visual_Id
 	  ;
 
 	# X hosts 
