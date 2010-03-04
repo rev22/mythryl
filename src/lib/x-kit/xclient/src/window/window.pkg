@@ -101,55 +101,55 @@ herein
 	#
 	fun user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_NONE)
 		=>
-		wio::BACKGROUND_PIXMAP_NONE;
+		xt::wa::BACKGROUND_PIXMAP_NONE;
 
 	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_PARENT_RELATIVE)
 		=>
-		wio::BACKGROUND_PIXMAP_PARENT_RELATIVE;
+		xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 
 	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
-		wio::BACKGROUND_PIXMAP id;
+		xt::wa::BACKGROUND_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } ))) 
 	       => 
-		wio::BACKGROUND_PIXMAP id;
+		xt::wa::BACKGROUND_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_COLOR color)
 		=>
-		wio::BACKGROUND_PIXEL (pixel_of color);
+		xt::wa::BACKGROUND_PIXEL (pixel_of color);
 
 	    user_window_attribute_to_internal_window_attribute (WA_BORDER_COPY_FROM_PARENT)
 		=>
-		wio::BORDER_PIXMAP_COPY_FROM_PARENT;
+		xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT;
 
 	    user_window_attribute_to_internal_window_attribute (WA_BORDER_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
-		wio::BORDER_PIXMAP id;
+		xt::wa::BORDER_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (WA_BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } )))
 		=>
-		wio::BORDER_PIXMAP id;
+		xt::wa::BORDER_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (WA_BORDER_COLOR color)
 		=>
-		wio::BORDER_PIXEL (pixel_of color);
+		xt::wa::BORDER_PIXEL (pixel_of color);
 
 	    user_window_attribute_to_internal_window_attribute (WA_BIT_GRAVITY g)
 		=>
-		wio::BIT_GRAVITY g;
+		xt::wa::BIT_GRAVITY g;
 
 	    user_window_attribute_to_internal_window_attribute (WA_WINDOW_GRAVITY g)
 		=>
-		wio::WINDOW_GRAVITY g;
+		xt::wa::WINDOW_GRAVITY g;
 
 	    user_window_attribute_to_internal_window_attribute (WA_CURSOR_NONE)
 		=>
-		wio::CURSOR_NONE;
+		xt::wa::CURSOR_NONE;
 
 	    user_window_attribute_to_internal_window_attribute (WA_CURSOR (cs::XCURSOR { id, ... } ))
 		=>
-		wio::CURSOR id;
+		xt::wa::CURSOR id;
 	end;
 
 
@@ -223,9 +223,9 @@ herein
 			    #
 			    attributes
 				=>
-				[ wio::BORDER_PIXEL     (pixel_of  border_color),
-				  wio::BACKGROUND_PIXEL (pixel_of  background_color),
-				  wio::EVENT_MASK        standard_xevent_mask
+				[ xt::wa::BORDER_PIXEL     (pixel_of  border_color),
+				  xt::wa::BACKGROUND_PIXEL (pixel_of  background_color),
+				  xt::wa::EVENT_MASK        standard_xevent_mask
 				]
 			  };
 
@@ -258,8 +258,8 @@ herein
 			    =
 			    case border_color
 				#
-				NULL  =>   wio::BORDER_PIXMAP_COPY_FROM_PARENT;
-				THE c =>   wio::BORDER_PIXEL (pixel_of c);
+				NULL  =>   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT;
+				THE c =>   xt::wa::BORDER_PIXEL (pixel_of c);
 			    esac;
 
 
@@ -267,8 +267,8 @@ herein
 			    =
 			    case background_color
 				#
-				NULL  =>   wio::BACKGROUND_PIXMAP_PARENT_RELATIVE;
-				THE c =>   wio::BACKGROUND_PIXEL (pixel_of c);
+				NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
+				THE c =>   xt::wa::BACKGROUND_PIXEL (pixel_of c);
 			    esac;
 
 
@@ -286,7 +286,7 @@ herein
 			      attributes => [
 				  border_pixel,
 				  background_pixel,
-				  wio::EVENT_MASK standard_xevent_mask
+				  xt::wa::EVENT_MASK standard_xevent_mask
 				]
 			    };
 
@@ -338,11 +338,11 @@ herein
 		    site       => check_site  site,
 		    #
 		    attributes => [
-			wio::OVERRIDE_REDIRECT TRUE,
-			wio::SAVE_UNDER TRUE,
-			wio::BORDER_PIXEL      (pixel_of  border_color),
-			wio::BACKGROUND_PIXEL  (pixel_of  background_color),
-			wio::EVENT_MASK        popup_xevent_mask
+			xt::wa::OVERRIDE_REDIRECT TRUE,
+			xt::wa::SAVE_UNDER TRUE,
+			xt::wa::BORDER_PIXEL      (pixel_of  border_color),
+			xt::wa::BACKGROUND_PIXEL  (pixel_of  background_color),
+			xt::wa::EVENT_MASK        popup_xevent_mask
 		      ]
 		  };
 	    end;
@@ -381,9 +381,9 @@ herein
 		    site       => check_site  site,
 		    #
 		    attributes => [
-			wio::BORDER_PIXEL     (pixel_of  border_color),
-			wio::BACKGROUND_PIXEL (pixel_of  background_color),
-			wio::EVENT_MASK       standard_xevent_mask
+			xt::wa::BORDER_PIXEL     (pixel_of  border_color),
+			xt::wa::BACKGROUND_PIXEL (pixel_of  background_color),
+			xt::wa::EVENT_MASK       standard_xevent_mask
 		      ]
 		};
 
@@ -431,7 +431,7 @@ herein
 		    depth      => 0,
 		    #	
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
-		    attributes => [wio::EVENT_MASK standard_xevent_mask],
+		    attributes => [xt::wa::EVENT_MASK standard_xevent_mask],
 		    #
 		    site => check_site
 				(g::WINDOW_SITE
@@ -664,8 +664,8 @@ herein
 
 		cur =  case c
 			   #		              
-			   THE (cs::XCURSOR { id, ... } ) =>   wio::CURSOR id;
-			   NULL                           =>   wio::CURSOR_NONE;
+			   THE (cs::XCURSOR { id, ... } ) =>   xt::wa::CURSOR id;
+			   NULL                           =>   xt::wa::CURSOR_NONE;
 		       esac;
 
 		wio::change_window_attributes  xsocket  (id, [cur]);
@@ -689,8 +689,8 @@ herein
 		    =
 		    case color
 			#	         
-			NULL  =>   wio::BACKGROUND_PIXMAP_PARENT_RELATIVE;
-			THE c =>   wio::BACKGROUND_PIXEL (pixel_of c);
+			NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
+			THE c =>   xt::wa::BACKGROUND_PIXEL (pixel_of c);
 		    esac;
 	    end;
 

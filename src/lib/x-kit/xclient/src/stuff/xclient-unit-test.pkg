@@ -77,7 +77,12 @@ herein
 #					   size         =>  xg::SIZE { wide=>400, high=>400 },
 #					   border_width =>  1
 #					 },
-#			    attributes => do_window_val_list attributes
+#			    attributes
+#				=>
+#				[ wio::BORDER_PIXEL     (pixel_of  border_color),
+#				  wio::BACKGROUND_PIXEL (pixel_of  background_color),
+#				  wio::EVENT_MASK        standard_xevent_mask
+#				]
 #			  };
 
 

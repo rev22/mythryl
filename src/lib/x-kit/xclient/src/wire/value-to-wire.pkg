@@ -134,6 +134,53 @@ herein
 
 
 	stipulate
+	    fun set_window_attribute  rw_vec
+		=
+		{   fun update (i, x)
+			=
+			rw_vector::set (rw_vec, i, THE x);
+
+		    fn xt::wa::BACKGROUND_PIXMAP_NONE			=> update (0, 0u0);
+		       xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE	=> update (0, 0u1);
+		       xt::wa::BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
+
+		       xt::wa::BACKGROUND_PIXEL (xt::PIXEL p)		=> update (1, unt::from_int p);
+
+		       xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
+		       xt::wa::BORDER_PIXMAP (xt::XID p)		=> update (2, p);
+
+		       xt::wa::BORDER_PIXEL (xt::PIXEL p)		=> update (3, unt::from_int p);
+		       xt::wa::BIT_GRAVITY g				=> update (4, gravity_to_wire g);
+		       xt::wa::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
+
+		       xt::wa::BACKING_STORE xt::BS_NOT_USEFUL		=> update (6, 0u0);
+		       xt::wa::BACKING_STORE xt::BS_WHEN_MAPPED		=> update (6, 0u1);
+		       xt::wa::BACKING_STORE xt::BS_ALWAYS		=> update (6, 0u2);
+
+		       xt::wa::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
+		       xt::wa::BACKING_PIXEL (xt::PIXEL p)		=> update (8, unt::from_int p);
+
+		       xt::wa::OVERRIDE_REDIRECT b			=> update ( 9, bool_to_wire b);
+		       xt::wa::SAVE_UNDER b				=> update (10, bool_to_wire b);
+
+		       xt::wa::EVENT_MASK            (xt::EVENT_MASK m)	=> update (11, m);
+		       xt::wa::DO_NOT_PROPAGATE_MASK (xt::EVENT_MASK m)	=> update (12, m);
+
+		       xt::wa::COLOR_MAP_COPY_FROM_PARENT		=> update (13, 0u0);
+		       xt::wa::COLOR_MAP (xt::XID x) 			=> update (13, x);
+
+		       xt::wa::CURSOR_NONE				=> update (14, 0u0);
+		       xt::wa::CURSOR (xt::XID x)			=> update (14, x);
+		    end;
+		};
+	herein
+
+	    make_window_attribute_list
+		=
+		do_val_list  15  set_window_attribute;
+	end;
+
+	stipulate
 
 	    # We need to treat requests as arrays for initialization purposes,
 	    # but we don't want them to be modifiable afterwords.
@@ -277,9 +324,9 @@ herein
 
 	    # Build a value list and mask from a value option rw_vector 
 	    #
-	    fun make_value_list (xt::VALUE_LIST arr)
+	    fun make_value_list (xt::VALUE_LIST rw_vec)
 		=
-		f ((rw_vector::length arr) - 1, 0, 0u0, [])
+		f ((rw_vector::length rw_vec) - 1, 0, 0u0, [])
 		where
 		    fun f (-1, n, m, l)
 			    =>
@@ -287,7 +334,7 @@ herein
 
 			f (i, n, m, l)
 			    =>
-			    case (rw_vector::get (arr, i))
+			    case (rw_vector::get (rw_vec, i))
 				#
 				THE x =>  f (i - 1, n+1, unt::bitwise_or (m, unt::(<<) (0u1, unt::from_int i)), x ! l);
 				NULL  =>  f (i - 1, n, m, l);

@@ -20,38 +20,6 @@ herein
 
     api Window_Io {
 
-	# Window configuration values:
-	#
-	Window_Attribute
-	  #
-	  = BACKGROUND_PIXMAP_NONE
-	  | BACKGROUND_PIXMAP_PARENT_RELATIVE
-	  | BACKGROUND_PIXMAP      		xt::Pixmap_Id
-	  | BACKGROUND_PIXEL       		xt::Pixel
-	  #
-	  | BORDER_PIXMAP_COPY_FROM_PARENT
-	  | BORDER_PIXMAP          		xt::Pixmap_Id
-	  | BORDER_PIXEL           		xt::Pixel
-	  #
-	  | BIT_GRAVITY            		xt::Gravity
-	  | WINDOW_GRAVITY         		xt::Gravity
-	  #
-	  | BACKING_STORE          		xt::Backing_Store
-	  | BACKING_PLANES         		xt::Plane_Mask
-	  | BACKING_PIXEL          		xt::Pixel
-	  | SAVE_UNDER  			Bool
-	  #
-	  | EVENT_MASK             		xt::Event_Mask
-	  | DO_NOT_PROPAGATE_MASK  		xt::Event_Mask
-	  | OVERRIDE_REDIRECT  			Bool
-	  #
-	  | COLOR_MAP_COPY_FROM_PARENT
-	  | COLOR_MAP  	       			xt::Colormap_Id
-	  #
-	  | CURSOR_NONE
-	  | CURSOR		       		xt::Cursor_Id
-	  ;
-
 	#  Create a new X-window with the given xid 
 	#
 	create_window
@@ -66,7 +34,7 @@ herein
 	       visual_id:   xt::Visual_Id_Choice,
 	       #
 	       site:        g::Window_Site,
-	       attributes:  List( Window_Attribute )
+	       attributes:  List( xt::wa::Window_Attribute )
 	     }
 	    ->
 	    Void;
@@ -79,7 +47,7 @@ herein
 
 	change_window_attributes
 	    :  xok::Xsocket
-	    -> (xt::Window_Id, List(Window_Attribute))
+	    -> (xt::Window_Id, List(xt::wa::Window_Attribute))
 	    -> Void;
 	    #
 	    # Change window attributes.

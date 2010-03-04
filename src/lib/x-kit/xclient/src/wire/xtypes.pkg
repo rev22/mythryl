@@ -582,6 +582,47 @@ herein
 	      vendor:    String
 	    };
 
+	# These are used as arguments to
+	#
+	#     value::make_window_attribute_list
+	#
+	# whose result in turn is an argument for:
+	#
+        #     value_to_wire::encode_create_window
+	#     value_to_wire::encode_change_window_attributes
+	#
+	package wa {
+
+	    Window_Attribute
+	      #
+	      = BACKGROUND_PIXMAP_NONE
+	      | BACKGROUND_PIXMAP_PARENT_RELATIVE
+	      | BACKGROUND_PIXMAP			Pixmap_Id
+	      | BACKGROUND_PIXEL			Pixel
+	      #
+	      | BORDER_PIXMAP_COPY_FROM_PARENT
+	      | BORDER_PIXMAP			Pixmap_Id
+	      | BORDER_PIXEL			Pixel
+	      #
+	      | BIT_GRAVITY				Gravity
+	      | WINDOW_GRAVITY			Gravity
+	      #
+	      | BACKING_STORE			Backing_Store
+	      | BACKING_PLANES			Plane_Mask
+	      | BACKING_PIXEL			Pixel
+	      #
+	      | EVENT_MASK				Event_Mask
+	      | DO_NOT_PROPAGATE_MASK		Event_Mask
+	      #
+	      | SAVE_UNDER  	   		Bool
+	      | OVERRIDE_REDIRECT  			Bool
+	      #
+	      | COLOR_MAP_COPY_FROM_PARENT
+	      | COLOR_MAP  				Colormap_Id
+	      | CURSOR_NONE
+	      | CURSOR				Cursor_Id
+	      ;
+	};
     };			#  xtypes 
 
 end;
