@@ -60,18 +60,6 @@ herein
     package value_to_wire: Value_To_Wire {	# Value_To_Wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.api
 
 
-	# Process a configuration value list,
-	# producing a value_list. 
-	#
-	fun do_val_list n f lst
-	    =
-	    {   v = rw_vector::make_rw_vector (n, NULL);
-
-		list::apply  (f v)  lst;
-
-                xt::VALUE_LIST  v;
-	    };
-
 	# Used (only) in:
 	#
 	#     src/lib/x-kit/xclient/src/window/pen.pkg
@@ -133,52 +121,67 @@ herein
 	end;
 
 
-	stipulate
-	    fun set_window_attribute  rw_vec
-		=
-		{   fun update (i, x)
-			=
-			rw_vector::set (rw_vec, i, THE x);
+	# Process a configuration value list,
+	# producing a value_list. 
+	#
+	fun do_val_list n f lst
+	    =
+	    {   v = rw_vector::make_rw_vector (n, NULL);
 
-		    fn xt::wa::BACKGROUND_PIXMAP_NONE			=> update (0, 0u0);
-		       xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE	=> update (0, 0u1);
-		       xt::wa::BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
+		list::apply  (f v)  lst;
 
-		       xt::wa::BACKGROUND_PIXEL (xt::PIXEL p)		=> update (1, unt::from_int p);
+                xt::VALUE_LIST  v;
+	    };
 
-		       xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
-		       xt::wa::BORDER_PIXMAP (xt::XID p)		=> update (2, p);
+	# This encodes the attribute "lists" (vectors) needed by:
+	#
+	#     encode_create_window
+	#     encode_change_window_attributes
+	#
+	make_window_attribute_list
+	    =
+	    do_val_list  15  set_window_attribute
+            where
+		fun set_window_attribute  rw_vec
+		    =
+		    {   fun update (i, x)
+			    =
+			    rw_vector::set (rw_vec, i, THE x);
 
-		       xt::wa::BORDER_PIXEL (xt::PIXEL p)		=> update (3, unt::from_int p);
-		       xt::wa::BIT_GRAVITY g				=> update (4, gravity_to_wire g);
-		       xt::wa::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
+			fn xt::wa::BACKGROUND_PIXMAP_NONE			=> update (0, 0u0);
+			   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE	=> update (0, 0u1);
+			   xt::wa::BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
 
-		       xt::wa::BACKING_STORE xt::BS_NOT_USEFUL		=> update (6, 0u0);
-		       xt::wa::BACKING_STORE xt::BS_WHEN_MAPPED		=> update (6, 0u1);
-		       xt::wa::BACKING_STORE xt::BS_ALWAYS		=> update (6, 0u2);
+			   xt::wa::BACKGROUND_PIXEL (xt::PIXEL p)		=> update (1, unt::from_int p);
 
-		       xt::wa::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
-		       xt::wa::BACKING_PIXEL (xt::PIXEL p)		=> update (8, unt::from_int p);
+			   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
+			   xt::wa::BORDER_PIXMAP (xt::XID p)		=> update (2, p);
 
-		       xt::wa::OVERRIDE_REDIRECT b			=> update ( 9, bool_to_wire b);
-		       xt::wa::SAVE_UNDER b				=> update (10, bool_to_wire b);
+			   xt::wa::BORDER_PIXEL (xt::PIXEL p)		=> update (3, unt::from_int p);
+			   xt::wa::BIT_GRAVITY g				=> update (4, gravity_to_wire g);
+			   xt::wa::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
 
-		       xt::wa::EVENT_MASK            (xt::EVENT_MASK m)	=> update (11, m);
-		       xt::wa::DO_NOT_PROPAGATE_MASK (xt::EVENT_MASK m)	=> update (12, m);
+			   xt::wa::BACKING_STORE xt::BS_NOT_USEFUL		=> update (6, 0u0);
+			   xt::wa::BACKING_STORE xt::BS_WHEN_MAPPED		=> update (6, 0u1);
+			   xt::wa::BACKING_STORE xt::BS_ALWAYS		=> update (6, 0u2);
 
-		       xt::wa::COLOR_MAP_COPY_FROM_PARENT		=> update (13, 0u0);
-		       xt::wa::COLOR_MAP (xt::XID x) 			=> update (13, x);
+			   xt::wa::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
+			   xt::wa::BACKING_PIXEL (xt::PIXEL p)		=> update (8, unt::from_int p);
 
-		       xt::wa::CURSOR_NONE				=> update (14, 0u0);
-		       xt::wa::CURSOR (xt::XID x)			=> update (14, x);
-		    end;
-		};
-	herein
+			   xt::wa::OVERRIDE_REDIRECT b			=> update ( 9, bool_to_wire b);
+			   xt::wa::SAVE_UNDER b				=> update (10, bool_to_wire b);
 
-	    make_window_attribute_list
-		=
-		do_val_list  15  set_window_attribute;
-	end;
+			   xt::wa::EVENT_MASK            (xt::EVENT_MASK m)	=> update (11, m);
+			   xt::wa::DO_NOT_PROPAGATE_MASK (xt::EVENT_MASK m)	=> update (12, m);
+
+			   xt::wa::COLOR_MAP_COPY_FROM_PARENT		=> update (13, 0u0);
+			   xt::wa::COLOR_MAP (xt::XID x) 			=> update (13, x);
+
+			   xt::wa::CURSOR_NONE				=> update (14, 0u0);
+			   xt::wa::CURSOR (xt::XID x)			=> update (14, x);
+			end;
+		    };
+	    end;
 
 	stipulate
 
@@ -640,12 +643,12 @@ herein
 		  depth:	Int,
                   visual_id:	xt::Visual_Id_Choice,
                   site:         g::Window_Site,
-                  attributes:   xt::Value_List
+                  attributes:   List( xt::wa::Window_Attribute )
                 }
 		=
 		{   my (attribute_count, mask, attributes)
 			=
-			make_value_list  attributes;
+			make_value_list  (make_window_attribute_list  attributes);
 
 		    io  = case io
 			      #
@@ -676,11 +679,15 @@ herein
 		};
 
 
-	    fun encode_change_window_attributes { window, attributes }
+	    fun encode_change_window_attributes
+                {
+                  window:      xt::Xid,
+                  attributes:  List( xt::wa::Window_Attribute )
+                }
 		=
 		{   my (attribute_count, mask, attributes)
 			=
-			make_value_list  attributes;
+			make_value_list  (make_window_attribute_list  attributes);
 
 		    msg = make_extra_request (req_change_window_attributes, attribute_count);
 

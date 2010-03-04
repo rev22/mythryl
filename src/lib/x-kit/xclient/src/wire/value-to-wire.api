@@ -30,17 +30,12 @@ herein
 	    -> xt::Value_List
             ;
 
-	# This encodes the attribute "lists" (vectors) needed by:
-	#
-	#     encode_create_window
-	#     encode_change_window_attributes
-	#
-	make_window_attribute_list
-	    :
-	    List( xt::wa::Window_Attribute )
-	    ->
-	    xt::Value_List
-	    ;
+#	make_window_attribute_list
+#	    :
+#	    List( xt::wa::Window_Attribute )
+#	    ->
+#	    xt::Value_List
+#	    ;
 
 	encode_alloc_color:       { cmap: xt::Xid,  color: xt::Rgb }             -> v8::Vector;
 	encode_alloc_named_color: { cmap: xt::Xid,  name: String }               -> v8::Vector;
@@ -71,7 +66,14 @@ herein
 				-> v8::Vector;
 
 	encode_change_save_set: { insert: Bool,  window: xt::Xid }                           -> v8::Vector;
-	encode_change_window_attributes: { attributes: xt::Value_List,  window: xt::Xid }    -> v8::Vector;
+
+	encode_change_window_attributes
+	    :
+            { window:      xt::Xid,
+              attributes:  List( xt::wa::Window_Attribute )
+            }
+            ->
+            v8::Vector;
 
 	encode_circulate_window: { parent: xt::Xid,  place: xt::Stack_Pos, window: xt::Xid } -> v8::Vector;
 
@@ -168,7 +170,7 @@ herein
                                 site:       g::Window_Site, 
 				io:         xt::Input_Output,
                                 parent:     xt::Xid, 
-				attributes: xt::Value_List, 
+				attributes: List( xt::wa::Window_Attribute ),
 				visual_id:  xt::Visual_Id_Choice,
 				window:     xt::Xid
                               }

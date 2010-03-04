@@ -37,7 +37,7 @@ herein
 	    =
 	    xok::request  connection  msg
 	    where 
-		msg =   value_to_wire::encode_create_window
+		msg =   v2w::encode_create_window
 			  {
 			    window => id,
 			    parent,
@@ -45,7 +45,7 @@ herein
 			    depth,
 			    visual_id,
 			    site,
-			    attributes =>  v2w::make_window_attribute_list  attributes
+			    attributes
 			  };
 
 	    end;
@@ -53,17 +53,13 @@ herein
 
 	fun map_window  connection  w
 	    =
-	    xok::request connection (value_to_wire::encode_map_window { window=>w } );
+	    xok::request connection (v2w::encode_map_window { window=>w } );
 
 	fun change_window_attributes  connection  (window, attributes)
 	    =
 	    {   xok::request  connection
 		      #
-		      (value_to_wire::encode_change_window_attributes
-			{ window,
-			  attributes =>  v2w::make_window_attribute_list  attributes
-			}
-		      );
+		      (v2w::encode_change_window_attributes  { window, attributes });
 
 		xok::flush connection;
 	    };
