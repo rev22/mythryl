@@ -729,7 +729,7 @@ herein
 				ptr_mode=xt::AsynchronousGrab, 
 				kbd_mode=xt::AsynchronousGrab, 
 				time=xt::CURRENT_TIME } ))))
-		    except Xok::LOST_REPLAY => raise exception (xgripe::XERROR "[reply lost]")
+		    except Xok::LOST_REPLY => raise exception (xgripe::XERROR "[reply lost]")
 			 | (Xok::ERROR_REPLY err) =>
 			    raise exception (xgripe::XERROR (e2s::xerror_to_string err))
 	    in (case (ans) of
@@ -751,7 +751,7 @@ herein
 			      { time=>xt::CURRENT_TIME }
 		      ) ) ) )
 		      except
-			  xok::LOST_REPLAY     => raise exception (xgripe::XERROR "[reply lost]");
+			  xok::LOST_REPLY      => raise exception (xgripe::XERROR "[reply lost]");
 			  xok::ERROR_REPLY err => raise exception (xgripe::XERROR (e2s::xerror_to_string err));
 		      end ;
 

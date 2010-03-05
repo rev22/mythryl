@@ -87,7 +87,7 @@ herein
 
     package xsocket: (weak)  Xsocket {			# Xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.api
 
-	exception LOST_REPLAY;
+	exception LOST_REPLY;
 	exception ERROR_REPLY  xerrors::Xerror;
 
 	empty_v
@@ -122,7 +122,7 @@ herein
 	#
 	also
 	Reply_Mail
-	  = REPLY_LOST			#  The reply was lost somewhere in transit.
+	  = REPLY_LOST				#  The reply was lost somewhere in transit.
 	  | REPLY        v8::Vector		#  A normal reply.
 	  | REPLY_ERROR  v8::Vector		#  The server returned an error message.
 	  ;
@@ -139,12 +139,12 @@ herein
 	max_chars_to_trace_per_send
 	    =
 	    NULL;			# Show complete message.
-    #	THE 4;			# First four bytes -- this is what Reppy had.
+#    	    THE 4;			# First four bytes -- this is what Reppy had.
 
 	max_chars_to_trace_per_read
 	    =
 	    NULL;			# Show complete message.
-    #	THE 8;			# First eight bytes -- this is what Reppy had.
+#   	    THE 8;			# First eight bytes -- this is what Reppy had.
 
 	# Convert "abc" -> "61.62.63." etc:
 	#
@@ -174,6 +174,7 @@ herein
 	fun bytes_to_ascii  bytes
 	    =
 	    string_to_ascii (byte::unpack_string_vector(unt8_vector_slice::make_slice (bytes, 0, NULL)));
+
 
 	fun out_msg_to_string OUTBUF_FLUSH
 		=>
@@ -222,66 +223,72 @@ herein
 	# Each message to the sequencer is a record consisting
 	# of the message code and the message data.
 	#
-	fun inbuf (out_slot, socket) ()
+	fun inbuf_imp (out_slot, socket) ()
 	    =
 	    {   std_msg_size = 32;
 
-		# Read n bytes from the socket:
-		#
-		fun read_vector (n, header)
-		    =
-		    read (n, header)
-		    where
-			fun read (0, [v])
-				=>
-				v;
+		stipulate
 
-			    read (0, vl)
-				=>
-				v8::cat (list::reverse vl);
+		    # Read n bytes from the socket:
+		    #
+		    fun read_vector (n, header)
+			=
+			read (n, header)
+			where
+			    fun read (0, [v])
+				    =>
+				    v;
 
-			    read (n, vl)
-				=>
-				{   v = socket::receive_vector (socket, n);
+				read (0, vl)
+				    =>
+				    v8::cat (list::reverse vl);
 
-				    case (v8::length v)
-					#
-					0   =>  raise exception FAIL "Socket closed"; 	# *** NOTE: we need a more graceful way to signal that the socket has closed!! ** XXX BUGGO FIXME
-					len =>  read (n - len, v ! vl);
-				    esac;
+				read (n, vl)
+				    =>
+				    {   v = socket::receive_vector (socket, n);
 
-				};
+					case (v8::length v)
+					    #
+					    0   =>  raise exception FAIL "Socket closed"; 	# *** NOTE: we need a more graceful way to signal that the socket has closed!! ** XXX BUGGO FIXME
+					    len =>  read (n - len, v ! vl);
+					esac;
+
+				    };
+			    end;
 			end;
-		    end;
 
-		fun get_msg ()
-		    =
-		    {   msg = read_vector (std_msg_size, []);
+		herein
 
-			case (v8::get (msg, 0))
-			    #
-			    0u1 =>
-				{   # Reply:
-				    # 
-				    extra_len = large_unt::to_int_x (pack_big_endian_unt32::get_vec (msg, 1));
+		    fun get_msg ()
+			=
+			{   msg = read_vector (std_msg_size, []);
 
-				    if (extra_len > 0)
-					#
-					{ code =>  0u1,
-					  msg  =>  read_vector (4 * extra_len, [msg])
-					};
-				    else
-					{ code =>  0u1,
-					  msg
-					};
-				    fi;
-				};
+			    case (v8::get (msg, 0))
+				#
+				0u1 =>
+				    {   # Reply:
+					# 
+					extra_len = large_unt::to_int_x (pack_big_endian_unt32::get_vec (msg, 1));
 
-			    k => { code => k, msg };
-			esac;
-		    };
+					if (extra_len > 0)
+					    #
+					    { code =>  0u1,
+					      msg  =>  read_vector (4 * extra_len, [msg])
+					    };
+					else
+					    { code =>  0u1,
+					      msg
+					    };
+					fi;
+				    };
 
+				k => { code => k, msg };
+			    esac;
+			};
+		end;
     #  +DEBUG 
+		# Tracelogging version of above:
+		#
 		get_msg
 		    =
 		   .{   my (result as { code, msg } )
@@ -335,7 +342,7 @@ herein
 
 	# The output stream manager.
 	#
-	fun outbuf (in_slot, socket) ()
+	fun outbuf_imp (in_slot, socket) ()
 	    =
 	    loop ([], 0)
 	    where
@@ -394,7 +401,7 @@ herein
 		fun print_msg  msg
 		    =
 		    {   xtracing::print_if  xtracing::io_tracing
-			   .{   cat ["outbuf::loop: ", out_msg_to_string msg]; };
+			   .{   cat ["outbuf_imp::loop: ", out_msg_to_string msg]; };
 
 			msg;
 		    };
@@ -402,7 +409,7 @@ herein
 		fun loop (buf, _)
 		    =
 		    {   xtracing::print_if xtracing::io_tracing .{
-			    cat [ "outbuf::loop: waiting ", int::to_string (list::length buf)];
+			    cat [ "outbuf_imp::loop: waiting ", int::to_string (list::length buf)];
 			};
 
 			case buf
@@ -434,7 +441,7 @@ herein
 				];
 			esac;
 		    };
-	    end;				# fun outbuf 
+	    end;				# fun outbuf_imp
 
 
 	# The sequencer:
@@ -572,7 +579,7 @@ herein
 
 			discard_reply (EXPOSURE_REPLY(_, sync_1shot))
 			    =>
-			    set  (sync_1shot,  fn () = raise exception LOST_REPLAY);
+			    set  (sync_1shot,  fn () = raise exception LOST_REPLY);
 		    end;
 
 
@@ -974,7 +981,7 @@ herein
 	#   from_sequencer_slot      --  raw messages from the sequencer
 	#   to_window_registry_slot  --  decoded events to the window registry
 	#
-	fun xbuf (from_sequencer_slot, to_window_registry_slot)
+	fun xbuf_imp (from_sequencer_slot, to_window_registry_slot)
 	    =
 	    route_p
 	    where
@@ -1046,7 +1053,7 @@ herein
 				);
 			end;
 		    end;
-	    end;					# fun xbuf
+	    end;					# fun xbuf_imp
 
 
 	# The connection:
@@ -1055,8 +1062,8 @@ herein
 	    =
 	    XSOCKET
 	      {
-		xsocket_id:  Ref( Void ),
-
+		xsocket_id:     Ref( Void ),				# The Usual trick -- REFs are equal to themselves and
+									# nothing else, hence work fine as unique identifiers.
 		xevent_slot:    Mailslot( event_types::Xevent ),
 		plea_slot:      Mailslot( Plea_Mail ),
 		xerror_slot:    Mailslot( (u::Unt, v8::Vector) ),
@@ -1110,8 +1117,8 @@ trace  .{  "xsocket.pkg: make_xsocket/EEE";  };
 
     /******
 		make_thread "xok seq"  (sequencer (reqStrm, inStrm, outStrm, xevtMsgStrm, errStrm));
-		make_thread "xok in"   (inbuf (inStrm, socket));
-		make_thread "xok out"  (outbuf (outStrm, socket));
+		make_thread "xok in"   ( inbuf_imp ( inStrm, socket));
+		make_thread "xok out"  (outbuf_imp (outStrm, socket));
 		make_thread "xok buf"  (xeventBuffer (xevtMsgStrm, xevtStrm));
     ******/
 trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
@@ -1128,11 +1135,11 @@ trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
 		  );
 
 trace  .{  "xsocket.pkg: make_xsocket/GGG";  };
-		xtracing::xspawn ("Inbuf",        inbuf  ( inbuf_to_sequencer_slot, socket));
+		xtracing::xspawn ("inbuf_imp",    inbuf_imp  ( inbuf_to_sequencer_slot, socket));
 trace  .{  "xsocket.pkg: make_xsocket/HHH";  };
-		xtracing::xspawn ("Outbuf",       outbuf (sequencer_to_outbuf_slot, socket));
+		xtracing::xspawn ("outbuf_imp",   outbuf_imp (sequencer_to_outbuf_slot, socket));
 trace  .{  "xsocket.pkg: make_xsocket/III";  };
-		xtracing::xspawn ("XEventBuffer", xbuf   (  sequencer_to_xbuf_slot, xbuf_to_client_slot));
+		xtracing::xspawn ("xbuf_imp",     xbuf_imp   (  sequencer_to_xbuf_slot, xbuf_to_client_slot));
 
 trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 		XSOCKET
@@ -1159,7 +1166,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    =
 	    give (plea_slot, PLEA s);
 
-	fun reply_wrapper  REPLY_LOST     =>  raise exception LOST_REPLAY;
+	fun reply_wrapper  REPLY_LOST     =>  raise exception LOST_REPLY;
 	    reply_wrapper (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
 	    reply_wrapper (REPLY s)       =>  s;
 	end;

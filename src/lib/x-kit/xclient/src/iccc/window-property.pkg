@@ -54,7 +54,7 @@ herein
 		    =
 		    (decode (do_mailop (request_reply (encode msg))))
 		    except
-			xok::LOST_REPLAY
+			xok::LOST_REPLY
 			    =>
 			    raise exception (xgripe::XERROR "[reply lost]");
 

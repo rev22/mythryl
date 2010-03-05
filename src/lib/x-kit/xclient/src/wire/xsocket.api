@@ -30,7 +30,7 @@ herein
 
     api Xsocket {
 
-	exception LOST_REPLAY;
+	exception LOST_REPLY;
 	exception ERROR_REPLY  xerrors::Xerror;
 
 	Xsocket;

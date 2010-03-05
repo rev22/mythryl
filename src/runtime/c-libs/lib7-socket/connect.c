@@ -246,6 +246,19 @@ lib7_val_t _lib7_Sock_connect (lib7_state_t *lib7_state, lib7_val_t arg)
  *      Basically, recv() is restarted if you use SA_RESTART, but select() is
  *      never restarted, regardless of SA_RESTART (and POSIX.1 allows this).
  *
+ * Later notes:
+ *     Drake advises that select() is an abomination and poll() rocks. :-)
+ *     He points to
+ *         http://www.madore.org/~david/computers/connect-intr.html
+ *     which notes that Linux (alone) actually makes connect() restartable,
+ *     and also
+ *         http://cr.yp.to/docs/connect.html
+ *     where DJ Bernstein discusses some nonblocking connect() issues.
+ *     This paper recommends Linux Real-time signals as superior to select/poll
+ *     when doing webserver extreme performance optimization:
+ *         http://www.hpl.hp.com/techreports/2000/HPL-2000-174.pdf
+ *
+ *
  */
 
 

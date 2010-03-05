@@ -111,7 +111,7 @@ herein
 		fun do_max ()
 		    =
 		    case (max_size ())
-
+			#
 			(NULL,  NULL ) =>  [];
 			(THE x, NULL ) =>  [ xs::HINT_PMAX_SIZE (xg::SIZE { wide=>x,    high => maxx } )];
 			(NULL,  THE y) =>  [ xs::HINT_PMAX_SIZE (xg::SIZE { wide=>maxx, high => y    } )];

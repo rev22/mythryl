@@ -20,6 +20,7 @@ stipulate
     package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
     package tr  =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
     package xtr =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    package sox =  socket_stuff;				# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
     package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package au  =  authentication;				# authentication		is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
@@ -42,7 +43,7 @@ herein
 
 	fun exercise_window_stuff  (xdisplay:  dy::Xdisplay)
 	    =
-	    {   xdisplay -> dy::XDISPLAY { default_screen, screens, next_xid, ... };
+	    {   xdisplay -> dy::XDISPLAY { default_screen, screens, next_xid, xsocket, ... };
 
 		screen =  list::nth  (screens, default_screen);
 
@@ -66,7 +67,7 @@ herein
                         =>
                         {   printf "root_visual is VISUAL as expected, depth d=%d.\n" depth;
 
-			    request
+			    create_window_request
 				=
 				v2w::encode_create_window
 				      {
@@ -91,6 +92,17 @@ herein
 					      xt::wa::EVENT_MASK        w::standard_xevent_mask
 					    ]
 				      };
+
+trace .{ sprintf "xclient_unit_test: Now  writing create_window_request to socket."; };
+#			    sox::send_vector (socket, create_window_request);
+trace .{ sprintf "xclient_unit_test: Done writing create_window_request to socket."; };
+
+
+trace .{ sprintf "xclient_unit_test: Now  reading back header of reply for create_window request."; };
+#			    header = rse::do_syscall_retry_on_eintr					# We need this retry mechanism because our 50Hz SIGALRM
+#					 #								# timer may hit before the X server reply gets back to us.
+#					 sox::receive_vector (socket, 8);
+trace .{ sprintf "xclient_unit_test: Done reading back header of reply for create_window request."; };
 			};
 		esac;
 

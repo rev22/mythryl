@@ -91,7 +91,7 @@ herein
 		    =
 		    decode (do_mailop (request_reply (encode msg)))
 		    except
-			xok::LOST_REPLAY     => raise exception (xgripe::XERROR "[reply lost]");
+			xok::LOST_REPLY      => raise exception (xgripe::XERROR "[reply lost]");
 			xok::ERROR_REPLY err => raise exception (xgripe::XERROR (e2s::xerror_to_string err));
 		    end;
 	    end;
