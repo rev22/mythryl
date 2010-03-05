@@ -98,7 +98,7 @@ herein
 	    =
 	    rw_unt8_vector::make_rw_vector (size, 0u0);
 
-	buf_size = 2048;
+	max_bytes_per_socket_write = 2048;
 
 	# Time to wait before flushing a non-empty output buffer 
 	#
@@ -122,17 +122,17 @@ herein
 	#
 	also
 	Reply_Mail
-	  = REPLY_LOST				#  The reply was lost somewhere in transit.
-	  | REPLY        v8::Vector		#  A normal reply.
-	  | REPLY_ERROR  v8::Vector		#  The server returned an error message.
+	  = REPLY_LOST				# The reply was lost somewhere in transit.
+	  | REPLY        v8::Vector		# A normal reply.
+	  | REPLY_ERROR  v8::Vector		# The server returned an error message.
 	  ;
 
 	# Messages from the sequencer to the output buffer 
 	#
 	Outbuf_Mail
-	  = OUTBUF_FLUSH
-	  | OUTBUF_QUIT
-	  | OUTBUF_MAIL  v8::Vector
+	  = FLUSH_OUTBUF			# Write buffer contents to X server socket.
+	  | SHUT_DOWN_OUTBUF				# Shut down.
+	  | ADD_TO_OUTBUF v8::Vector		# Add bytestring to buffer.
 	  ;
 
     #  +DEBUG 
@@ -176,15 +176,15 @@ herein
 	    string_to_ascii (byte::unpack_string_vector(unt8_vector_slice::make_slice (bytes, 0, NULL)));
 
 
-	fun out_msg_to_string OUTBUF_FLUSH
+	fun out_msg_to_string FLUSH_OUTBUF
 		=>
 		"OutFlush";
 
-	    out_msg_to_string OUTBUF_QUIT
+	    out_msg_to_string SHUT_DOWN_OUTBUF
 		=>
 		"OutQuit";
 
-	    out_msg_to_string (OUTBUF_MAIL v)
+	    out_msg_to_string (ADD_TO_OUTBUF v)
 		=>
 		{   prefix_to_show
 			=
@@ -213,15 +213,34 @@ herein
 
     #  -DEBUG 
 
-	# The input stream manager.
+        ##########################################################################################
+	# inbuf_imp -- break socket bytestream into individual messages.
 	#
-	# This monitors the input stream from the X-server
-	# and breaks it up into individual messages which
+	# Here we monitor the input stream from the X-server
+	# socket and break it up into individual messages which
 	# are sent on out_slot to be unmarshalled and routed
 	# by the sequencer.
 	#
-	# Each message to the sequencer is a record consisting
-	# of the message code and the message data.
+	# We get three kinds of messages from the X server:
+	#	
+	#  o Replies to requests we have sent. Always at least 32 bytes long.
+	#  o Error messages.                   Always  exactly 32 bytes long.
+	#  o Events.                           Always  exactly 32 bytes long.
+	#	
+	# The first byte of the message distinguishes the three types.
+	#	
+	# For more details see (e.g.) p5 "1 Protocol Formats" in:
+	#
+	#     http://mythryl.org/pub/exene/X-protocol.pdf	
+	#	
+	# Our task here is to repetitively read one complete message
+        # from the X server socket (which on a reply means reading any
+	# extra databytes) and then forward to the sequencer a pair
+	#
+        #     (message-bytecode, message-bytes)
+	# 
+	# where 'message-bytecode' is the first byte from the message
+	# and message-bytes is the complete message, including bytecode.
 	#
 	fun inbuf_imp (out_slot, socket) ()
 	    =
@@ -266,23 +285,29 @@ herein
 			    case (v8::get (msg, 0))
 				#
 				0u1 =>
-				    {   # Reply:
-					# 
-					extra_len = large_unt::to_int_x (pack_big_endian_unt32::get_vec (msg, 1));
+				    # Reply -- may need to read additional data bytes.
+				    # 
+				    # Byte    0 contains the 'Reply' bytecode (0u1).
+				    # 
+				    # Bytes 1-4 contain the number of extra 32-bit words
+				    #           of data following the stock 32-byte header.
+				    {
+					extra_dwords
+					    =
+					    large_unt::to_int_x (pack_big_endian_unt32::get_vec (msg, 1));
 
-					if (extra_len > 0)
-					    #
-					    { code =>  0u1,
-					      msg  =>  read_vector (4 * extra_len, [msg])
-					    };
-					else
-					    { code =>  0u1,
-					      msg
-					    };
-					fi;
+					{ code =>  0u1,
+					  #
+					  msg  =>  (extra_dwords > 0)
+						     ?? read_vector (extra_dwords * 4, [msg])	# "* 4" because we measure in bytes but X protocol measures in 32-bit words.
+						     :: msg
+					};
 				    };
 
-				k => { code => k, msg };
+				k =>
+				    # Error or event:
+				    #	
+				    { code => k, msg };
 			    esac;
 			};
 		end;
@@ -340,24 +365,38 @@ herein
 	    };
 
 
-	# The output stream manager.
+        ##########################################################################################
+	# The X socket output buffer imp.
+	#
+	# It is more efficient to send a few large
+	# network packets than many small ones
+	# (due to ethernet minimum packet sizes,
+	# per-packet handling overhead etc) so
+	# here we pack multiple X server requests
+	# per packet.
+	#
+	# We write our buffer contents to the socket
+	# after 50 milliseconds or when the buffer
+	# contents exceed 2K, whichever comes first:
 	#
 	fun outbuf_imp (in_slot, socket) ()
 	    =
 	    loop ([], 0)
 	    where
-		fun quit ()
+		fun shut_down_outbuf_imp ()
 		    =
 		    {   socket::close socket;
 			thread_done ();
 		    };
 
-		fun flush_buf strs
+		fun flush_outbuf strings
 		    =
-		    socket_stuff::send_vector (socket, v8::cat (reverse strs));
+		    socket_stuff::send_vector (socket, v8::cat (reverse strings));
 
     #  +DEBUG 
-		flush_buf
+		# Tracelogging version of above:
+		#
+		flush_outbuf
 		    =
 		    fn strs
 			=
@@ -368,36 +407,23 @@ herein
 				    ];
 			       };
 
-			    flush_buf strs;
+			    flush_outbuf strs;
 			};
     #  -DEBUG 
 
-		fun insert (s, (strs, nb))
+		fun add_to_outbuf (string, (strings, bytes_in_buf))
 		    =
-		    {   n = v8::length s;
+		    {   added_bytes = v8::length string;
 
-			if (n+nb > buf_size)
+			if (added_bytes + bytes_in_buf  >  max_bytes_per_socket_write)
 			    #
-			    flush_buf strs;
-			    ([s], n);
+			    flush_outbuf strings;
+			    ([string], added_bytes);
 			else
-			    (s ! strs, n+nb);
+			    (string ! strings, added_bytes + bytes_in_buf);
 			fi;
 		    };
 
-    /*****
-	      fun loop ([], _) = (case get_mail inCh
-		   of OUTBUF_FLUSH => loop([], 0)
-		    | (OUTBUF_MAIL s) => loop([s], v8::length s)
-		    | OUTBUF_QUIT => quit())
-		| loop (buf as (strs, _)) = select [
-		      wrap (flushTimeOut, fn _ => (flushBuf strs; loop([], 0))),
-		      wrap (get_mailop inCh,
-			fn OUTBUF_FLUSH => (flushBuf strs; loop([], 0))
-			 | (OUTBUF_MAIL s) => loop (insert (s, buf))
-			 | OUTBUF_QUIT => (flushBuf strs; quit()))
-		    ]
-    *****/
 		fun print_msg  msg
 		    =
 		    {   xtracing::print_if  xtracing::io_tracing
@@ -406,44 +432,55 @@ herein
 			msg;
 		    };
 
-		fun loop (buf, _)
+		fun loop (outbuf, bytes_in_buf)
 		    =
 		    {   xtracing::print_if xtracing::io_tracing .{
-			    cat [ "outbuf_imp::loop: waiting ", int::to_string (list::length buf)];
+			    cat [ "outbuf_imp::loop: waiting ", int::to_string (list::length outbuf)];
 			};
 
-			case buf
+			case outbuf
 			    #
 			    [] =>
+				# Buffer is empty, so no need to
+				# flush buffer on timeout; just
+				# wait for a command:
+				#
 				case (print_msg (take  in_slot))
 				    #
-				    OUTBUF_FLUSH  =>  loop([], 0);
-				    OUTBUF_MAIL s =>  loop([s], v8::length s);
-				    OUTBUF_QUIT   =>  quit ();
+				    FLUSH_OUTBUF         =>  loop([], 0);			# Buffer empty, so flush is a no-op.
+				    ADD_TO_OUTBUF string =>  loop([string], v8::length string);
+				    SHUT_DOWN_OUTBUF     =>  shut_down_outbuf_imp ();
 				esac;
 
-			    strs =>
+			    strings =>
+				# Read and execute command;  if no command
+				# arrives within 50ms, write buffer contents
+				# to X server socket:
+				# 
 				select [
 				    #
-				    flush_time_out'
-					==>
-					(fn _ = {   flush_buf strs;
-						    loop([], 0);
-						}
-					),
-
 				    (take' in_slot ==> print_msg)
 					==>
-					fn OUTBUF_FLUSH  => {  flush_buf strs;  loop([], 0);  };
-					   OUTBUF_QUIT   => {  flush_buf strs;  quit();       };
-					   OUTBUF_MAIL s => loop (insert (s, (buf, 0)));
-					end
+					fn FLUSH_OUTBUF          => {  flush_outbuf strings;  loop([], 0);  };
+					   SHUT_DOWN_OUTBUF      => {  flush_outbuf strings;  shut_down_outbuf_imp();       };
+					   #
+					   ADD_TO_OUTBUF string => loop (add_to_outbuf (string, (outbuf, bytes_in_buf)));
+					end,
+
+				    flush_time_out'
+					==>
+					(fn _ = {   flush_outbuf strings;
+						    loop([], 0);
+						}
+					)
+
 				];
 			esac;
 		    };
 	    end;				# fun outbuf_imp
 
 
+        ##########################################################################################
 	# The sequencer:
 	# The sequencer is responsible for matching
 	# replies with requests. All requests to the
@@ -746,7 +783,7 @@ herein
 
 		    fun quit ()
 			=
-			{   give (to_x_slot, OUTBUF_QUIT);
+			{   give (to_x_slot, SHUT_DOWN_OUTBUF);
 			    thread_done ();
 			};
 
@@ -755,7 +792,7 @@ herein
 
 		    fun send_request (req, (last_in, last_out, pending))
 			=
-			{   give (to_x_slot, OUTBUF_MAIL req);
+			{   give (to_x_slot, ADD_TO_OUTBUF req);
 			    (last_in, last_out+0u1, pending);
 			};
 
@@ -763,7 +800,7 @@ herein
 			=
 			{   n = last_out+0u1;
 
-			    give (to_x_slot, OUTBUF_MAIL req);
+			    give (to_x_slot, ADD_TO_OUTBUF req);
 
 			    (last_in, n, insert (ERROR_CHECK (n, reply_slot), pending));
 			};
@@ -772,7 +809,7 @@ herein
 			=
 			{   n = last_out+0u1;
 
-			    give (to_x_slot, OUTBUF_MAIL req);
+			    give (to_x_slot, ADD_TO_OUTBUF req);
 
 			    (last_in, n, insert (ONE_REPLY (n, reply_slot), pending));
 			};
@@ -781,7 +818,7 @@ herein
 			=
 			{   n = last_out+0u1;
 
-			    give (to_x_slot, OUTBUF_MAIL req);
+			    give (to_x_slot, ADD_TO_OUTBUF req);
 
 			    (last_in, n, insert (MULTI_REPLY (n, reply_slot, remain, []), pending));
 			};
@@ -790,7 +827,7 @@ herein
 			=
 			{   n = last_out+0u1;
 
-			    give (to_x_slot, OUTBUF_MAIL req);
+			    give (to_x_slot, ADD_TO_OUTBUF req);
 
 			    (last_in, n, insert (EXPOSURE_REPLY (n, sync_v), pending));
 			};
@@ -819,7 +856,7 @@ herein
 
 			    result = loop arg;
 
-			    give (to_x_slot, OUTBUF_FLUSH);
+			    give (to_x_slot, FLUSH_OUTBUF);
 
 			    result;
 			};
@@ -844,7 +881,7 @@ herein
 
 				do_plea (PLEA req)
 				    =>
-				    {   give (to_x_slot, OUTBUF_MAIL req);
+				    {   give (to_x_slot, ADD_TO_OUTBUF req);
 
 					(last_req_in, last_req_out+0u1, pending);
 				    };
@@ -1234,7 +1271,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    };
 
 	# This is directly used exactly once,
-	# by draw_imp::flush_buf, and ultimately
+	# by draw_imp::flush_outbuf, and ultimately
 	# used twice, by DOP_COPY_AREA and DOP_COPY_PLANE
 	# in draw_imp:
 	#
