@@ -24,7 +24,7 @@ herein
 	    =
 	    WINDOW
 	      {
-		id:	          xt::Window_Id,
+		window_id:    xt::Window_Id,
 		screen:       sn::Screen,
 		screen_depth: sn::Screen_Depth_Imps,
 		draw_fn:      di::Draw_Mail -> Void

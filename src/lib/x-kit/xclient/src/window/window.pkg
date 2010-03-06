@@ -234,7 +234,7 @@ herein
 		    };
 	    end;
 
-	fun make_simple_subwindow (dt::WINDOW { id=>parent_id, screen, draw_fn, screen_depth, ... } )
+	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_id, screen, draw_fn, screen_depth, ... } )
 	    =
 	    create_fn
 	    where 
@@ -243,12 +243,15 @@ herein
 
 		window_id = next_xid();
 
-		window = dt::WINDOW {
-		    id => window_id,
-		    screen,
-		    draw_fn,
-		    screen_depth
-		  };
+		window
+		    =
+		    dt::WINDOW
+                      {
+		        window_id,
+		        screen,
+		        draw_fn,
+		        screen_depth
+		      };
 
 		screen_depth ->   sn::SCREEN_DEPTH_IMPS { depth, ... };
 
@@ -354,7 +357,7 @@ herein
 	    (window, kidplug)
 	    where 
 
-		prop_window ->  dt::WINDOW { id, screen=>scrn as sn::SCREEN { screen, xsession }, ... };
+		prop_window ->  dt::WINDOW { window_id=>id, screen=>scrn as sn::SCREEN { screen, xsession }, ... };
 		screen      ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
 
 		root_imps   ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
@@ -398,7 +401,7 @@ herein
 	    window
 	    where  
 
-		window ->   dt::WINDOW { id=>parent_id, screen, screen_depth, draw_fn, ... };
+		window ->   dt::WINDOW { window_id=>parent_id, screen, screen_depth, draw_fn, ... };
 		screen ->   sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }, ... };
 
 		window_id = next_xid();
@@ -416,7 +419,7 @@ herein
 		    =
 		    dt::WINDOW
 		      {
-			id => window_id,
+			window_id,
 			screen,
 			draw_fn,
 			screen_depth
@@ -462,11 +465,11 @@ herein
 		  ilk_hints
 		}
 	    =
-	    {   window ->  dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... };
+	    {   window ->  dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... };
 
 		fun put_property (name, value)
 		    =
-		    set_property (xsession, id, name, value);
+		    set_property (xsession, window_id, name, value);
 
 		fun put_string_prop (_, NULL)     =>   ();
 		    put_string_prop (atom, THE s) =>   put_property (atom, ip::make_string_property s);
@@ -502,11 +505,11 @@ herein
 	#
 	fun set_window_manager_protocols window atoml
 	    =
-	    {   window ->  dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... };
+	    {   window ->  dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... };
 
 		fun put_property n a
 		    =
-		    set_property (xsession, id, n, ip::make_atom_property a);
+		    set_property (xsession, window_id, n, ip::make_atom_property a);
 
 		case (a::find_atom  xsession  "WM_PROTOCOLS")
 		    #
@@ -546,7 +549,7 @@ herein
 			    upd (6, v2w::stack_mode_to_wire mode);
 			};
 
-		   (WC_REL_STACK_MODE (dt::WINDOW { id=>(xt::XID x), ... }, mode))
+		   (WC_REL_STACK_MODE (dt::WINDOW { window_id => xt::XID x, ... }, mode))
 			=>
 			{   upd (5, x);
 			    upd (6, v2w::stack_mode_to_wire mode);
@@ -558,12 +561,12 @@ herein
 	    =
 	    v2w::do_val_list 7 do_config_val;
 
-	fun configure_window (dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... } ) vals
+	fun configure_window (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } ) vals
 	    =
 	    sn::request  xsession
 	      ( v2w::encode_configure_window
 		  {
-		    window_id  => id,
+		    window_id,
 		    vals => do_config_vals vals
 		  }
 	      );
@@ -580,17 +583,17 @@ herein
 
 	# Show ("map") a window:
 	#
-	fun show_window (dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... } )
+	fun show_window (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
-	    {   sn::request    xsession  (v2w::encode_map_window { window_id=>id } );
+	    {   sn::request    xsession  (v2w::encode_map_window { window_id } );
 		sn::flush_out  xsession;
 	    };
 
 	# Hide ("unmap") a window:
 	#
-	fun hide_window (dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... } )
+	fun hide_window (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
-	    {   sn::request    xsession  (v2w::encode_unmap_window { window_id=>id } );
+	    {   sn::request    xsession  (v2w::encode_unmap_window { window_id } );
 
 		sn::flush_out  xsession;
 	    };
@@ -605,7 +608,7 @@ herein
 		     ];
 	herein
 
-	    fun withdraw_window (dt::WINDOW { id, screen => sn::SCREEN { screen=> sn::SCREEN_INFO { xscreen, ... }, xsession }, ... } )
+	    fun withdraw_window (dt::WINDOW { window_id, screen => sn::SCREEN { screen=> sn::SCREEN_INFO { xscreen, ... }, xsession }, ... } )
 		=
 		{   xscreen ->  dy::XSCREEN { root_window_id, ... };
 
@@ -616,7 +619,7 @@ herein
 			    propagate => FALSE,
 			    event_mask => mask, 
 			    event      => root_window_id,
-			    window     => id,
+			    window     => window_id,
 			    from_configure => FALSE
 			  }
 			);
@@ -629,15 +632,15 @@ herein
 	# We do this via draw_imp to avoid a race
 	# with any pending draw requests on the window.
 	#
-	fun destroy_window (dt::WINDOW { id, draw_fn, ... } )
+	fun destroy_window (dt::WINDOW { window_id, draw_fn, ... } )
 	    = 
-	    draw_fn (di::DMSG_DESTROY (di::DESTROY_WINDOW id));
+	    draw_fn (di::DMSG_DESTROY (di::DESTROY_WINDOW window_id));
 
 
 	# Map a point in the window's coordinate
 	# system to the screen's coordinate system
 	#
-	fun window_pt_to_screen_pt (dt::WINDOW { id, screen, ... } ) pt
+	fun window_pt_to_screen_pt (dt::WINDOW { window_id, screen, ... } ) pt
 	    =
 	    {   screen ->  sn::SCREEN { xsession, screen=> sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... };
 
@@ -648,7 +651,7 @@ herein
 			do_mailop
 			  (sn::request_reply
 			      xsession
-			      (v2w::encode_translate_coords { from_window=>id, to_window=>root_window_id, from_point=>pt } )
+			      (v2w::encode_translate_coords { from_window=>window_id, to_window=>root_window_id, from_point=>pt } )
 			  )
 		      );
 
@@ -658,7 +661,7 @@ herein
 
 	# Set the window cursor:
 	#
-	fun set_cursor (dt::WINDOW { id, screen, ... } ) c
+	fun set_cursor (dt::WINDOW { window_id, screen, ... } ) c
 	    =
 	    {   screen -> sn::SCREEN { xsession => sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, ... }, ... }, ... };
 
@@ -668,7 +671,7 @@ herein
 			   NULL                           =>   xt::wa::CURSOR_NONE;
 		       esac;
 
-		wio::change_window_attributes  xsocket  (id, [cur]);
+		wio::change_window_attributes  xsocket  (window_id, [cur]);
 	    };
 
 
@@ -679,9 +682,9 @@ herein
 	# before the window is mapped the window will
         # come up with the right color.
 	#
-	fun set_background_color (dt::WINDOW { id, screen, ... } ) color
+	fun set_background_color (dt::WINDOW { window_id, screen, ... } ) color
 	    =
-	    wio::change_window_attributes  xsocket  (id, [color])
+	    wio::change_window_attributes  xsocket  (window_id, [color])
 	    where 
 		screen ->  sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, ... }, ... }, ... };
 
@@ -696,13 +699,13 @@ herein
 
 	# Set various window attributes 
 	#
-	fun change_window_attributes (dt::WINDOW { id, screen, ... } )
+	fun change_window_attributes (dt::WINDOW { window_id, screen, ... } )
 	    =
 	    {   screen ->  sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, ... }, ... }, ... };
 
 		change = wio::change_window_attributes  xsocket;
 
-		fn attributes =  change (id,  map  user_window_attribute_to_internal_window_attribute  attributes);
+		fn attributes =  change (window_id,  map  user_window_attribute_to_internal_window_attribute  attributes);
 	    };
 
 	fun screen_of_window  (dt::WINDOW { screen, ... } )
@@ -716,7 +719,7 @@ herein
 	#  Added ddeboer Jan 2005 
 	#  grabKeyboard: we would like a reply of xprottypes::GrabSuccess 
 	#
-	fun grab_keyboard (dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... } )
+	fun grab_keyboard (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
 	    0;
 
@@ -740,7 +743,7 @@ herein
 	      | xt::GrabFrozen => 4)
 	    end */
 
-	fun ungrab_keyboard (dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... } )
+	fun ungrab_keyboard (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
 	    {   ans = ( /* w2v::decode_grab_keyboard_reply */
 

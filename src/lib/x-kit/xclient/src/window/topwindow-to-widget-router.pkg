@@ -45,9 +45,9 @@ herein
 		    =
 		    {   top_window ->  dt::WINDOW { screen, screen_depth, draw_fn, ... };
 
-			fn id
+			fn window_id
 			    =
-                            dt::WINDOW { id, screen, screen_depth, draw_fn };
+                            dt::WINDOW { window_id, screen, screen_depth, draw_fn };
 		    };
 
 		my { kidplug, momplug }
@@ -355,7 +355,7 @@ herein
 
 		top_window
 		    =
-		    dt::WINDOW { id=>window_id, screen, screen_depth, draw_fn=>dm };
+		    dt::WINDOW { window_id, screen, screen_depth, draw_fn=>dm };
 
 		my (kidplug, router, del_slot)
 		    =

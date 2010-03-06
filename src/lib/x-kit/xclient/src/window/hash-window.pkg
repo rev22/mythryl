@@ -22,14 +22,14 @@ herein
 
 	make_map =  hx::make_map;
 
-	fun get m (dt::WINDOW { id, ... } )
+	fun get m (dt::WINDOW { window_id, ... } )
 	    =
-	    hash_xid::get  m  id;
+	    hash_xid::get  m  window_id;
 
 	get_window_id =  hx::get;
 
-	fun set    m (dt::WINDOW { id, ... }, a) =  hx::set m (id, a);
-	fun remove m (dt::WINDOW { id, ... }   ) =  hx::remove m id;
+	fun set    m (dt::WINDOW { window_id, ... }, a) =  hx::set m (window_id, a);
+	fun remove m (dt::WINDOW { window_id, ... }   ) =  hx::remove m window_id;
 
 	fun list table
 	    =

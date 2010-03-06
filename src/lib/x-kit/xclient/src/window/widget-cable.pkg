@@ -284,9 +284,9 @@ herein
 	    # TRUE iff envelope should be routed to
 	    # that window for delivery:
 	    #
-	    fun to_window (envelope, dt::WINDOW { id, ... } )
+	    fun to_window (envelope, dt::WINDOW { window_id, ... } )
 		=
-		(next_window envelope) == id;
+		(next_window envelope) == window_id;
 
 	    exception NO_MATCH_WINDOW;
 
@@ -310,10 +310,10 @@ herein
 		where 
 		    w = next_window envelope;
 
-		    fun find ((dt::WINDOW { id, ... }, x) ! r)
+		    fun find ((dt::WINDOW { window_id, ... }, x) ! r)
 			    =>
-			    if (id == w)  x;
-			    else          find r;
+			    if (window_id == w)  x;
+			    else                 find r;
 			    fi;
 
 			find []

@@ -44,11 +44,11 @@ herein
 	    =
 	    selection_imp;
 
-	fun acquire_selection (dt::WINDOW { id, screen, ... }, selection, time)
+	fun acquire_selection (dt::WINDOW { window_id, screen, ... }, selection, time)
 	    =
 	    si::acquire_selection
 		(selection_imp_of_screen  screen)
-		(id, selection, time);
+		(window_id, selection, time);
 
 	release_selection    = si::release_selection;
 	selection_of         = si::selection_of;
@@ -58,7 +58,7 @@ herein
 
 	fun request_selection
 	    {
-	      window => dt::WINDOW { id, screen, ... },
+	      window => dt::WINDOW { window_id, screen, ... },
 	      selection,
 	      target,
 	      property,
@@ -68,7 +68,7 @@ herein
 	    si::request_selection
 		(selection_imp_of_screen  screen)
 		{
-		  window  => id,
+		  window  => window_id,
 		  selection,
 		  target,
 		  property,

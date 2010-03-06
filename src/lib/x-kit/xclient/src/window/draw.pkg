@@ -44,9 +44,9 @@ herein
 	    #
 	    fun info_of_drawable (dt::DRAWABLE_WINDOW { draw_fn, root => dt::DWIN w } )
 		    =>
-		    {   w ->   dt::WINDOW { id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
+		    {   w ->   dt::WINDOW { window_id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
-			{ draw_fn, id, depth };
+			{ draw_fn, id => window_id, depth };
 		    };
 
 		info_of_drawable (dt::DRAWABLE_WINDOW { draw_fn, root => dt::DPM pm } )
@@ -60,9 +60,9 @@ herein
 
 	    # Extract the xid and depth of a source drawable 
 	    #
-	    fun info_of_src (dt::FROM_WINDOW    (dt::WINDOW    { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
+	    fun info_of_src (dt::FROM_WINDOW    (dt::WINDOW    { window_id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
 		    =>
-		    (id, depth);
+		    (window_id, depth);
 
 		info_of_src (dt::FROM_RW_PIXMAP (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
 		    =>

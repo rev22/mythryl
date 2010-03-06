@@ -197,7 +197,7 @@ herein
 				    m | 0u4;
 				};
 
-			    wh::HINT_ICON_WINDOW (dt::WINDOW { id=>xt::XID window, ... } )
+			    wh::HINT_ICON_WINDOW (dt::WINDOW { window_id=>xt::XID window, ... } )
 				=>
 				{   upd (4, window);
 				    m | 0u8;
@@ -216,7 +216,7 @@ herein
 				    m | 0u32;
 				};
 
-			    wh::HINT_WINDOW_GROUP (dt::WINDOW { id=>xt::XID window, ... } )
+			    wh::HINT_WINDOW_GROUP (dt::WINDOW { window_id=>xt::XID window, ... } )
 				=>
 				{   upd (8, window);
 				    m | 0u64;
@@ -247,7 +247,7 @@ herein
 		    )
 		);
 
-	fun make_transient_hint (dt::WINDOW { id=>xt::XID window, ... } )
+	fun make_transient_hint (dt::WINDOW { window_id=>xt::XID window, ... } )
 	    =
 	    xt::PROPERTY_VALUE
 	      {

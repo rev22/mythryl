@@ -39,7 +39,7 @@ herein
 	    =
 	    WINDOW
 	      {
-		id:            xt::Window_Id,
+		window_id:     xt::Window_Id,
 		#
 		screen:        sn::Screen,
 		screen_depth:  sn::Screen_Depth_Imps,
@@ -65,8 +65,8 @@ herein
 
 	#  identity tests 
 
-	fun same_window (   WINDOW { id=>id1, screen=>s1, ... },
-			    WINDOW { id=>id2, screen=>s2, ... }   )
+	fun same_window (   WINDOW { window_id=>id1, screen=>s1, ... },
+			    WINDOW { window_id=>id2, screen=>s2, ... }   )
 	    =
 	   (id1 == id2) and sn::same_screen (s1, s2);
 
@@ -101,7 +101,7 @@ herein
 	    depth_of_draw_src (FROM_RO_PIXMAP w) =>  depth_of_ro_pixmap  w;
 	end;
 
-	fun shape_of_window (WINDOW { id, screen=>sn::SCREEN { xsession, ... }, ... } )
+	fun shape_of_window (WINDOW { window_id, screen=>sn::SCREEN { xsession, ... }, ... } )
 	    =
 	    {   include value_to_wire;					# value_to_wire	is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
 		include wire_to_value;					# wire_to_value	is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
@@ -109,7 +109,7 @@ herein
 		reply = do_mailop
 			    (sn::request_reply
 				xsession
-				(encode_get_geometry { drawable=>id } )
+				(encode_get_geometry { drawable=>window_id } )
 			    );
 
 		my { depth, geometry=>g::WINDOW_SITE { upperleft, size, border_width }, ... }
