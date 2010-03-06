@@ -10,9 +10,9 @@
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
 
 stipulate
-    include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package br  = xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+    package e2t = xevent_to_topwindow_router;		# xevent_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
     #
     package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
@@ -36,7 +36,7 @@ herein
 
 		default_screen:    	Screen_Info,
 
-		xbuf_to_widgettree_xevent_router:   br::Xbuf_To_Widgettree_Xevent_Router,          # Feeds X events to appropriate toplevel window.
+		xevent_to_topwindow_router:   e2t::Xevent_To_Topwindow_Router,          # Feeds X events to appropriate toplevel window.
 
 		font_imp:          	fti::Font_Imp,
 		atom_imp:          	ai::Atom_Imp,

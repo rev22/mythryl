@@ -17,7 +17,7 @@
 #    src/lib/x-kit/xclient/src/window/draw-imp.pkg
 #    src/lib/x-kit/xclient/src/window/font-imp.pkg
 #    src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.pkg
-#    src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+#    src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
 #    src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
 #    src/lib/x-kit/xclient/src/window/window-property-imp.pkg
 #    src/lib/x-kit/xclient/src/window/keysym.pkg

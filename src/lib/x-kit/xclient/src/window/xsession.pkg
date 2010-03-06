@@ -88,18 +88,18 @@
 #     processing.
 #         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
 #
-#  o  The xbuf_to_widgettree_xevent_router imp
+#  o  The xevent_to_topwindow_router imp
 #     receives all X events (e.g. keystrokes and mouseclicks)
 #     and feeds each one to the appropriate toplevel window,
 #     or more precisely to the widgettree_root_xevent_router
 #     at the root of the widgettree for that window, there to
 #     trickle down the widgettree to its ultimate target widget.
 #
-#     To do this, the xbuf_to_widgettree_xevent_router imp
+#     To do this, the xevent_to_topwindow_router imp
 #     tracks all toplevel windows by the application, keyed
 #     by their X-server-assigned IDs.
 #
-#         Implemented in:  src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+#         Implemented in:  src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
 #         See also:        src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.pkg
 # 
 #  o  The font imp ... 
@@ -139,23 +139,23 @@
 
 
 stipulate
-    include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package br  = xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
+    package e2t = xevent_to_topwindow_router;		# xevent_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
     #
-    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xok = xsocket;				# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
-    package ai  = atom_imp;				# atom_imp		is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
-    package ci  = color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
-    package di  = draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
-    package fti = font_imp;	# "fi" is taken! :-)	# font_imp		is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
-    package gci = graphics_context_imp;			# graphics_context_imp	is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
-    package ki  = keymap_imp;				# keymap_imp		is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
-    package xt  = xtypes;				# xtypes		is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package g   = geometry;				# geometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xok = xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package dy  = display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package ai  = atom_imp;				# atom_imp			is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
+    package ci  = color_imp;				# color_imp			is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
+    package di  = draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package fti = font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
+    package gci = graphics_context_imp;			# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package ki  = keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+    package xt  = xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
-    package xsession: Xsession {			# Xsession		is from   src/lib/x-kit/xclient/src/window/xsession.api
+    package xsession: Xsession {			# Xsession			is from   src/lib/x-kit/xclient/src/window/xsession.api
 
 	Xsession
 	    =
@@ -165,7 +165,7 @@ herein
 
 		default_screen:    	Screen_Info,
 
-		xbuf_to_widgettree_xevent_router:   br::Xbuf_To_Widgettree_Xevent_Router,          # Feeds X events to appropriate toplevel window.
+		xevent_to_topwindow_router:   e2t::Xevent_To_Topwindow_Router,          # Feeds X events to appropriate toplevel window.
 
 		font_imp:          	fti::Font_Imp,
 		atom_imp:          	ai::Atom_Imp,
@@ -258,9 +258,9 @@ herein
                     =
                     selection_imp::make_selection_imp  display;
 
-		xbuf_to_widgettree_xevent_router
+		xevent_to_topwindow_router
 		    =
-		    br::make_xbuf_to_widgettree_xevent_router
+		    e2t::make_xevent_to_topwindow_router
 		      { display,
 			keymap_imp,
 			#
@@ -285,7 +285,7 @@ herein
 					di::make_draw_imp
 					  ( take'  config_slot,
 					    gc_imp,
-					    xbuf_to_widgettree_xevent_router,
+					    xevent_to_topwindow_router,
                                             xsocket
                                           )
 				};
@@ -365,7 +365,7 @@ herein
 		    xdisplay => display,
 		    default_screen => list::nth (screens, default_screen),
 		    screens,
-		    xbuf_to_widgettree_xevent_router,
+		    xevent_to_topwindow_router,
 		    atom_imp,
 		    font_imp =>  fti::make_font_imp  display,
 		    window_property_imp,

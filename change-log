@@ -1,3 +1,4 @@
+2010-03-05-03.51.27: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Cleaning and commenting.
 2010-03-05-01.44.23: src/lib/x-kit/xclient/src/wire/xsocket.pkg: outbuf_imp: loop() was ignoring max_bytes_per_socket_write, clearly a bug: Fixed.  Much commenting.
 2010-03-04-18.41.30: src/lib/x-kit/xclient/src/wire/xsocket.api: Renamed   exception LOST_REPLAY  ->   exception LOST_REPLY.  (I think the former was my typo in the heat of battle... *blush*)
 2010-03-04-00.43.08: src/lib/x-kit/xclient/src/wire/display.api: XSCREEN: Renamed black,white -> black_pixel,white_pixel for clarity and consistency.

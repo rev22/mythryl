@@ -90,21 +90,7 @@ herein
 	exception LOST_REPLY;
 	exception ERROR_REPLY  xerrors::Xerror;
 
-	empty_v
-	    =
-	    v8::from_list [];
-
-	fun new_buf size
-	    =
-	    rw_unt8_vector::make_rw_vector (size, 0u0);
-
 	max_bytes_per_socket_write = 2048;
-
-	# Time to wait before flushing a non-empty output buffer 
-	#
-	flush_time_out'
-	    =
-	    timeout_in' (time::from_milliseconds 50);
 
 	# Client pleas to sequencer: by clients 
 	#
@@ -135,6 +121,30 @@ herein
 	  | ADD_TO_OUTBUF v8::Vector		# Add bytestring to buffer.
 	  ;
 
+	Xsocket
+	    =
+	    XSOCKET
+	      {
+		xsocket_id:     Ref( Void ),				# The usual trick -- REFs are equal to themselves and
+									# nothing else, hence work fine as unique identifiers.
+		xevent_slot:    Mailslot( event_types::Xevent ),
+		plea_slot:      Mailslot( Plea_Mail ),
+		xerror_slot:    Mailslot( (u::Unt, v8::Vector) ),
+
+		flush:    Void -> Void,
+		close:    Void -> Void
+	      };
+
+	empty_v
+	    =
+	    v8::from_list [];
+
+	# Time to wait before flushing a non-empty output buffer 
+	#
+	flush_time_out'
+	    =
+	    timeout_in' (time::from_milliseconds 50);
+
     #  +DEBUG 
 	max_chars_to_trace_per_send
 	    =
@@ -145,6 +155,10 @@ herein
 	    =
 	    NULL;			# Show complete message.
 #   	    THE 8;			# First eight bytes -- this is what Reppy had.
+
+	fun new_buf size
+	    =
+	    rw_unt8_vector::make_rw_vector (size, 0u0);
 
 	# Convert "abc" -> "61.62.63." etc:
 	#
@@ -214,7 +228,7 @@ herein
     #  -DEBUG 
 
         ##########################################################################################
-	# inbuf_imp -- break socket bytestream into individual messages.
+	# X socket input buffer imp.
 	#
 	# Here we monitor the input stream from the X-server
 	# socket and break it up into individual messages which
@@ -366,7 +380,7 @@ herein
 
 
         ##########################################################################################
-	# The X socket output buffer imp.
+	# X socket output buffer imp.
 	#
 	# It is more efficient to send a few large
 	# network packets than many small ones
@@ -481,7 +495,7 @@ herein
 
 
         ##########################################################################################
-	# The sequencer:
+	# Sequencer imp.
 	#
 	# The sequencer is responsible for matching
 	# replies read from the X with requests sent
@@ -697,7 +711,7 @@ herein
 	    # send the extracted reply to the requesting
 	    # client.
 	    #
-	    fun extract_reply (n, reply, pending_reply_queue)
+	    fun handle_reply_message (n, reply, pending_reply_queue)
 		=
 		case (pending_reply_n_exists (n, pending_reply_queue))
 		    #
@@ -723,7 +737,7 @@ herein
 			{   # Debug support:
 			    #	
 			    show_pending_reply_queue (n, pending_reply_queue);
-			    xgripe::impossible "[xok::extract_reply: bogus pending reply queue]";
+			    xgripe::impossible "[xok::handle_reply_message: bogus pending reply queue]";
 			};
 	       esac;
 
@@ -731,7 +745,7 @@ herein
 	    # Extract the pending-reply queue entry
 	    # with seqence number n:
 	    #
-	    fun extract_expose (n, reply, pending_reply_queue)
+	    fun handle_expose_message (n, reply, pending_reply_queue)
 		=
 		{   case (pending_reply_n_exists (n, pending_reply_queue))
 			#
@@ -752,7 +766,7 @@ herein
 
      /* +DEBUG 
      (dumpPendingQ (n, q);
-     xgripe::impossible "[xok::extract_expose: bogus pending reply queue]")
+     xgripe::impossible "[xok::handle_expose_message: bogus pending reply queue]")
      -DEBUG */
 		};
 
@@ -760,7 +774,7 @@ herein
 	    # with seqence number n (corresponding
 	    # to the given error message):
 	    #
-	    fun extract_err (n, err, pending_reply_queue)
+	    fun handle_error_message (n, err, pending_reply_queue)
 		= 
 		case (pending_reply_n_exists (n, pending_reply_queue))
 		    #
@@ -794,12 +808,12 @@ herein
 
 		    _   =>
     /* DEBUG */         {   show_pending_reply_queue (n, pending_reply_queue);
-			    xgripe::impossible "[xok::extract_err: bogus pending reply queue]";
+			    xgripe::impossible "[xok::handle_error_message: bogus pending reply queue]";
     /* DEBUG */         };
 		esac;
 
 
-	    fun sync_with_xevent (n, pending_reply_queue)
+	    fun handle_event_message (n, pending_reply_queue)
 		=
 		case (pending_reply_n_exists (n, pending_reply_queue))
 		    #
@@ -891,10 +905,10 @@ herein
 			    (last_seqn_read, n, add_to_pending_reply_queue (EXPOSURE_REPLY (n, sync_v), pending_reply_queue));
 			};
 
-		    # Process all pending client-thread requests
-		    # and then flush outbuf:
+		    # Process all pending client-thread
+		    # requests and then flush outbuf:
 		    #
-		    fun do_all_pending_pleas_then_flush_outbuf  imp_state
+		    fun do_pending_pleas  imp_state
 			=
 			{   imp_state =  do_all_pending_pleas  imp_state;
 
@@ -942,13 +956,13 @@ herein
 			    # Handle a request from a client
 			    # (an app thread on our side):
 			    # 
-			    fun do_plea PLEA_FLUSH => do_all_pending_pleas_then_flush_outbuf imp_state;
+			    fun do_plea PLEA_FLUSH => do_pending_pleas imp_state;
 				do_plea PLEA_QUIT  => quit();
 				#
-				do_plea (PLEA_AND_CHECK request) =>  do_all_pending_pleas_then_flush_outbuf (send_request_and_check (request, imp_state));
-				do_plea (PLEA_REPLY     request) =>  do_all_pending_pleas_then_flush_outbuf (send_request_reply     (request, imp_state));
-				do_plea (PLEA_REPLIES   request) =>  do_all_pending_pleas_then_flush_outbuf (send_request_replies   (request, imp_state));
-				do_plea (PLEA_EXPOSURES request) =>  do_all_pending_pleas_then_flush_outbuf (send_request_exposures (request, imp_state));
+				do_plea (PLEA_AND_CHECK request) =>  do_pending_pleas (send_request_and_check (request, imp_state));
+				do_plea (PLEA_REPLY     request) =>  do_pending_pleas (send_request_reply     (request, imp_state));
+				do_plea (PLEA_REPLIES   request) =>  do_pending_pleas (send_request_replies   (request, imp_state));
+				do_plea (PLEA_EXPOSURES request) =>  do_pending_pleas (send_request_exposures (request, imp_state));
 				#
 				do_plea (PLEA request)
 				    =>
@@ -1000,7 +1014,7 @@ herein
 
 						    give (error_sink_slot, (seqn, msg));
 
-						    (seqn, last_seqn_sent, extract_err (seqn, msg, pending_reply_queue));
+						    (seqn, last_seqn_sent, handle_error_message (seqn, msg, pending_reply_queue));
 						};
 
 
@@ -1008,7 +1022,7 @@ herein
 
 						    seqn = get_seq_n();
 
-						    (seqn, last_seqn_sent, extract_reply (seqn, msg, pending_reply_queue));
+						    (seqn, last_seqn_sent, handle_reply_message (seqn, msg, pending_reply_queue));
 						};
 
 
@@ -1018,7 +1032,7 @@ herein
 
 						    ( last_seqn_read,
 						      last_seqn_sent,
-						      sync_with_xevent (last_seqn_read, pending_reply_queue)
+						      handle_event_message (last_seqn_read, pending_reply_queue)
 						    );
 						};
 
@@ -1057,7 +1071,7 @@ herein
 
 						    ( seqn,
 						      last_seqn_sent,
-						      extract_expose (seqn, boxes, pending_reply_queue)
+						      handle_expose_message (seqn, boxes, pending_reply_queue)
 						    );
 						};
 
@@ -1066,7 +1080,7 @@ herein
 
 						    seqn = get_seq_n();
 
-						    (seqn, last_seqn_sent, extract_expose (seqn, [], pending_reply_queue));
+						    (seqn, last_seqn_sent, handle_expose_message (seqn, [], pending_reply_queue));
 						};
 
 
@@ -1076,7 +1090,7 @@ herein
 
 						    give (to_xbuf_slot, (code, msg));
 
-						    (seqn, last_seqn_sent, sync_with_xevent (seqn, pending_reply_queue));
+						    (seqn, last_seqn_sent, handle_event_message (seqn, pending_reply_queue));
 						};
 				    esac;
 				};		# fun do_from_x
@@ -1085,12 +1099,17 @@ herein
 	end;					# stipulate
 
 
-	# The X-event buffer **
+        ##########################################################################################
+	# X event buffer imp.
 	#
-	# The X-event buffer decodes and buffers X-events.
-	# This thread also packs expose events.
+	# The X-event buffer decodes and buffers
+        # events from the X-server -- keystrokes,
+	# mouseclicks, mouse-motions etc.
+	#
+	# We also pack expose events.
 	# 
 	# It communicates via two mailslots as follows:
+	# 
 	#   from_sequencer_slot      --  raw messages from the sequencer_imp
 	#   to_window_registry_slot  --  decoded events to the window registry
 	#
@@ -1098,7 +1117,6 @@ herein
 	    =
 	    route_p
 	    where
-
 		include event_types;
 
 		fun decode (k, s)
@@ -1169,30 +1187,17 @@ herein
 	    end;					# fun xbuf_imp
 
 
-	# The connection:
-	#
-	Xsocket
-	    =
-	    XSOCKET
-	      {
-		xsocket_id:     Ref( Void ),				# The Usual trick -- REFs are equal to themselves and
-									# nothing else, hence work fine as unique identifiers.
-		xevent_slot:    Mailslot( event_types::Xevent ),
-		plea_slot:      Mailslot( Plea_Mail ),
-		xerror_slot:    Mailslot( (u::Unt, v8::Vector) ),
 
-		flush:    Void -> Void,
-		close:    Void -> Void
-	      };
-
+        ##########################################################################################
 	# Create the threads and internal mailslots
-	# to manage a connection to the X server.
+	# to manage a connection to the X server:
+	# inbuf_imp, outbuf_imp, xbuf_imp, sequencer_imp...
 	#
 	# We assume that the connection request/reply
 	# has already been dealt with.
 	#
-	# This function is currently called from only
-	# one place in
+	# This function is called (only) from open_xdisplay in:
+	#
 	#     src/lib/x-kit/xclient/src/wire/display.pkg
 	#
 	fun make_xsocket  socket
@@ -1259,7 +1264,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 		  { xsocket_id => REF (),
 
 		    xevent_slot  => xbuf_to_client_slot,
-		    plea_slot => client_to_sequencer_slot,
+		    plea_slot    => client_to_sequencer_slot,
 		    xerror_slot,
 
 		    flush   => flush_fn,

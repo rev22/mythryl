@@ -12,20 +12,20 @@
 
 
 stipulate
-    include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package br  =  xbuf_to_widgettree_xevent_router;	# xbuf_to_widgettree_xevent_router	is from   src/lib/x-kit/xclient/src/window/xbuf-to-widgettree-xevent-router.pkg
-    package g   =  geometry;				# geometry				is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package gi  =  graphics_context_imp;		# graphics_context_imp			is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
-    package m1  =  oneshot_maildrop;			# oneshot_maildrop			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
-    package pg  =  pen_guts;				# pen_guts				is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
-    package v2w =  value_to_wire;			# value_to_wire				is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
-    package vu8 =  unt8_vector;				# unt8_vector				is from   src/lib/std/src/unt8-vector.pkg
-    package xok =  xsocket;			 	# xsocket				is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package xt  =  xtypes;				# xtypes				is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package e2t =  xevent_to_topwindow_router;		# xevent_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
+    package g   =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package gi  =  graphics_context_imp;		# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package m1  =  oneshot_maildrop;			# oneshot_maildrop		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
+    package pg  =  pen_guts;				# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
+    package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package vu8 =  unt8_vector;				# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
+    package xok =  xsocket;			 	# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package xt  =  xtypes;				# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
-    package draw_imp: (weak)  Draw_Imp {		# Draw_Imp				is from   src/lib/x-kit/xclient/src/window/draw-imp.api
+    package draw_imp: (weak)  Draw_Imp {		# Draw_Imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.api
 
 	Dm_Config
 	  = DM_UNMAP
@@ -641,7 +641,7 @@ herein
 		      =
 		      {   fun filter_msg (to, m)
 			      =
-			      if (br::window_is_locked (lock_imp, to))
+			      if (e2t::window_is_locked (lock_imp, to))
 				  #
 				  loop (m ! buf);
 			      else

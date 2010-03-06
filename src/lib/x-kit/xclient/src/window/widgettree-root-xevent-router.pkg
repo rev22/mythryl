@@ -212,7 +212,7 @@ herein
 			window == event   ??   route_ci (wrap_mail (path, wc::ETC_OWN_DEATH))
 					  ::   do_config_sync (path, wc::ETC_CHILD_DEATH (make_descendant_window window));
 
-		    route_xevent (xbuf_to_widgettree_xevent_router::ENVELOPE_ROUTE_END _, et::UNMAP_NOTIFY_XEVENT _)
+		    route_xevent (xevent_to_topwindow_router::ENVELOPE_ROUTE_END _, et::UNMAP_NOTIFY_XEVENT _)
 			=>
 			always_void
 			    ==> 
@@ -222,7 +222,7 @@ herein
 			=>
 			always_void;
 
-		    route_xevent (xbuf_to_widgettree_xevent_router::ENVELOPE_ROUTE_END _, et::MAP_NOTIFY_XEVENT _)
+		    route_xevent (xevent_to_topwindow_router::ENVELOPE_ROUTE_END _, et::MAP_NOTIFY_XEVENT _)
 			=>
 			always_void
 			    ==>
@@ -332,7 +332,7 @@ herein
 	      window_id
 	    )
 	    =
-	    {   xsession ->  sn::XSESSION { xdisplay as dy::XDISPLAY { xsocket, ... }, xbuf_to_widgettree_xevent_router, ... };
+	    {   xsession ->  sn::XSESSION { xdisplay as dy::XDISPLAY { xsocket, ... }, xevent_to_topwindow_router, ... };
 
 		dm_config_slot
 		    =
@@ -342,14 +342,14 @@ herein
 			  (
 			    take'  dm_config_slot,
 			    gc_imp,
-			    xbuf_to_widgettree_xevent_router,
+			    xevent_to_topwindow_router,
 			    xsocket
 			  );
 
 		xevent_mailop
 		    =
-		    xbuf_to_widgettree_xevent_router::note_toplevel_window
-		      ( xbuf_to_widgettree_xevent_router,
+		    xevent_to_topwindow_router::note_toplevel_window
+		      ( xevent_to_topwindow_router,
 			window_id
 		      );
 
