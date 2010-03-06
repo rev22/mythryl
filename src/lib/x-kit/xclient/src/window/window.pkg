@@ -52,10 +52,10 @@ herein
 		#
 		(v2w::encode_change_property
 		  {
+		    window_id,
 		    name,
-		    window =>  window_id,
-		    prop   =>  value,
-		    mode   =>  xt::REPLACE_PROPERTY
+		    property =>  value,
+		    mode     =>  xt::REPLACE_PROPERTY
 		  }
 		);
 
@@ -563,7 +563,7 @@ herein
 	    sn::request  xsession
 	      ( v2w::encode_configure_window
 		  {
-		    window  => id,
+		    window_id  => id,
 		    vals => do_config_vals vals
 		  }
 	      );
@@ -582,7 +582,7 @@ herein
 	#
 	fun show_window (dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
-	    {   sn::request    xsession  (v2w::encode_map_window { window=>id } );
+	    {   sn::request    xsession  (v2w::encode_map_window { window_id=>id } );
 		sn::flush_out  xsession;
 	    };
 
@@ -590,7 +590,7 @@ herein
 	#
 	fun hide_window (dt::WINDOW { id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
-	    {   sn::request    xsession  (v2w::encode_unmap_window { window=>id } );
+	    {   sn::request    xsession  (v2w::encode_unmap_window { window_id=>id } );
 
 		sn::flush_out  xsession;
 	    };
@@ -724,7 +724,7 @@ herein
 	    let ans = 
 		(w2v::decode_grab_keyboard_reply (do_mailop (sn::dpy_pequest_peply xsession
 			    (v2w::encode_grab_keyboard { 
-				window=id, * type XTy::XID *
+				window_id=id, * type XTy::XID *
 				owner_events=FALSE, 
 				ptr_mode=xt::AsynchronousGrab, 
 				kbd_mode=xt::AsynchronousGrab, 

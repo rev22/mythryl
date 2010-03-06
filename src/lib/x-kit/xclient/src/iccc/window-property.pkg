@@ -231,8 +231,8 @@ herein
 		change_property  display
 		  { name,
 		    mode,
-		    window => window_id,
-		    prop => value
+		    window_id,
+		    property => value
 		  };
 	    };
 
@@ -271,7 +271,7 @@ herein
 		  =
 		  info_of_prop prop;
 
-	      delete_prop display { window => wid, prop => name };
+	      delete_prop display { window_id => wid, property => name };
 	  };
 
 
@@ -297,7 +297,7 @@ herein
 
 	    rotate_properties (l as prop ! r, n)
 		=>
-		{   my (display, wid, _)
+		{   my (display, window_id, _)
 			=
 			info_of_prop prop;
 
@@ -305,16 +305,16 @@ herein
 			=
 			{   my (_, w, name) = info_of_prop prop;
 
-			    if (w != wid)   raise exception ROTATE_PROPERTIES;
-			    else            name;
+			    if (w != window_id)   raise exception ROTATE_PROPERTIES;
+			    else                  name;
 			    fi;
 			};
 
 		    rotate_props display
 			{
-			  window   => wid,
-			  delta => n,
-			  properties=> map check_prop l
+			  window_id,
+			  delta      => n,
+			  properties => map check_prop l
 			};
 	      };
 	end;
@@ -323,13 +323,13 @@ herein
 	# Get a property value, which
 	# may require several requests:
 	#
-	fun get_property prop
+	fun get_property property
 	    =
 	    get_prop ()
 	    where
-		my (display, window, name)
+		my (display, window_id, name)
 		    =
-		    info_of_prop  prop;
+		    info_of_prop  property;
 
 		fun size_of (xt::RAW_DATA { data, ... } )
 		    =
@@ -337,12 +337,15 @@ herein
 
 		fun get_chunk words_so_far
 		    =
-		    req_get_property display {
-			    window, prop => name,
-			    type => NULL, #  AnyPropertyType 
-			    offset => words_so_far, len => 1024,
-		    delete => FALSE
-			  };
+		    req_get_property  display
+                      {
+			window_id,
+                        property => name,
+			type     => NULL,			#  AnyPropertyType 
+			offset   => words_so_far,
+			len      => 1024,
+			delete   => FALSE
+		      };
 
 		fun extend_data (data', xt::RAW_DATA { data, ... } )
 		    =

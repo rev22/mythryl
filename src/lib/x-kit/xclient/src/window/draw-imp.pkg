@@ -301,7 +301,7 @@ herein
 
 			(to, _, _, DOP_CLEAR_AREA box)
 			    =>
-			    request (v2w::encode_clear_area { window=>to, box, exposures => FALSE } );
+			    request (v2w::encode_clear_area { window_id=>to, box, exposures => FALSE } );
 
 			(to, gc, _, DOP_PUT_IMAGE im)
 			    =>
@@ -606,7 +606,7 @@ herein
 
 	  fun destroy_window connection (DESTROY_WINDOW window_id)
 		  =>
-		  {   xok::request connection (v2w::encode_destroy_window { window => window_id } );
+		  {   xok::request connection (v2w::encode_destroy_window { window_id } );
 		      xok::flush connection;
 		  };
 

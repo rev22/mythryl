@@ -376,7 +376,7 @@ herein
 
 
 	# X-server I/O. 
-
+	#
 	stipulate
 
 	    fun apply_to_xsocket f (XSESSION { xdisplay=>dy::XDISPLAY { xsocket, ... }, ... } )

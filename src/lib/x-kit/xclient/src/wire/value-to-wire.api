@@ -51,28 +51,43 @@ herein
                                        }
 				       -> v8::Vector;
 
-	encode_change_property: { mode:   xt::Change_Property_Mode, 
-				  name:   xt::Atom,
-                                  prop:   xt::Property_Value, 
-				  window: xt::Xid
+	encode_change_property: { window_id: xt::Xid,
+				  mode:      xt::Change_Property_Mode, 
+				  name:      xt::Atom,
+                                  property:  xt::Property_Value
+				  
                                 }
 				-> v8::Vector;
 
-	encode_change_save_set: { insert: Bool,  window: xt::Xid }                           -> v8::Vector;
+	encode_change_save_set
+	    :
+	    { window_id:  xt::Xid,
+              insert:     Bool
+            }
+            ->
+            v8::Vector;
 
 	encode_change_window_attributes
 	    :
-            { window:      xt::Xid,
+            { window_id:   xt::Xid,
               attributes:  List( xt::wa::Window_Attribute )
             }
             ->
             v8::Vector;
 
-	encode_circulate_window: { parent: xt::Xid,  place: xt::Stack_Pos, window: xt::Xid } -> v8::Vector;
+	encode_circulate_window
+	    :
+	    { window_id:  xt::Xid,
+	      parent_id:  xt::Xid,
+              place:      xt::Stack_Pos
+              
+            }
+            ->
+            v8::Vector;
 
-	encode_clear_area:       { box: g::Box,  exposures: Bool, window: xt::Xid }          -> v8::Vector;
+	encode_clear_area:       { box: g::Box,  exposures: Bool, window_id: xt::Xid }       -> v8::Vector;
 	encode_close_font:       { font: xt::Xid }                                           -> v8::Vector;
-	encode_configure_window: { vals: xt::Value_List,  window: xt::Xid }                  -> v8::Vector;
+	encode_configure_window: { vals: xt::Value_List,  window_id: xt::Xid }               -> v8::Vector;
 
 	encode_xserver_connection_request
 	    :
@@ -121,7 +136,7 @@ herein
 	encode_create_colormap: { all_writable: Bool,
                                   cmap:         xt::Xid, 
 				  visual:       xt::Xid,
-                                  window:       xt::Xid
+                                  window_id:    xt::Xid
                                 }
 				-> v8::Vector;
 
@@ -169,9 +184,9 @@ herein
                               }
 			      -> v8::Vector;
 
-	encode_delete_property:    { prop: xt::Atom,  window: xt::Xid } -> v8::Vector;
-	encode_destroy_subwindows: { window: xt::Xid }                  -> v8::Vector;
-	encode_destroy_window:     { window: xt::Xid }                  -> v8::Vector;
+	encode_delete_property:    { window_id: xt::Xid, property: xt::Atom } -> v8::Vector;
+	encode_destroy_subwindows: { window_id: xt::Xid                     } -> v8::Vector;
+	encode_destroy_window:     { window_id: xt::Xid                     } -> v8::Vector;
 
 	encode_fill_poly: { drawable:  xt::Xid,
                             gc:        xt::Xid, 
@@ -206,26 +221,29 @@ herein
 
 	encode_get_keyboard_mapping: { count: Int,  first: xt::Keycode } -> v8::Vector;
 
-	encode_get_motion_events: { start:  xt::Timestamp,
-                                    stop:   xt::Timestamp,
-                                    window: xt::Xid
+	encode_get_motion_events: { window_id:  xt::Xid,
+				    start:      xt::Timestamp,
+                                    stop:       xt::Timestamp
+                                    
                                   }
                                   ->
                                   v8::Vector;
 
-	encode_get_property: { delete: Bool,
-                               len:    Int,
-                               offset: Int, 
-			       prop:   xt::Atom,
-                               type:   Null_Or(xt::Atom), 
-			       window: xt::Xid
+	encode_get_property: { window_id:  xt::Xid,
+			       delete:     Bool,
+                               len:        Int,
+                               offset:     Int, 
+			       property:   xt::Atom,
+                               type:       Null_Or(xt::Atom)
+			       
                              }
 			     -> v8::Vector;
 
 	encode_get_selection_owner:   { selection: xt::Atom } -> v8::Vector;
-	encode_get_window_attributes: { window:    xt::Xid  } -> v8::Vector;
+	encode_get_window_attributes: { window_id: xt::Xid  } -> v8::Vector;
 
 	encode_grab_button: { button:       Null_Or(xt::Mousebutton), 
+			      window_id:    xt::Xid,
 			      confine_to:   Null_Or(xt::Xid), 
 			      cursor:       Null_Or(xt::Xid),
 			      #
@@ -235,8 +253,7 @@ herein
 			      modifiers:    List(xt::Modifier_Key), 
 			      owner_events: Bool,
 			      #
-                              ptr_mode:     xt::Grab_Mode, 
-			      window:       xt::Xid
+                              ptr_mode:     xt::Grab_Mode
                             }
 			    -> v8::Vector;
 
@@ -245,7 +262,7 @@ herein
 			   modifiers:    List(xt::Modifier_Key), 
 			   owner_events: Bool,
                            ptr_mode:     xt::Grab_Mode, 
-			   window:       xt::Xid
+			   window_id:    xt::Xid
                          }
 			 -> v8::Vector;
 
@@ -253,7 +270,7 @@ herein
                                 owner_events:  Bool, 
 				ptr_mode:      xt::Grab_Mode,
                                 time:          xt::Timestamp, 
-				window:        xt::Xid
+				window_id:     xt::Xid
                               }
 			      -> v8::Vector;
 
@@ -266,7 +283,7 @@ herein
                                owner_events:  Bool, 
 			       ptr_mode:      xt::Grab_Mode,
                                time:          xt::Timestamp, 
-			       window:        xt::Xid
+			       window_id:     xt::Xid
                              }
 			     -> v8::Vector;
 
@@ -292,17 +309,17 @@ herein
 			    ->
                             v8::Vector;
 
-	encode_kill_client:              { resource: Null_Or(xt::Xid) }     -> v8::Vector;
-	encode_list_fonts:               { max: Int,  pattern: String }     -> v8::Vector;
-	encode_list_fonts_with_info:     { max: Int,  pattern: String }     -> v8::Vector;
+	encode_kill_client:              { resource: Null_Or(xt::Xid) }        -> v8::Vector;
+	encode_list_fonts:               { max: Int,  pattern: String }        -> v8::Vector;
+	encode_list_fonts_with_info:     { max: Int,  pattern: String }        -> v8::Vector;
 
-	encode_list_installed_colormaps: { window: xt::Xid }                -> v8::Vector;
-	encode_list_properties:          { window: xt::Xid }                -> v8::Vector;
-	encode_lookup_color:             { cmap:   xt::Xid,  name: String } -> v8::Vector;
+	encode_list_installed_colormaps: { window_id: xt::Xid }                -> v8::Vector;
+	encode_list_properties:          { window_id: xt::Xid }                -> v8::Vector;
+	encode_lookup_color:             { cmap:      xt::Xid,  name: String } -> v8::Vector;
 
-	encode_map_subwindows:           { window: xt::Xid }                -> v8::Vector;
-	encode_map_window:               { window: xt::Xid }                -> v8::Vector;
-	encode_open_font:                { font:   xt::Xid,  name: String } -> v8::Vector;
+	encode_map_subwindows:           { window_id: xt::Xid }                -> v8::Vector;
+	encode_map_window:               { window_id: xt::Xid }                -> v8::Vector;
+	encode_open_font:                { font:      xt::Xid, name: String }  -> v8::Vector;
 
 	encode_poly_arc: { drawable: xt::Xid,
                            gc:       xt::Xid, 
@@ -385,12 +402,12 @@ herein
 
 	encode_query_colors:    { cmap: xt::Xid,  pixels: List(xt::Pixel) } -> v8::Vector;
 
-	encode_query_extension: String              -> v8::Vector;
-	encode_query_font:      { font:   xt::Xid } -> v8::Vector;
-	encode_query_pointer:   { window: xt::Xid } -> v8::Vector;
+	encode_query_extension: String                    -> v8::Vector;
+	encode_query_font:      { font:         xt::Xid } -> v8::Vector;
+	encode_query_pointer:   { window_id:    xt::Xid } -> v8::Vector;
 
-	encode_query_text_extents: { font:   xt::Xid,  str: String } -> v8::Vector;
-	encode_query_tree:         { window: xt::Xid }               -> v8::Vector;
+	encode_query_text_extents: { font:      xt::Xid,  str: String } -> v8::Vector;
+	encode_query_tree:         { window_id: xt::Xid }               -> v8::Vector;
 
 	encode_recolor_cursor:  { background_color: xt::Rgb,
 				  foreground_color: xt::Rgb,
@@ -398,14 +415,15 @@ herein
                                 }
 			        -> v8::Vector;
 
-	encode_reparent_window: { parent: xt::Xid,  pos: g::Point, 
-				  window: xt::Xid
+	encode_reparent_window: { parent_id:  xt::Xid,
+				  window_id:  xt::Xid,
+                                  pos:        g::Point
                                 }
 				-> v8::Vector;
 
-	encode_rotate_properties: { delta: Int,
-                                    properties: List(xt::Atom), 
-				    window: xt::Xid
+	encode_rotate_properties: { delta:       Int,
+                                    properties:  List(xt::Atom), 
+				    window_id:   xt::Xid
                                   }
 				  -> v8::Vector;
 
@@ -441,10 +459,10 @@ herein
                                  }
 				 -> v8::Vector;
 
-	encode_set_selection_owner: { selection: xt::Atom, 
-				      timestamp: xt::Timestamp, 
+	encode_set_selection_owner: { selection:   xt::Atom, 
+				      timestamp:   xt::Timestamp, 
 				      #	
-				      window:    Null_Or(xt::Xid)
+				      window_id:   Null_Or(xt::Xid)
                                     }
 				    -> v8::Vector;
 
@@ -471,24 +489,24 @@ herein
                                   }
 				  -> v8::Vector;
 
-	encode_ungrab_button: { button:    Null_Or(xt::Mousebutton), 
-				modifiers: List(xt::Modifier_Key), 
-				window:    xt::Xid
+	encode_ungrab_button: { button:     Null_Or(xt::Mousebutton), 
+				modifiers:  List(xt::Modifier_Key), 
+				window_id:  xt::Xid
                               }
 			      -> v8::Vector;
 
-	encode_ungrab_key: { key:       xt::Keycode, 
-			     window:    xt::Xid,
-			     modifiers: List(xt::Modifier_Key)
+	encode_ungrab_key: { key:        xt::Keycode, 
+			     window_id:  xt::Xid,
+			     modifiers:  List(xt::Modifier_Key)
                            }
 			   -> v8::Vector;
 
-	encode_ungrab_keyboard:    { time:   xt::Timestamp } -> v8::Vector;
-	encode_ungrab_pointer:     { time:   xt::Timestamp } -> v8::Vector;
+	encode_ungrab_keyboard:    { time:       xt::Timestamp } -> v8::Vector;
+	encode_ungrab_pointer:     { time:       xt::Timestamp } -> v8::Vector;
 
-	encode_uninstall_colormap: { cmap:   xt::Xid }       -> v8::Vector;
-	encode_unmap_subwindows:   { window: xt::Xid }       -> v8::Vector;
-	encode_unmap_window:       { window: xt::Xid }       -> v8::Vector;
+	encode_uninstall_colormap: { cmap:       xt::Xid }       -> v8::Vector;
+	encode_unmap_subwindows:   { window_id:  xt::Xid }       -> v8::Vector;
+	encode_unmap_window:       { window_id:  xt::Xid }       -> v8::Vector;
 
 	encode_warp_pointer: { from:     Null_Or(xt::Xid), 
                                to:       Null_Or(xt::Xid), 

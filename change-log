@@ -1,3 +1,4 @@
+2010-03-05-20.03.19: For clarity and consistency, in src/lib/x-kit/xclient/src/wire/window-io.api: create_window: Renamed id, parent -> window_id, parent_id.  In src/lib/x-kit/xclient/src/wire/value-to-wire.api: encode_create_window: Renamed window, parent -> window_id, parent_id.
 2010-03-05-19.16.13: src/lib/x-kit/xclient/src/window/: For clarity and consistency rename xevent-to-topwindow-router.pkg ->  xsocket-to-topwindow-router.pkg, widgettree-root-xevent-router.pkg -> topwindow-to-widget-router.pkg. Break out xsocket-to-topwindow-router.api as a separate file.
 2010-03-05-18.40.04: src/lib/x-kit/xclient/src/window/: Renamed xbuf-to-widgettree-xevent-router.pkg -> xevent-to-topwindow-router.pkg for conciseness, perhaps slightly improved clarity.
 2010-03-05-03.51.27: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Cleaning and commenting.

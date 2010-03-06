@@ -51,21 +51,21 @@ herein
 	    end;
 
 
-	fun map_window  xsocket  w
+	fun map_window  xsocket  window_id
 	    =
-	    xok::request xsocket (v2w::encode_map_window { window=>w } );
+	    xok::request xsocket (v2w::encode_map_window { window_id } );
 
-	fun change_window_attributes  xsocket  (window, attributes)
+
+	fun change_window_attributes  xsocket  (window_id, attributes)
 	    =
 	    {   xok::request  xsocket
 		      #
-		      (v2w::encode_change_window_attributes  { window, attributes });
+		      (v2w::encode_change_window_attributes  { window_id, attributes });
 
 		xok::flush xsocket;
 	    };
-
-    };			# package xwin 
-end;			# stipulate
+    };					# package window_io
+end;					# stipulate
 
 
 ##########################################################################

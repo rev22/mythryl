@@ -152,7 +152,7 @@ herein
 
 	# Get a property value, which may require several requests 
 	#
-	fun get_property connection (window, prop)
+	fun get_property connection (window_id, property)
 	    =
 	    get_prop ()
 	    where 
@@ -166,9 +166,11 @@ herein
 		    =
 		    req_get_property connection
 		      {
-			window, prop,
-			type => NULL, #  AnyPropertyType 
-			offset => words_so_far, len => 1024,
+			window_id,
+                        property,
+			type   => NULL,			#  AnyPropertyType 
+			offset => words_so_far,
+			len    => 1024,
 			delete => FALSE
 		      };
 
@@ -177,9 +179,12 @@ herein
 		    =
 		    req_get_property  connection
 		      {
-			window, prop,
-			type => NULL, #  AnyPropertyType 
-			offset => 0, len => 0, delete => TRUE
+			window_id,
+			property,
+			type   => NULL,			#  AnyPropertyType 
+			offset => 0,
+			len    => 0,
+			delete => TRUE
 		      };
 
 
@@ -234,7 +239,6 @@ herein
 				);
 			    fi;
 		     esac;
-
 	    end;
 
 
@@ -399,14 +403,16 @@ herein
 							 =>
 							 {   # Write out the property value:
 
-							     change_property xsocket {
-								 window => xevent.requestor,
-								 name => prop,
-								 mode => xt::REPLACE_PROPERTY,
-								 prop => prop_val
+							     change_property xsocket
+                                                               {
+								 window_id => xevent.requestor,
+								 name      => prop,
+								 mode      => xt::REPLACE_PROPERTY,
+								 property  => prop_val
 							       };
 
-							     selection_notify xsocket {
+							     selection_notify xsocket
+                                                               {
 								 requestor => xevent.requestor,
 								 selection => xevent.selection,
 								 target    => xevent.target,
@@ -480,7 +486,7 @@ herein
 			    set_selection_owner  xsocket
 			      {
 				selection,
-				window    =>  THE window,
+				window_id =>  THE window,
 				timestamp =>  xt::TIME_STAMP timestamp
 			      };
 
@@ -530,7 +536,7 @@ herein
 			    set_selection_owner  xsocket
 			      {
 				selection,
-				window    => NULL,
+				window_id => NULL,
 				timestamp => xt::CURRENT_TIME #  ??? 
 			      };
 
