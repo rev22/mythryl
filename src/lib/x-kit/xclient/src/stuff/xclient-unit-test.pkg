@@ -21,6 +21,7 @@ stipulate
     package tr  =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
     package xtr =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     package sox =  socket_stuff;				# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
+    package xok =  xsocket;					# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package au  =  authentication;				# authentication		is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
@@ -54,6 +55,11 @@ herein
 
 		window_id =  next_xid ();
 
+		xevent_in'
+                    =
+                    xok::wait_for_xevent  xsocket;
+
+
 		case root_visual
 		    #
 		    xt::NO_VISUAL_FOR_THIS_DEPTH int
@@ -71,12 +77,12 @@ herein
 				=
 				v2w::encode_create_window
 				      {
-					depth,
-					window    => window_id,
-					parent    => parent_id,
-					#
-					io        => xt::INPUT_OUTPUT,
+					window_id,
+					parent_id,
 					visual_id => xt::SAME_VISUAL_AS_PARENT,
+					#
+					depth,
+					io        => xt::INPUT_OUTPUT,
 					#
 					site =>
                                             g::WINDOW_SITE

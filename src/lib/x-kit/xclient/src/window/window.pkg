@@ -213,8 +213,8 @@ herein
 			  {
 			    depth,
 			    #
-			    id          => window_id,
-			    parent      => root_window_id,
+			    window_id,
+			    parent_id   => root_window_id,
 			    #
 			    io          => xt::INPUT_OUTPUT,
 			    visual_id   => xt::SAME_VISUAL_AS_PARENT,
@@ -274,8 +274,8 @@ herein
 
 			  wio::create_window   xsocket
                             {
-			      id         => window_id,
-			      parent     => parent_id,
+			      window_id,
+			      parent_id,
 			      #	
 			      io         => xt::INPUT_OUTPUT,
 			      depth,
@@ -328,8 +328,8 @@ herein
 
 		wio::create_window  xsocket
                   {
-		    id         => window_id,
-		    parent     => root_window_id,
+		    window_id,
+		    parent_id  => root_window_id,
 		    #
 		    io         => xt::INPUT_OUTPUT,
 		    depth,
@@ -371,8 +371,8 @@ herein
 
 		wio::create_window  xsocket
                   {
-		    id         => window_id,
-		    parent     => root_window_id,
+		    window_id,
+		    parent_id  => root_window_id,
 		    #
 		    io         => xt::INPUT_OUTPUT,
 		    depth,
@@ -424,8 +424,8 @@ herein
 
 		wio::create_window  xsocket
                   {
-		    id         => window_id,
-		    parent     => parent_id,
+		    window_id,
+		    parent_id,
 		    #	
 		    io         => xt::INPUT_ONLY,
 		    depth      => 0,

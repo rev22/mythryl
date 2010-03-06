@@ -1386,6 +1386,11 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    =
 	    flush ();
 
+	# Generate a mailop to read X events from X server.
+	# Called (only) from:
+	#
+	#     src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
+	#
 	fun wait_for_xevent (XSOCKET { xevent_slot, ... } )
 	    =
 	    take'  xevent_slot;

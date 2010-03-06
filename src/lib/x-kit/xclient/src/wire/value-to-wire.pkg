@@ -637,11 +637,11 @@ herein
 		};
 
 	    fun encode_create_window
-                { window:       xt::Xid,
-		  parent:	xt::Xid,
+                { window_id:    xt::Xid,
+		  parent_id:	xt::Xid,
+                  visual_id:	xt::Visual_Id_Choice,
 		  io:		xt::Input_Output,
 		  depth:	Int,
-                  visual_id:	xt::Visual_Id_Choice,
                   site:         g::Window_Site,
                   attributes:   List( xt::wa::Window_Attribute )
                 }
@@ -668,8 +668,8 @@ herein
 		    msg = make_extra_request (req_create_window, attribute_count);
 
 		    put_signed8  (msg,  1, depth           );
-		    put_xid      (msg,  4, window          );
-		    put_xid      (msg,  8, parent          );
+		    put_xid      (msg,  4, window_id       );
+		    put_xid      (msg,  8, parent_id       );
 		    put_wgeom    (msg, 12, site            );
 		    put16	 (msg, 22, io              );
 		    put_word32   (msg, 24, visual_id       );

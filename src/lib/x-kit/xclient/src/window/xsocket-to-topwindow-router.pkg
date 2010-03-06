@@ -299,7 +299,7 @@ package xsocket_to_topwindow_router: (weak)  Xsocket_To_Topwindow_Router {		# Xs
 #			      rcref:= *rcref + 1)
 #		* end testing. */
 
-		xevent_in
+		xevent_in'
                     =
                     xok::wait_for_xevent  xsocket;
 
@@ -457,7 +457,7 @@ package xsocket_to_topwindow_router: (weak)  Xsocket_To_Topwindow_Router {		# Xs
                             ==>
                             do_plea,
 
-			xevent_in
+			xevent_in'
                             ==>
                             do_xevent
 		    ];

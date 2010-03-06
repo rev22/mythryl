@@ -23,27 +23,27 @@ herein
 
 	# Create a new X-window with the given xid 
 	#
-	fun create_window   (connection: xok::Xsocket)
+	fun create_window   (xsocket: xok::Xsocket)
             {
-              id:           xt::Window_Id,
-              parent:       xt::Window_Id,
+              window_id:    xt::Window_Id,
+              parent_id:    xt::Window_Id,
+              visual_id:    xt::Visual_Id_Choice,
 	      #	
               io:           xt::Input_Output,
               depth:        Int,
-              visual_id:    xt::Visual_Id_Choice,
               site:         g::Window_Site,
               attributes:   List( xt::wa::Window_Attribute )
             }
 	    =
-	    xok::request  connection  msg
+	    xok::request  xsocket  msg
 	    where 
 		msg =   v2w::encode_create_window
 			  {
-			    window => id,
-			    parent,
+			    window_id,
+			    parent_id,
+			    visual_id,
 			    io,
 			    depth,
-			    visual_id,
 			    site,
 			    attributes
 			  };
@@ -51,17 +51,17 @@ herein
 	    end;
 
 
-	fun map_window  connection  w
+	fun map_window  xsocket  w
 	    =
-	    xok::request connection (v2w::encode_map_window { window=>w } );
+	    xok::request xsocket (v2w::encode_map_window { window=>w } );
 
-	fun change_window_attributes  connection  (window, attributes)
+	fun change_window_attributes  xsocket  (window, attributes)
 	    =
-	    {   xok::request  connection
+	    {   xok::request  xsocket
 		      #
 		      (v2w::encode_change_window_attributes  { window, attributes });
 
-		xok::flush connection;
+		xok::flush xsocket;
 	    };
 
     };			# package xwin 

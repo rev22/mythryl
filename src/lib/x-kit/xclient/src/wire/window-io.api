@@ -26,8 +26,8 @@ herein
 	    :
 	    xok::Xsocket
 	    ->
-	     { id:          xt::Window_Id,
-	       parent:      xt::Window_Id,
+	     { window_id:   xt::Window_Id,
+	       parent_id:   xt::Window_Id,
 	       #
 	       io:	    xt::Input_Output,
 	       depth:       Int,

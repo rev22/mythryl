@@ -159,13 +159,13 @@ herein
                               }
 			      -> v8::Vector;
 
-	encode_create_window: { depth:      Int,
+	encode_create_window: { window_id:  xt::Xid,
+                                parent_id:  xt::Xid, 
+				visual_id:  xt::Visual_Id_Choice,
+				depth:      Int,
                                 site:       g::Window_Site, 
 				io:         xt::Input_Output,
-                                parent:     xt::Xid, 
-				attributes: List( xt::wa::Window_Attribute ),
-				visual_id:  xt::Visual_Id_Choice,
-				window:     xt::Xid
+				attributes: List( xt::wa::Window_Attribute )
                               }
 			      -> v8::Vector;
 
