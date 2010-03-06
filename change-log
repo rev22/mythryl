@@ -1,3 +1,4 @@
+2010-03-05-18.40.04: src/lib/x-kit/xclient/src/window/: Renamed xbuf-to-widgettree-xevent-router.pkg -> xevent-to-topwindow-router.pkg for conciseness, perhaps slightly improved clarity.
 2010-03-05-03.51.27: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Cleaning and commenting.
 2010-03-05-01.44.23: src/lib/x-kit/xclient/src/wire/xsocket.pkg: outbuf_imp: loop() was ignoring max_bytes_per_socket_write, clearly a bug: Fixed.  Much commenting.
 2010-03-04-18.41.30: src/lib/x-kit/xclient/src/wire/xsocket.api: Renamed   exception LOST_REPLAY  ->   exception LOST_REPLY.  (I think the former was my typo in the heat of battle... *blush*)

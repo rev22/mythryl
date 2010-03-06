@@ -11,7 +11,7 @@
 stipulate
     include threadkit;					# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package e2t =  xevent_to_topwindow_router;		# xevent_to_topwindow_router		is from   src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
+    package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router		is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     package g   =  geometry;				# geometry				is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package gi  =  graphics_context_imp;		# graphics_context_imp			is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
     package m1  =  oneshot_maildrop;			# oneshot_maildrop			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
@@ -98,7 +98,7 @@ herein
 	    :
 	    ( Mailop( Dm_Config ),
 	      gi::Graphics_Context_Imp,
-	      e2t::Xevent_To_Topwindow_Router,
+	      s2t::Xsocket_To_Topwindow_Router,
 	      xok::Xsocket
 	    )
 	    ->

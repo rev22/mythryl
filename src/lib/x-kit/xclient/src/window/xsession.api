@@ -12,7 +12,7 @@
 stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package e2t = xevent_to_topwindow_router;		# xevent_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
+    package s2t = xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     #
     package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
@@ -36,7 +36,7 @@ herein
 
 		default_screen:    	Screen_Info,
 
-		xevent_to_topwindow_router:   e2t::Xevent_To_Topwindow_Router,          # Feeds X events to appropriate toplevel window.
+		xsocket_to_topwindow_router:   s2t::Xsocket_To_Topwindow_Router,          # Feeds X events to appropriate toplevel window.
 
 		font_imp:          	fti::Font_Imp,
 		atom_imp:          	ai::Atom_Imp,

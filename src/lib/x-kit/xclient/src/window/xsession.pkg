@@ -88,19 +88,19 @@
 #     processing.
 #         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
 #
-#  o  The xevent_to_topwindow_router imp
-#     receives all X events (e.g. keystrokes and mouseclicks)
-#     and feeds each one to the appropriate toplevel window,
-#     or more precisely to the widgettree_root_xevent_router
-#     at the root of the widgettree for that window, there to
-#     trickle down the widgettree to its ultimate target widget.
+#  o  The   xsocket_to_topwindow_router   imp receives all X events
+#     (e.g. keystrokes and mouseclicks) and feeds each one to the
+#     appropriate toplevel window, or more precisely to the
+#     topwindow_to_widget_router   at the root of the widgettree for
+#     that window, there to trickle down the widgettree to its ultimate
+#     target widget.
 #
-#     To do this, the xevent_to_topwindow_router imp
-#     tracks all toplevel windows by the application, keyed
-#     by their X-server-assigned IDs.
+#     To do this, the xsocket_to_topwindow_router imp
+#     tracks all toplevel windows created by the application,
+#     keyed by their X-server-assigned IDs.
 #
-#         Implemented in:  src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
-#         See also:        src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.pkg
+#         Implemented in:  src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
+#         See also:        src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 # 
 #  o  The font imp ... 
 #         Implemented in:  src/lib/x-kit/xclient/src/window/font-imp.pkg
@@ -141,7 +141,7 @@
 stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package e2t = xevent_to_topwindow_router;		# xevent_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
+    package s2t = xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     #
     package g   = geometry;				# geometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xok = xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
@@ -165,7 +165,7 @@ herein
 
 		default_screen:    	Screen_Info,
 
-		xevent_to_topwindow_router:   e2t::Xevent_To_Topwindow_Router,          # Feeds X events to appropriate toplevel window.
+		xsocket_to_topwindow_router:   s2t::Xsocket_To_Topwindow_Router,          # Feeds X events to appropriate toplevel window.
 
 		font_imp:          	fti::Font_Imp,
 		atom_imp:          	ai::Atom_Imp,
@@ -258,9 +258,9 @@ herein
                     =
                     selection_imp::make_selection_imp  display;
 
-		xevent_to_topwindow_router
+		xsocket_to_topwindow_router
 		    =
-		    e2t::make_xevent_to_topwindow_router
+		    s2t::make_xsocket_to_topwindow_router
 		      { display,
 			keymap_imp,
 			#
@@ -285,7 +285,7 @@ herein
 					di::make_draw_imp
 					  ( take'  config_slot,
 					    gc_imp,
-					    xevent_to_topwindow_router,
+					    xsocket_to_topwindow_router,
                                             xsocket
                                           )
 				};
@@ -365,7 +365,7 @@ herein
 		    xdisplay => display,
 		    default_screen => list::nth (screens, default_screen),
 		    screens,
-		    xevent_to_topwindow_router,
+		    xsocket_to_topwindow_router,
 		    atom_imp,
 		    font_imp =>  fti::make_font_imp  display,
 		    window_property_imp,

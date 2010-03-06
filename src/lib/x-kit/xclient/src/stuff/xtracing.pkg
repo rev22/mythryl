@@ -15,8 +15,8 @@
 #     src/lib/x-kit/xclient/src/window/keymap-imp.pkg
 #     src/lib/x-kit/xclient/src/window/window-property-imp.pkg
 #     src/lib/x-kit/xclient/src/window/selection-imp.pkg
-#     src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.pkg
-#     src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
+#     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
+#     src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
 #     src/lib/x-kit/xclient/src/wire/display.pkg
 #     src/lib/x-kit/xclient/src/wire/socket-closer-imp.pkg
 #     src/lib/x-kit/xclient/src/wire/wire-to-value.pkg

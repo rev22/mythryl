@@ -1102,18 +1102,35 @@ herein
         ##########################################################################################
 	# X event buffer imp.
 	#
-	# The X-event buffer decodes and buffers
-        # events from the X-server -- keystrokes,
+	# Here we decode and buffer X events
+        # from the X-server -- keystrokes,
 	# mouseclicks, mouse-motions etc.
 	#
 	# We also pack expose events.
 	# 
-	# It communicates via two mailslots as follows:
+	# We communicate via two mailslots as follows:
 	# 
 	#   from_sequencer_slot      --  raw messages from the sequencer_imp
-	#   to_window_registry_slot  --  decoded events to the window registry
+	#   to_widget_slot           --  decoded events headed for the appropriate widget.
 	#
-	fun xbuf_imp (from_sequencer_slot, to_window_registry_slot)
+	# X events that we send to 'to_widget_slot' get routed by
+        #     xsocket_to_topwindow
+	# from
+	#     src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
+	#
+	# to the correct topwindow, where they get routed on down that window's widget-tree by
+	#     topwindow_to_widget_router
+	# from
+	#     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
+	#
+	# This machinery mostly gets wired up in display and xsession from (respectively)
+	#
+	#     src/lib/x-kit/xclient/src/wire/display.pkg
+	#     src/lib/x-kit/xclient/src/window/xsession.pkg
+	# 
+	# -- see the dataflow diagram in top-of-file comments there.
+	#
+	fun xbuf_imp (from_sequencer_slot, to_widget_slot)
 	    =
 	    route_p
 	    where
@@ -1177,7 +1194,7 @@ herein
 					    ==>
 					    (fn mail = (front, do_xevent (mail, rear))),
 
-					give' (to_window_registry_slot, x)
+					give' (to_widget_slot, x)
 					    ==>
 					    .{  (rest, rear);  }
 				    ]

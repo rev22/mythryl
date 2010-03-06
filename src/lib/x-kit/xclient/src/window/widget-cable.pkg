@@ -21,7 +21,7 @@
 stipulate
 	include threadkit;				# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
 	#
-	package e2t =  xevent_to_topwindow_router;	# xevent_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
+	package s2t =  xsocket_to_topwindow_router;	# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
 	package dt  =  draw_types;			# draw_types			is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
 	package g   =  geometry;			# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
 	package hw  =  hash_window;			# hash_window			is from   src/lib/x-kit/xclient/src/window/hash-window.pkg
@@ -186,12 +186,12 @@ herein
 	Envelope(X)
 	    =
 	    ENVELOPE
-	      { route:    e2t::Envelope_Route,
+	      { route:    s2t::Envelope_Route,
 		seqn:     Int,
 		contents: X
 	      };
 
-	# NB: Envelope_Route is defined in src/lib/x-kit/xclient/src/window/xevent-to-topwindow-router.pkg
+	# NB: Envelope_Route is defined in src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
 	#     Probably both it and Envelope() should be defined in an envelope.pkg.   XXX BUGGO FIXME.
 
 	Kidplug
@@ -262,11 +262,11 @@ herein
 	# or else it needs to be passed to
 	# one of our kids:
 	#
-	fun route_envelope (ENVELOPE { route=>e2t::ENVELOPE_ROUTE_END _, contents, ... } )
+	fun route_envelope (ENVELOPE { route=>s2t::ENVELOPE_ROUTE_END _, contents, ... } )
 		=>
 		TO_SELF contents;
 
-	    route_envelope (ENVELOPE { route=>e2t::ENVELOPE_ROUTE(_, rest_of_route), seqn, contents } )
+	    route_envelope (ENVELOPE { route=>s2t::ENVELOPE_ROUTE(_, rest_of_route), seqn, contents } )
 		=>
 		TO_CHILD (ENVELOPE { route=>rest_of_route, seqn, contents } );
 	end;
@@ -274,8 +274,8 @@ herein
 
 	stipulate
 
-	    fun next_window (ENVELOPE { route=>e2t::ENVELOPE_ROUTE_END dst, ... } ) =>   dst;
-		next_window (ENVELOPE { route=>e2t::ENVELOPE_ROUTE (w, _),  ... } ) =>   w;
+	    fun next_window (ENVELOPE { route=>s2t::ENVELOPE_ROUTE_END dst, ... } ) =>   dst;
+		next_window (ENVELOPE { route=>s2t::ENVELOPE_ROUTE (w, _),  ... } ) =>   w;
 	    end;
 
 	herein

@@ -1,0 +1,79 @@
+## xsocket-to-topwindow-router.api
+#
+# API for functionality which reads X server events
+# from xsocket (specifically, xbuf_imp) and routes
+# them to the appropriate top-level window.  From
+# there they get routed down the widget tree -- see:
+#
+#     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
+
+stipulate
+    include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xt = xtypes;						# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+
+    api Xsocket_To_Topwindow_Router {
+
+	Xsocket_To_Topwindow_Router;
+
+	Envelope_Route
+	  = ENVELOPE_ROUTE_END  xt::Window_Id
+	  | ENVELOPE_ROUTE     (xt::Window_Id, Envelope_Route)
+	  ;
+			# XXX BUGGO FIXME Envelope_Route should be defined elswhere, with Envelope.
+			# Current Envelope is defined in src/lib/x-kit/xclient/src/window/widget-cable.pkg
+
+	make_xsocket_to_topwindow_router
+	    :
+	    { display:        display::Xdisplay,
+	      keymap_imp:     keymap_imp::Keymap_Imp,
+	      #
+	      prop_event_slot:  Mailslot( event_types::Xevent ),
+	      sel_event_slot:   Mailslot( event_types::Xevent )
+	    }
+	    ->
+	    Xsocket_To_Topwindow_Router;
+
+	note_toplevel_window
+	    :
+	    (Xsocket_To_Topwindow_Router, xt::Window_Id)
+	    ->
+	    Mailop( (Envelope_Route, event_types::Xevent) );
+
+	# Lock a window and all of its descendants.
+	# Return the unlocking function:
+	#
+	lock_window_tree
+	    :
+	    (Xsocket_To_Topwindow_Router, xt::Window_Id)
+	    ->
+	    (Void -> Void);
+
+	# Test to see if a window is locked:
+	# 
+	window_is_locked
+	    :
+	    ( Xsocket_To_Topwindow_Router,
+	      xt::Window_Id
+	    )
+	    ->
+	    Bool;
+
+    };
+end;						# stipulate
+
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

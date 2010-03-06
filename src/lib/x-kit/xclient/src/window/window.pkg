@@ -35,7 +35,7 @@ stipulate
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     package wio =  window_io;				# window_io			is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
-    package wr  =  widgettree_root_xevent_router;       # widgettree_root_xevent_router	is from   src/lib/x-kit/xclient/src/window/widgettree-root-xevent-router.pkg
+    package wr  =  topwindow_to_widget_router;       	# topwindow_to_widget_router	is from   src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
     package xok =  xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package xt  =  xtypes;				# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
@@ -203,7 +203,7 @@ herein
 
 		my (kidplug, window, delete_slot)
 		    =
-		    wr::make_widgettree_root_xevent_router
+		    wr::make_topwindow_to_widget_router
 			(screen, root_imps, window_id);
 
 		fun create_fn { site, border_color, background_color }
@@ -324,7 +324,7 @@ herein
 
 		my (kidplug, window, delete_slot)
 		    =
-		    wr::make_widgettree_root_xevent_router (scrn, root_imps, window_id);
+		    wr::make_topwindow_to_widget_router (scrn, root_imps, window_id);
 
 		wio::create_window  xsocket
                   {
@@ -367,7 +367,7 @@ herein
 
 		my (kidplug, window, delete_slot)
 		    =
-		    wr::make_widgettree_root_xevent_router (scrn, root_imps, window_id);
+		    wr::make_topwindow_to_widget_router (scrn, root_imps, window_id);
 
 		wio::create_window  xsocket
                   {
