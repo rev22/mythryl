@@ -51,460 +51,463 @@
 #     also locking already locked windows.
 
 
-package xsocket_to_topwindow_router: (weak)  Xsocket_To_Topwindow_Router {		# Xsocket_To_Topwindow_Router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api
+stipulate
+    package xt  = xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ev  = event_types;				# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
+    package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package xok = xsocket;				# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
 
-    include threadkit;									# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+herein
+    package xsocket_to_topwindow_router: (weak)  Xsocket_To_Topwindow_Router {		# Xsocket_To_Topwindow_Router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api
 
-    Envelope_Route
-      = ENVELOPE_ROUTE_END  xtypes::Window_Id
-      | ENVELOPE_ROUTE     (xtypes::Window_Id, Envelope_Route)
-      ;
+	include threadkit;								# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
 
-    stipulate
-
-	package xt  = xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-	package ev  = event_types;				# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
-	package dy  = display;					# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
-	package xok = xsocket;					# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-
-	Plea_Mail
-	  = PLEA_NEW       xt::Window_Id
-	  | PLEA_LOCK      xt::Window_Id
-	  | PLEA_UNLOCK    xt::Window_Id
-	  | PLEA_ISLOCKED  xt::Window_Id
-          ;
-
-	# * NOTE: could bundle this all into a couple of functions *
-	#
-	Window_Desc
-            =
-            WINDOW_DESC
-              { id:          xt::Window_Id,
-		route:       Envelope_Route,
-		parent:      Null_Or( Window_Desc ),
-
-		children:    Ref(  List(  Window_Desc ) ),
-		lock:        Ref( Bool ),
-
-		event_strm:  Mailslot ((Envelope_Route, ev::Xevent))
-	      };
-
-	Xevent_Dst
-	  = TO_WINDOW       xt::Window_Id
-	  | DESTROY_WINDOW  xt::Window_Id
-	  | TO_KEYMAP_IMP
-	  | TO_WINDOW_PROPERTY_IMP
-	  | TO_SELECTION_IMP
-	  | TO_ALL
-	  | TO_TRASH
-	  | CREATE_WINDOW  { parent:      xt::Window_Id,
-                             new_window:  xt::Window_Id
-                           }
-          ;
-
-	    # ddeboer test, fall 2004. 
-	    # rcref = REF 0
-
-	# Discard instances of an X-event that
-        # are the product of SubstructureNotify,
-	# instead of PackageNotify.
-	#
-	fun ignore_substruct_xevents (w1, w2)
-            =
-            if (w1 == w2)  TO_WINDOW w1;
-            else           TO_TRASH;
-            fi;
-
-	# Extract the destination xid of an X-event 
-	#
-	fun extract_dst (ev::KEY_PRESS_XEVENT      { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::KEY_RELEASE_XEVENT    { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::BUTTON_PRESS_XEVENT   { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::BUTTON_RELEASE_XEVENT { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::MOTION_NOTIFY_XEVENT  { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::ENTER_NOTIFY_XEVENT   { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::LEAVE_NOTIFY_XEVENT   { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::FOCUS_IN_XEVENT       { event, ... } ) =>  TO_WINDOW event;
-	    extract_dst (ev::FOCUS_OUT_XEVENT      { event, ... } ) =>  TO_WINDOW event;
-
-#	    extract_dst (ev::KeymapNotifyXEvt {, ... } ) = 
-
-	    extract_dst (ev::EXPOSE_XEVENT { window, ... } ) => TO_WINDOW window;
-
-#	    extract_dst (ev::GraphicsExposeXEvt ?? 
-#	    extract_dst (ev::NoExposeXEvt {, ... } ) =
-
-	    extract_dst (ev::VISIBILITY_NOTIFY_XEVENT { window, ... } ) => TO_WINDOW window;
-
-	    extract_dst (ev::CREATE_NOTIFY_XEVENT { parent, window, ... } )
-		=>
-		CREATE_WINDOW { parent, new_window => window };
-
-	    extract_dst (ev::DESTROY_NOTIFY_XEVENT { event, window, ... } )
-		=>
-		event == window  ??  DESTROY_WINDOW event	# Remove window from registry. 
-				 ::  TO_WINDOW      event;	# Report to parent that child is dead. 
-
-	    extract_dst (ev::UNMAP_NOTIFY_XEVENT { event, window, ... } )
-		=>
-		ignore_substruct_xevents (event, window);
-
-	    extract_dst (ev::MAP_NOTIFY_XEVENT { event, window, ... } )
-		=>
-		ignore_substruct_xevents (event, window);
-
-#           extract_dst (ev::MapRequestXEvt {, ... } ) =
-
-	    extract_dst (ev::REPARENT_NOTIFY_XEVENT _)
-                =>
-                TO_TRASH;
-
-	    extract_dst (ev::CONFIGURE_NOTIFY_XEVENT { event, window, ... } )
-		=>
-		ignore_substruct_xevents (event, window);
-
-#	    extract_dst (ev::ConfigureRequestXEvt {, ... } ) =
-
-	    extract_dst (ev::GRAVITY_NOTIFY_XEVENT { event, window, ... } )
-		=>
-		ignore_substruct_xevents (event, window);
-
-#	    extract_dst (ev::ResizeRequestXEvt {, ... } ) =
-
-	    extract_dst (ev::CIRCULATE_NOTIFY_XEVENT { event, window, ... } )
-		=>
-		ignore_substruct_xevents (event, window);
-
-#	    extract_dst (ev::CirculateRequestXEvt {, ... } ) =
-
-	    extract_dst (ev::PROPERTY_NOTIFY_XEVENT   _) => TO_WINDOW_PROPERTY_IMP;    # We may have other uses of PropertyNotify someday.
-	    extract_dst (ev::SELECTION_CLEAR_XEVENT   _) => TO_SELECTION_IMP;
-	    extract_dst (ev::SELECTION_REQUEST_XEVENT _) => TO_SELECTION_IMP;
-	    extract_dst (ev::SELECTION_NOTIFY_XEVENT  _) => TO_SELECTION_IMP;
-
-	    extract_dst (ev::COLORMAP_NOTIFY_XEVENT { window, ... } ) => TO_WINDOW window;
-	    extract_dst (ev::CLIENT_MESSAGE_XEVENT  { window, ... } ) => TO_WINDOW window;
-
-	    extract_dst  ev::MODIFIER_MAPPING_NOTIFY_XEVENT      => TO_ALL;
-	    extract_dst (ev::KEYBOARD_MAPPING_NOTIFY_XEVENT _)  => TO_ALL;
-	    extract_dst  ev::POINTER_MAPPING_NOTIFY_XEVENT       => TO_ALL;
-
-	    extract_dst e => {
-	       xgripe::warning (string::cat [
-		 "[WinReg: unexpected ", xevent_to_string::xevent_name e, " event]\n"]);
-	       TO_TRASH;};
-	  end;
-#  +DEBUG 
-
-    stipulate
-
-	xid_to_string = xtype_to_string::xid_to_string;
-
-	fun dst2s (TO_WINDOW w)
-                =>
-                ("ToWindow(" + xid_to_string w + ")");
-
-	    dst2s (CREATE_WINDOW { parent, new_window } )
-                =>
-                string::cat [
-		 "CreateWin { parent=", xid_to_string parent, ", new_window=",
-		 xid_to_string new_window, "}"
-	       ];
-
-	    dst2s (DESTROY_WINDOW w) => ("DestroyWin(" + xid_to_string w + ")");
-	    dst2s TO_KEYMAP_IMP => "ToKeymapServer";
-	    dst2s TO_WINDOW_PROPERTY_IMP => "ToPropertyServer";
-	    dst2s TO_SELECTION_IMP => "ToSelectionServer";
-	    dst2s TO_ALL => "ToAll";
-	    dst2s TO_TRASH => "ToTrash";
-	end;
-
-    herein
-
-        extract_dst
-            =
-            fn event
-                =
-                {   dst = extract_dst event;
-
-		    xtracing::print_if xtracing::winreg_tracing .{
-			cat ["WinReg: ", xevent_to_string::xevent_name event, " => ", dst2s dst];
-		    };
-
-	            dst;
-	        };
-    end;
-#  -DEBUG 
-
-    herein
-
-	Xsocket_To_Topwindow_Router
-            =
-            XSOCKET_TO_TOPWINDOW_ROUTER 
-	      {
-		plea_slot:    Mailslot( Plea_Mail ),
-		reply_slot:   Mailslot( Mailop( (Envelope_Route, ev::Xevent) ) ),
-		lock_slot:    Mailslot( Bool )
-	      };
-
-
+	Envelope_Route
+	  = ENVELOPE_ROUTE_END  xtypes::Window_Id
+	  | ENVELOPE_ROUTE     (xtypes::Window_Id, Envelope_Route)
+	  ;
 
 	stipulate
 
-	    fun set_window_subtree_locks_to
-                    (bool: Bool)	
+	    Plea_Mail
+	      = PLEA_NEW       xt::Window_Id
+	      | PLEA_LOCK      xt::Window_Id
+	      | PLEA_UNLOCK    xt::Window_Id
+	      | PLEA_ISLOCKED  xt::Window_Id
+	      ;
+
+	    # * NOTE: could bundle this all into a couple of functions *
+	    #
+	    Window_Desc
 		=
-		set
-		where
-		    fun set (WINDOW_DESC { lock, children, ... } )
-			=
-			{   lock := bool;
-			    set_list *children;
-			}
+		WINDOW_DESC
+		  { id:          xt::Window_Id,
+		    route:       Envelope_Route,
+		    parent:      Null_Or( Window_Desc ),
 
-		    also
-		    fun set_list (wd ! r)
-			    =>
-			    {   set wd;
-				set_list r;
-			    };
+		    children:    Ref(  List(  Window_Desc ) ),
+		    lock:        Ref( Bool ),
 
-			set_list []
-			    =>
-			    ();
-		    end;
-		end;
+		    event_strm:  Mailslot ((Envelope_Route, ev::Xevent))
+		  };
+
+	    Xevent_Dst
+	      = TO_WINDOW       xt::Window_Id
+	      | DESTROY_WINDOW  xt::Window_Id
+	      | TO_KEYMAP_IMP
+	      | TO_WINDOW_PROPERTY_IMP
+	      | TO_SELECTION_IMP
+	      | TO_ALL
+	      | TO_TRASH
+	      | CREATE_WINDOW  { parent:      xt::Window_Id,
+				 new_window:  xt::Window_Id
+			       }
+	      ;
+
+		# ddeboer test, fall 2004. 
+		# rcref = REF 0
+
+	    # Discard instances of an X-event that
+	    # are the product of SubstructureNotify,
+	    # instead of PackageNotify.
+	    #
+	    fun ignore_substruct_xevents (w1, w2)
+		=
+		if (w1 == w2)  TO_WINDOW w1;
+		else           TO_TRASH;
+		fi;
+
+	    # Extract the destination xid of an X-event 
+	    #
+	    fun extract_dst (ev::KEY_PRESS_XEVENT      { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::KEY_RELEASE_XEVENT    { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::BUTTON_PRESS_XEVENT   { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::BUTTON_RELEASE_XEVENT { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::MOTION_NOTIFY_XEVENT  { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::ENTER_NOTIFY_XEVENT   { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::LEAVE_NOTIFY_XEVENT   { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::FOCUS_IN_XEVENT       { event, ... } ) =>  TO_WINDOW event;
+		extract_dst (ev::FOCUS_OUT_XEVENT      { event, ... } ) =>  TO_WINDOW event;
+
+    #	    extract_dst (ev::KeymapNotifyXEvt {, ... } ) = 
+
+		extract_dst (ev::EXPOSE_XEVENT { window, ... } ) => TO_WINDOW window;
+
+    #	    extract_dst (ev::GraphicsExposeXEvt ?? 
+    #	    extract_dst (ev::NoExposeXEvt {, ... } ) =
+
+		extract_dst (ev::VISIBILITY_NOTIFY_XEVENT { window, ... } ) => TO_WINDOW window;
+
+		extract_dst (ev::CREATE_NOTIFY_XEVENT { parent, window, ... } )
+		    =>
+		    CREATE_WINDOW { parent, new_window => window };
+
+		extract_dst (ev::DESTROY_NOTIFY_XEVENT { event, window, ... } )
+		    =>
+		    event == window  ??  DESTROY_WINDOW event	# Remove window from registry. 
+				     ::  TO_WINDOW      event;	# Report to parent that child is dead. 
+
+		extract_dst (ev::UNMAP_NOTIFY_XEVENT { event, window, ... } )
+		    =>
+		    ignore_substruct_xevents (event, window);
+
+		extract_dst (ev::MAP_NOTIFY_XEVENT { event, window, ... } )
+		    =>
+		    ignore_substruct_xevents (event, window);
+
+    #           extract_dst (ev::MapRequestXEvt {, ... } ) =
+
+		extract_dst (ev::REPARENT_NOTIFY_XEVENT _)
+		    =>
+		    TO_TRASH;
+
+		extract_dst (ev::CONFIGURE_NOTIFY_XEVENT { event, window, ... } )
+		    =>
+		    ignore_substruct_xevents (event, window);
+
+    #	    extract_dst (ev::ConfigureRequestXEvt {, ... } ) =
+
+		extract_dst (ev::GRAVITY_NOTIFY_XEVENT { event, window, ... } )
+		    =>
+		    ignore_substruct_xevents (event, window);
+
+    #	    extract_dst (ev::ResizeRequestXEvt {, ... } ) =
+
+		extract_dst (ev::CIRCULATE_NOTIFY_XEVENT { event, window, ... } )
+		    =>
+		    ignore_substruct_xevents (event, window);
+
+    #	    extract_dst (ev::CirculateRequestXEvt {, ... } ) =
+
+		extract_dst (ev::PROPERTY_NOTIFY_XEVENT   _) => TO_WINDOW_PROPERTY_IMP;    # We may have other uses of PropertyNotify someday.
+		extract_dst (ev::SELECTION_CLEAR_XEVENT   _) => TO_SELECTION_IMP;
+		extract_dst (ev::SELECTION_REQUEST_XEVENT _) => TO_SELECTION_IMP;
+		extract_dst (ev::SELECTION_NOTIFY_XEVENT  _) => TO_SELECTION_IMP;
+
+		extract_dst (ev::COLORMAP_NOTIFY_XEVENT { window, ... } ) => TO_WINDOW window;
+		extract_dst (ev::CLIENT_MESSAGE_XEVENT  { window, ... } ) => TO_WINDOW window;
+
+		extract_dst  ev::MODIFIER_MAPPING_NOTIFY_XEVENT      => TO_ALL;
+		extract_dst (ev::KEYBOARD_MAPPING_NOTIFY_XEVENT _)  => TO_ALL;
+		extract_dst  ev::POINTER_MAPPING_NOTIFY_XEVENT       => TO_ALL;
+
+		extract_dst e => {
+		   xgripe::warning (string::cat [
+		     "[WinReg: unexpected ", xevent_to_string::xevent_name e, " event]\n"]);
+		   TO_TRASH;};
+	      end;
+    #  +DEBUG 
+
+	stipulate
+
+	    xid_to_string = xtype_to_string::xid_to_string;
+
+	    fun dst2s (TO_WINDOW w)
+		    =>
+		    ("ToWindow(" + xid_to_string w + ")");
+
+		dst2s (CREATE_WINDOW { parent, new_window } )
+		    =>
+		    string::cat [
+		     "CreateWin { parent=", xid_to_string parent, ", new_window=",
+		     xid_to_string new_window, "}"
+		   ];
+
+		dst2s (DESTROY_WINDOW w) => ("DestroyWin(" + xid_to_string w + ")");
+		dst2s TO_KEYMAP_IMP => "ToKeymapServer";
+		dst2s TO_WINDOW_PROPERTY_IMP => "ToPropertyServer";
+		dst2s TO_SELECTION_IMP => "ToSelectionServer";
+		dst2s TO_ALL => "ToAll";
+		dst2s TO_TRASH => "ToTrash";
+	    end;
+
 	herein
 
-	    lock_tree   =  set_window_subtree_locks_to   TRUE;
-	    unlock_tree =  set_window_subtree_locks_to   FALSE;
+	    extract_dst
+		=
+		fn event
+		    =
+		    {   dst = extract_dst event;
 
-	end;
-
-	# This is called exactly one place, in
-	#     src/lib/x-kit/xclient/src/window/xsession.pkg
-	#
-	fun make_xsocket_to_topwindow_router
-	    {
-              display => dy::XDISPLAY { xsocket, ... },
-              keymap_imp,
-              prop_event_slot,
-              sel_event_slot
-            }
-	    =
-	    {
-#		/* testing: ddeboer, fall 2004. *
-#		rn = *rcref
-#		(file::print ("Started registry " + (int::to_string rn) + "\n");
-#			      rcref:= *rcref + 1)
-#		* end testing. */
-
-		xevent_in'
-                    =
-                    xok::wait_for_xevent  xsocket;
-
-		register_plea_slot  =   make_mailslot ();
-		register_reply_slot =   make_mailslot ();
-
-		lock_reply_slot     =   make_mailslot ();
-								# hash_xid	is from   src/lib/x-kit/xclient/src/stuff/hash-xid.pkg
-		id_map = hash_xid::make_map ();
-		find   = hash_xid::get id_map;
-		insert = hash_xid::set id_map;
-		remove = hash_xid::remove id_map;
-
-		fun do_plea (PLEA_NEW window)
-			=>
-			{   # Log a new top-level window:
-
-		            event_slot = make_mailslot ();
-
-			    insert
-                              ( window,
-                                WINDOW_DESC
-                                  {
-				    id => window,
-                                    route => ENVELOPE_ROUTE_END window,
-                                    parent => NULL,
-				    children => REF [],
-                                    lock => REF FALSE,
-                                    event_strm => event_slot
-			          }
-                              );
-
-			    give  (register_reply_slot,  take'  event_slot);
+			xtracing::print_if xtracing::winreg_tracing .{
+			    cat ["xsocket_to_topwindow_router: ", xevent_to_string::xevent_name event, " => ", dst2s dst];
 			};
 
-		   do_plea (PLEA_LOCK   window) =>   lock_tree (find window);
-		   do_plea (PLEA_UNLOCK window) => unlock_tree (find window);
-
-		   do_plea (PLEA_ISLOCKED window)
-                       =>
-                       {   my WINDOW_DESC { lock, ... }
-                               =
-                               find window;
-
-			   give  (lock_reply_slot,  *lock);
-		       };
-		end;
-
-		fun new_subwin (parent, child_id)
-		    =
-		    {
-			(find parent)
-			    -> 
-			    parent_desc as WINDOW_DESC { route, event_strm, children, lock, ... };
-
-			fun extend_route (ENVELOPE_ROUTE_END w)      =>  ENVELOPE_ROUTE (w, ENVELOPE_ROUTE_END child_id);
-			    extend_route (ENVELOPE_ROUTE (w, route)) =>  ENVELOPE_ROUTE (w, extend_route route);
-			end;
-
-			child_route = extend_route route;
-
-			child
-                            =
-                            WINDOW_DESC
-                              {
-				id => child_id,
-                                route => child_route,
-                                parent => THE parent_desc,
-				children => REF [],
-                                lock => REF *lock,
-                                event_strm
-			      };
-
-			children := child ! *children;
-			insert (child_id, child);
+			dst;
 		    };
+	end;
+    #  -DEBUG 
 
-		# ddeboer, test, fall 2004 
-		# cref = REF 0
+	herein
 
-		fun push_event (e, WINDOW_DESC { route, event_strm, ... } )
-		    = 
-		    give  (event_strm, (route, e));
+	    Xsocket_To_Topwindow_Router
+		=
+		XSOCKET_TO_TOPWINDOW_ROUTER 
+		  {
+		    plea_slot:    Mailslot( Plea_Mail ),
+		    reply_slot:   Mailslot( Mailop( (Envelope_Route, ev::Xevent) ) ),
+		    lock_slot:    Mailslot( Bool )
+		  };
 
 
-		fun push_event_to_window (e, window_id)
+
+	    stipulate
+
+		fun set_window_subtree_locks_to
+			(bool: Bool)	
 		    =
-		    (push_event (e, find window_id))
-		    except
-			hash_xid::XID_NOT_FOUND = ();
+		    set
+		    where
+			fun set (WINDOW_DESC { lock, children, ... } )
+			    =
+			    {   lock := bool;
+				set_list *children;
+			    }
 
-		fun do_xevent e
-		    =
-		    case (extract_dst e)
-			#
-			TO_WINDOW window_id
-                            =>
-                            push_event_to_window (e, window_id);
+			also
+			fun set_list (wd ! r)
+				=>
+				{   set wd;
+				    set_list r;
+				};
 
-			CREATE_WINDOW { parent, new_window }
-                            =>
-                            {   new_subwin (parent, new_window);
-			        push_event_to_window (e, parent);
-                            };
+			    set_list []
+				=>
+				();
+			end;
+		    end;
+	    herein
 
-			DESTROY_WINDOW window_id
-                            =>
-                            case (remove window_id)
+		lock_tree   =  set_window_subtree_locks_to   TRUE;
+		unlock_tree =  set_window_subtree_locks_to   FALSE;
 
-				(window as WINDOW_DESC { parent=>THE (WINDOW_DESC { children, ... } ), ... } )
-                                    =>
-                                    {   fun remove_child ((w as WINDOW_DESC { id, ... } ) ! r)
-						=>
-					        if (id == window_id)  r;
-                                                else                  (w ! (remove_child r));
-                                                fi;
+	    end;
 
-                                            remove_child []
-                                                =>
-                                                {   xgripe::warning "[WinReg: missing child]";
-						    [];
-                                                };
-					end;
+	    # This is called exactly one place, in
+	    #     src/lib/x-kit/xclient/src/window/xsession.pkg
+	    #
+	    fun make_xsocket_to_topwindow_router
+		{
+		  display => dy::XDISPLAY { xsocket, ... },
+		  keymap_imp,
+		  prop_event_slot,
+		  sel_event_slot
+		}
+		=
+		{
+    #		/* testing: ddeboer, fall 2004. *
+    #		rn = *rcref
+    #		(file::print ("Started registry " + (int::to_string rn) + "\n");
+    #			      rcref:= *rcref + 1)
+    #		* end testing. */
 
-				        children
-					    :=
-					    remove_child *children;
+		    xevent_in'
+			=
+			xok::wait_for_xevent  xsocket;
 
-				        push_event (e, window);
+		    register_plea_slot  =   make_mailslot ();
+		    register_reply_slot =   make_mailslot ();
+
+		    lock_reply_slot     =   make_mailslot ();
+								    # hash_xid	is from   src/lib/x-kit/xclient/src/stuff/hash-xid.pkg
+		    id_map = hash_xid::make_map ();
+		    find   = hash_xid::get id_map;
+		    insert = hash_xid::set id_map;
+		    remove = hash_xid::remove id_map;
+
+		    fun do_plea (PLEA_NEW window)
+			    =>
+			    {   # Log a new top-level window:
+
+				event_slot = make_mailslot ();
+
+				insert
+				  ( window,
+				    WINDOW_DESC
+				      {
+					id => window,
+					route => ENVELOPE_ROUTE_END window,
+					parent => NULL,
+					children => REF [],
+					lock => REF FALSE,
+					event_strm => event_slot
+				      }
+				  );
+
+				give  (register_reply_slot,  take'  event_slot);
+			    };
+
+		       do_plea (PLEA_LOCK   window) =>   lock_tree (find window);
+		       do_plea (PLEA_UNLOCK window) => unlock_tree (find window);
+
+		       do_plea (PLEA_ISLOCKED window)
+			   =>
+			   {   my WINDOW_DESC { lock, ... }
+				   =
+				   find window;
+
+			       give  (lock_reply_slot,  *lock);
+			   };
+		    end;
+
+		    fun new_subwin (parent, child_id)
+			=
+			{
+			    (find parent)
+				-> 
+				parent_desc as WINDOW_DESC { route, event_strm, children, lock, ... };
+
+			    fun extend_route (ENVELOPE_ROUTE_END w)      =>  ENVELOPE_ROUTE (w, ENVELOPE_ROUTE_END child_id);
+				extend_route (ENVELOPE_ROUTE (w, route)) =>  ENVELOPE_ROUTE (w, extend_route route);
+			    end;
+
+			    child_route = extend_route route;
+
+			    child
+				=
+				WINDOW_DESC
+				  {
+				    id => child_id,
+				    route => child_route,
+				    parent => THE parent_desc,
+				    children => REF [],
+				    lock => REF *lock,
+				    event_strm
+				  };
+
+			    children := child ! *children;
+			    insert (child_id, child);
+			};
+
+		    # ddeboer, test, fall 2004 
+		    # cref = REF 0
+
+		    fun push_event (e, WINDOW_DESC { route, event_strm, ... } )
+			= 
+			give  (event_strm, (route, e));
+
+
+		    fun push_event_to_window (e, window_id)
+			=
+			(push_event (e, find window_id))
+			except
+			    hash_xid::XID_NOT_FOUND = ();
+
+		    fun do_xevent e
+			=
+			case (extract_dst e)
+			    #
+			    TO_WINDOW window_id
+				=>
+				push_event_to_window (e, window_id);
+
+			    CREATE_WINDOW { parent, new_window }
+				=>
+				{   new_subwin (parent, new_window);
+				    push_event_to_window (e, parent);
+				};
+
+			    DESTROY_WINDOW window_id
+				=>
+				case (remove window_id)
+				    #
+				    (window as WINDOW_DESC { parent=>THE (WINDOW_DESC { children, ... } ), ... } )
+					=>
+					{   fun remove_child ((w as WINDOW_DESC { id, ... } ) ! r)
+						    =>
+						    if (id == window_id)  r;
+						    else                  (w ! (remove_child r));
+						    fi;
+
+						remove_child []
+						    =>
+						    {   xgripe::warning "[WinReg: missing child]";
+							[];
+						    };
+					    end;
+
+					    children
+						:=
+						remove_child *children;
+
+					    push_event (e, window);
+					};
+
+				    window
+					=>
+					push_event (e, window);
+				esac;
+
+			    TO_KEYMAP_IMP
+				=>
+				{   xgripe::warning "[WinReg: unexpected ToKeymapServer]";
+				    ();
+				};
+
+			    TO_WINDOW_PROPERTY_IMP  =>  give  (prop_event_slot, e);
+			    TO_SELECTION_IMP =>  give  (sel_event_slot,  e);
+
+			    TO_TRASH => ();
+			    TO_ALL   => apply (fn (_, x) = push_event (e, x))
+					      (hash_xid::list id_map);
+			esac;
+
+		    mailop
+			=
+			choose [
+			    take'  register_plea_slot
+				==>
+				do_plea,
+
+			    xevent_in'
+				==>
+				do_xevent
+			];
+
+		    # fun loop () = { do_mailop mailop; loop(); };
+	  /* DEBUG */ fun loop () = { xtracing::print_if xtracing::winreg_tracing .{ "Winreg::loop: waiting."; };
+				      do_mailop mailop;
+				      loop();
 				    };
 
-			        window
-				    =>
-				    push_event (e, window);
-                            esac;
+		    xtracing::xspawn ("WinReg", loop);
 
-			TO_KEYMAP_IMP
-                            =>
-                            {   xgripe::warning "[WinReg: unexpected ToKeymapServer]";
-                                ();
-                            };
-
-			TO_WINDOW_PROPERTY_IMP  =>  give  (prop_event_slot, e);
-			TO_SELECTION_IMP =>  give  (sel_event_slot,  e);
-
-			TO_TRASH => ();
-			TO_ALL   => apply (fn (_, x) = push_event (e, x))
-                                          (hash_xid::list id_map);
-		    esac;
-
-		mailop
-                    =
-                    choose [
-			take'  register_plea_slot
-                            ==>
-                            do_plea,
-
-			xevent_in'
-                            ==>
-                            do_xevent
-		    ];
-
-		# fun loop () = { do_mailop mailop; loop(); };
-      /* DEBUG */ fun loop () = { xtracing::print_if xtracing::winreg_tracing .{ "Winreg::loop: waiting."; };
-                                  do_mailop mailop;
-                                  loop();
-                                };
-
-		xtracing::xspawn ("WinReg", loop);
-
-		XSOCKET_TO_TOPWINDOW_ROUTER
-		  {
-		    plea_slot  => register_plea_slot,
-		    reply_slot => register_reply_slot,
-		    lock_slot  => lock_reply_slot
-		  };
-	    };						# fun make_xsocket_to_topwindow_router
+		    XSOCKET_TO_TOPWINDOW_ROUTER
+		      {
+			plea_slot  => register_plea_slot,
+			reply_slot => register_reply_slot,
+			lock_slot  => lock_reply_slot
+		      };
+		};						# fun make_xsocket_to_topwindow_router
 
 
-	fun note_toplevel_window (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
-            =
-            {   give  (plea_slot,  PLEA_NEW window);
-                take   reply_slot;
-            };
+	    fun note_toplevel_window (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
+		=
+		{   give  (plea_slot,  PLEA_NEW window);
+		    take   reply_slot;
+		};
 
-	# This is nowhere called:
-	#
-	fun lock_window_tree (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
-            =
-            {   give (plea_slot, PLEA_LOCK window);
+	    # This is nowhere called:
+	    #
+	    fun lock_window_tree (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
+		=
+		{   give (plea_slot, PLEA_LOCK window);
 
-		.{  give (plea_slot, PLEA_UNLOCK window);  };
-            };
+		    .{  give (plea_slot, PLEA_UNLOCK window);  };
+		};
 
-	# This gets called exactly one place, in
-	#
-	#     src/lib/x-kit/xclient/src/window/draw-imp.pkg
-	#
-	fun window_is_locked (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, lock_slot, ... }, window)
-            =
-            {   give (plea_slot, PLEA_ISLOCKED window);
-		take lock_slot;
-            };
-    end;					# stipulate
-};						# package window_registry 
+	    # This gets called exactly one place, in
+	    #
+	    #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
+	    #
+	    fun window_is_locked (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, lock_slot, ... }, window)
+		=
+		{   give (plea_slot, PLEA_ISLOCKED window);
+		    take lock_slot;
+		};
+	end;					# stipulate
+    };						# package xsocket_to_topwindow_router
+end;
 
 
 ##########################################################################

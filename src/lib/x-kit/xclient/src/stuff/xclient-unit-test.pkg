@@ -16,6 +16,7 @@
 stipulate
     include unit_test;
     include make7::scripting_globals;
+    include threadkit;						# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
     package tr  =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
@@ -61,6 +62,10 @@ herein
                     xok::wait_for_xevent  xsocket;
 
 
+		fun do_xevent (e: event_types::Xevent)
+		    =
+                    ();
+
 		case root_visual
 		    #
 		    xt::NO_VISUAL_FOR_THIS_DEPTH int
@@ -78,43 +83,46 @@ herein
 			    # incoming X events, since the xsocket logic
 			    # will deadlock if we do not:
 			    #	
-#			    make_thread "Discard all X events" .{
-#				#
-#				for (;;) {
-#				    #
-#				    select [
-#					#
-#					xevent_in'  ==>  ()
-#				    ];
-#				};
-#			    };
-#	
-#			    wio::create_window   xsocket
-#			      {
-#				window_id,
-#				parent_id,
-#				visual_id => xt::SAME_VISUAL_AS_PARENT,
-#				#
-#				depth,
-#				io        => xt::INPUT_OUTPUT,
-#				#
-#				site =>
-#				    g::WINDOW_SITE
-#				      { upperleft    =>  g::POINT { col=>100, row=>100 },
-#					size         =>  g::SIZE { wide=>400, high=>400 },
-#					border_width =>  1
-#				      },
-#
-#				attributes
-#				    =>
-#				    [ xt::wa::BORDER_PIXEL     border_pixel,
-#				      xt::wa::BACKGROUND_PIXEL background_pixel,
-#				      xt::wa::EVENT_MASK        w::standard_xevent_mask
-#				    ]
-#			      };
-#
-#			    xok::request  xsocket  (v2w::encode_map_window { window_id });
-#			    xok::flush    xsocket;
+			    make_thread "Discard all X events" .{
+				#
+				for (;;) {
+				    #
+				    select [
+					#
+					xevent_in'  ==>  do_xevent
+				    ];
+				};
+			    };
+	
+			    wio::create_window   xsocket
+			      {
+				window_id,
+				parent_id,
+				visual_id => xt::SAME_VISUAL_AS_PARENT,
+				#
+				depth,
+				io        => xt::INPUT_OUTPUT,
+				#
+				site =>
+				    g::WINDOW_SITE
+				      { upperleft    =>  g::POINT { col=>100, row=>100 },
+					size         =>  g::SIZE { wide=>400, high=>400 },
+					border_width =>  1
+				      },
+
+				attributes
+				    =>
+				    [ xt::wa::BORDER_PIXEL     border_pixel,
+				      xt::wa::BACKGROUND_PIXEL background_pixel,
+				      xt::wa::EVENT_MASK        w::standard_xevent_mask
+				    ]
+			      };
+
+			    xok::request  xsocket  (v2w::encode_map_window { window_id });
+			    xok::flush    xsocket;
+
+			    do_mailop (timeout_in' (time::from_seconds 10));
+
 trace .{ sprintf "xclient_unit_test: Now  writing create_window_request to socket."; };
 #			    sox::send_vector (socket, create_window_request);
 trace .{ sprintf "xclient_unit_test: Done writing create_window_request to socket."; };

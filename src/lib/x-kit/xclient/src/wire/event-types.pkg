@@ -128,8 +128,8 @@ herein
 	       };
 
 
-	   # X event messages:
-	   #
+	    # X event messages:
+	    #
 	    Xevent
 	     = KEY_PRESS_XEVENT       Key_Xevtinfo
 	     | KEY_RELEASE_XEVENT     Key_Xevtinfo
