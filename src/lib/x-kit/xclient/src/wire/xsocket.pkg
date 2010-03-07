@@ -2,6 +2,52 @@
 #
 # Manage binary socket I/O to an X server for an X client.
 #
+# Motivation
+# ==========
+#
+# From a coding point of view, the most natural form of
+# network client-server interaction is the "remote procedure
+# call" (RPC):  The client process fires off a network packet
+# with a request and then waits for the reply packet from the
+# server process.
+#
+# Unfortunately, the RPC approach can easily slow computation
+# to a relative crawl:  Memory access times on contemporary
+# hardware are measured in nanoseconds, but network round-trip
+# times are measured in millions of nanoseconds.  Even on today's
+# speedy hardware, slowing down computation by a factor of a
+# million turns snappy apps into dogs.
+#
+# Consequently the X Protocol for network communication
+# between X client and X server is designed to eliminate
+# network round trips where possible and overlap them the
+# rest of the time:  Instead of firing off a request and
+# then sitting idly waiting, the application continues
+# to fire off requests, handling the server replies later
+# as they trickle back in.
+#
+# The downside of this approach is that a good deal more
+# bookkeeping is required on the client side;  a log of
+# replies expected but not yet received must be maintained,
+# along with a record of what to do with each reply when it
+# does arrive, and perhaps what to do if the X server returns
+# an error message instead of the expected reply.  We must
+# also handle the case where no reply at all arrives.
+# (Networks are unreliable!)
+#
+# Our core task in xsocket.pkg is to handle this bookkeeping.
+# Higher-level application code sends us requests together
+# with code to handle the eventual server replies and/or
+# error messages, and we take care of firing off the requests,
+# logging the reply-handling code, matching up X server replies
+# with logged reply handlers, invoking those handlers, and
+# logging error conditions such as lost replies.
+#
+#
+#
+# Details
+# =======
+#
 # This code implements the low-level I/O of the X-protocol,
 # sending and receiving actual bytestrings from the socket
 # connected to the X server.
