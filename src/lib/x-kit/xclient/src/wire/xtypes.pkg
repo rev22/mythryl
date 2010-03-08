@@ -430,10 +430,10 @@ herein
 	  | RETAIN_TEMPORARY
 	  ;
 
-	# 'io' arg for create_window
+	# 'io_class' arg for create_window
         # and  encode_create_window:
 	#
-	Input_Output
+	Io_Class
 	  #
 	  = SAME_IO_AS_PARENT
 	  | INPUT_OUTPUT

@@ -39,9 +39,9 @@ herein
 		=
 		case f
 		    #
-		    xt::RAW8  => "RAW8";
-		    xt::RAW16 => "RAW16";
-		    xt::RAW32 => "RAW32";
+		    xt::RAW8  => "8";
+		    xt::RAW16 => "16";
+		    xt::RAW32 => "32";
 		esac;
 
 	    fun backing_store_to_string  backing_store
@@ -80,33 +80,35 @@ herein
 
 	    fun visual_to_string  (v: xt::Visual)
 		=
-		case v
-		    #
-		    xt::NO_VISUAL_FOR_THIS_DEPTH i
-			=>
-			sprintf "%d (no visuals for this depth)" i;
+		{   result
+			=
+			case v
+			    #
+			    xt::NO_VISUAL_FOR_THIS_DEPTH i
+				=>
+				[ "",
+				  sprintf "No visuals for depth %d" i
+                                ];
 
-		    xt::VISUAL v
-			=>
-			{   result
-				=
-				[ sprintf "id               d=%d" (visual_id_to_int v.visual_id),
-				  sprintf "depth            d=%d" v.depth,
-				  sprintf "colormap entries d=%d" v.cmap_entries,
-				  sprintf "colobits_per_rgb d=%d" v.bits_per_rgb,
-				  sprintf "red_mask         x=%x" (unt::to_int v.red_mask),
-				  sprintf "green_mask       x=%x" (unt::to_int v.green_mask),
-				  sprintf "blue_mask        x=%x" (unt::to_int v.blue_mask),
-				  sprintf "display_class    s=%s" (display_class_to_string  v.ilk)
+			    xt::VISUAL v
+				=>
+				[ "",
+				  sprintf "visual id         x=%x"  (visual_id_to_int v.visual_id),
+				  sprintf "depth             d=%d"   v.depth,
+				  sprintf "colormap entries  d=%d"   v.cmap_entries,
+				  sprintf "colorbits_per_rgb d=%d"   v.bits_per_rgb,
+				  sprintf "red_mask          x=%08x" (unt::to_int v.red_mask),
+				  sprintf "green_mask        x=%08x" (unt::to_int v.green_mask),
+				  sprintf "blue_mask         x=%08x" (unt::to_int v.blue_mask),
+				  sprintf "display_class     s=%s"   (display_class_to_string  v.ilk)
 				];
+			esac;
 
-			    result =  "" ! reverse result;						# Restore natural order and prepend a blank linke.
-			    result =  map   .{ "            " + #string + "\n"; }   result;		# Indent each line and append a newline.
-			    result =  cat result;							# Reduce to a single result string.
+		    result =  map   .{ "            " + #string + "\n"; }   result;		# Indent each line and append a newline.
+		    result =  cat result;							# Reduce to a single result string.
 
-			    result;
-			};
-		esac;
+		    result;
+		};
 
 	    fun visuals_to_string ([], result_so_far)
 		    =>
@@ -121,30 +123,36 @@ herein
 		=
 		{   result
 			=
-			[ sprintf  "root_window      x=%x"  (xid_to_int        s.root_window),
+			[ "",
+			  sprintf  "root_window id   x=%x"  (xid_to_int        s.root_window),
 			  sprintf  "root_depth       d=%d"                     s.root_depth,
+			  "",
 			  sprintf  "root_visual_id   d=%d"  (visual_id_to_int  s.root_visualid),
 			  sprintf  "default_colormap x=%x"  (xid_to_int        s.default_colormap),
+			  "",
 			  sprintf  "millimeters_high d=%d"  s.millimeters_high,
 			  sprintf  "millimeters_wide d=%d"  s.millimeters_wide,
+			  "",
 			  sprintf  "pixels_high d=%d"       s.pixels_high,
 			  sprintf  "pixels_wide d=%d"       s.pixels_wide,
-			  sprintf  "root_depth  d=%d"       s.root_depth,
+			  "",
+			  sprintf  "backing store %s"      (backing_store_to_string s.backing_store),
 			  sprintf  "save_unders s=%s"      (s.save_unders ?? "TRUE" :: "FALSE"),
+			  "",
 			  sprintf  "black_pixel x=%x"      (pixel_to_int s.black_pixel),
 			  sprintf  "white_pixel x=%x"      (pixel_to_int s.white_pixel),
-			  sprintf  "backing store %s"      (backing_store_to_string s.backing_store),
 
-			           "Installed colormaps:",
-			  sprintf  "    min     d=%d"       s.installed_colormaps.min,
-			  sprintf  "    max     d=%d"       s.installed_colormaps.max,
+			           "",
+			           "Graphics hardware colormap support:   # (These days usually min==max==1 -- colormaps are largely obsolete.)",
+			  sprintf  "    min     d=%d                       # Minimum simultaneous colormaps guaranteed supported by the hardware."       s.installed_colormaps.min,
+			  sprintf  "    max     d=%d                       # Maximum simultaneous colormaps possibly   supported by the hardware."       s.installed_colormaps.max,
 			  sprintf  "input_masks d=%d"      (event_mask_to_int s.input_masks),
 
-			           "Visual depths:",
-			  visuals_to_string          (s.visuals, [])
+			  "",
+			  sprintf  "%d visuals:" (list::length s.visuals),
+			  visuals_to_string      (s.visuals, [])
 			];
 		    
-		    result =  "" ! reverse result;					# Restore natural order and prepend a blank linke.
 		    result =  map   .{ "        " + #string + "\n"; }   result;		# Indent each line and append a newline.
 		    result =  cat result;						# Reduce to a single result string.
 
@@ -166,7 +174,12 @@ herein
 		=
 		{   result
                         =
-                        [ sprintf "protocol_version      d= %d.%d" i.protocol_version.major i.protocol_version.minor,
+                        [ "",
+                          "",
+                          "X server info from connection reply.",
+                          "For details on this stuff see pages 9-12 in http://mythryl.org/pub/exene/X-protocol.pdf",
+                          "",
+                          sprintf "protocol_version      d= %d.%d" i.protocol_version.major i.protocol_version.minor,
                           sprintf "release_number        d= %d"    i.release_number,
                           sprintf "vendor                s= '%s'"  i.vendor,
 
@@ -176,23 +189,25 @@ herein
                           sprintf "motion_buf_size       d= %d"    i.motion_buf_size,
                           sprintf "max_request_length    d= %d"    i.max_request_length,
 
-                          sprintf "image_byte_order      s= %s"         case i.image_byte_order  xt::LSBFIRST => "LEAST_SIGNIFICANT_BYTE_FIRST"; xt::MSBFIRST => "MOST_SIGNIFICANT_BYTE_FIRST"; esac,
-                          sprintf "bitmap_order          s= %s"         case i.bitmap_order      xt::LSBFIRST => "LEAST_SIGNIFICANT_BIT_FIRST";  xt::MSBFIRST => "MOST_SIGNIFICANT_BIT_FIRST";  esac,
+                          sprintf "image_byte_order      s= %s"    case i.image_byte_order  xt::LSBFIRST => "LEAST_SIGNIFICANT_BYTE_FIRST"; xt::MSBFIRST => "MOST_SIGNIFICANT_BYTE_FIRST"; esac,
+                          sprintf "bitmap_order          s= %s"    case i.bitmap_order      xt::LSBFIRST => "LEAST_SIGNIFICANT_BIT_FIRST";  xt::MSBFIRST => "MOST_SIGNIFICANT_BIT_FIRST";  esac,
 
                           sprintf "bitmap_scanline_unit  s= %s"    case i.bitmap_scanline_unit   xt::RAW8 => "8 bits"; xt::RAW16 => "16 bits"; xt::RAW32 => "32 bits"; esac,
                           sprintf "bitmap_scanline_pad   s= %s"    case i.bitmap_scanline_pad    xt::RAW8 => "8 bits"; xt::RAW16 => "16 bits"; xt::RAW32 => "32 bits"; esac,
 
-                          sprintf "min_keycode           d= %d"     case i.min_keycode  xt::KEYCODE i => i; esac,
-                          sprintf "max_keycode           d= %d"     case i.max_keycode  xt::KEYCODE i => i; esac,
+                          sprintf "min_keycode           d= %d"    case i.min_keycode  xt::KEYCODE i => i; esac,
+                          sprintf "max_keycode           d= %d"    case i.max_keycode  xt::KEYCODE i => i; esac,
 
-			           "Pixmap formats:",
+			  "",
+			  sprintf "%d pixmap formats:"   (list::length  i.pixmap_formats),
 			  pixmap_formats_to_string         (i.pixmap_formats,      []),
 
-			           "Screens:",
+			  "",
+			  sprintf "%d screens:" (list::length  i.screens),
                           screens_to_string  (i.screens, [])
+
 			];
 
-		    result =  reverse result;
 		    result =  map   .{ "    " + #string + "\n"; }   result;		# Indent each line and append a newline.
 		    result =  cat result;						# Combine lines into a single final string.
 

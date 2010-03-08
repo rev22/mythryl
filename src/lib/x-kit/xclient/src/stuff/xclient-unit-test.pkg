@@ -101,7 +101,7 @@ herein
 				visual_id => xt::SAME_VISUAL_AS_PARENT,
 				#
 				depth,
-				io        => xt::INPUT_OUTPUT,
+				io_class  => xt::INPUT_OUTPUT,
 				#
 				site =>
 				    g::WINDOW_SITE

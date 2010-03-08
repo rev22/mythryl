@@ -29,7 +29,7 @@ herein
 	     { window_id:   xt::Window_Id,
 	       parent_id:   xt::Window_Id,
 	       #
-	       io:	    xt::Input_Output,
+	       io_class:    xt::Io_Class,
 	       depth:       Int,
 	       visual_id:   xt::Visual_Id_Choice,
 	       #

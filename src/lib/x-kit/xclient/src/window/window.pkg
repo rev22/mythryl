@@ -216,7 +216,7 @@ herein
 			    window_id,
 			    parent_id   => root_window_id,
 			    #
-			    io          => xt::INPUT_OUTPUT,
+			    io_class    => xt::INPUT_OUTPUT,
 			    visual_id   => xt::SAME_VISUAL_AS_PARENT,
 			    #
 			    site        => check_site site,
@@ -280,7 +280,7 @@ herein
 			      window_id,
 			      parent_id,
 			      #	
-			      io         => xt::INPUT_OUTPUT,
+			      io_class   => xt::INPUT_OUTPUT,
 			      depth,
 			      #	
 			      visual_id  => xt::SAME_VISUAL_AS_PARENT,
@@ -334,7 +334,7 @@ herein
 		    window_id,
 		    parent_id  => root_window_id,
 		    #
-		    io         => xt::INPUT_OUTPUT,
+		    io_class   => xt::INPUT_OUTPUT,
 		    depth,
 		    #
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
@@ -377,7 +377,7 @@ herein
 		    window_id,
 		    parent_id  => root_window_id,
 		    #
-		    io         => xt::INPUT_OUTPUT,
+		    io_class   => xt::INPUT_OUTPUT,
 		    depth,
 		    #
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
@@ -430,7 +430,7 @@ herein
 		    window_id,
 		    parent_id,
 		    #	
-		    io         => xt::INPUT_ONLY,
+		    io_class   => xt::INPUT_ONLY,
 		    depth      => 0,
 		    #	
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,

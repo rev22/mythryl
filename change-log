@@ -1,3 +1,4 @@
+2010-03-07-11.41.03: src/lib/x-kit/xclient/src/wire/xsocket.pkg:  Top-of-file motivational comments.
 2010-03-06-20.17.09: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Now actually creates a visible window! :-) :-) :-)
 2010-03-05-21.40.52: src/lib/x-kit/xclient/src/window/draw-types.api: WINDOW: Renamed id -> window_id for clarity and consistency.
 2010-03-05-21.17.30: src/lib/x-kit/xclient/src/wire/value-to-wire.api: Rename window -> window_id various places for clarity and consistency.

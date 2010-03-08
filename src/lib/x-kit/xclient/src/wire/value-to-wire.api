@@ -179,7 +179,7 @@ herein
 				visual_id:  xt::Visual_Id_Choice,
 				depth:      Int,
                                 site:       g::Window_Site, 
-				io:         xt::Input_Output,
+				io_class:   xt::Io_Class,
 				attributes: List( xt::wa::Window_Attribute )
                               }
 			      -> v8::Vector;

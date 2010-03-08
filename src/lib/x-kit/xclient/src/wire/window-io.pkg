@@ -29,7 +29,7 @@ herein
               parent_id:    xt::Window_Id,
               visual_id:    xt::Visual_Id_Choice,
 	      #	
-              io:           xt::Input_Output,
+              io_class:     xt::Io_Class,
               depth:        Int,
               site:         g::Window_Site,
               attributes:   List( xt::wa::Window_Attribute )
@@ -42,7 +42,7 @@ herein
 			    window_id,
 			    parent_id,
 			    visual_id,
-			    io,
+			    io_class,
 			    depth,
 			    site,
 			    attributes
