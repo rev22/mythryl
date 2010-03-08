@@ -37,7 +37,6 @@ LIBRARY_EXPORTS
 	api Spline
 	api Region
 	api Xauthentication
-	api Color_Space
 
 	pkg bitmap_io
 	pkg ellipse
@@ -45,7 +44,6 @@ LIBRARY_EXPORTS
 	pkg spline
 	pkg region
 	pkg xauthentication
-	pkg color_space
 
         # From widgets:
 	#

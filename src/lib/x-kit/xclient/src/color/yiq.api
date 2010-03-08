@@ -1,0 +1,33 @@
+## yiq.api
+#
+# "YIQ is the color space used by the NTSC color TV system"
+#    -- http://en.wikipedia.org/wiki/YIQ
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+
+
+
+stipulate
+    package xt  = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+    api Yiq {
+
+	Yiq;		# hsv = "Hue, Saturation, Value"
+
+	rgb_to_yiq:  xt::Rgb -> Yiq;
+
+	get_yiqvalues:  Yiq -> { y:  Float,
+				 i:  Float,
+				 q:  Float
+			       };
+
+    };
+end;
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

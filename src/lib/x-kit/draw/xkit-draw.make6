@@ -13,14 +13,12 @@ LIBRARY_GROUP_EXPORTS
 	api Cartouche
 	api Spline
 	api Region
-	api Color_Space
 
 	pkg bitmap_io
 	pkg ellipse
 	pkg cartouche
 	pkg spline
 	pkg region
-	pkg color_space
 
 LIBRARY_GROUP_COMPONENTS
 
@@ -40,8 +38,6 @@ LIBRARY_GROUP_COMPONENTS
 	scan-convert.pkg
 	region.api
 	region.pkg
-	color-space.api
-	color-space.pkg
 
 
 

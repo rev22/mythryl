@@ -48,6 +48,11 @@ LIBRARY_GROUP_COMPONENTS
 	src/stuff/xtracing.pkg
 	src/stuff/authentication.pkg
 
+	src/color/hue-saturation-value.api
+	src/color/hue-saturation-value.pkg
+	src/color/yiq.api
+	src/color/yiq.pkg
+
 	src/to-string/xerror-to-string.pkg
 	src/to-string/xevent-to-string.pkg
 	src/to-string/xserver-info-to-string.api

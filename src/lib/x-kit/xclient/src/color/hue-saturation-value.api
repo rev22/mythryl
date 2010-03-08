@@ -1,0 +1,39 @@
+## hue-saturation-value.api
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+# Specification of various color space utilities.
+
+
+
+###               "The difference between papa and mama is,
+###                that mama loves morals and papa loves cats."
+###
+###                                 -- Susy Clemens
+###                                    (quoted in Mark Twain, a Biography)
+
+
+stipulate
+    package xt  = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+    api Hue_Saturation_Value {
+
+	Hsv;		# hsv = "Hue, Saturation, Value"
+
+	rgb_to_hsv:  xt::Rgb -> Hsv;
+	hsb_to_rgb:  Hsv -> xt::Rgb;
+
+	get_hsvvalues:  Hsv -> { hue:    Float,
+				 sat:    Float,
+				 value:  Float
+			       };
+
+    };
+end;
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

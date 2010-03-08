@@ -1,0 +1,80 @@
+## yiq.pkg
+#
+# Various color space utilities.
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+stipulate
+    package xt  = xtypes;					# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+    package yiq: (weak)  Yiq {					# Yiq		is from   src/lib/x-kit/xclient/src/stuff/yiq.api
+
+	maxrgb = 65535.0;
+
+	Yiq = YIQ  { y:  Float,					# NTSC colorspace -- see http://en.wikipedia.org/wiki/YIQ
+		     i:  Float,
+		     q:  Float
+		   };
+
+	fun get_yiqvalues (YIQ v)
+	    =
+	    v;
+
+	fun w2r w =  real (unt::to_int_x w);
+
+
+	fun get_y' (xt::RGB { red, green, blue } )
+	    = 
+	    (0.3*(w2r red) + 0.59*(w2r green) + 0.11*(w2r blue))//maxrgb;
+
+	fun get_i' (xt::RGB { red, green, blue } )
+	    = 
+	    (0.6*(w2r red) - 0.28*(w2r green) - 0.32*(w2r blue))//maxrgb;
+
+	fun get_q' (xt::RGB { red, green, blue } )
+	    = 
+	    (0.21*(w2r red) - 0.52*(w2r green) + 0.31*(w2r blue))//maxrgb;
+
+	fun get getf color
+	    =
+	    {   rgb =   xt::rgb_of_color color;
+
+		getf rgb;
+	    };
+
+	get_y = get get_y';
+	get_i = get get_i';
+	get_q = get get_q';
+
+	fun rgb_to_yiq rgb
+	    =
+	    YIQ { y=>get_y' rgb, i=>get_i' rgb, q=>get_q' rgb };
+
+    };
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.
