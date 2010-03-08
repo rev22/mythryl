@@ -43,16 +43,16 @@ LIBRARY_GROUP_COMPONENTS
 	src/stuff/hash-xid.api
 	src/stuff/hash-xid.pkg
 	src/stuff/range-check.pkg
-	src/stuff/xerror-to-string.pkg
-	src/stuff/xevent-to-string.pkg
 	src/stuff/xgripe.pkg
 	src/stuff/xkit-version.pkg
-	src/stuff/xserver-info-to-string.api
-	src/stuff/xserver-info-to-string.pkg
 	src/stuff/xtracing.pkg
-	src/stuff/xtype-to-string.pkg
 	src/stuff/authentication.pkg
 
+	src/to-string/xerror-to-string.pkg
+	src/to-string/xevent-to-string.pkg
+	src/to-string/xserver-info-to-string.api
+	src/to-string/xserver-info-to-string.pkg
+	src/to-string/xtype-to-string.pkg
 
 	src/window/color-imp.api
 	src/window/color-imp.pkg

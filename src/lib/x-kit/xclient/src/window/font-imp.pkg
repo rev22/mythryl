@@ -29,8 +29,8 @@ stipulate
     package v   =  rw_vector;					# rw_vector			is from   src/lib/std/src/rw-vector.pkg
     package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package fb  =  font_base;					# font_base			is from   src/lib/x-kit/xclient/src/window/font-base.pkg
-    package t2s =  xtype_to_string;				# xtype_to_string		is from   src/lib/x-kit/xclient/src/stuff/xtype-to-string.pkg
-    package e2s =  xerror_to_string;				# xerror_to_string		is from   src/lib/x-kit/xclient/src/stuff/xerror-to-string.pkg
+    package t2s =  xtype_to_string;				# xtype_to_string		is from   src/lib/x-kit/xclient/src/to-string/xtype-to-string.pkg
+    package e2s =  xerror_to_string;				# xerror_to_string		is from   src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
     package xok =  xsocket;					# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package hs  =  hash_string;					# hash_string			is from   src/lib/src/hash-string.pkg

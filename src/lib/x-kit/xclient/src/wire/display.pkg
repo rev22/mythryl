@@ -13,7 +13,7 @@
 stipulate
     include threadkit;							# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package i2s =  xserver_info_to_string;				# xserver_info_to_string	is from   src/lib/x-kit/xclient/src/stuff/xserver-info-to-string.pkg
+    package i2s =  xserver_info_to_string;				# xserver_info_to_string	is from   src/lib/x-kit/xclient/src/to-string/xserver-info-to-string.pkg
     package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package xok =  xsocket;			    			# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package g   =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
@@ -522,7 +522,7 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 			    xok::read_xerror  xsocket;
 									# unt			is from   src/lib/std/unt.pkg
 									# number_string		is from   src/lib/std/src/number-string.pkg
-									# xerror_to_string	is from   src/lib/x-kit/xclient/src/stuff/xerror-to-string.pkg
+									# xerror_to_string	is from   src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
 			trace .{
 			    #
 			    sprintf "Error on request #%s: %s"

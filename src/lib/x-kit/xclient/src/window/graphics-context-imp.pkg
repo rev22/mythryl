@@ -30,7 +30,7 @@ stipulate
     package pg  =  pen_guts;						# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
     package x2w =  value_to_wire;					# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package xok =  xsocket;						# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package t2s =  xtype_to_string;					# xtype_to_string		is from   src/lib/x-kit/xclient/src/stuff/xtype-to-string.pkg
+    package t2s =  xtype_to_string;					# xtype_to_string		is from   src/lib/x-kit/xclient/src/to-string/xtype-to-string.pkg
 herein
 
     package graphics_context_imp: (weak)  Graphics_Context_Imp {	# Graphics_Context_Imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.api

@@ -8,7 +8,7 @@
 stipulate
     package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
-    package xserver_info_to_string: Xserver_Info_To_String {	# Xserver_Info_To_String	is from   src/lib/x-kit/xclient/src/stuff/xserver-info-to-string.api
+    package xserver_info_to_string: Xserver_Info_To_String {	# Xserver_Info_To_String	is from   src/lib/x-kit/xclient/src/to-string/xserver-info-to-string.api
 
 	# Stringify the reply from an
         # X-server connection request:

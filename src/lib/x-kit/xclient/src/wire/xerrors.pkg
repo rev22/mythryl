@@ -4,7 +4,7 @@
 #
 # Used in:
 #
-#     src/lib/x-kit/xclient/src/stuff/xerror-to-string.pkg
+#     src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
 #     src/lib/x-kit/xclient/src/wire/xsocket.pkg
 #     src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
 #     src/lib/x-kit/xclient/src/iccc/window-property.pkg

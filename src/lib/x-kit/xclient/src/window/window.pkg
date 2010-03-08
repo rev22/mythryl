@@ -25,7 +25,7 @@ stipulate
     package di  =  draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package dt  =  draw_types;				# draw_types			is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
     package dy  =  display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
-    package e2s =  xerror_to_string;			# xerror_to_string		is from   src/lib/x-kit/xclient/src/stuff/xerror-to-string.pkg
+    package e2s =  xerror_to_string;			# xerror_to_string		is from   src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
     package et  =  event_types;				# event_types			is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
     package g   =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package ip  =  iccc_property;			# iccc_property			is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg

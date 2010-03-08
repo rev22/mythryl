@@ -98,22 +98,22 @@ herein
 
 
 	/* +DEBUG 
-	fun dopToString (DOP_POLY_POINT _) = "PolyPoint"
-	  | dopToString (DOP_POLY_LINE _) = "PolyLine"
-	  | dopToString (DOP_POLY_SEG _) = "PolySeg"
-	  | dopToString (DOP_FILL_POLY _) = "PolyFillPoly"
-	  | dopToString (DOP_POLY_BOX _) = "PolyRect"
+	fun dopToString (DOP_POLY_POINT    _) = "PolyPoint"
+	  | dopToString (DOP_POLY_LINE     _) = "PolyLine"
+	  | dopToString (DOP_POLY_SEG      _) = "PolySeg"
+	  | dopToString (DOP_FILL_POLY     _) = "PolyFillPoly"
+	  | dopToString (DOP_POLY_BOX      _) = "PolyRect"
 	  | dopToString (DOP_POLY_FILL_BOX _) = "PolyFillRect"
-	  | dopToString (DOP_POLY_ARC _) = "PolyArc"
+	  | dopToString (DOP_POLY_ARC      _) = "PolyArc"
 	  | dopToString (DOP_POLY_FILL_ARC _) = "PolyFillArc"
-	  | dopToString (DOP_COPY_AREA _) = "CopyArea"
-	  | dopToString (DOP_COPY_PLANE _) = "CopyPlane"
-	  | dopToString (DOP_COPY_PMAREA _) = "CopyPMArea"
-	  | dopToString (DOP_COPY_PMPLANE _) = "CopyPMPlane"
-	  | dopToString (DOP_CLEAR_AREA _) = "ClearArea"
-	  | dopToString (DOP_PUT_IMAGE _) = "PutImage"
-	  | dopToString (DOP_POLY_TEXT8 _) = "PolyText8"
-	  | dopToString (DOP_IMAGE_TEXT8 _) = "ImageText8"
+	  | dopToString (DOP_COPY_AREA     _) = "CopyArea"
+	  | dopToString (DOP_COPY_PLANE    _) = "CopyPlane"
+	  | dopToString (DOP_COPY_PMAREA   _) = "CopyPMArea"
+	  | dopToString (DOP_COPY_PMPLANE  _) = "CopyPMPlane"
+	  | dopToString (DOP_CLEAR_AREA    _) = "ClearArea"
+	  | dopToString (DOP_PUT_IMAGE     _) = "PutImage"
+	  | dopToString (DOP_POLY_TEXT8    _) = "PolyText8"
+	  | dopToString (DOP_IMAGE_TEXT8   _) = "ImageText8"
 	 -DEBUG */
 
 
@@ -192,22 +192,22 @@ herein
 		  | pen_dash_list
 		  ;
 
-	    fun pen_vals_used (DOP_POLY_POINT _)	=> std_comp;
-		pen_vals_used (DOP_POLY_LINE _)	=> std_line_comp;
-		pen_vals_used (DOP_POLY_SEG _)	=> std_line_comp;
-		pen_vals_used (DOP_FILL_POLY _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_POLY_BOX _)	=> std_line_comp;
+	    fun pen_vals_used (DOP_POLY_POINT    _)	=>  std_comp;
+		pen_vals_used (DOP_POLY_LINE     _)	=>  std_line_comp;
+		pen_vals_used (DOP_POLY_SEG      _)	=>  std_line_comp;
+		pen_vals_used (DOP_FILL_POLY     _)	=> (std_comp|pen_fill_style);
+		pen_vals_used (DOP_POLY_BOX      _)	=>  std_line_comp;
 		pen_vals_used (DOP_POLY_FILL_BOX _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_POLY_ARC _)	=> std_line_comp;
+		pen_vals_used (DOP_POLY_ARC      _)	=>  std_line_comp;
 		pen_vals_used (DOP_POLY_FILL_ARC _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_COPY_AREA _)	=> std_comp|pen_exposures;
-		pen_vals_used (DOP_COPY_PLANE _)	=> std_comp|pen_exposures;
-		pen_vals_used (DOP_COPY_PMAREA _)	=> std_comp;
-		pen_vals_used (DOP_COPY_PMPLANE _)	=> std_comp;
-		pen_vals_used (DOP_CLEAR_AREA _)	=> 0u0;
-		pen_vals_used (DOP_PUT_IMAGE _)	=> std_comp;
+		pen_vals_used (DOP_COPY_AREA     _)	=>  std_comp|pen_exposures;
+		pen_vals_used (DOP_COPY_PLANE    _)	=>  std_comp|pen_exposures;
+		pen_vals_used (DOP_COPY_PMAREA   _)	=>  std_comp;
+		pen_vals_used (DOP_COPY_PMPLANE  _)	=>  std_comp;
+		pen_vals_used (DOP_CLEAR_AREA    _)	=> 0u0;
+		pen_vals_used (DOP_PUT_IMAGE     _)	=>  std_comp;
 		pen_vals_used (DOP_POLY_TEXT8 _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_IMAGE_TEXT8 _)	=> std_comp;
+		pen_vals_used (DOP_IMAGE_TEXT8 _)	=>  std_comp;
 	    end;
 
 #	    stipulate

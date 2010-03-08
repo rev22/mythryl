@@ -52,7 +52,9 @@ herein
 
 		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, black_pixel, white_pixel, ... };
 
-		background_pixel = white_pixel;
+		green_pixel = xt::PIXEL 0x00FF00;
+
+		background_pixel = green_pixel;
 		border_pixel     = black_pixel;
 
 		window_id =  next_xid ();
@@ -105,7 +107,7 @@ herein
 				    =>
 				    [ xt::wa::BORDER_PIXEL     border_pixel,
 				      xt::wa::BACKGROUND_PIXEL background_pixel,
-				      xt::wa::EVENT_MASK        w::standard_xevent_mask
+				      xt::wa::EVENT_MASK       w::standard_xevent_mask
 				    ]
 			      };
 

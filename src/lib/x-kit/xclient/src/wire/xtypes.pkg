@@ -2,7 +2,7 @@
 #
 # These may be printed via:
 #
-#     src/lib/x-kit/xclient/src/stuff/xtype-to-string.pkg
+#     src/lib/x-kit/xclient/src/to-string/xtype-to-string.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -59,7 +59,7 @@ herein
 	Cursor_Id           = Xid;
 	Colormap_Id         = Xid;
 
-	Pixel = PIXEL  Int;		#  index into colormap 
+	Pixel = PIXEL Int;			# (red<<16)|(green<<8)|blue.
 	Plane_Mask = PLANEMASK  Unt;
 
 	Visual_Id = VISUAL_ID  Unt; #  should this be int?? 
@@ -74,7 +74,8 @@ herein
 	# 	
 	#
 	Keysym = NO_SYMBOL
-               | KEYSYM  Int;
+               | KEYSYM  Int
+               ;
 
 	Keycode = KEYCODE  Int;
 
@@ -521,7 +522,7 @@ herein
 	#
 	#     xserver_info_to_string
 	#
-	# from   src/lib/x-kit/xclient/src/stuff/xserver-info-to-string.pkg
+	# from   src/lib/x-kit/xclient/src/to-string/xserver-info-to-string.pkg
 	#     
 	Xserver_Screen
 	    =

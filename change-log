@@ -1,3 +1,4 @@
+2010-03-07-22.18.16: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: exercise_window_stuff: Check assumption that root visual is depth=24 red/green/blue masks FF0000/00FF00/0000FF, and bypass unit tests if not.
 2010-03-07-21.51.27: src/lib/x-kit/xclient/src/stuff/xserver-info-to-string.pkg:  Improve formatting. (Considerably!)  src/lib/x-kit/xclient/src/wire/value-to-wire.api: encode_create_window: Rename io -> io_class for clarity.  src/lib/x-kit/xclient/src/wire/window-io.api: create_window: Rename io -> io_class for clarity and consistency.  src/lib/x-kit/xclient/src/wire/xtypes.pkg: Rename Input_Output -> Io_Class for clarity and consistency.
 2010-03-07-11.41.03: src/lib/x-kit/xclient/src/wire/xsocket.pkg:  Top-of-file motivational comments.
 2010-03-06-20.17.09: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Now actually creates a visible window! :-) :-) :-)
