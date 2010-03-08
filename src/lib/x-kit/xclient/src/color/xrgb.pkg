@@ -1,0 +1,36 @@
+## xrgb.pkg
+#
+# X server format 24-bit int RGB values.
+#
+# I'm currently hardwiring this format as
+#
+#     red   = 0xFF0000
+#     green = 0x00FF00
+#     blue  = 0x0000FF
+#
+# Technically, X allows any number of bits per
+# color value, different numbers of bits per color
+# value, arbitrary ordering of color fields etc,
+# but my impression is that in practice everyone
+# is using the above format these days.
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+
+
+
+
+stipulate
+    package xt  = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+herein
+    package xrgb: Xrgb {				# Xrgb		is from   src/lib/x-kit/xclient/src/color/xrgb.api
+
+	Xrgb = XRGB Int;
+    };
+end;
+
+## COPYRIGHT (c) 1994 by AT&T Bell Laboratories
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

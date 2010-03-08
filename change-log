@@ -1,3 +1,4 @@
+2010-03-08-13.34.21: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Change   Pixel = PIXEL Int   ->   Xrgb = XRGB Int.
 2010-03-08-13.08.09: src/lib/x-kit/xclient/src/: mkdir color/, cp stuff/color* color, split color.api -> hue-saturation-value.api + yiq.api.
 2010-03-08-12.18.57: src/lib/x-kit/xclient/src/: Create to-string/, mv stuff/*to-string* into it.
 2010-03-07-22.18.16: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: exercise_window_stuff: Check assumption that root visual is depth=24 red/green/blue masks FF0000/00FF00/0000FF, and bypass unit tests if not.

@@ -52,6 +52,8 @@ LIBRARY_GROUP_COMPONENTS
 	src/color/hue-saturation-value.pkg
 	src/color/yiq.api
 	src/color/yiq.pkg
+	src/color/xrgb.api
+	src/color/xrgb.pkg
 
 	src/to-string/xerror-to-string.pkg
 	src/to-string/xevent-to-string.pkg
