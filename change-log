@@ -1,3 +1,4 @@
+2010-03-07-21.51.27: src/lib/x-kit/xclient/src/stuff/xserver-info-to-string.pkg:  Improve formatting. (Considerably!)  src/lib/x-kit/xclient/src/wire/value-to-wire.api: encode_create_window: Rename io -> io_class for clarity.  src/lib/x-kit/xclient/src/wire/window-io.api: create_window: Rename io -> io_class for clarity and consistency.  src/lib/x-kit/xclient/src/wire/xtypes.pkg: Rename Input_Output -> Io_Class for clarity and consistency.
 2010-03-07-11.41.03: src/lib/x-kit/xclient/src/wire/xsocket.pkg:  Top-of-file motivational comments.
 2010-03-06-20.17.09: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Now actually creates a visible window! :-) :-) :-)
 2010-03-05-21.40.52: src/lib/x-kit/xclient/src/window/draw-types.api: WINDOW: Renamed id -> window_id for clarity and consistency.

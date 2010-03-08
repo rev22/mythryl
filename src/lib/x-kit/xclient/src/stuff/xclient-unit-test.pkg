@@ -68,18 +68,9 @@ herein
 
 		case root_visual
 		    #
-		    xt::NO_VISUAL_FOR_THIS_DEPTH int
+		    xt::VISUAL { visual_id, depth => 24, red_mask => 0uxFF0000, green_mask => 0ux00FF00, blue_mask => 0ux0000FF, ... }
                         =>
-                        {   # This case should never happen.
-			    assert FALSE;
-			    print "root_visual is NO_VISUAL_FOR_THIS_DEPTH?!\n";
-			};
-
-		    xt::VISUAL { depth, visual_id, ... }
-                        =>
-                        {   printf "root_visual is VISUAL as expected, depth d=%d.\n" depth;
-
-			    # Set up a null thread to read and discard
+                        {   # Set up a null thread to read and discard
 			    # incoming X events, since the xsocket logic
 			    # will deadlock if we do not:
 			    #	
@@ -100,7 +91,7 @@ herein
 				parent_id,
 				visual_id => xt::SAME_VISUAL_AS_PARENT,
 				#
-				depth,
+				depth => 24,
 				io_class  => xt::INPUT_OUTPUT,
 				#
 				site =>
@@ -133,6 +124,22 @@ trace .{ sprintf "xclient_unit_test: Now  reading back header of reply for creat
 #					 #								# timer may hit before the X server reply gets back to us.
 #					 sox::receive_vector (socket, 8);
 trace .{ sprintf "xclient_unit_test: Done reading back header of reply for create_window request."; };
+			};
+
+		    xt::VISUAL { visual_id, depth, red_mask, green_mask, blue_mask, ... }
+                        =>
+                        {   printf "\nxclient-unit-test.pkg: exercise_window_stuff:\n";
+                            printf "This code assumes root visual has depth=24 red_mask=0xff0000 green_mask=0x00ff00 blue_mask=0x0000ff\n";
+                            printf "but actually the  root visual has depth=%d red_mask=0x%06x green_mask=0x%06x blue_mask=0x%06x\n"  depth  (unt::to_int red_mask)  (unt::to_int green_mask)  (unt::to_int blue_mask);
+			    printf "Skipping these unit tests.\n";
+			    assert FALSE;	
+			};
+
+		    xt::NO_VISUAL_FOR_THIS_DEPTH int
+                        =>
+                        {   # This case should never happen.
+			    assert FALSE;
+			    print "root_visual is NO_VISUAL_FOR_THIS_DEPTH?!\n";
 			};
 		esac;
 
