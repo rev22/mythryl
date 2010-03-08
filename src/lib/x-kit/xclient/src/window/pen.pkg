@@ -121,11 +121,11 @@ herein
 
 		trait_to_rep (PLANE_MASK (xt::PLANEMASK mask)) => (1, IS_WIRE mask);
 
-		trait_to_rep (FOREGROUND (COLOR { pixel=>xt::PIXEL 0,  ... } )) =>  (2, IS_DEFAULT);
-		trait_to_rep (FOREGROUND (COLOR { pixel=>xt::PIXEL px, ... } )) =>  (2, IS_WIRE (unt::from_int px));
+		trait_to_rep (FOREGROUND (COLOR { pixel=>xt::XRGB 0,  ... } )) =>  (2, IS_DEFAULT);
+		trait_to_rep (FOREGROUND (COLOR { pixel=>xt::XRGB px, ... } )) =>  (2, IS_WIRE (unt::from_int px));
 
-		trait_to_rep (BACKGROUND (COLOR { pixel=>xt::PIXEL 1,  ... } )) =>  (3, IS_DEFAULT);
-		trait_to_rep (BACKGROUND (COLOR { pixel=>xt::PIXEL px, ... } )) =>  (3, IS_WIRE (unt::from_int px));
+		trait_to_rep (BACKGROUND (COLOR { pixel=>xt::XRGB 1,  ... } )) =>  (3, IS_DEFAULT);
+		trait_to_rep (BACKGROUND (COLOR { pixel=>xt::XRGB px, ... } )) =>  (3, IS_WIRE (unt::from_int px));
 
 		trait_to_rep (LINE_WIDTH 0 ) => (4, IS_DEFAULT);
 		trait_to_rep (LINE_WIDTH wd) => (4, IS_WIRE (check_card16 wd));

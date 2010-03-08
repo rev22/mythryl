@@ -124,8 +124,8 @@ package pixmap_widget:  Pixmap_Widget {		# Pixmap_Widget		is from   src/lib/x-ki
 
 	    off_pen  = make_pen [ FOREGROUND pixel0 ];
 
-	    copy_pen = make_pen [ FOREGROUND (black_pixel_of screen),
-                                  BACKGROUND (white_pixel_of screen)
+	    copy_pen = make_pen [ FOREGROUND (black_xrgb_of screen),
+                                  BACKGROUND (white_xrgb_of screen)
                                 ];
 
 	    fun fill_pix_map  pm

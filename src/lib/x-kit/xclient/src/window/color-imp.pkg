@@ -54,15 +54,15 @@ herein
 
 	Color =
 	    COLOR  {		  		#  A color in the colormap 
-		pixel:  xt::Pixel,		#  Its pixel value 
+		pixel:  xt::Xrgb,		#  Its X-server 24-bit-int RGB value.
 		rgb:    Rgb		 	#  Its RGB value 
 	    };
 
 	# The following are used for drawing 0s or 1s on pixmaps.
 	# Note that the rgb fields are bogus.
 
-	color0 = COLOR { pixel => xt::PIXEL 0, rgb => black_rgb };
-	color1 = COLOR { pixel => xt::PIXEL 1, rgb => black_rgb };
+	color0 = COLOR { pixel => xt::XRGB 0, rgb => black_rgb };
+	color1 = COLOR { pixel => xt::XRGB 1, rgb => black_rgb };
 
 	Reply_Mail
 	  = REPLY_ERROR
@@ -143,7 +143,7 @@ herein
 	#
 	fun make_color_imp (
 		display::XDISPLAY { xsocket, ... },
-		display::XSCREEN { default_colormap, black_pixel, white_pixel, ... }
+		display::XSCREEN { default_colormap, black_xrgb, white_xrgb, ... }
 	    )
 	    =
 	    {   exception NOT_FOUND;
@@ -245,8 +245,8 @@ herein
 			give  (reply_slot,  result);
 		    };
 
-		black = COLOR { pixel=>black_pixel, rgb=>black_rgb };
-		white = COLOR { pixel=>white_pixel, rgb=>white_rgb };
+		black = COLOR { pixel=>black_xrgb, rgb=>black_rgb };
+		white = COLOR { pixel=>white_xrgb, rgb=>white_rgb };
 
 		  rgb_ins (black_rgb, black);
 		  rgb_ins (white_rgb, white);

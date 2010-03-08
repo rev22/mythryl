@@ -104,8 +104,8 @@ herein
 		root_window_id:   xt::Window_Id,			# Root window id of this screen.
 		default_colormap: xt::Colormap_Id,			# Default colormap.
 
-		white_pixel:      xt::Pixel,				# White and Black pixel values.
-		black_pixel:      xt::Pixel,
+		white_xrgb:      xt::Xrgb,				# White and Black pixel values.
+		black_xrgb:      xt::Xrgb,
 
 		root_input_mask:  xt::Event_Mask,			# Initial root input mask.
 

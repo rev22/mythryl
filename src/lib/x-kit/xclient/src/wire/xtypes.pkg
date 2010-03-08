@@ -59,10 +59,11 @@ herein
 	Cursor_Id           = Xid;
 	Colormap_Id         = Xid;
 
-	Pixel = PIXEL Int;			# (red<<16)|(green<<8)|blue.
+	Xrgb = XRGB Int;			# (red<<16)|(green<<8)|blue.
+
 	Plane_Mask = PLANEMASK  Unt;
 
-	Visual_Id = VISUAL_ID  Unt; #  should this be int?? 
+	Visual_Id = VISUAL_ID  Unt;		#  should this be int?? 
 
 	# Keysyms are a portable representation
 	# of keycap symbols.
@@ -140,7 +141,7 @@ herein
 	Color_Item
 	    =
 	    COLORITEM
-	      { pixel:  Pixel,
+	      { xrgb:   Xrgb,
 		red:    Null_Or( Unt ),
 		green:  Null_Or( Unt ),
 		blue:   Null_Or( Unt )
@@ -528,8 +529,8 @@ herein
 	    =
 	    { backing_store:    Backing_Store, 
 	      #
-	      black_pixel:      Pixel,
-	      white_pixel:      Pixel,
+	      black_xrgb:       Xrgb,
+	      white_xrgb:       Xrgb,
 	      #
 	      default_colormap: Xid, 
 	      input_masks:      Event_Mask, 
@@ -599,18 +600,18 @@ herein
 	      = BACKGROUND_PIXMAP_NONE
 	      | BACKGROUND_PIXMAP_PARENT_RELATIVE
 	      | BACKGROUND_PIXMAP		Pixmap_Id
-	      | BACKGROUND_PIXEL		Pixel
+	      | BACKGROUND_PIXEL		Xrgb
 	      #
 	      | BORDER_PIXMAP_COPY_FROM_PARENT
 	      | BORDER_PIXMAP			Pixmap_Id
-	      | BORDER_PIXEL			Pixel
+	      | BORDER_PIXEL			Xrgb
 	      #
 	      | BIT_GRAVITY			Gravity
 	      | WINDOW_GRAVITY			Gravity
 	      #
 	      | BACKING_STORE			Backing_Store
 	      | BACKING_PLANES			Plane_Mask
-	      | BACKING_PIXEL			Pixel
+	      | BACKING_PIXEL			Xrgb
 	      #
 	      | EVENT_MASK			Event_Mask
 	      | DO_NOT_PROPAGATE_MASK		Event_Mask
@@ -633,7 +634,8 @@ end;
 # [1]:  X server resources are small (29-bit) integers global to
 #       the running server process, i.e., shared by all X clients.
 #       Rather than allocating them on the X server, the X
-#       designers decided to have clients allocate them locally.
+#       designers decided to have clients allocate them locally,
+#       to reduce network round-trip delays and X server load.
 #       To prevent collisions, each client is assigned by the
 #       X server its own identifier subspace from which it may
 #       allocate freely without need of network round trips to

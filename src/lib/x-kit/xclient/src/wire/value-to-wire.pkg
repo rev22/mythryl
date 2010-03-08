@@ -149,36 +149,36 @@ herein
 			    rw_vector::set (rw_vec, i, THE x);
 
 			fn xt::wa::BACKGROUND_PIXMAP_NONE			=> update (0, 0u0);
-			   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE	=> update (0, 0u1);
+			   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE		=> update (0, 0u1);
 			   xt::wa::BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
 
-			   xt::wa::BACKGROUND_PIXEL (xt::PIXEL p)		=> update (1, unt::from_int p);
+			   xt::wa::BACKGROUND_PIXEL (xt::XRGB p)		=> update (1, unt::from_int p);
 
 			   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
-			   xt::wa::BORDER_PIXMAP (xt::XID p)		=> update (2, p);
+			   xt::wa::BORDER_PIXMAP (xt::XID p)			=> update (2, p);
 
-			   xt::wa::BORDER_PIXEL (xt::PIXEL p)		=> update (3, unt::from_int p);
+			   xt::wa::BORDER_PIXEL (xt::XRGB p)			=> update (3, unt::from_int p);
 			   xt::wa::BIT_GRAVITY g				=> update (4, gravity_to_wire g);
 			   xt::wa::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
 
 			   xt::wa::BACKING_STORE xt::BS_NOT_USEFUL		=> update (6, 0u0);
 			   xt::wa::BACKING_STORE xt::BS_WHEN_MAPPED		=> update (6, 0u1);
-			   xt::wa::BACKING_STORE xt::BS_ALWAYS		=> update (6, 0u2);
+			   xt::wa::BACKING_STORE xt::BS_ALWAYS			=> update (6, 0u2);
 
 			   xt::wa::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
-			   xt::wa::BACKING_PIXEL (xt::PIXEL p)		=> update (8, unt::from_int p);
+			   xt::wa::BACKING_PIXEL  (xt::XRGB p)			=> update (8, unt::from_int p);
 
-			   xt::wa::OVERRIDE_REDIRECT b			=> update ( 9, bool_to_wire b);
-			   xt::wa::SAVE_UNDER b				=> update (10, bool_to_wire b);
+			   xt::wa::OVERRIDE_REDIRECT b				=> update ( 9, bool_to_wire b);
+			   xt::wa::SAVE_UNDER b					=> update (10, bool_to_wire b);
 
 			   xt::wa::EVENT_MASK            (xt::EVENT_MASK m)	=> update (11, m);
 			   xt::wa::DO_NOT_PROPAGATE_MASK (xt::EVENT_MASK m)	=> update (12, m);
 
-			   xt::wa::COLOR_MAP_COPY_FROM_PARENT		=> update (13, 0u0);
+			   xt::wa::COLOR_MAP_COPY_FROM_PARENT			=> update (13, 0u0);
 			   xt::wa::COLOR_MAP (xt::XID x) 			=> update (13, x);
 
-			   xt::wa::CURSOR_NONE				=> update (14, 0u0);
-			   xt::wa::CURSOR (xt::XID x)			=> update (14, x);
+			   xt::wa::CURSOR_NONE					=> update (14, 0u0);
+			   xt::wa::CURSOR (xt::XID x)				=> update (14, x);
 			end;
 		    };
 	    end;
@@ -252,7 +252,7 @@ herein
 		put_atom_option (buf, i, NULL             ) =>  put_word32 (buf, i, 0u0);
 	    end;
 
-	    fun put_pixel          (buf, i, xt::PIXEL       n) =  put_signed32 (buf, i, n);
+	    fun put_pixel          (buf, i, xt::XRGB        n) =  put_signed32 (buf, i, n);
 	    fun put_plane_mask     (buf, i, xt::PLANEMASK   n) =  put_word32   (buf, i, n);
 	    fun put_event_mask     (buf, i, xt::EVENT_MASK  m) =  put_word32   (buf, i, m);
 	    fun put_ptr_event_mask (buf, i, xt::EVENT_MASK  m) =  put_word16   (buf, i, m);
@@ -1611,13 +1611,13 @@ herein
 
 	    stipulate
 
-		fun put_color_item (buf, i, xt::COLORITEM { pixel, red, green, blue } )
+		fun put_color_item (buf, i, xt::COLORITEM { xrgb, red, green, blue } )
 		    =
 		    {   rmask = case red    NULL  => 0u0;  THE x => { put_word16 (buf, i+4, x); 0u1;};  esac;
 			gmask = case green  NULL  => 0u0;  THE x => { put_word16 (buf, i+6, x); 0u2;};  esac;
 			bmask = case blue   NULL  => 0u0;  THE x => { put_word16 (buf, i+8, x); 0u4;};  esac;
 
-			put_pixel (buf, i,    pixel);
+			put_pixel (buf, i,    xrgb);
 			put8      (buf, i+10, unt8::bitwise_or (rmask, unt8::bitwise_or (gmask, bmask)));
 		    };
 
