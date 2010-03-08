@@ -59,7 +59,8 @@ herein
 	Cursor_Id           = Xid;
 	Colormap_Id         = Xid;
 
-	Xrgb = XRGB Int;			# (red<<16)|(green<<8)|blue.
+#	Xrgb = XRGB Int;			# (red<<16)|(green<<8)|blue.
+	Xrgb = xrgb::Xrgb;			# (red<<16)|(green<<8)|blue.
 
 	Plane_Mask = PLANEMASK  Unt;
 

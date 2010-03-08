@@ -1,3 +1,4 @@
+2010-03-08-13.45.11: src/lib/x-kit/xclient/src/color/: Establish xrgb.api, xrgb.pkg.
 2010-03-08-13.34.21: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Change   Pixel = PIXEL Int   ->   Xrgb = XRGB Int.
 2010-03-08-13.08.09: src/lib/x-kit/xclient/src/: mkdir color/, cp stuff/color* color, split color.api -> hue-saturation-value.api + yiq.api.
 2010-03-08-12.18.57: src/lib/x-kit/xclient/src/: Create to-string/, mv stuff/*to-string* into it.

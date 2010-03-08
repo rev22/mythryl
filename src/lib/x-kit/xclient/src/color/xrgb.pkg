@@ -22,14 +22,11 @@
 
 
 
-stipulate
-    package xt  = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-herein
     package xrgb: Xrgb {				# Xrgb		is from   src/lib/x-kit/xclient/src/color/xrgb.api
 
 	Xrgb = XRGB Int;
     };
-end;
+
 
 ## COPYRIGHT (c) 1994 by AT&T Bell Laboratories
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,

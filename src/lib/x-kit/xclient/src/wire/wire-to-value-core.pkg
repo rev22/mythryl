@@ -202,7 +202,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 		esac;
 
 
-	    get_pixel = xt::XRGB o get_int;
+	    get_pixel = xrgb::XRGB o get_int;
 
 	    #  Are time values signed???  XXX BUGGO FIXME (X server timestamp values wrap around every 49.7 days)
 

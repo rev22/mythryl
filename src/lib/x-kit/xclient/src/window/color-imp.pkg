@@ -61,8 +61,8 @@ herein
 	# The following are used for drawing 0s or 1s on pixmaps.
 	# Note that the rgb fields are bogus.
 
-	color0 = COLOR { pixel => xt::XRGB 0, rgb => black_rgb };
-	color1 = COLOR { pixel => xt::XRGB 1, rgb => black_rgb };
+	color0 = COLOR { pixel => xrgb::XRGB 0, rgb => black_rgb };
+	color1 = COLOR { pixel => xrgb::XRGB 1, rgb => black_rgb };
 
 	Reply_Mail
 	  = REPLY_ERROR

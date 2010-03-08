@@ -152,12 +152,12 @@ herein
 			   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE		=> update (0, 0u1);
 			   xt::wa::BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
 
-			   xt::wa::BACKGROUND_PIXEL (xt::XRGB p)		=> update (1, unt::from_int p);
+			   xt::wa::BACKGROUND_PIXEL (xrgb::XRGB p)		=> update (1, unt::from_int p);
 
 			   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
 			   xt::wa::BORDER_PIXMAP (xt::XID p)			=> update (2, p);
 
-			   xt::wa::BORDER_PIXEL (xt::XRGB p)			=> update (3, unt::from_int p);
+			   xt::wa::BORDER_PIXEL (xrgb::XRGB p)			=> update (3, unt::from_int p);
 			   xt::wa::BIT_GRAVITY g				=> update (4, gravity_to_wire g);
 			   xt::wa::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
 
@@ -166,7 +166,7 @@ herein
 			   xt::wa::BACKING_STORE xt::BS_ALWAYS			=> update (6, 0u2);
 
 			   xt::wa::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
-			   xt::wa::BACKING_PIXEL  (xt::XRGB p)			=> update (8, unt::from_int p);
+			   xt::wa::BACKING_PIXEL  (xrgb::XRGB p)		=> update (8, unt::from_int p);
 
 			   xt::wa::OVERRIDE_REDIRECT b				=> update ( 9, bool_to_wire b);
 			   xt::wa::SAVE_UNDER b					=> update (10, bool_to_wire b);
@@ -252,7 +252,7 @@ herein
 		put_atom_option (buf, i, NULL             ) =>  put_word32 (buf, i, 0u0);
 	    end;
 
-	    fun put_pixel          (buf, i, xt::XRGB        n) =  put_signed32 (buf, i, n);
+	    fun put_pixel          (buf, i, xrgb::XRGB      n) =  put_signed32 (buf, i, n);
 	    fun put_plane_mask     (buf, i, xt::PLANEMASK   n) =  put_word32   (buf, i, n);
 	    fun put_event_mask     (buf, i, xt::EVENT_MASK  m) =  put_word32   (buf, i, m);
 	    fun put_ptr_event_mask (buf, i, xt::EVENT_MASK  m) =  put_word16   (buf, i, m);

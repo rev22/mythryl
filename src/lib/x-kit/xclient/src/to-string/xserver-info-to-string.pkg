@@ -19,7 +19,7 @@ herein
 	    fun visual_id_to_int  (xt::VISUAL_ID  unt) =  unt::to_int unt;
 	    fun event_mask_to_int (xt::EVENT_MASK unt) =  unt::to_int unt;
 
-	    fun xrgb_to_int (xt::XRGB int)
+	    fun xrgb_to_int (xrgb::XRGB int)
 		=
 		int;
 
