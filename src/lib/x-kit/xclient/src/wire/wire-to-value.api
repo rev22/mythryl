@@ -32,8 +32,8 @@ herein
 	decode_alloc_color_cells_reply:  X -> { err: Y };
 	decode_alloc_color_planes_reply: X -> { err: Y };
 
-	decode_alloc_color_reply:       v8::Vector -> { pixel: xt::Xrgb,                      visual_rgb: xt::Rgb };
-	decode_alloc_named_color_reply: v8::Vector -> { exact_rgb: xt::Rgb,  pixel: xt::Xrgb, visual_rgb: xt::Rgb };
+	decode_alloc_color_reply:       v8::Vector -> { pixel: xrgb::Xrgb,                      visual_rgb: xt::Rgb };
+	decode_alloc_named_color_reply: v8::Vector -> { exact_rgb: xt::Rgb,  pixel: xrgb::Xrgb, visual_rgb: xt::Rgb };
 
 	decode_connect_request_reply
 	    :
@@ -114,7 +114,7 @@ herein
 					    ->
 					    { all_event_mask:    xt::Event_Mask, 
 					      #
-					      backing_pixel:     xt::Xrgb, 
+					      backing_pixel:     xrgb::Xrgb, 
 					      backing_planes:    xt::Plane_Mask, 
 					      backing_store:     xt::Backing_Store, 
 					      #

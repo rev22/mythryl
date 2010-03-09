@@ -54,7 +54,7 @@ herein
 
 	Color =
 	    COLOR  {		  		#  A color in the colormap 
-		pixel:  xt::Xrgb,		#  Its X-server 24-bit-int RGB value.
+		pixel:  xrgb::Xrgb,		#  Its X-server 24-bit-int RGB value.
 		rgb:    Rgb		 	#  Its RGB value 
 	    };
 

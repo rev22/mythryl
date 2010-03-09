@@ -222,7 +222,7 @@ herein
 
 	standard_xevent_mask: xt::Event_Mask;
 
-	pixel_of:	      ci::Color -> xt::Xrgb;
+	pixel_of:	      ci::Color -> xrgb::Xrgb;
     };
 
 end;

@@ -2,6 +2,11 @@
 #
 # "YIQ is the color space used by the NTSC color TV system"
 #    -- http://en.wikipedia.org/wiki/YIQ
+#
+# Above article notes that it can also be useful in image
+# processing -- histogram equalization in RGB sucks, but
+# doing it on the Y (brightness) component in YIQ format
+# works well to equalize brightness.
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6

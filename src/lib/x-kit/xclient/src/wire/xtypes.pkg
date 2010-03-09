@@ -59,9 +59,6 @@ herein
 	Cursor_Id           = Xid;
 	Colormap_Id         = Xid;
 
-#	Xrgb = XRGB Int;			# (red<<16)|(green<<8)|blue.
-	Xrgb = xrgb::Xrgb;			# (red<<16)|(green<<8)|blue.
-
 	Plane_Mask = PLANEMASK  Unt;
 
 	Visual_Id = VISUAL_ID  Unt;		#  should this be int?? 
@@ -142,7 +139,7 @@ herein
 	Color_Item
 	    =
 	    COLORITEM
-	      { xrgb:   Xrgb,
+	      { xrgb:   xrgb::Xrgb,
 		red:    Null_Or( Unt ),
 		green:  Null_Or( Unt ),
 		blue:   Null_Or( Unt )
@@ -530,8 +527,8 @@ herein
 	    =
 	    { backing_store:    Backing_Store, 
 	      #
-	      black_xrgb:       Xrgb,
-	      white_xrgb:       Xrgb,
+	      black_xrgb:       xrgb::Xrgb,
+	      white_xrgb:       xrgb::Xrgb,
 	      #
 	      default_colormap: Xid, 
 	      input_masks:      Event_Mask, 
@@ -601,18 +598,18 @@ herein
 	      = BACKGROUND_PIXMAP_NONE
 	      | BACKGROUND_PIXMAP_PARENT_RELATIVE
 	      | BACKGROUND_PIXMAP		Pixmap_Id
-	      | BACKGROUND_PIXEL		Xrgb
+	      | BACKGROUND_PIXEL		xrgb::Xrgb
 	      #
 	      | BORDER_PIXMAP_COPY_FROM_PARENT
 	      | BORDER_PIXMAP			Pixmap_Id
-	      | BORDER_PIXEL			Xrgb
+	      | BORDER_PIXEL			xrgb::Xrgb
 	      #
 	      | BIT_GRAVITY			Gravity
 	      | WINDOW_GRAVITY			Gravity
 	      #
 	      | BACKING_STORE			Backing_Store
 	      | BACKING_PLANES			Plane_Mask
-	      | BACKING_PIXEL			Xrgb
+	      | BACKING_PIXEL			xrgb::Xrgb
 	      #
 	      | EVENT_MASK			Event_Mask
 	      | DO_NOT_PROPAGATE_MASK		Event_Mask
