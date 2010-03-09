@@ -41,6 +41,7 @@ api  Xcore {
     Ro_Pixmap;				# Ro_Pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     Xcursor;				# Xcursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
     Color;				# Color			def in    src/lib/x-kit/xclient/src/window/color-imp.pkg
+    Xrgb;				# Xrgb			def in    src/lib/x-kit/xclient/src/color/xrgb.pkg
     #
     eqtype Standard_Xcursor;		# Standard_Xcursor	def in    src/lib/x-kit/xclient/src/window/cursors.pkg
     eqtype Atom;			# Atom			def in    src/lib/x-kit/xclient/src/wire/xtypes.pkg
@@ -112,6 +113,13 @@ api  Xcore {
     rgb_from_unts: (Unt, Unt, Unt) -> Rgb;
     rgb_to_unts:   Rgb -> (Unt, Unt, Unt);
 
+    xrgb_from_ints: (Int, Int, Int) -> Xrgb;
+    xrgb_from_int:  Int             -> Xrgb;
+    xrgb_from_name: String          -> Xrgb;
+    #
+    xrgb_to_ints:   Xrgb -> (Int, Int, Int);
+    xrgb_to_int:    Xrgb -> Int;
+
     # Identity tests:
     #
     same_xsession: (Xsession, Xsession) -> Bool;			# same_xsession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
@@ -121,6 +129,7 @@ api  Xcore {
     same_cursor:   (Xcursor, Xcursor)   -> Bool;			# same_cursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
     same_color:    (Color, Color)       -> Bool;			# same_color		def in    src/lib/x-kit/xclient/src/window/color-imp.pkg
     same_rgb:      (Rgb, Rgb)           -> Bool;			# same_rgb		def in    src/lib/x-kit/xclient/src/color/rgb.pkg 
+    same_xrgb:     (Xrgb, Xrgb)         -> Bool;			# same_xrgb		def in    src/lib/x-kit/xclient/src/color/xrgb.pkg
     #
     same_rw_pixmap							# same_rw_pixmap	def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
 	:

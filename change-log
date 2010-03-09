@@ -1,3 +1,4 @@
+2010-03-08-22.16.47: src/lib/x-kit/xclient/src/color/xrgb.pkg: Change   	Xrgb = XRGB Int;   to simply   	Xrgb = Int;
 2010-03-08-22.00.01: src/lib/x-kit/xclient/src/color/xrgb.api: Make Xrgb type opaque. Add to_int(), from_int(), same().
 2010-03-08-21.21.20: src/lib/x-kit/xclient/src/color/hue-saturation-value.api: Add to_floats() and from_floats() calls.
 2010-03-08-21.01.40: src/lib/x-kit/xclient/src/color/rgb.api: Make exported Rgb type opaque; add from_unts(), to_unts() and same().

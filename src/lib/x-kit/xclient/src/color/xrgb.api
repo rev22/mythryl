@@ -18,6 +18,10 @@
 	to_int:   Xrgb -> Int;
 
 	same:    (Xrgb, Xrgb) -> Bool;
+
+        colors_by_name: string_map::Map(Xrgb);
+
+        from_name: String -> Xrgb;
     };
 
 

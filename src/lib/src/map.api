@@ -49,7 +49,7 @@ api Map {
 
     contains_key					# Return TRUE, iff the key is in the domain of the map 
         :
-        ((Map(X), key::Key))
+        (Map(X), key::Key)
         ->
         Bool;
 
