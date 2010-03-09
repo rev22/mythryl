@@ -152,12 +152,12 @@ herein
 			   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE		=> update (0, 0u1);
 			   xt::wa::BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
 
-			   xt::wa::BACKGROUND_PIXEL (xrgb::XRGB p)		=> update (1, unt::from_int p);
+			   xt::wa::BACKGROUND_PIXEL  xrgb			=> update (1, unt::from_int (xrgb::to_int xrgb));
 
 			   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
 			   xt::wa::BORDER_PIXMAP (xt::XID p)			=> update (2, p);
 
-			   xt::wa::BORDER_PIXEL (xrgb::XRGB p)			=> update (3, unt::from_int p);
+			   xt::wa::BORDER_PIXEL  xrgb				=> update (3, unt::from_int (xrgb::to_int xrgb));
 			   xt::wa::BIT_GRAVITY g				=> update (4, gravity_to_wire g);
 			   xt::wa::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
 
@@ -166,7 +166,7 @@ herein
 			   xt::wa::BACKING_STORE xt::BS_ALWAYS			=> update (6, 0u2);
 
 			   xt::wa::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
-			   xt::wa::BACKING_PIXEL  (xrgb::XRGB p)		=> update (8, unt::from_int p);
+			   xt::wa::BACKING_PIXEL   xrgb				=> update (8, unt::from_int (xrgb::to_int xrgb));
 
 			   xt::wa::OVERRIDE_REDIRECT b				=> update ( 9, bool_to_wire b);
 			   xt::wa::SAVE_UNDER b					=> update (10, bool_to_wire b);
@@ -252,7 +252,7 @@ herein
 		put_atom_option (buf, i, NULL             ) =>  put_word32 (buf, i, 0u0);
 	    end;
 
-	    fun put_pixel          (buf, i, xrgb::XRGB      n) =  put_signed32 (buf, i, n);
+	    fun put_xrgb           (buf, i, xrgb             ) =  put_signed32 (buf, i, (xrgb::to_int xrgb));
 	    fun put_plane_mask     (buf, i, xt::PLANEMASK   n) =  put_word32   (buf, i, n);
 	    fun put_event_mask     (buf, i, xt::EVENT_MASK  m) =  put_word32   (buf, i, m);
 	    fun put_ptr_event_mask (buf, i, xt::EVENT_MASK  m) =  put_word16   (buf, i, m);
@@ -324,9 +324,9 @@ herein
 		    end;
 		 end;
 
-	    put_pts    =  put_list (put_pt,    4);
-	    put_boxes  =  put_list (put_box,  8);
-	    put_pixels =  put_list (put_pixel, 4);
+	    put_pts   =  put_list (put_pt,   4);
+	    put_boxes =  put_list (put_box,  8);
+	    put_xrgbs =  put_list (put_xrgb, 4);
 
 	    # Build a value list and mask from a value option rw_vector 
 	    #
@@ -1607,7 +1607,7 @@ herein
 
 		    put_xid        (msg,  4, cmap      );
 		    put_plane_mask (msg,  8, plane_mask);
-		    put_pixels     (msg, 12, pixels    );
+		    put_xrgbs      (msg, 12, pixels    );
 
 		    msg;
 		};
@@ -1620,7 +1620,7 @@ herein
 			gmask = case green  NULL  => 0u0;  THE x => { put_word16 (buf, i+6, x); 0u2;};  esac;
 			bmask = case blue   NULL  => 0u0;  THE x => { put_word16 (buf, i+8, x); 0u4;};  esac;
 
-			put_pixel (buf, i,    xrgb);
+			put_xrgb  (buf, i,    xrgb);
 			put8      (buf, i+10, unt8::bitwise_or (rmask, unt8::bitwise_or (gmask, bmask)));
 		    };
 
@@ -1667,7 +1667,7 @@ herein
 
 		    put8       (msg,  1, mask );
 		    put_xid    (msg,  4, cmap );
-		    put_pixel  (msg,  8, pixel);
+		    put_xrgb   (msg,  8, pixel);
 		    put_string (msg, 12, name );
 
 		    msg;
@@ -1677,8 +1677,8 @@ herein
 		=
 		{   msg = make_extra_request (req_query_colors, list::length pixels);
 
-		    put_xid    (msg, 4, cmap  );
-		    put_pixels (msg, 8, pixels);
+		    put_xid   (msg, 4, cmap  );
+		    put_xrgbs (msg, 8, pixels);
 
 		    msg;
 		};

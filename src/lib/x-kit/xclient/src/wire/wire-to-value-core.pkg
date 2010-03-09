@@ -202,7 +202,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 		esac;
 
 
-	    get_pixel = xrgb::XRGB o get_int;
+	    get_xrgb =  xrgb::from_int  o  get_int;
 
 	    #  Are time values signed???  XXX BUGGO FIXME (X server timestamp values wrap around every 49.7 days)
 
@@ -470,8 +470,8 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 			( { root_window         => get_xid (buf, i),
 			    default_colormap    => get_xid (buf, i+4),
 
-			    white_xrgb          => get_pixel (buf, i+8),
-			    black_xrgb          => get_pixel (buf, i+12),
+			    white_xrgb          => get_xrgb  (buf, i+8),
+			    black_xrgb          => get_xrgb  (buf, i+12),
 
 			    input_masks         => get_event_mask (buf, i+16),
 
@@ -1067,7 +1067,7 @@ result;
 		  window_gravity => get_window_gravity         (msg, 15),
 
 		  backing_planes   => xt::PLANEMASK (get_word  (msg, 16)),
-		  backing_pixel    => get_pixel                (msg, 20),
+		  backing_pixel    => get_xrgb                 (msg, 20),
 		  save_under       => get_bool                 (msg, 24),
 		  map_is_installed => get_bool                 (msg, 25),
 
@@ -1099,13 +1099,13 @@ result;
 
 	    fun decode_alloc_color_reply msg
 		=
-		{ visual_rgb => get_rgb (msg,  8),
-		  pixel => get_pixel    (msg, 16)
+		{ visual_rgb => get_rgb   (msg,  8),
+		  pixel      => get_xrgb  (msg, 16)
 		};
 
 	    fun decode_alloc_named_color_reply msg
 		=
-		{ pixel      => get_pixel (msg,  8),
+		{ pixel      => get_xrgb  (msg,  8),
 		  exact_rgb  => get_rgb   (msg, 12),
 		  visual_rgb => get_rgb   (msg, 18)
 		};

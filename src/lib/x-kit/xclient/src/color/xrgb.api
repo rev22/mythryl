@@ -9,8 +9,15 @@
 
     api Xrgb {
 
-	Xrgb = XRGB Int;
+	Xrgb;
 
+	from_ints: (Int, Int, Int) -> Xrgb;
+	to_ints:   Xrgb -> (Int, Int, Int);
+
+	from_int: Int  -> Xrgb;
+	to_int:   Xrgb -> Int;
+
+	same:    (Xrgb, Xrgb) -> Bool;
     };
 
 

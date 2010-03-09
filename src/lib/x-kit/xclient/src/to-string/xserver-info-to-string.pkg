@@ -19,10 +19,6 @@ herein
 	    fun visual_id_to_int  (xt::VISUAL_ID  unt) =  unt::to_int unt;
 	    fun event_mask_to_int (xt::EVENT_MASK unt) =  unt::to_int unt;
 
-	    fun xrgb_to_int (xrgb::XRGB int)
-		=
-		int;
-
 	    fun display_class_to_string  (d: xt::Display_Class)
 		=
 		case d
@@ -39,7 +35,7 @@ herein
 		=
 		case f
 		    #
-		    xt::RAW8  => "8";
+		    xt::RAW8  =>  "8";
 		    xt::RAW16 => "16";
 		    xt::RAW32 => "32";
 		esac;
@@ -139,8 +135,8 @@ herein
 			  sprintf  "backing store %s"      (backing_store_to_string s.backing_store),
 			  sprintf  "save_unders s=%s"      (s.save_unders ?? "TRUE" :: "FALSE"),
 			  "",
-			  sprintf  "black_xrgb  x=%x"      (xrgb_to_int s.black_xrgb),
-			  sprintf  "white_xrgb  x=%x"      (xrgb_to_int s.white_xrgb),
+			  sprintf  "black_xrgb  x=%x"      (xrgb::to_int s.black_xrgb),
+			  sprintf  "white_xrgb  x=%x"      (xrgb::to_int s.white_xrgb),
 
 			           "",
 			           "Graphics hardware colormap support:   # (These days usually min==max==1 -- colormaps are largely obsolete.)",

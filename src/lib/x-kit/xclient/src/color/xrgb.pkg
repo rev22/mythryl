@@ -25,6 +25,44 @@
     package xrgb: Xrgb {				# Xrgb		is from   src/lib/x-kit/xclient/src/color/xrgb.api
 
 	Xrgb = XRGB Int;
+
+
+	fun from_int i
+	    =
+	    XRGB i;
+
+
+	fun to_int (XRGB i)
+	    =
+	    i;
+
+
+	fun from_ints (r, g, b)
+	    =
+	    {   r = r & 0xFF;
+	        g = g & 0xFF;
+	        b = b & 0xFF;
+
+		i = (r << 16)
+                  | (g <<  8)
+		  | (b      )
+		  ;
+
+		XRGB i;
+	    };
+
+	fun to_ints (XRGB i)
+	    =
+	    {   r = (i >> 16); 
+	        g = (i >>  8) & 0xFF; 
+	        b = (i      ) & 0xFF; 
+
+		(r, g, b);
+	    };
+
+	fun same (XRGB i, XRGB j)
+	    =
+	    i == j;
     };
 
 
