@@ -26,10 +26,17 @@ herein
 	rgb_to_hsv:  xt::Rgb -> Hsv;
 	hsb_to_rgb:  Hsv -> xt::Rgb;
 
-	get_hsvvalues:  Hsv -> { hue:    Float,
-				 sat:    Float,
-				 value:  Float
-			       };
+	to_floats:  Hsv -> { hue:          Float,
+			     saturation:   Float,
+			     value:        Float
+			   };
+
+	from_floats:  { hue:          Float,
+			saturation:   Float,
+			value:        Float
+		      }
+		      ->
+		      Hsv;		
 
     };
 end;

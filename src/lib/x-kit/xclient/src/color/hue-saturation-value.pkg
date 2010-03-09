@@ -22,10 +22,18 @@ herein
 
 	maxrgb = 65535.0;
 
-	Hsv = HSV  { hue:    Float,
-		     sat:    Float,
-		     value:  Float
-		   };
+	Hsv = HSV { hue:          Float,
+		    saturation:   Float,
+		    value:        Float
+		  };
+
+	fun to_floats (HSV v)
+	    =
+	    v;
+
+	fun from_floats v							# XXX BUGGO FIXME:  Should do some sort of validation (restriction to [0,1) interval). What exception should we throw? Or should we silently truncate?
+	    =
+	    HSV v;
 
 	fun max (a:  Float, b) = if (a >= b) a; else b; fi;
 	fun min (a:  Float, b) = if (a <= b) a; else b; fi;
@@ -46,9 +54,9 @@ herein
 
 		if (float::(====) (delta, 0.0))
 		    #                
-		     HSV { hue=>0.0, sat=>0.0, value=>max_v };
+		     HSV { hue=>0.0, saturation=>0.0, value=>max_v };
 		else 
-		    sat = delta // max_v;
+		    saturation = delta // max_v;
 
 		    rc = (max_v - realr)//delta;
 		    gc = (max_v - realg)//delta;
@@ -64,17 +72,13 @@ herein
 			  else           h2;
 			  fi;
 
-		    HSV { hue, sat, value=>max_v };
+		    HSV { hue, saturation, value=>max_v };
 		 fi;
 	      };
 
-	fun get_hsvvalues (HSV v)
+	fun hsb_to_rgb (HSV { saturation, value, hue } )
 	    =
-	    v;
-
-	fun hsb_to_rgb (HSV { sat, value, hue } )
-	    =
-	    if (float::(====) (sat, 0.0))
+	    if (float::(====) (saturation, 0.0))
 		#
 		v = sc value;   xt::RGB { red=>v, green=>v, blue=>v }; 
 	    else
@@ -84,9 +88,9 @@ herein
 		ri = real i;
 		f = h - ri;
 
-		p = value*(1.0 -  sat);
-		q = value*(1.0 - (sat*f));
-		t = value*(1.0 - (sat*(1.0 - f)));
+		p = value*(1.0 -  saturation);
+		q = value*(1.0 - (saturation*f));
+		t = value*(1.0 - (saturation*(1.0 - f)));
 
 		fun mkrgb (r, g, b)
 		    =
