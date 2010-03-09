@@ -1,3 +1,4 @@
+2010-03-08-19.20.26: src/lib/x-kit/xclient/src/color/: Establish rgb.api, rgb.pkg;  move Rgb definition over from src/lib/x-kit/xclient/src/wire/xtypes.pkg.
 2010-03-08-19.01.22: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Drop Xrgb type altogether, redirecting all references to xrgb.pkg.
 2010-03-08-14.06.03: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Replace   Xrgb = XRGB Int   with   Xrgb = xrgb::Xrgb
 2010-03-08-13.45.11: src/lib/x-kit/xclient/src/color/: Establish xrgb.api, xrgb.pkg.

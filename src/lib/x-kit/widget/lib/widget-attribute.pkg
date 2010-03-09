@@ -330,9 +330,10 @@ herein
 
 	fun color_to_string c
 	    =
-	    {   my xc::RGB { red, blue, green }
+	    {   my (red, blue, green)
 		    =
-		    xc::rgb_of_color c;
+		    xc::rgb_to_unts (xc::rgb_of_color c);
+
 
 		color_format [f::UNT red, f::UNT green, f::UNT blue];
 	    };

@@ -55,15 +55,20 @@ herein
 	    =
 	    monomorphic_hash_table_g (
 
-	      Hash_Key = xc::Rgb;
+		Hash_Key = xc::Rgb;
 
-	      fun same_key (k1:  Hash_Key, k2)
-		  =
-		 k1 == k2;
+		fun same_key (k1:  Hash_Key, k2)
+		    =
+		    xc::same_rgb (k1, k2);
 
-	      fun hash_value (xc::RGB { red, green, blue } )
-		  =
-		  red + green + blue;
+		fun hash_value (rgb: xc::Rgb)
+		    =
+		    {   (xc::rgb_to_unts rgb)
+			    ->
+			    (red, green, blue);
+
+			red + green + blue;
+		    };
 	    );
 
 	Rgb_Table = rgbtable::Hash_Table( Shades );
@@ -148,7 +153,9 @@ herein
 
 		fun color_shade (c, rgb)
 		    =
-		    {   rgb ->   xc::RGB { red, blue, green };
+		    {   (xc::rgb_to_unts rgb)
+			    ->
+			    (red, blue, green);
 
 			fun shade ()
 			    =

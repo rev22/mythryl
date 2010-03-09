@@ -109,7 +109,7 @@ package xclient_sharing: api {
         include cursors;				# cursors		is from   src/lib/x-kit/xclient/src/window/cursors.pkg
         include color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
         include rw_pixmap;				# rw_pixmap		is from   src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
-        include cs_pixmap;				# cs_pixmap	is from   src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+        include cs_pixmap;				# cs_pixmap		is from   src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
         include ro_pixmap;				# ro_pixmap		is from   src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
 	include hash_window;				# hash_window		is from   src/lib/x-kit/xclient/src/window/hash-window.pkg
 
@@ -117,9 +117,14 @@ package xclient_sharing: api {
 
         stipulate
 
-            fun copy_rgb (RGB rgb)
+            fun copy_rgb rgb
 		=
-		CMS_RGB rgb;
+		{   (rgb::to_unts rgb)
+			->
+			(red, green, blue);
+
+		    CMS_RGB { red, green, blue };
+		};
 
         herein
 
@@ -127,6 +132,10 @@ package xclient_sharing: api {
 	    black = copy_rgb  black_rgb;
 
 	end;
+
+	same_rgb      =  rgb::same;
+	rgb_from_unts =  rgb::from_unts;
+	rgb_to_unts   =  rgb::to_unts;
 
     };
 

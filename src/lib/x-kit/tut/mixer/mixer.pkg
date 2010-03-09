@@ -51,14 +51,14 @@ herein
 
 	pause = time::from_milliseconds 500;
 
-	redc   = xc::RGB { red=>medcolor, green=>0u0,      blue=>0u0      };
-	greenc = xc::RGB { red=>0u0,      green=>medcolor, blue=>0u0      };
-	bluec  = xc::RGB { red=>0u0,      green=>0u0,      blue=>medcolor };
-	blackc = xc::RGB { red=>0u0,      green=>0u0,      blue=>0u0      };
+	redc   = xc::rgb_from_unts (medcolor, 0u0,      0u0      );
+	greenc = xc::rgb_from_unts (0u0,      medcolor, 0u0      );
+	bluec  = xc::rgb_from_unts (0u0,      0u0,      medcolor );
+	blackc = xc::rgb_from_unts (0u0,      0u0,      0u0      );
 
-	fun make_red   n =  xc::RGB { red => n,        green=>mincolor, blue=>mincolor };
-	fun make_green n =  xc::RGB { red => mincolor, green=>n,        blue=>mincolor };
-	fun make_blue  n =  xc::RGB { red => mincolor, green=>mincolor, blue=>n        };
+	fun make_red   n =  xc::rgb_from_unts (n,        mincolor, mincolor );
+	fun make_green n =  xc::rgb_from_unts (mincolor, n,        mincolor );
+	fun make_blue  n =  xc::rgb_from_unts (mincolor, mincolor, n        );
 
 	fun make_mixer (root_window, view)
 	    =
@@ -144,11 +144,15 @@ herein
 		    painter (paint (do_mailop  cc_mailop)) ;
 
 
-		fun make_color_complex (xc::RGB c) make_color mkmsg
+		fun make_color_complex  rgb  make_color  mkmsg
 		    =
 		    (line, printer_loop)
 		    where
-			color = color_of (xc::CMS_RGB c);
+			(xc::rgb_to_unts rgb)
+			    ->
+			    (red, green, blue);
+
+			color = color_of (xc::CMS_RGB { red, green, blue });
 
 			l_args = [ (wa::label,      wa::STRING_VAL "          0"),
 				   (wa::background, wa::COLOR_VAL  color)

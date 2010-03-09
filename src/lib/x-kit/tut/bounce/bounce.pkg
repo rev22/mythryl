@@ -117,8 +117,8 @@ herein
 			    xc::recolor_cursor
 			      {
 				cursor,
-				foreground_rgb => xc::RGB { red=>0u65535,  green=>0u65535, blue=>0u65535 },
-				background_rgb => xc::RGB { red=>0u0,      green=>0u0,     blue=>0u0 }
+				foreground_rgb =>  xc::rgb_from_unts (0u65535, 0u65535, 0u655350),
+				background_rgb =>  xc::rgb_from_unts (0u0,     0u0,     0u0     )
 			      };
 
 			    cursor;

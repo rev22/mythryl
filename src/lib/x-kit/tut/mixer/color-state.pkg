@@ -1,5 +1,4 @@
 ## color-state.pkg
-## See COPYRIGHT file for details.
 
 # Compiled by:
 #     src/lib/x-kit/tut/mixer/mixer.make6
@@ -34,15 +33,19 @@ herein
 		fun get_msg ()   =  take in_slot;
 		fun send_color c =  give (out_slot, c);
 
-		fun change_color (xc::RGB { red=>r, green=>g, blue=>b }, msg)
+		fun change_color (rgb, msg)
 		    =
-		    {   new_color
+		    {   (xc::rgb_to_unts rgb)
+			    ->
+			    (r, g, b);
+
+			new_color
 			    =
 			    case msg
 				#
-				CHANGE_R   n =>  xc::RGB { red=>n, green=>g, blue=>b };
-				CHANGE_G   n =>  xc::RGB { red=>r, green=>n, blue=>b };
-				CHANGE_B   n =>  xc::RGB { red=>r, green=>g, blue=>n };
+				CHANGE_R   n =>  xc::rgb_from_unts (n, g, b);
+				CHANGE_G   n =>  xc::rgb_from_unts (r, n, b);
+				CHANGE_B   n =>  xc::rgb_from_unts (r, g, n);
 				#
 				CHANGE_RGB r =>  r;
 			    esac;

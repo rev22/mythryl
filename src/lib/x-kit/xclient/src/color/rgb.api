@@ -9,11 +9,13 @@
 
 	# RGB colors 
 	#
-	Rgb = RGB { red:    Unt,
-		    green:  Unt,
-		    blue:   Unt
-		  };
+	Rgb;
 
+        from_unts:  (Unt, Unt, Unt)  ->  Rgb;
+
+        to_unts:    Rgb  ->  (Unt, Unt, Unt);
+
+	same:       (Rgb, Rgb) -> Bool;
     };
 
 

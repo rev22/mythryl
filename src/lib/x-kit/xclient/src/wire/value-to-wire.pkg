@@ -300,9 +300,12 @@ herein
 	    end;
 
 
-	    fun put_rgb (buf, i, rgb::RGB { red, green, blue } )
+	    fun put_rgb (buf, i, rgb)
 		=
-		{
+		{   (rgb::to_unts rgb)
+			->
+			(red, green, blue);
+
 		    put_word16 (buf, i,   red  );
 		    put_word16 (buf, i+2, green);
 		    put_word16 (buf, i+4, blue );

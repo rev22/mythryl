@@ -21,14 +21,16 @@ herein
 
 	fun spot
 	      (root_window, view)
-	      { color => xc::RGB color,
+	      { color => rgb,
 		wide,
 		high
 	      }
 	    =
 	    {   color_of = rw::color_of  root_window;
 
-		color = xc::CMS_RGB color;
+		(xc::rgb_to_unts rgb) ->  (red, green, blue);
+
+		color = xc::CMS_RGB { red, green, blue };
 
 		args  = [ (wa::background, wa::COLOR_VAL (color_of color)) ];
 
@@ -41,11 +43,16 @@ herein
 			xg::SIZE { wide, high }
 		      );
 
-		fun setc (xc::RGB rgb)
+		fun setc  rgb						# "setc" may be "set color"
 		    = 
-		    lbl::set_background
-			label
-			(color_of (xc::CMS_RGB rgb));
+		    {   (xc::rgb_to_unts rgb)
+			    ->
+			    (red, green, blue);
+
+			lbl::set_background
+			    label
+			    (color_of (xc::CMS_RGB { red, green, blue }));
+		    };
 
 		SPOT (widget, setc);
 	    };

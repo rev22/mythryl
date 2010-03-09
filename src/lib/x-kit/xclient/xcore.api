@@ -101,6 +101,17 @@ api  Xcore {
 	    data:     unt8_vector::Vector				# For   MIT-MAGIC-COOKIE-1 this is 16 bytes (128 bits) of random data.
 	  };
 
+    # NOTE: the following should go away soon,		# XXX BUGGO FIXME
+    # but we need it for recolorCursor *
+    # Maybe not; see rgbOfColor function *
+    #
+#    Rgb = RGB  { red:  Unt, green:  Unt, blue:  Unt };
+    Rgb;
+    #
+    rgb_of_color:  Color -> Rgb;
+    rgb_from_unts: (Unt, Unt, Unt) -> Rgb;
+    rgb_to_unts:   Rgb -> (Unt, Unt, Unt);
+
     # Identity tests:
     #
     same_xsession: (Xsession, Xsession) -> Bool;			# same_xsession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
@@ -109,6 +120,7 @@ api  Xcore {
     same_font:     (Font, Font)         -> Bool;			# same_font		def in    src/lib/x-kit/xclient/src/window/font-base.pkg
     same_cursor:   (Xcursor, Xcursor)   -> Bool;			# same_cursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
     same_color:    (Color, Color)       -> Bool;			# same_color		def in    src/lib/x-kit/xclient/src/window/color-imp.pkg
+    same_rgb:      (Rgb, Rgb)           -> Bool;			# same_rgb		def in    src/lib/x-kit/xclient/src/color/rgb.pkg 
     #
     same_rw_pixmap							# same_rw_pixmap	def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
 	:
@@ -273,13 +285,6 @@ api  Xcore {
     black_of_screen:  Screen -> Color;
     white_of_screen:  Screen -> Color;
 
-    # NOTE: the following should go away soon,
-    # but we need it for recolorCursor *
-    # Maybe not; see rgbOfColor function *
-    #
-    Rgb = RGB  { red:  Unt, green:  Unt, blue:  Unt };
-    #
-    rgb_of_color:  Color -> Rgb;
 
 
 

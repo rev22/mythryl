@@ -20,20 +20,7 @@ herein
 
 	exception NO_COLOR_CELL;
 
-	stipulate
-	    package x
-		: (weak)
-		api {
-		     Rgb = RGB { red:    Unt,
-				 green:  Unt,
-				 blue:   Unt
-			       };
-		}
-		=
-		rgb;								# rgb			is from   src/lib/x-kit/xclient/src/color/rgb.pkg
-	herein
-	    include x;
-	end;
+        Rgb = rgb::Rgb;
 
 	# Color specifications.
 	# Eventually, this will be extended to R5
@@ -49,8 +36,8 @@ herein
 		     }
 	  ;
 
-	white_rgb = RGB { red=>0uxffff, green=>0uxffff, blue=>0uxffff };
-	black_rgb = RGB { red=>0ux0000, green=>0ux0000, blue=>0ux0000 };
+	white_rgb = rgb::from_unts (0uxffff, 0uxffff, 0uxffff);
+	black_rgb = rgb::from_unts (0ux0000, 0ux0000, 0ux0000);
 
 	Color =
 	    COLOR  {		  		#  A color in the colormap 
@@ -89,11 +76,16 @@ herein
 
 		fun same_key (k1:  Hash_Key, k2)
 		    =
-		    k1 == k2;
+		    rgb::same (k1, k2);
 
-		fun hash_value (RGB { red, green, blue } )
+		fun hash_value rgb
 		    =
-		    red + unt::(<<) (green, 0u1) + unt::(<<) (blue, 0u2);
+		    {   (rgb::to_unts rgb)
+			    ->
+			    (red, green, blue);
+
+		        red + unt::(<<) (green, 0u1) + unt::(<<) (blue, 0u2);
+		    };
 	    );
 
 	Rgb_Table
@@ -214,9 +206,9 @@ herein
 
 				rgb_ins (rgb, c);
 
-				if   (rgb != visual_rgb)
-
-				     rgb_ins (visual_rgb, c);
+				if (not (rgb::same (rgb, visual_rgb)))
+				    #
+				    rgb_ins (visual_rgb, c);
 				fi;
 
 				c;
@@ -225,8 +217,8 @@ herein
 		    esac;
 
 
-		fun do_plea (CMS_NAME cname) =>   find_color_by_name cname;
-		    do_plea (CMS_RGB rgb)    =>   find_color_by_rgb (RGB rgb);
+		fun do_plea (CMS_NAME cname)               =>   find_color_by_name cname;
+		    do_plea (CMS_RGB { red, green, blue }) =>   find_color_by_rgb (rgb::from_unts (red, green, blue));
 		end;
 
 		plea_slot = make_mailslot ();
@@ -266,9 +258,13 @@ herein
 	    =
 	    if   (not (valid_rgb c)   )   raise exception BAD_RGB;   fi;
 
-	fun check_rgb (rgb as (RGB v))
+	fun check_rgb  rgb
 	    =
-	    {   check_rgbval v;
+	    {   (rgb::to_unts rgb)
+		    ->
+		    (red, green, blue);
+
+                check_rgbval { red, green, blue };
 		rgb;
 	    };
 
@@ -296,12 +292,14 @@ herein
 
 	fun rgb_of_color (COLOR { rgb, ... } ) = rgb;
 
-	fun same_color (   COLOR { pixel=>p1, rgb=>rgb1 },
-			  COLOR { pixel=>p2, rgb=>rgb2 }
-		      )
+	fun same_color
+            ( COLOR { pixel=>p1, rgb=>rgb1 },
+	      COLOR { pixel=>p2, rgb=>rgb2 }
+	    )
 	    =
-	    p1   == p2    or
-	    rgb1 == rgb2;
+	    p1 == p2
+            or
+	    rgb::same (rgb1, rgb2);
 
     };				# package color_imp 
 

@@ -14,6 +14,23 @@
 		    blue:   Unt
 		  };
 
+
+        fun from_unts (red, green, blue)
+	    =
+	    RGB { red, green, blue };
+
+        fun to_unts (RGB { red, green, blue })
+	    =
+	    (red, green, blue);
+
+	fun same
+            ( RGB { red=>r1, green=>g1, blue=>b1 },
+              RGB { red=>r2, green=>g2, blue=>b2 }
+	    )
+	    =  r1 == r2
+            && g1 == g2
+            && b1 == b2
+	    ;
     };
 
 
