@@ -1,15 +1,18 @@
-## xrgb.api
+## rgb.api
 #
-# X server format 24-bit int RGB values.
+# RGB color values.
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
+    api Rgb {
 
-
-    api Xrgb {
-
-	Xrgb = XRGB Int;
+	# RGB colors 
+	#
+	Rgb = RGB { red:    Unt,
+		    green:  Unt,
+		    blue:   Unt
+		  };
 
     };
 

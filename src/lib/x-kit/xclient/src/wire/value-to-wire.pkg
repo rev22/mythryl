@@ -300,7 +300,7 @@ herein
 	    end;
 
 
-	    fun put_rgb (buf, i, xt::RGB { red, green, blue } )
+	    fun put_rgb (buf, i, rgb::RGB { red, green, blue } )
 		=
 		{
 		    put_word16 (buf, i,   red  );

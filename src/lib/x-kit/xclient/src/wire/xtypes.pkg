@@ -127,13 +127,6 @@ herein
 	      |    CONVEX_SHAPE
 	      ;
 
-	# RGB colors 
-	#
-	Rgb = RGB { red:    Unt,
-		    green:  Unt,
-		    blue:   Unt
-		  };
-
 	# Color items 
 	#
 	Color_Item

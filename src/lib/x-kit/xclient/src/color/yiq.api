@@ -6,7 +6,8 @@
 # Above article notes that it can also be useful in image
 # processing -- histogram equalization in RGB sucks, but
 # doing it on the Y (brightness) component in YIQ format
-# works well to equalize brightness.
+# works well to equalize brightness.  (Presumably HSV or
+# such would work as well?)
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6

@@ -9,11 +9,11 @@
 stipulate
     include threadkit;								# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package rc  = range_check;							# range_check		is from   src/lib/x-kit/xclient/src/stuff/range-check.pkg
-    package xok = xsocket;							# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package v2w = value_to_wire;						# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
-    package w2v = wire_to_value;						# wire_to_value		is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
-    package xt  = xtypes;							# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package rc  =  range_check;							# range_check		is from   src/lib/x-kit/xclient/src/stuff/range-check.pkg
+    package xok =  xsocket;							# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package v2w =  value_to_wire;						# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package w2v =  wire_to_value;						# wire_to_value		is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
+    package xt  =  xtypes;							# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     package color_imp: (weak)  Color_Imp {					# Color_Imp		is from   src/lib/x-kit/xclient/src/window/color-imp.api
@@ -30,7 +30,7 @@ herein
 			       };
 		}
 		=
-		xtypes;								# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+		rgb;								# rgb			is from   src/lib/x-kit/xclient/src/color/rgb.pkg
 	herein
 	    include x;
 	end;

@@ -170,8 +170,8 @@ herein
 	#
 	fun recolor_cursor
 	    { cursor as XCURSOR { id, xsession },
-	      foreground_rgb:  xt::Rgb,
-	      background_rgb:  xt::Rgb
+	      foreground_rgb:  rgb::Rgb,
+	      background_rgb:  rgb::Rgb
 	    }
 	    =
 	    sn::request xsession

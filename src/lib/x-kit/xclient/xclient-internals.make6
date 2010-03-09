@@ -54,6 +54,8 @@ LIBRARY_GROUP_COMPONENTS
 	src/color/yiq.pkg
 	src/color/xrgb.api
 	src/color/xrgb.pkg
+	src/color/rgb.api
+	src/color/rgb.pkg
 
 	src/to-string/xerror-to-string.pkg
 	src/to-string/xevent-to-string.pkg

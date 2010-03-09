@@ -308,7 +308,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 
 	    fun get_rgb (buf, i)
 		=
-		xt::RGB
+		rgb::RGB
 		  {
 		    red   => get_word16 (buf, i),
 		    green => get_word16 (buf, i+2),

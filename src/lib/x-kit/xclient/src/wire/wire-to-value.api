@@ -32,8 +32,8 @@ herein
 	decode_alloc_color_cells_reply:  X -> { err: Y };
 	decode_alloc_color_planes_reply: X -> { err: Y };
 
-	decode_alloc_color_reply:       v8::Vector -> { pixel: xrgb::Xrgb,                      visual_rgb: xt::Rgb };
-	decode_alloc_named_color_reply: v8::Vector -> { exact_rgb: xt::Rgb,  pixel: xrgb::Xrgb, visual_rgb: xt::Rgb };
+	decode_alloc_color_reply:       v8::Vector -> { pixel:    xrgb::Xrgb,                    visual_rgb: rgb::Rgb };
+	decode_alloc_named_color_reply: v8::Vector -> { exact_rgb: rgb::Rgb,  pixel: xrgb::Xrgb, visual_rgb: rgb::Rgb };
 
 	decode_connect_request_reply
 	    :
@@ -150,11 +150,11 @@ herein
 	decode_list_installed_colormaps_reply: v8::Vector -> List(xt::Xid);
 	decode_list_properties_reply:          v8::Vector -> List(xt::Atom);
 
-	decode_lookup_color_reply:    v8::Vector -> { exact_rgb: xt::Rgb,  visual_rgb: xt::Rgb };
+	decode_lookup_color_reply:    v8::Vector -> { exact_rgb: rgb::Rgb,  visual_rgb: rgb::Rgb };
 	decode_no_expose:             v8::Vector -> event_types::Xevent;
 
 	decode_query_best_size_reply: v8::Vector -> { high: Int,  wide: Int };
-	decode_query_colors_reply:    v8::Vector -> List(xt::Rgb);
+	decode_query_colors_reply:    v8::Vector -> List(rgb::Rgb);
 
 	decode_query_extension_reply: X -> { err: Y };
 

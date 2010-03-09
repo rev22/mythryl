@@ -30,7 +30,7 @@ herein
 	    -> xt::Value_List
             ;
 
-	encode_alloc_color:       { cmap: xt::Xid,  color: xt::Rgb }             -> v8::Vector;
+	encode_alloc_color:       { cmap: xt::Xid,  color: rgb::Rgb }            -> v8::Vector;
 	encode_alloc_named_color: { cmap: xt::Xid,  name: String }               -> v8::Vector;
 	encode_allow_events:      { mode: xt::Event_Mode,  time: xt::Timestamp } -> v8::Vector;
 
@@ -140,8 +140,8 @@ herein
                                 }
 				-> v8::Vector;
 
-	encode_create_cursor: { background_rgb: xt::Rgb,
-				foreground_rgb: xt::Rgb,
+	encode_create_cursor: { background_rgb: rgb::Rgb,
+				foreground_rgb: rgb::Rgb,
                                 cursor:         xt::Xid, 
                                 from:           xt::Xid, 
 				hot_spot:       g::Point, 
@@ -155,8 +155,8 @@ herein
                           }
 			  -> v8::Vector;
 
-	encode_create_glyph_cursor: { background_rgb: xt::Rgb,
-				      foreground_rgb: xt::Rgb,
+	encode_create_glyph_cursor: { background_rgb: rgb::Rgb,
+				      foreground_rgb: rgb::Rgb,
 				      #
                                       mask_chr:       Int, 
                                       src_chr:        Int, 
@@ -409,8 +409,8 @@ herein
 	encode_query_text_extents: { font:      xt::Xid,  str: String } -> v8::Vector;
 	encode_query_tree:         { window_id: xt::Xid }               -> v8::Vector;
 
-	encode_recolor_cursor:  { background_color: xt::Rgb,
-				  foreground_color: xt::Rgb,
+	encode_recolor_cursor:  { background_color: rgb::Rgb,
+				  foreground_color: rgb::Rgb,
                                   cursor:           xt::Xid
                                 }
 			        -> v8::Vector;
