@@ -41,15 +41,15 @@ herein
 
 	Color =
 	    COLOR  {		  		#  A color in the colormap 
-		pixel:  xrgb::Xrgb,		#  Its X-server 24-bit-int RGB value.
+		pixel:  rgb24::Rgb24,		#  Its X-server 24-bit-int RGB value.
 		rgb:    Rgb		 	#  Its RGB value 
 	    };
 
 	# The following are used for drawing 0s or 1s on pixmaps.
 	# Note that the rgb fields are bogus.
 
-	color0 = COLOR { pixel => xrgb::from_int 0, rgb => black_rgb };
-	color1 = COLOR { pixel => xrgb::from_int 1, rgb => black_rgb };
+	color0 = COLOR { pixel => rgb24::from_int 0, rgb => black_rgb };
+	color1 = COLOR { pixel => rgb24::from_int 1, rgb => black_rgb };
 
 	Reply_Mail
 	  = REPLY_ERROR
@@ -135,7 +135,7 @@ herein
 	#
 	fun make_color_imp (
 		display::XDISPLAY { xsocket, ... },
-		display::XSCREEN { default_colormap, black_xrgb, white_xrgb, ... }
+		display::XSCREEN { default_colormap, black_rgb24, white_rgb24, ... }
 	    )
 	    =
 	    {   exception NOT_FOUND;
@@ -237,8 +237,8 @@ herein
 			give  (reply_slot,  result);
 		    };
 
-		black = COLOR { pixel=>black_xrgb, rgb=>black_rgb };
-		white = COLOR { pixel=>white_xrgb, rgb=>white_rgb };
+		black = COLOR { pixel=>black_rgb24, rgb=>black_rgb };
+		white = COLOR { pixel=>white_rgb24, rgb=>white_rgb };
 
 		  rgb_ins (black_rgb, black);
 		  rgb_ins (white_rgb, white);
@@ -293,11 +293,11 @@ herein
 	fun rgb_of_color (COLOR { rgb, ... } ) = rgb;
 
 	fun same_color
-            ( COLOR { pixel=>xrgb1, rgb=>rgb1 },
-	      COLOR { pixel=>xrgb2, rgb=>rgb2 }
+            ( COLOR { pixel=>rgb241, rgb=>rgb1 },
+	      COLOR { pixel=>rgb242, rgb=>rgb2 }
 	    )
 	    =
-	    xrgb::same (xrgb1, xrgb2)
+	    rgb24::same (rgb241, rgb242)
             or
 	    rgb::same (rgb1, rgb2);
 

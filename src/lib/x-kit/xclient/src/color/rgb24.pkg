@@ -1,4 +1,4 @@
-## xrgb.pkg
+## rgb24.pkg
 #
 # X server format 24-bit int RGB values.
 #
@@ -26,9 +26,9 @@
 
 
 
-    package xrgb: Xrgb {				# Xrgb		is from   src/lib/x-kit/xclient/src/color/xrgb.api
+    package rgb24: Rgb24 {				# Rgb24		is from   src/lib/x-kit/xclient/src/color/rgb24.api
 
-	Xrgb = Int;
+	Rgb24 = Int;
 
 
 	fun from_int i
@@ -85,9 +85,9 @@
 	    end;
 
 
-	fun to_floats  xrgb
+	fun to_floats  rgb24
 	    =
-	    {   (to_ints  xrgb)
+	    {   (to_ints  rgb24)
 		    ->
 		    (red, green, blue);
 
@@ -889,7 +889,7 @@
 	    =
 	    case (string_map::get (colors_by_name, color_name))
 		#
-		THE xrgb => xrgb;
+		THE rgb24 => rgb24;
 		NULL     => raise exception lib_base::NOT_FOUND;
 	    esac;
     };

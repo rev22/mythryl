@@ -71,8 +71,8 @@ herein
 		root_window_id:		xt::Window_Id,		# Root window id of this screen.
 		default_colormap:	xt::Colormap_Id,	# 
 
-		white_xrgb:		xrgb::Xrgb,		# White and Black pixel values.
-		black_xrgb:		xrgb::Xrgb,
+		white_rgb24:		rgb24::Rgb24,		# White and Black pixel values.
+		black_rgb24:		rgb24::Rgb24,
 
 		root_input_mask:	xt::Event_Mask,		# Initial root input mask.
 
@@ -384,8 +384,8 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 	    #
 	    { root_window,
               default_colormap,
-              white_xrgb,
-              black_xrgb,
+              white_rgb24,
+              black_rgb24,
               input_masks,
               pixels_wide,
               pixels_high,
@@ -425,8 +425,8 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 		    id => screen_number,
 		    root_window_id => root_window,
 		    default_colormap,
-		    white_xrgb,
-		    black_xrgb,
+		    white_rgb24,
+		    black_rgb24,
 		    root_input_mask => input_masks,
 
 		    size_in_pixels => g::SIZE { wide => pixels_wide,      high => pixels_high      },

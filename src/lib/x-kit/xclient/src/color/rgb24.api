@@ -1,4 +1,4 @@
-## xrgb.api
+## rgb24.api
 #
 # X server format 24-bit int RGB values.
 
@@ -7,26 +7,26 @@
 
 # This api is implemented in:
 #
-#     src/lib/x-kit/xclient/src/color/xrgb.pkg
+#     src/lib/x-kit/xclient/src/color/rgb24.pkg
 
-    api Xrgb {
+    api Rgb24 {
 
-	Xrgb;
+	Rgb24;
 
-	to_floats:   Xrgb -> (Float, Float, Float);
-	from_floats: (Float, Float, Float) -> Xrgb;
+	to_floats:   Rgb24 -> (Float, Float, Float);
+	from_floats: (Float, Float, Float) -> Rgb24;
 	    #
 	    # Here we think in terms of three color components
 	    # ranging from 0.0 -> 1.0 inclusive.
 
-	to_ints:   Xrgb -> (Int, Int, Int);
-	from_ints: (Int, Int, Int) -> Xrgb;
+	to_ints:   Rgb24 -> (Int, Int, Int);
+	from_ints: (Int, Int, Int) -> Rgb24;
 	    #
 	    # Here we think in terms of three color
 	    # components ranging from 0 -> 255 inclusive.
 
-	from_int: Int  -> Xrgb;
-	to_int:   Xrgb -> Int;
+	from_int: Int  -> Rgb24;
+	to_int:   Rgb24 -> Int;
 	    #
 	    # Here we think in terms of a single
 	    # 24-bit RGB color value, where
@@ -38,16 +38,16 @@
 	    # This is the usual format for pixels
 	    # in modern X visuals.
 
-	same:    (Xrgb, Xrgb) -> Bool;
+	same:    (Rgb24, Rgb24) -> Bool;
 
-        colors_by_name:  string_map::Map(Xrgb);
+        colors_by_name:  string_map::Map(Rgb24);
 	    #
 	    # A table of the standard
 	    # color names from
 	    #
 	    #     /etc/X11/rgb.txt
 
-        from_name:  String -> Xrgb;
+        from_name:  String -> Rgb24;
 	    #
 	    # Look up a color in the above table.
     };
