@@ -5,7 +5,9 @@
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
-
+# This api is implemented in:
+#
+#     src/lib/x-kit/xclient/src/color/xrgb.pkg
 
     api Xrgb {
 

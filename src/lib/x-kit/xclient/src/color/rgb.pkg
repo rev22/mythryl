@@ -1,37 +1,78 @@
 ## rgb.pkg
 #
+# RGB colors 
+#
+# See also:
+#     src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg
+#     src/lib/x-kit/xclient/src/color/xrgb.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
+stipulate
+    include rw_float_vector;							# float_vector			is from   src/lib/std/float-vector.pkg
+    #
+    package fv  = rw_float_vector;						# float_vector			is from   src/lib/std/float-vector.pkg
+herein
 
-    package rgb: Rgb {				# Rgb		is from   src/lib/x-kit/xclient/src/color/rgb.api
+    package rgb: Rgb {								# Rgb		is from   src/lib/x-kit/xclient/src/color/rgb.api
 
-	# RGB colors 
 	#
-	Rgb = RGB { red:    Unt,
-		    green:  Unt,
-		    blue:   Unt
-		  };
+	# We represent an RGB color value by a
+	# packed 3-vector of 64-bit floats holding
+	# red, green, blue in that order:
+	# 
+	Rgb = fv::Rw_Vector;							# This should really be a read-only floatvector, but currently they are not actually a packed type -- See src/lib/std/src/float64-vector.pkg XXX BUGGO FIXME.
+	    #									# Since we export Rgb as an opaque type, the difference is not critical.
+
+
+	fun from_floats (red, green, blue)					# Should do some sort of validation (restriction to [0,1) interval). What exception should we throw? Or should we silently truncate?  XXX BUGGO FIXME.
+	    =
+	    {	rgb = fv::make_rw_vector (3, 0.0);
+
+		rgb[0] := red;							# Eventually we'll probably want to suppress index checking here for speed, using unsafe:: operations or whatever. XXX BUGGO FIXME.
+		rgb[1] := green;
+		rgb[2] := blue;
+
+		rgb;
+	    };
+
+	fun to_floats rgb
+	    =
+	    (rgb[0], rgb[1], rgb[2]);						# Eventually we'll probably want to suppress index checking here for speed, using unsafe:: operations or whatever. XXX BUGGO FIXME.
+
 
 
         fun from_unts  (red, green, blue)
 	    =
-	    RGB { red, green, blue };
+	    from_floats
+              ( unt_to_float  red,
+                unt_to_float  green,
+                unt_to_float  blue
+	      )
+	    where
+		fun unt_to_float u
+		    =
+		    {   i  = unt::to_int     u;
+			f  = float::from_int  i;
 
+			f  = f // 65535.0;		# Our unts run 0 -> 65535.
 
-        fun to_unts  (RGB { red, green, blue })
+			f;
+		    };
+	      end;		
+	
+
+        fun to_unts  rgb
 	    =
-	    (red, green, blue);
+	    {   (to_floats  rgb)
+		    ->
+		    (red, green, blue);
 
-
-	fun from_floats (red, green, blue)
-	    =
-	    {   red   =  float_to_unt  red;
-		green =  float_to_unt  green;
-		blue  =  float_to_unt  blue;
-
-		RGB { red, green, blue };
+		( float_to_unt  red,
+		  float_to_unt  green,
+		  float_to_unt  blue
+		);
 	    }
 	    where
 		fun float_to_unt f
@@ -45,36 +86,14 @@
 		    };
 	    end;
 
-	fun to_floats (RGB { red, green, blue })
-	    =
-	    ( unt_to_float  red,
-	      unt_to_float  green,
-	      unt_to_float  blue
-	    )
-	    where
-		fun unt_to_float u
-		    =
-		    {   i  = unt::to_int     u;
-			f  = float::from_int  i;
 
-			f  = f // 65535.0;		# Our unts run 0 -> 65535.
-
-			f;
-		    };
-	    end;
-
-
-
-	fun same
-            ( RGB { red=>r1, green=>g1, blue=>b1 },
-              RGB { red=>r2, green=>g2, blue=>b2 }
-	    )
-	    =  r1 == r2
-            && g1 == g2
-            && b1 == b2
+	fun same (a, b)
+	    =  float::(====) (a[0], b[0])
+            && float::(====) (a[1], b[1])
+            && float::(====) (a[2], b[2])
 	    ;
     };
-
+end;
 
 ## COPYRIGHT (c) 1994 by AT&T Bell Laboratories
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,

@@ -1,6 +1,10 @@
 ## hue-saturation-value.pkg
 #
-# Various color space utilities.
+# HSV color representation.
+#
+# See also:
+#     src/lib/x-kit/xclient/src/color/rgb.pkg
+#     src/lib/x-kit/xclient/src/color/xrgb.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -18,11 +22,14 @@
 stipulate
     include rw_float_vector;							# float_vector			is from   src/lib/std/float-vector.pkg
     #
-    package xt  = xtypes;							# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package fv  = rw_float_vector;						# float_vector			is from   src/lib/std/float-vector.pkg
 herein
     package hue_saturation_value:  Hue_Saturation_Value {			# Hue_Saturation_Value		is from   src/lib/x-kit/xclient/src/stuff/color.api
 
+	# We represent an HSV color value by a
+	# packed 3-vector of 64-bit floats holding
+	# hue, saturation, value in that order:
+	# 
 	Hsv = fv::Rw_Vector;			# This should really be a read-only floatvector, but currently they are not actually a packed type -- See src/lib/std/src/float64-vector.pkg XXX BUGGO FIXME.
 	    #					# Since we export Hsv as an opaque type, the difference is not critical.
 	    # The above type was originally
@@ -61,7 +68,14 @@ herein
 
 	fun from_floats { hue, saturation, value }					# Should do some sort of validation (restriction to [0,1) interval). What exception should we throw? Or should we silently truncate?  XXX BUGGO FIXME.
 	    =
-	    fv::from_list [ hue, saturation, value ];					# Eventually we need a way to avoid constructing lists while doing this; A compiler optimization or a new C primitive or something.  XXX BUGGO FIXME.
+	    {	hsv = fv::make_rw_vector (3, 0.0);
+
+		hsv[0] := hue;								# Eventually we'll probably want to suppress index checking here for speed, using unsafe:: operations or whatever. XXX BUGGO FIXME.
+		hsv[1] := saturation;
+		hsv[2] := value;
+
+		hsv;
+	    };
 
 	fun max (a:  Float, b) = if (a >= b) a; else b; fi;
 	fun min (a:  Float, b) = if (a <= b) a; else b; fi;

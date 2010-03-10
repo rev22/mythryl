@@ -13,6 +13,10 @@
 # value, arbitrary ordering of color fields etc,
 # but my impression is that in practice everyone
 # is using the above format these days.
+#
+# See also:
+#     src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg
+#     src/lib/x-kit/xclient/src/color/rgb.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6

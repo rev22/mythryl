@@ -16,6 +16,10 @@
 ###                                    (quoted in Mark Twain, a Biography)
 
 
+# This api is implemented in:
+#
+#     src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg 
+
 stipulate
     package xt  = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
@@ -31,7 +35,7 @@ herein
 			     value:        Float
 			   };
 
-	from_floats:  { hue:          Float,
+	from_floats:  { hue:          Float,		# Args should be in range 0.0 through 1.0 inclusive.
 			saturation:   Float,
 			value:        Float
 		      }
