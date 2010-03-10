@@ -1,3 +1,4 @@
+2010-03-09-23.47.06: src/lib/x-kit/xclient/src/color/xrgb.api: Add from_floats(), to_floats(): I want to make floating point triples the standard color notation.
 2010-03-09-21.47.49: src/lib/x-kit/xclient/src/color/rgb.pkg: Change  Rgb = RGB { red: Unt, green: Unt, blue: Unt }   ->  Rgb = rw_float_vector::Rw_Vector
 2010-03-09-20.17.09: src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg: Force hue-saturation-value.pkg to compile.  src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg: Change  Hsv = HSV { hue: float, saturation: Float, value: Float }   ->  Hsv = fv::Rw_Vector  for efficiency.   src/lib/x-kit/xclient/src/color/rgb.api:  Add from_floats(), to_floats().
 2010-03-09-03.49.52: src/lib/x-kit/xclient/src/color/xrgb.api: Add colors_by_name, from_name().

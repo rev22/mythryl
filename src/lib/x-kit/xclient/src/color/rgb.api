@@ -29,7 +29,11 @@
         from_unts:    (Unt, Unt, Unt)  ->  Rgb;
         to_unts:      Rgb  ->  (Unt, Unt, Unt);
 
-#       from_name: String -> Rgb;
+        from_name: String -> Rgb;
+	    #
+	    # Support the    /etc/X11/rgb.txt
+	    # set of colornames.
+
 # (Also do hue_saturation_color::from_name)
 
 	same:       (Rgb, Rgb) -> Bool;

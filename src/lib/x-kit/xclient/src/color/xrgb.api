@@ -13,34 +13,43 @@
 
 	Xrgb;
 
-	# Here we think in terms of three color components
-	# ranging from 0.0 -> 1.0 inclusive:
-	#
 	to_floats:   Xrgb -> (Float, Float, Float);
 	from_floats: (Float, Float, Float) -> Xrgb;
+	    #
+	    # Here we think in terms of three color components
+	    # ranging from 0.0 -> 1.0 inclusive.
 
-	# Here we think in terms of three color
-	# components ranging from 0 -> 255 inclusive:
-	#
 	to_ints:   Xrgb -> (Int, Int, Int);
 	from_ints: (Int, Int, Int) -> Xrgb;
+	    #
+	    # Here we think in terms of three color
+	    # components ranging from 0 -> 255 inclusive.
 
-	# Here we think in terms of 24-bit
-	# RGB color values, where
-	#     red   = 0xFF0000
-	#     green = 0x00FF00
-	#     blue  = 0x0000FF
-	# This is the usual format for pixels
-	# in modern X visuals:
-	#
 	from_int: Int  -> Xrgb;
 	to_int:   Xrgb -> Int;
+	    #
+	    # Here we think in terms of a single
+	    # 24-bit RGB color value, where
+	    #     black = 0x000000
+	    #     red   = 0xFF0000
+	    #     green = 0x00FF00
+	    #     blue  = 0x0000FF
+	    #     white = 0xFFFFFF
+	    # This is the usual format for pixels
+	    # in modern X visuals.
 
 	same:    (Xrgb, Xrgb) -> Bool;
 
-        colors_by_name: string_map::Map(Xrgb);
+        colors_by_name:  string_map::Map(Xrgb);
+	    #
+	    # A table of the standard
+	    # color names from
+	    #
+	    #     /etc/X11/rgb.txt
 
-        from_name: String -> Xrgb;
+        from_name:  String -> Xrgb;
+	    #
+	    # Look up a color in the above table.
     };
 
 

@@ -92,6 +92,13 @@ herein
             && float::(====) (a[1], b[1])
             && float::(====) (a[2], b[2])
 	    ;
+
+
+        fun from_name  colorname
+	    =
+	    from_floats (xrgb::to_floats  (xrgb::from_name  colorname));
+
+
     };
 end;
 

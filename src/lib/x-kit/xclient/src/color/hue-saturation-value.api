@@ -27,8 +27,8 @@ herein
 
 	Hsv;		# hsv = "Hue, Saturation, Value"
 
-	rgb_to_hsv:  rgb::Rgb -> Hsv;
-	hsb_to_rgb:  Hsv -> rgb::Rgb;
+	from_rgb:  rgb::Rgb -> Hsv;
+	to_rgb:    Hsv -> rgb::Rgb;
 
 	to_floats:  Hsv -> { hue:          Float,
 			     saturation:   Float,
@@ -41,6 +41,11 @@ herein
 		      }
 		      ->
 		      Hsv;		
+
+        from_name: String -> Hsv;
+	    #
+	    # Support the    /etc/X11/rgb.txt
+	    # set of colornames.
 
     };
 end;

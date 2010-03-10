@@ -80,7 +80,7 @@ herein
 	fun max (a:  Float, b) = if (a >= b) a; else b; fi;
 	fun min (a:  Float, b) = if (a <= b) a; else b; fi;
 
-	fun rgb_to_hsv rgb
+	fun from_rgb rgb
 	    =
 	    {   (rgb::to_floats rgb)
 		    ->
@@ -115,7 +115,7 @@ herein
 		fi;
 	    };
 
-	fun hsb_to_rgb  hsv
+	fun to_rgb  hsv
 	    =
 	    {	(to_floats hsv)
 		    ->
@@ -150,6 +150,10 @@ herein
 		    esac;
 		fi;
 	    };
+
+        fun from_name  colorname
+	    =
+	    from_rgb (rgb::from_floats (xrgb::to_floats  (xrgb::from_name  colorname)));
     };
 end;
 
