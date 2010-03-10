@@ -41,7 +41,7 @@ api  Xcore {
     Ro_Pixmap;				# Ro_Pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     Xcursor;				# Xcursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
     Color;				# Color			def in    src/lib/x-kit/xclient/src/window/color-imp.pkg
-    Rgb24;				# Rgb24			def in    src/lib/x-kit/xclient/src/color/rgb24.pkg
+    Rgb8;				# Rgb8			def in    src/lib/x-kit/xclient/src/color/rgb8.pkg
     #
     eqtype Standard_Xcursor;		# Standard_Xcursor	def in    src/lib/x-kit/xclient/src/window/cursors.pkg
     eqtype Atom;			# Atom			def in    src/lib/x-kit/xclient/src/wire/xtypes.pkg
@@ -113,12 +113,12 @@ api  Xcore {
     rgb_from_unts: (Unt, Unt, Unt) -> Rgb;
     rgb_to_unts:   Rgb -> (Unt, Unt, Unt);
 
-    rgb24_from_ints: (Int, Int, Int) -> Rgb24;
-    rgb24_from_int:  Int             -> Rgb24;
-    rgb24_from_name: String          -> Rgb24;
+    rgb8_from_ints: (Int, Int, Int) -> Rgb8;
+    rgb8_from_int:  Int             -> Rgb8;
+    rgb8_from_name: String          -> Rgb8;
     #
-    rgb24_to_ints:   Rgb24 -> (Int, Int, Int);
-    rgb24_to_int:    Rgb24 -> Int;
+    rgb8_to_ints:   Rgb8 -> (Int, Int, Int);
+    rgb8_to_int:    Rgb8 -> Int;
 
     # Identity tests:
     #
@@ -129,7 +129,7 @@ api  Xcore {
     same_cursor:   (Xcursor, Xcursor)   -> Bool;			# same_cursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
     same_color:    (Color, Color)       -> Bool;			# same_color		def in    src/lib/x-kit/xclient/src/window/color-imp.pkg
     same_rgb:      (Rgb, Rgb)           -> Bool;			# same_rgb		def in    src/lib/x-kit/xclient/src/color/rgb.pkg 
-    same_rgb24:    (Rgb24, Rgb24)       -> Bool;			# same_rgb24		def in    src/lib/x-kit/xclient/src/color/rgb24.pkg
+    same_rgb8:     (Rgb8, Rgb8)         -> Bool;			# same_rgb8		def in    src/lib/x-kit/xclient/src/color/rgb8.pkg
     #
     same_rw_pixmap							# same_rw_pixmap	def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
 	:

@@ -92,9 +92,9 @@ herein
 
 	# Extract the pixel from a color:
 	#
-	fun pixel_of (ci::COLOR { pixel, ... } )
+	fun rgb8_of (ci::COLOR { rgb8, ... } )
 	    =
-	    pixel;
+	    rgb8;
 
 	# Map user-level window attributes
 	# to internal x-window attributes: 
@@ -117,7 +117,7 @@ herein
 
 	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_COLOR color)
 		=>
-		xt::wa::BACKGROUND_PIXEL (pixel_of color);
+		xt::wa::BACKGROUND_PIXEL (rgb8_of color);
 
 	    user_window_attribute_to_internal_window_attribute (WA_BORDER_COPY_FROM_PARENT)
 		=>
@@ -133,7 +133,7 @@ herein
 
 	    user_window_attribute_to_internal_window_attribute (WA_BORDER_COLOR color)
 		=>
-		xt::wa::BORDER_PIXEL (pixel_of color);
+		xt::wa::BORDER_PIXEL (rgb8_of color);
 
 	    user_window_attribute_to_internal_window_attribute (WA_BIT_GRAVITY g)
 		=>
@@ -223,8 +223,8 @@ herein
 			    #
 			    attributes
 				=>
-				[ xt::wa::BORDER_PIXEL     (pixel_of  border_color),
-				  xt::wa::BACKGROUND_PIXEL (pixel_of  background_color),
+				[ xt::wa::BORDER_PIXEL     (rgb8_of  border_color),
+				  xt::wa::BACKGROUND_PIXEL (rgb8_of  background_color),
 				  xt::wa::EVENT_MASK        standard_xevent_mask
 				]
 			  };
@@ -262,7 +262,7 @@ herein
 			    case border_color
 				#
 				NULL  =>   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT;
-				THE c =>   xt::wa::BORDER_PIXEL (pixel_of c);
+				THE c =>   xt::wa::BORDER_PIXEL (rgb8_of c);
 			    esac;
 
 
@@ -271,7 +271,7 @@ herein
 			    case background_color
 				#
 				NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
-				THE c =>   xt::wa::BACKGROUND_PIXEL (pixel_of c);
+				THE c =>   xt::wa::BACKGROUND_PIXEL (rgb8_of c);
 			    esac;
 
 
@@ -343,8 +343,8 @@ herein
 		    attributes => [
 			xt::wa::OVERRIDE_REDIRECT TRUE,
 			xt::wa::SAVE_UNDER TRUE,
-			xt::wa::BORDER_PIXEL      (pixel_of  border_color),
-			xt::wa::BACKGROUND_PIXEL  (pixel_of  background_color),
+			xt::wa::BORDER_PIXEL      (rgb8_of  border_color),
+			xt::wa::BACKGROUND_PIXEL  (rgb8_of  background_color),
 			xt::wa::EVENT_MASK        popup_xevent_mask
 		      ]
 		  };
@@ -384,8 +384,8 @@ herein
 		    site       => check_site  site,
 		    #
 		    attributes => [
-			xt::wa::BORDER_PIXEL     (pixel_of  border_color),
-			xt::wa::BACKGROUND_PIXEL (pixel_of  background_color),
+			xt::wa::BORDER_PIXEL     (rgb8_of  border_color),
+			xt::wa::BACKGROUND_PIXEL (rgb8_of  background_color),
 			xt::wa::EVENT_MASK       standard_xevent_mask
 		      ]
 		};
@@ -692,7 +692,7 @@ herein
 		    =
 		    case color
 			#	         
-			THE c =>   xt::wa::BACKGROUND_PIXEL (pixel_of c);
+			THE c =>   xt::wa::BACKGROUND_PIXEL (rgb8_of c);
 			NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 		    esac;
 	    end;

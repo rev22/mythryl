@@ -1,6 +1,12 @@
 ## rgb.api
 #
-# RGB color values.
+# RGB color values as opaque triples
+#
+#     (red: Float, green: Float, blue: Float)
+#
+# This is our preferred color representation;
+# all other color representations implement
+# to_rgb() and from_rgb() conversion functions.
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -9,33 +15,45 @@
 #
 #     src/lib/x-kit/xclient/src/color/rgb.pkg
 
-    api Rgb {
+api Rgb {
 
-	# RGB colors 
+    # RGB colors 
+    #
+    Rgb;
+
+    # We primarily think of color components as
+    # ranging from 0.0 -> 1.0 inclusive:
+    #
+    from_floats:  (Float, Float, Float)  ->  Rgb;
+    to_floats:    Rgb  ->  (Float, Float, Float);
+
+    # The X protocol level likes to think
+    # of color components as ranging from
+    # 0 -> 65355 inclusive, so we support
+    # that for implementation of X protocol
+    # packet encoding and decoding.  This format
+    # is not otherwise particularly recommended:
+    #
+    from_unts:    (Unt, Unt, Unt)  ->  Rgb;
+    to_unts:      Rgb  ->  (Unt, Unt, Unt);
+
+    same:       (Rgb, Rgb) -> Bool;
 	#
-	Rgb;
-
-	# We primarily think of color components as
-	# ranging from 0.0 -> 1.0 inclusive:
+	# Note that this 'same' function does
+	# 64-bit float comparisons, and consequently
+	# is very sensitive to rounding errors: Things
+	# you expect to compare equal may fail to do so.
 	#
-        from_floats:  (Float, Float, Float)  ->  Rgb;
-        to_floats:    Rgb  ->  (Float, Float, Float);
+	# If that is an issue in your application, you
+	# may wish to convert to Rgb8 form (thus discarding
+	# all but the most significant 8 bits of each color
+	# component) and then use rgb8::same().
 
-	# The X protocol level likes to think
-	# of color components as ranging from
-	# 0 -> 65355 inclusive;  this format
-	# is not otherwise particularly recommended:
+
+    from_name:  String -> Rgb;		# Raises exception lib_base::NOT_FOUND if given string is not in table.
 	#
-        from_unts:    (Unt, Unt, Unt)  ->  Rgb;
-        to_unts:      Rgb  ->  (Unt, Unt, Unt);
-
-	same:       (Rgb, Rgb) -> Bool;
-
-        from_name: String -> Rgb;
-	    #
-	    # Support the    /etc/X11/rgb.txt
-	    # set of colornames.
-    };
+	# Return a color from x11_color_name::x11_colors table.
+};
 
 
 ## COPYRIGHT (c) 1994 by AT&T Bell Laboratories

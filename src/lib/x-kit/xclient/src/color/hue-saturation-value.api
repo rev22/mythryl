@@ -42,11 +42,9 @@ herein
 		      ->
 		      Hsv;		
 
-        from_name: String -> Hsv;
+	from_name:  String -> Hsv;			# Raises exception lib_base::NOT_FOUND if given string is not in table.
 	    #
-	    # Support the    /etc/X11/rgb.txt
-	    # set of colornames.
-
+	    # Return a color from x11_color_name::x11_colors table.
     };
 end;
 

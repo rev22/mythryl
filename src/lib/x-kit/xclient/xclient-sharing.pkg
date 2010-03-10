@@ -137,13 +137,13 @@ package xclient_sharing: api {
 	rgb_from_unts  =  rgb::from_unts;
 	rgb_to_unts    =  rgb::to_unts;
 
-	Rgb24	       = rgb24::Rgb24;	
-	same_rgb24      = rgb24::same;
-	rgb24_from_ints = rgb24::from_ints;
-	rgb24_from_int  = rgb24::from_int;
-	rgb24_from_name = rgb24::from_name;
-	rgb24_to_ints   = rgb24::to_ints;
-	rgb24_to_int    = rgb24::to_int;
+	Rgb8	       = rgb8::Rgb8;	
+	same_rgb8      = rgb8::same;
+	rgb8_from_ints = rgb8::from_ints;
+	rgb8_from_int  = rgb8::from_int;
+	rgb8_from_name = rgb8::from_name;
+	rgb8_to_ints   = rgb8::to_ints;
+	rgb8_to_int    = rgb8::to_int;
     };
 
     package xauthentication: (weak)  Xauthentication {	# Xauthentication	is from   src/lib/x-kit/xclient/xauthentication.api

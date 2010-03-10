@@ -120,17 +120,17 @@ herein
 
 		trait_to_rep (PLANE_MASK (xt::PLANEMASK mask)) => (1, IS_WIRE mask);
 
-		trait_to_rep (FOREGROUND (ci::COLOR { pixel, ... } ))
+		trait_to_rep (FOREGROUND (ci::COLOR { rgb8, ... } ))
 		    =>
-		    {   i = rgb24::to_int  pixel;
+		    {   i = rgb8::to_int  rgb8;
 
 			i == 0   ??   (2, IS_DEFAULT)
 				 ::   (2, IS_WIRE (unt::from_int i));
 		    };
 
-		trait_to_rep (BACKGROUND (ci::COLOR { pixel, ... } ))
+		trait_to_rep (BACKGROUND (ci::COLOR { rgb8, ... } ))
                     =>
-		    {   i = rgb24::to_int  pixel;
+		    {   i = rgb8::to_int  rgb8;
 
 			i == 1   ??   (3, IS_DEFAULT)
 				 ::   (3, IS_WIRE (unt::from_int i));

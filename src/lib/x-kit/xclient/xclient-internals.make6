@@ -52,10 +52,12 @@ LIBRARY_GROUP_COMPONENTS
 	src/color/hue-saturation-value.pkg
 	src/color/yiq.api
 	src/color/yiq.pkg
-	src/color/rgb24.api
-	src/color/rgb24.pkg
+	src/color/rgb8.api
+	src/color/rgb8.pkg
 	src/color/rgb.api
 	src/color/rgb.pkg
+	src/color/x11-color-name.api
+	src/color/x11-color-name.pkg
 
 	src/to-string/xerror-to-string.pkg
 	src/to-string/xevent-to-string.pkg

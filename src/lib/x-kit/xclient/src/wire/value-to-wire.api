@@ -200,7 +200,7 @@ herein
 	encode_free_colormap:      { cmap:     xt::Xid }  -> v8::Vector;
 
 	encode_free_colors: { cmap:        xt::Xid,
-                              pixels:      List(rgb24::Rgb24), 
+                              pixels:      List(rgb8::Rgb8), 
 			      plane_mask:  xt::Plane_Mask
                             }
 			    -> v8::Vector;
@@ -400,7 +400,7 @@ herein
                                 }
 				-> v8::Vector;
 
-	encode_query_colors:    { cmap: xt::Xid,  pixels: List(rgb24::Rgb24) } -> v8::Vector;
+	encode_query_colors:    { cmap: xt::Xid,  pixels: List(rgb8::Rgb8) } -> v8::Vector;
 
 	encode_query_extension: String                    -> v8::Vector;
 	encode_query_font:      { font:         xt::Xid } -> v8::Vector;
@@ -479,7 +479,7 @@ herein
 				    do_red:   Bool,
 				    #
                                     name:     String,
-                                    pixel:    rgb24::Rgb24
+                                    pixel:    rgb8::Rgb8
                                   }
 				  -> v8::Vector;
 

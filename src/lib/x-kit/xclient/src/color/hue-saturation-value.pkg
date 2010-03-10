@@ -4,7 +4,7 @@
 #
 # See also:
 #     src/lib/x-kit/xclient/src/color/rgb.pkg
-#     src/lib/x-kit/xclient/src/color/rgb24.pkg
+#     src/lib/x-kit/xclient/src/color/rgb8.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -153,7 +153,7 @@ herein
 
         fun from_name  colorname
 	    =
-	    from_rgb (rgb::from_floats (rgb24::to_floats  (rgb24::from_name  colorname)));
+	    from_rgb  (rgb::from_floats  (x11_color_name::to_floats  colorname));
     };
 end;
 

@@ -135,8 +135,8 @@ herein
 			  sprintf  "backing store %s"      (backing_store_to_string s.backing_store),
 			  sprintf  "save_unders s=%s"      (s.save_unders ?? "TRUE" :: "FALSE"),
 			  "",
-			  sprintf  "black_rgb24 x=%x"      (rgb24::to_int s.black_rgb24),
-			  sprintf  "white_rgb24 x=%x"      (rgb24::to_int s.white_rgb24),
+			  sprintf  "black_rgb8  x=%x"      (rgb8::to_int s.black_rgb8),
+			  sprintf  "white_rgb8  x=%x"      (rgb8::to_int s.white_rgb8),
 
 			           "",
 			           "Graphics hardware colormap support:   # (These days usually min==max==1 -- colormaps are largely obsolete.)",

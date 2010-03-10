@@ -202,7 +202,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 		esac;
 
 
-	    get_rgb24 =  rgb24::from_int  o  get_int;
+	    get_rgb8 =  rgb8::from_int  o  get_int;
 
 	    #  Are time values signed???  XXX BUGGO FIXME (X server timestamp values wrap around every 49.7 days)
 
@@ -470,8 +470,8 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 			( { root_window         => get_xid (buf, i),
 			    default_colormap    => get_xid (buf, i+4),
 
-			    white_rgb24         => get_rgb24  (buf, i+8),
-			    black_rgb24         => get_rgb24  (buf, i+12),
+			    white_rgb8          => get_rgb8  (buf, i+8),
+			    black_rgb8          => get_rgb8  (buf, i+12),
 
 			    input_masks         => get_event_mask (buf, i+16),
 
@@ -1067,7 +1067,7 @@ result;
 		  window_gravity => get_window_gravity         (msg, 15),
 
 		  backing_planes   => xt::PLANEMASK (get_word  (msg, 16)),
-		  backing_pixel    => get_rgb24                (msg, 20),
+		  backing_pixel    => get_rgb8                (msg, 20),
 		  save_under       => get_bool                 (msg, 24),
 		  map_is_installed => get_bool                 (msg, 25),
 
@@ -1099,15 +1099,15 @@ result;
 
 	    fun decode_alloc_color_reply msg
 		=
-		{ visual_rgb => get_rgb   (msg,  8),
-		  pixel      => get_rgb24 (msg, 16)
+		{ visual_rgb => get_rgb  (msg,  8),
+		  pixel      => get_rgb8 (msg, 16)
 		};
 
 	    fun decode_alloc_named_color_reply msg
 		=
-		{ pixel      => get_rgb24 (msg,  8),
-		  exact_rgb  => get_rgb   (msg, 12),
-		  visual_rgb => get_rgb   (msg, 18)
+		{ pixel      => get_rgb8 (msg,  8),
+		  exact_rgb  => get_rgb  (msg, 12),
+		  visual_rgb => get_rgb  (msg, 18)
 		};
 
 	    fun decode_get_atom_name_reply msg

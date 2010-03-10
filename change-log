@@ -1,3 +1,5 @@
+2010-03-10-03.05.01: src/lib/x-kit/xclient/src/color/: Split x11-color-name.pkg off from rgb24.pkg, partly to avoid cyclicity problems, partly because it is better in a separate package anyhow.
+2010-03-10-03.05.01: src/lib/x-kit/xclient/src/color/yiq.pkg: Total rewrite. :-)
 2010-03-10-01.59.35: Globally renamed xrgb -> rgb24, taking 24-bitness as primary and X protocol applications as secondary.
 2010-03-10-00.04.39: src/lib/x-kit/xclient/src/color/: rgb.api, hue-saturation-value.api:  Add from_name() support.
 2010-03-09-23.47.06: src/lib/x-kit/xclient/src/color/xrgb.api: Add from_floats(), to_floats(): I want to make floating point triples the standard color notation.

@@ -55,7 +55,7 @@ herein
 
         fun from_name  colorname
 	    =
-	    from_rgb (rgb::from_floats (rgb24::to_floats  (rgb24::from_name  colorname)));
+	    from_rgb  (rgb::from_floats  (x11_color_name::to_floats  colorname));
     };
 
 end;
