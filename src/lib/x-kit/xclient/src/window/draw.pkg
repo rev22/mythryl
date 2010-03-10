@@ -515,7 +515,7 @@ herein
 	    end; # stipulate
 
 	    # Clear part of a destination drawable.
-	    # For windows, this fills in thebackground color;
+	    # For windows, this fills in the background color;
 	    # for pixmaps, this fills in all 0's (which is actually
 	    # the default foreground pixel value).
 	    #
@@ -526,6 +526,7 @@ herein
 		    pen::make_pen [pen::FOREGROUND color_imp::color0];
 
 	    herein
+
 		fun clear_box drawable
 		    =
 		    {   my { draw_fn, id, ... }

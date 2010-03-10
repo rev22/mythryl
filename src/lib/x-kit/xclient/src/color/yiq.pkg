@@ -1,59 +1,63 @@
 ## yiq.pkg
 #
-# Various color space utilities.
+# YIQ NTSC colorspace -- see http://en.wikipedia.org/wiki/YIQ
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
 
-
 stipulate
-    package xt  = xtypes;					# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    include rw_float_vector;							# Enable   vec[i]   and   vec[i] := f   notations.
+    #
+    package fv  = rw_float_vector;						# float_vector		is from   src/lib/std/float-vector.pkg
 herein
-    package yiq: (weak)  Yiq {					# Yiq		is from   src/lib/x-kit/xclient/src/stuff/yiq.api
 
-	maxrgb = 65535.0;
+    package yiq:  Yiq {								# Yiq			is from   src/lib/x-kit/xclient/src/stuff/yiq.api
 
-	Yiq = YIQ  { y:  Float,					# NTSC colorspace -- see http://en.wikipedia.org/wiki/YIQ
-		     i:  Float,
-		     q:  Float
-		   };
+	# We represent a YIQ color value by a
+	# packed 3-vector of 64-bit floats holding
+	# red, green, blue in that order:
+	# 
+	Yiq = fv::Rw_Vector;							# This should really be a read-only floatvector, but currently they are not actually a packed type -- See src/lib/std/src/float64-vector.pkg XXX BUGGO FIXME.
+	    #									# Since we export Rgb as an opaque type, the difference is not critical.
 
-	fun get_yiqvalues (YIQ v)
+	fun from_floats { y, i, q }						# Should do some sort of validation (restriction to [0,1) interval). What exception should we throw? Or should we silently truncate?  XXX BUGGO FIXME.
 	    =
-	    v;
+	    {	yiq = fv::make_rw_vector (3, 0.0);
 
-	fun w2r w =  real (unt::to_int_x w);
+		yiq[0] := y;							# Eventually we'll probably want to suppress index checking here for speed, using unsafe:: operations or whatever. XXX BUGGO FIXME.
+		yiq[1] := i;
+		yiq[2] := q;
 
-
-	fun get_y' (xt::RGB { red, green, blue } )
-	    = 
-	    (0.3*(w2r red) + 0.59*(w2r green) + 0.11*(w2r blue))//maxrgb;
-
-	fun get_i' (xt::RGB { red, green, blue } )
-	    = 
-	    (0.6*(w2r red) - 0.28*(w2r green) - 0.32*(w2r blue))//maxrgb;
-
-	fun get_q' (xt::RGB { red, green, blue } )
-	    = 
-	    (0.21*(w2r red) - 0.52*(w2r green) + 0.31*(w2r blue))//maxrgb;
-
-	fun get getf color
-	    =
-	    {   rgb =   xt::rgb_of_color color;
-
-		getf rgb;
+		yiq;
 	    };
 
-	get_y = get get_y';
-	get_i = get get_i';
-	get_q = get get_q';
-
-	fun rgb_to_yiq rgb
+	fun to_floats yiq
 	    =
-	    YIQ { y=>get_y' rgb, i=>get_i' rgb, q=>get_q' rgb };
+	    {   y = yiq[0];						# Eventually we'll probably want to suppress index checking here for speed, using unsafe:: operations or whatever. XXX BUGGO FIXME.
+		i = yiq[1];
+		q = yiq[2];
 
+		{ y, i, q };
+	    };
+
+
+	fun from_rgb  rgb
+	    =
+	    {   (rgb::to_floats rgb) -> (red, green, blue);
+
+		y = 0.30*red + 0.59*green + 0.11*blue;
+		i = 0.60*red - 0.28*green - 0.32*blue;
+		q = 0.21*red - 0.52*green + 0.31*blue;
+
+		from_floats { y, i, q };
+	    };
+
+        fun from_name  colorname
+	    =
+	    from_rgb (rgb::from_floats (rgb24::to_floats  (rgb24::from_name  colorname)));
     };
+
 end;
 
 

@@ -46,8 +46,9 @@ herein
 	    time::from_milliseconds 20;
 
         junk = hsv::from_floats { hue => 0.0, saturation => 0.0, value => 0.0 };
+        junk = yiq::from_rgb (rgb::from_floats (0.0, 0.0, 0.0));
 	    #
-	    # This is a temporary hack just to force hsv:: to compile.
+	    # This is a temporary hack just to force hsv:: and yiq:: to compile.
 
 	fun exercise_window_stuff  (xdisplay:  dy::Xdisplay)
 	    =

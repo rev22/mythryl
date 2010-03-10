@@ -20,7 +20,7 @@
 
 
 stipulate
-    include rw_float_vector;							# float_vector			is from   src/lib/std/float-vector.pkg
+    include rw_float_vector;							# Enable   vec[i]   and   vec[i] := f   notations.
     #
     package fv  = rw_float_vector;						# float_vector			is from   src/lib/std/float-vector.pkg
 herein

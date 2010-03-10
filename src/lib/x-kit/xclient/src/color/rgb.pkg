@@ -10,14 +10,13 @@
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
 stipulate
-    include rw_float_vector;							# float_vector			is from   src/lib/std/float-vector.pkg
+    include rw_float_vector;							# Enable   vec[i]   and   vec[i] := f   notations.
     #
     package fv  = rw_float_vector;						# float_vector			is from   src/lib/std/float-vector.pkg
 herein
 
     package rgb: Rgb {								# Rgb		is from   src/lib/x-kit/xclient/src/color/rgb.api
 
-	#
 	# We represent an RGB color value by a
 	# packed 3-vector of 64-bit floats holding
 	# red, green, blue in that order:

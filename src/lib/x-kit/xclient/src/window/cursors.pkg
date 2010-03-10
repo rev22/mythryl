@@ -134,9 +134,10 @@ herein
 
 		xsession -> sn::XSESSION { xdisplay => XDISPLAY { next_xid, ... }, ... };
 
-		my fb::FONT { id=>font_id, ... }
-		    =
-		    sn::open_font xsession "cursor";
+		(sn::open_font  xsession  "cursor")
+		    ->
+		    fb::FONT { id=>font_id, ... };
+		    
 
 		cursor_id = next_xid();
 

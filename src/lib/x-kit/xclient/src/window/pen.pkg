@@ -82,7 +82,6 @@ herein
 	stipulate
 
 	    include pen_guts;				# pen_guts		is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
-	    include color_imp;
 
 
 	    fun check_list chkfn l
@@ -121,7 +120,7 @@ herein
 
 		trait_to_rep (PLANE_MASK (xt::PLANEMASK mask)) => (1, IS_WIRE mask);
 
-		trait_to_rep (FOREGROUND (COLOR { pixel, ... } ))
+		trait_to_rep (FOREGROUND (ci::COLOR { pixel, ... } ))
 		    =>
 		    {   i = rgb24::to_int  pixel;
 
@@ -129,7 +128,7 @@ herein
 				 ::   (2, IS_WIRE (unt::from_int i));
 		    };
 
-		trait_to_rep (BACKGROUND (COLOR { pixel, ... } ))
+		trait_to_rep (BACKGROUND (ci::COLOR { pixel, ... } ))
                     =>
 		    {   i = rgb24::to_int  pixel;
 

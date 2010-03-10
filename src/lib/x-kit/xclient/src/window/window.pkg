@@ -692,8 +692,8 @@ herein
 		    =
 		    case color
 			#	         
-			NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 			THE c =>   xt::wa::BACKGROUND_PIXEL (pixel_of c);
+			NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 		    esac;
 	    end;
 

@@ -17,22 +17,18 @@
 
 
 
-stipulate
-    package xt  = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-herein
-    api Yiq {
+api Yiq {
 
-	Yiq;		# hsv = "Hue, Saturation, Value"
+    Yiq;
 
-	rgb_to_yiq:  xt::Rgb -> Yiq;
+    from_rgb:  rgb::Rgb -> Yiq;
 
-	get_yiqvalues:  Yiq -> { y:  Float,
-				 i:  Float,
-				 q:  Float
-			       };
+    from_floats:        { y: Float, i: Float, q: Float } -> Yiq;
+    to_floats:   Yiq -> { y: Float, i: Float, q: Float };
 
-    };
-end;
+    from_name: String -> Yiq;	    # Support the    /etc/X11/rgb.txt   set of colornames.
+};
+
 
 ## COPYRIGHT (c) 1994 by AT&T Bell Laboratories
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,
