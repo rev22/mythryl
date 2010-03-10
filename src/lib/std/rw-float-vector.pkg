@@ -3,5 +3,7 @@
 # Compiled by:
 #     src/lib/std/stdlib.make6
 
-package rw_float_vector= rw_float64_vector;	# rw_float64_vector	is from   src/lib/std/src/rw-float64-vector.pkg
+package rw_float_vector
+    =
+    rw_float64_vector;		# rw_float64_vector	is from   src/lib/std/src/rw-float64-vector.pkg
 

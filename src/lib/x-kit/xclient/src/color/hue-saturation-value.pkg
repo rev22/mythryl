@@ -16,36 +16,61 @@
 
 
 stipulate
+    include rw_float_vector;							# float_vector			is from   src/lib/std/float-vector.pkg
+    #
     package xt  = xtypes;							# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package fv  = rw_float_vector;						# float_vector			is from   src/lib/std/float-vector.pkg
 herein
-    package hue_saturation_value: (weak)  Hue_Saturation_Value {		# Hue_Saturation_Value		is from   src/lib/x-kit/xclient/src/stuff/color.api
+    package hue_saturation_value:  Hue_Saturation_Value {			# Hue_Saturation_Value		is from   src/lib/x-kit/xclient/src/stuff/color.api
 
-	maxrgb = 65535.0;
+	Hsv = fv::Rw_Vector;			# This should really be a read-only floatvector, but currently they are not actually a packed type -- See src/lib/std/src/float64-vector.pkg XXX BUGGO FIXME.
+	    #					# Since we export Hsv as an opaque type, the difference is not critical.
+	    # The above type was originally
+	    #
+	    #	Hsv = HSV { hue:          Float,
+	    #		    saturation:   Float,
+	    #		    value:        Float
+	    #		  };
+	    #
+	    # which is fine when we are mainly
+	    # interested in thinking of the color
+	    # as a bag of components and are not
+	    # doing anything particularly compute-
+	    # intensive, but I'm interested in
+	    # treating colors as conceptually
+	    # atomic values used in ray-tracing
+	    # and similar compute-intensive
+	    # applications.
+            #     In this context, a 3-vector of
+            # floats is more time and space efficient:
+	    # we replace a root record plus three
+	    # boxed floats by a single vector record.
+	    #     This is also more compatible with
+	    # the OpenGL view of the world, which
+	    # is built around float vectors rather
+	    # than ML records.
 
-	Hsv = HSV { hue:          Float,
-		    saturation:   Float,
-		    value:        Float
-		  };
-
-	fun to_floats (HSV v)
+	fun to_floats hsv
 	    =
-	    v;
+	    {   hue        = hsv[0];							# Eventually we'll probably want to suppress index checking here for speed, using unsafe:: operations or whatever. XXX BUGGO FIXME.
+	        saturation = hsv[1];
+	        value      = hsv[2];
 
-	fun from_floats v							# XXX BUGGO FIXME:  Should do some sort of validation (restriction to [0,1) interval). What exception should we throw? Or should we silently truncate?
+	        { hue, saturation, value };
+	    };
+
+	fun from_floats { hue, saturation, value }					# Should do some sort of validation (restriction to [0,1) interval). What exception should we throw? Or should we silently truncate?  XXX BUGGO FIXME.
 	    =
-	    HSV v;
+	    fv::from_list [ hue, saturation, value ];					# Eventually we need a way to avoid constructing lists while doing this; A compiler optimization or a new C primitive or something.  XXX BUGGO FIXME.
 
 	fun max (a:  Float, b) = if (a >= b) a; else b; fi;
 	fun min (a:  Float, b) = if (a <= b) a; else b; fi;
 
-	fun sc r  =  unt::from_int (float::truncate (maxrgb*r));
-	fun w2r w =  real (unt::to_int_x w);
-
-	fun rgb_to_hsv (xt::RGB { red, green, blue } )
+	fun rgb_to_hsv rgb
 	    =
-	    {   realr = (w2r red)//maxrgb;
-		realg = (w2r green)//maxrgb;
-		realb = (w2r blue)//maxrgb;
+	    {   (rgb::to_floats rgb)
+		    ->
+		    (realr, realg, realb);
 
 		max_v = max (realr, max (realg, realb));
 		min_v = min (realr, min (realg, realb));
@@ -54,7 +79,7 @@ herein
 
 		if (float::(====) (delta, 0.0))
 		    #                
-		     HSV { hue=>0.0, saturation=>0.0, value=>max_v };
+		    from_floats { hue=>0.0, saturation=>0.0, value=>max_v };
 		else 
 		    saturation = delta // max_v;
 
@@ -72,44 +97,45 @@ herein
 			  else           h2;
 			  fi;
 
-		    HSV { hue, saturation, value=>max_v };
-		 fi;
-	      };
+		    from_floats { hue, saturation, value=>max_v };
+		fi;
+	    };
 
-	fun hsb_to_rgb (HSV { saturation, value, hue } )
+	fun hsb_to_rgb  hsv
 	    =
-	    if (float::(====) (saturation, 0.0))
-		#
-		v = sc value;   xt::RGB { red=>v, green=>v, blue=>v }; 
-	    else
-		h = if (float::(====) (hue, 360.0) ) 0.0; else hue//60.0;fi;
-		i = floor h;
+	    {	(to_floats hsv)
+		    ->
+		    { hue, saturation, value };
 
-		ri = real i;
-		f = h - ri;
-
-		p = value*(1.0 -  saturation);
-		q = value*(1.0 - (saturation*f));
-		t = value*(1.0 - (saturation*(1.0 - f)));
-
-		fun mkrgb (r, g, b)
-		    =
-		    xt::RGB { red   =>  sc r,
-			      green =>  sc g,
-			      blue  =>  sc b
-			    };
-
-		case i
+		if (float::(====) (saturation, 0.0))
 		    #
-		    0 =>  mkrgb (value, t, p);
-		    1 =>  mkrgb (q, value, p);
-		    2 =>  mkrgb (p, value, t);
-		    3 =>  mkrgb (p, q, value);
-		    4 =>  mkrgb (t, p, value);
-		    _ =>  mkrgb (value, p, q);
-		esac;
-	    fi;
+		    rgb::from_floats (value, value, value);
+		else
+		    h = if (float::(====) (hue, 360.0))  0.0;
+                        else                             hue//60.0;
+                        fi;
 
+		    i = floor h;
+
+		    ri = real i;
+		    f = h - ri;
+
+		    p = value*(1.0 -  saturation);
+		    q = value*(1.0 - (saturation*f));
+		    t = value*(1.0 - (saturation*(1.0 - f)));
+
+
+		    case i
+			#
+			0 =>  rgb::from_floats (value, t, p);
+			1 =>  rgb::from_floats (q, value, p);
+			2 =>  rgb::from_floats (p, value, t);
+			3 =>  rgb::from_floats (p, q, value);
+			4 =>  rgb::from_floats (t, p, value);
+			_ =>  rgb::from_floats (value, p, q);
+		    esac;
+		fi;
+	    };
     };
 end;
 

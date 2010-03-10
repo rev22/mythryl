@@ -30,6 +30,7 @@ stipulate
     package w   =  window;					# window			is from   src/lib/x-kit/xclient/src/window/window.pkg
     package g   =  geometry;					# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package wio =  window_io;					# window_io			is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
+    package hsv =  hue_saturation_value;			# hue_saturation_value		is from   src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg
     #
     tracefile   =  "xclient-unit-test-trace.log";
 herein
@@ -43,6 +44,10 @@ herein
 	default_time_quantum					# Copied from src/lib/x-kit/widget/lib/run-xkit.pkg
 	    =
 	    time::from_milliseconds 20;
+
+        junk = hsv::from_floats { hue => 0.0, saturation => 0.0, value => 0.0 };
+	    #
+	    # This is a temporary hack just to force hsv:: to compile.
 
 	fun exercise_window_stuff  (xdisplay:  dy::Xdisplay)
 	    =

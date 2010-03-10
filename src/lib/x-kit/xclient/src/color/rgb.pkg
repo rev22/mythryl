@@ -15,13 +15,55 @@
 		  };
 
 
-        fun from_unts (red, green, blue)
+        fun from_unts  (red, green, blue)
 	    =
 	    RGB { red, green, blue };
 
-        fun to_unts (RGB { red, green, blue })
+
+        fun to_unts  (RGB { red, green, blue })
 	    =
 	    (red, green, blue);
+
+
+	fun from_floats (red, green, blue)
+	    =
+	    {   red   =  float_to_unt  red;
+		green =  float_to_unt  green;
+		blue  =  float_to_unt  blue;
+
+		RGB { red, green, blue };
+	    }
+	    where
+		fun float_to_unt f
+		    =
+		    {   f = (f < 0.0) ?? 0.0 :: f;
+			f = (f > 1.0) ?? 1.0 :: f;
+
+			f = f * 65535.99;		# Our unts run 0 -> 65535.
+
+			unt::from_int (float::truncate f);
+		    };
+	    end;
+
+	fun to_floats (RGB { red, green, blue })
+	    =
+	    ( unt_to_float  red,
+	      unt_to_float  green,
+	      unt_to_float  blue
+	    )
+	    where
+		fun unt_to_float u
+		    =
+		    {   i  = unt::to_int     u;
+			f  = float::from_int  i;
+
+			f  = f // 65535.0;		# Our unts run 0 -> 65535.
+
+			f;
+		    };
+	    end;
+
+
 
 	fun same
             ( RGB { red=>r1, green=>g1, blue=>b1 },

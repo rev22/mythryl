@@ -71,9 +71,10 @@ herein
 
 		    fun lookup n
 			=
-			case (quark_table::find table n)   
-			     THE v => convert v;
-			     NULL => base n;
+			case (quark_table::find table n)
+			    #
+			    THE v =>  convert v;
+			    NULL  =>  base n;
 			esac;
 
 		    apply (add (okay attribute_specs, table)) args;

@@ -21,52 +21,67 @@ herein
 
 	Name = qk::Quark;
 
-	active:        	  Name;	#  "active" 
-	aspect:        	  Name;	#  "aspect" 
-	arrow_dir:     	  Name;	#  "arrowDir" 
-	background:    	  Name;	#  "background" 
-	border_color:  	  Name;	#  "borderColor" 
-	border_width:  	  Name;	#  "borderWidth" 
-	color:         	  Name;	#  "color" 
-	current:       	  Name;	#  "current" 
-	cursor:        	  Name;	#  "cursor" 
-	font:          	  Name;	#  "font" 
-	font_list:     	  Name;	#  "fontList" 
-	font_size:     	  Name;	#  "fontSize" 
-	foreground:    	  Name;	#  "foreground" 
-	from_value:    	  Name;	#  "fromValue" 
-	gravity:       	  Name;	#  "gravity" 
-	halign:        	  Name;	#  "halign" 
-	height:        	  Name;	#  "height" 
-	icon_name:     	  Name;	#  "iconName" 
-	is_active:     	  Name;	#  "is_active" 
-	is_set:        	  Name;	#  "isSet" 
-	is_vertical:   	  Name;	#  "isVertical" 
-	label:         	  Name;	#  "label" 
-	length:        	  Name;	#  "length" 
-	padx:          	  Name;	#  "padx" 
-	pady:          	  Name;	#  "pady" 
-	ready_color:   	  Name;	#  "readyColor" 
-	relief:        	  Name;	#  "relief" 
-	repeat_delay:  	  Name;	#  "repeatDelay" 
-	repeat_interval:	  Name; #  "repeatInterval" 
-	rounded:       	  Name;	#  "rounded" 
-	scale:         	  Name;	#  "scale" 
-	select_color:  	  Name;	#  "selectColor" 
-	select_background:    Name;	#  "selectBackground" 
-	select_border_width:  Name;	#  "selectBorderWidth" 
-	select_foreground:    Name;	#  "selectForeground" 
-	show_value:    	  Name;	#  "showValue" 
-	state:         	  Name;	#  "state" 
-	text:          	  Name;	#  "text" 
-	thumb_length:  	  Name;	#  "thumbLength" 
-	tick_interval: 	  Name;	#  "tickInterval" 
-	tile:          	  Name;	#  "tile" 
-	title:         	  Name;	#  "title" 
-	to_value:      	  Name;	#  "toValue" 
-	type:          	  Name;	#  "type" 
-	valign:        	  Name;	#  "valign" 
-	width:         	  Name;	#  "width" 
+	active:        	  	Name;			#  "active" 
+	aspect:        	  	Name;			#  "aspect" 
+	arrow_dir:     	  	Name;			#  "arrowDir" 
+
+	background:    	  	Name;			#  "background" 
+	border_color:  	  	Name;			#  "borderColor" 
+	border_width:  	  	Name;			#  "borderWidth" 
+
+	color:         	  	Name;			#  "color" 
+	current:       	  	Name;			#  "current" 
+	cursor:        	  	Name;			#  "cursor" 
+
+	font:          	  	Name;			#  "font" 
+	font_list:     	  	Name;			#  "fontList" 
+	font_size:     	  	Name;			#  "fontSize" 
+
+	foreground:    	  	Name;			#  "foreground" 
+	from_value:    	  	Name;			#  "fromValue" 
+	gravity:       	  	Name;			#  "gravity" 
+
+	halign:        	  	Name;			#  "halign" 
+	height:        	  	Name;			#  "height" 
+
+	icon_name:     	  	Name;			#  "iconName" 
+	is_active:     	  	Name;			#  "is_active" 
+	is_set:        	  	Name;			#  "isSet" 
+	is_vertical:   	  	Name;			#  "isVertical" 
+
+	label:         	  	Name;			#  "label" 
+	length:        	  	Name;			#  "length" 
+
+	padx:          	  	Name;			#  "padx" 
+	pady:          	  	Name;			#  "pady" 
+
+	ready_color:   	  	Name;			#  "readyColor" 
+	relief:        	  	Name;			#  "relief" 
+	repeat_delay:  	  	Name;			#  "repeatDelay" 
+
+	repeat_interval:	Name;			#  "repeatInterval" 
+	rounded:       		Name;			#  "rounded" 
+
+	scale:         		Name;			#  "scale" 
+	select_color:		Name;			#  "selectColor" 
+	select_background:	Name;			#  "selectBackground" 
+
+	select_border_width:	Name;			#  "selectBorderWidth" 
+	select_foreground:	Name;			#  "selectForeground" 
+	show_value:    	  	Name;			#  "showValue" 
+	state:         	  	Name;			#  "state" 
+
+	text:			Name;			#  "text" 
+	thumb_length:		Name;			#  "thumbLength" 
+	tick_interval:		Name;			#  "tickInterval" 
+
+	tile:			Name;			#  "tile" 
+	title:			Name;			#  "title" 
+	to_value:      		Name;			#  "toValue" 
+	type:          		Name;			#  "type" 
+
+	valign:        		Name;			#  "valign" 
+	width:         		Name;			#  "width" 
 
 	Type
 	  = STRING

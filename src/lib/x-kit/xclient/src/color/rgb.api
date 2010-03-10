@@ -11,9 +11,11 @@
 	#
 	Rgb;
 
-        from_unts:  (Unt, Unt, Unt)  ->  Rgb;
+        from_unts:    (Unt,   Unt,   Unt  )  ->  Rgb;
+        from_floats:  (Float, Float, Float)  ->  Rgb;
 
-        to_unts:    Rgb  ->  (Unt, Unt, Unt);
+        to_unts:      Rgb  ->  (Unt,   Unt,   Unt  );
+        to_floats:    Rgb  ->  (Float, Float, Float);
 
 	same:       (Rgb, Rgb) -> Bool;
     };
