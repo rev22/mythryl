@@ -15,11 +15,22 @@
 	#
 	Rgb;
 
-        from_unts:    (Unt,   Unt,   Unt  )  ->  Rgb;	# Args should be in range 0 through 65535 inclusive.
-        from_floats:  (Float, Float, Float)  ->  Rgb;	# Args should be in range 0.0 through 1.0 inclusive.
-
-        to_unts:      Rgb  ->  (Unt,   Unt,   Unt  );
+	# We primarily think of color components as
+	# ranging from 0.0 -> 1.0 inclusive:
+	#
+        from_floats:  (Float, Float, Float)  ->  Rgb;
         to_floats:    Rgb  ->  (Float, Float, Float);
+
+	# The X protocol level likes to think
+	# of color components as ranging from
+	# 0 -> 65355 inclusive;  this format
+	# is not otherwise particularly recommended:
+	#
+        from_unts:    (Unt, Unt, Unt)  ->  Rgb;
+        to_unts:      Rgb  ->  (Unt, Unt, Unt);
+
+#       from_name: String -> Rgb;
+# (Also do hue_saturation_color::from_name)
 
 	same:       (Rgb, Rgb) -> Bool;
     };

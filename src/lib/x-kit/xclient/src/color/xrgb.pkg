@@ -64,6 +64,50 @@
 		(r, g, b);
 	    };
 
+
+	fun from_floats (red, green, blue)
+	    =
+	    from_ints
+              ( float_to_int  red,
+		float_to_int  green,
+		float_to_int  blue
+	      )
+	    where
+		fun float_to_int f
+		    =
+		    {   f =  (f < 0.0) ?? 0.0 :: f;
+			f =  (f > 1.0) ?? 1.0 :: f;
+
+			f =   f * 255.99;		# Our ints run 0 -> 255.
+
+			float::truncate  f;
+		    };
+	    end;
+
+
+	fun to_floats  xrgb
+	    =
+	    {   (to_ints  xrgb)
+		    ->
+		    (red, green, blue);
+
+		( int_to_float  red,
+		  int_to_float  green,
+		  int_to_float  blue
+		);
+	    }
+	    where
+		fun int_to_float i
+		    =
+		    {   f  = float::from_int  i;
+
+			f  = f // 255.0;		# Our ints run 0 -> 255.
+
+			f;
+		    };
+	    end;
+
+
 	fun same (i, j)
 	    =
 	    i == j;
