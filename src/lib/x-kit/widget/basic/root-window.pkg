@@ -53,7 +53,7 @@ herein
 	      { screen:          xc::Screen,
 		id:              Ref( Void ),			# Here we are just taking advantage of
 		#						# the fact that all REFs are distinct.
-		mkshade:         xc::Color -> si::Shades,
+		mkshade:         xc::Rgb -> si::Shades,
 		mktile:          String -> xc::Ro_Pixmap,
 		#
 		style:           Style,

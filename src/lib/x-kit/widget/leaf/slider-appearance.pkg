@@ -86,25 +86,31 @@ herein
 
 	 State = ((Int, Bool, Bool, Bool));
 
-	 Result = { bg:  xc::Color,
+	 Result = { bg:            xc::Rgb,
+		    fg:            xc::Rgb,
+		    #
+		    is_vertical:   Bool,
+		    show_value:    Bool,
+		    #
+		    fontinfo:     (xc::Font, Int, Int),
+		    relief:        w::Relief,
+		    #
 		    border_width:  Int,
-		    fontinfo:  (xc::Font, Int, Int),
-		    fg:  xc::Color,
-		    is_vertical:  Bool,
-		    relief:  w::Relief,
-		    from_v:  Int,
-		    label:   Null_Or( (String, Int, Int) ),
-		    length:  Int,
-		    show_value:  Bool,
-		    shades:  w::Shades,
+		    from_v:        Int,
+		    length:        Int,
+		    #
+		    label:         Null_Or( (String, Int, Int) ),
+		    #
+		    shades:        w::Shades,
 		    ready_shades:  w::Shades,
 		    slide_shades:  w::Shades,
-		    thumb:  Int,
-		    tick:  Int,
-		    to_v:  Int,
-		    offset:  Int,
-		    twid:  Int,
-		    width:  Int
+		    #
+		    thumb:         Int,
+		    tick:          Int,
+		    to_v:          Int,
+		    offset:        Int,
+		    twid:          Int,
+		    width:         Int
 		  };
 
 	fun num_ticks ( { tick=>0, ... } : Result)

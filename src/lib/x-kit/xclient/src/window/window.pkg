@@ -66,12 +66,12 @@ herein
 	  | WA_BACKGROUND_PARENT_RELATIVE
 	  | WA_BACKGROUND_RW_PIXMAP   	     dt::Rw_Pixmap
 	  | WA_BACKGROUND_RO_PIXMAP          dt::Ro_Pixmap
-	  | WA_BACKGROUND_COLOR              ci::Color
+	  | WA_BACKGROUND_COLOR              ci::Rgb
 	  #
 	  | WA_BORDER_COPY_FROM_PARENT
 	  | WA_BORDER_RW_PIXMAP       	     dt::Rw_Pixmap
 	  | WA_BORDER_RO_PIXMAP              dt::Ro_Pixmap
-	  | WA_BORDER_COLOR                  ci::Color
+	  | WA_BORDER_COLOR                  ci::Rgb
 	  #
 	  | WA_BIT_GRAVITY                   xt::Gravity
 	  | WA_WINDOW_GRAVITY                xt::Gravity
@@ -92,7 +92,7 @@ herein
 
 	# Extract the Rgb8 from a color:
 	#
-	fun rgb8_of (ci::COLOR { rgb, ... } )
+	fun rgb8_of rgb
 	    =
 	    rgb8::from_rgb rgb;
 

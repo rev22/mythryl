@@ -36,7 +36,7 @@ herein
 	    :
 	    w::Root_Window
 	    ->
-	    { color:  Null_Or( xc::Color ),
+	    { color:  Null_Or( xc::Rgb ),
 	      width:  Int 
 	    }
 	    ->
@@ -46,7 +46,7 @@ herein
 	    :
 	    w::Root_Window
 	    ->
-	    { color:  Null_Or( xc::Color ),
+	    { color:  Null_Or( xc::Rgb ),
 	      width:  Int 
 	    }
 	    ->

@@ -35,12 +35,12 @@ herein
 
 	Palette							# This was abstract, but then 'brickview.pkg' wouldn't compile. -- 2009-12-09 CrT
 	    =
-	    { brick:            xc::Color,
-	      mark:             xc::Color,
-	      concrete:         xc::Color,
-	      dark_lines:       xc::Color,
-	      light_lines:      xc::Color,
-	      highlight_lines:  xc::Color
+	    { brick:            xc::Rgb,
+	      mark:             xc::Rgb,
+	      concrete:         xc::Rgb,
+	      dark_lines:       xc::Rgb,
+	      light_lines:      xc::Rgb,
+	      highlight_lines:  xc::Rgb
 	    };
 
 	difficulty_probability:  Difficulty -> Int;

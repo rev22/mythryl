@@ -81,18 +81,21 @@ herein
 	 Button_Appearance
 	     =
 	     BUTTON_APPEARANCE
-	     { fg:        xc::Color,
-	       bg:        xc::Color,
-	       color:     xc::Color,
-	       readyc:    xc::Color,
+	     { fg:        xc::Rgb,
+	       bg:        xc::Rgb,
+	       color:     xc::Rgb,
+	       readyc:    xc::Rgb,
+	       #	
 	       on_src:    xc::Ro_Pixmap,
 	       off_src:   xc::Ro_Pixmap,
 	       on_mask:   xc::Ro_Pixmap,
 	       off_mask:  xc::Ro_Pixmap,
+	       #	
 	       inactive_on_mask:  xc::Ro_Pixmap,
 	       inactive_off_mask: xc::Ro_Pixmap,
+	       #	
 	       iwid:  Int,
-	       iht:  Int
+	       iht:   Int
 	     };
 
 	fun make_button_appearance (root, view, args)
@@ -212,7 +215,7 @@ herein
 
 		my (ready_on_pen, ready_off_pen)
 		    =
-		    if (xc::same_color (color, readyc))
+		    if (xc::same_rgb (color, readyc))
 			( on_pen,
 			  off_pen
 			);

@@ -41,7 +41,7 @@
 
 stipulate
     package w  =  widget;						# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xb =  xcore;						# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package xc =  xcore;						# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
     package wt =  widget_types;						# widget_types	is from   src/lib/x-kit/widget/basic/widget-types.pkg
 herein
 
@@ -74,7 +74,7 @@ herein
 	    :  w::Root_Window
 	    -> { state:          wt::Button_State,
 		 click_callback: Bool -> Void,
-		 color:          Null_Or( xb::Color ),	# Toggle color, defaults to black. Background color is from parent.
+		 color:          Null_Or( xc::Rgb ),	# Toggle color, defaults to black. Background color is from parent.
 		 size:           Int			# Length in pixels of widget sides. Raises BAD_ARG if < 14.
 	       }
 	    -> Toggleswitch;
@@ -85,8 +85,8 @@ herein
 	    -> { state:           wt::Button_State,
 		 rounded:         Bool,
 		 click_callback:  Bool -> Void,
-		 background:      Null_Or( xb::Color ),
-		 foreground:      Null_Or( xb::Color ),
+		 background:      Null_Or( xc::Rgb ),
+		 foreground:      Null_Or( xc::Rgb ),
 		 label:           String
 	       }
 	    -> Toggleswitch;
@@ -95,8 +95,8 @@ herein
 	    :  w::Root_Window
 	    -> { state:           wt::Button_State,
 		 click_callback:  Bool -> Void,
-		 background:      Null_Or( xb::Color ),	# White by default.
-		 foreground:      Null_Or( xb::Color )	# Black by default.
+		 background:      Null_Or( xc::Rgb ),	# White by default.
+		 foreground:      Null_Or( xc::Rgb )	# Black by default.
 	       }
 	    -> Toggleswitch;
 
@@ -104,8 +104,8 @@ herein
 	    :  w::Root_Window
 	    -> { state:           wt::Button_State,
 		 click_callback:  Bool -> Void,
-		 background:      Null_Or( xb::Color ),	# White by default.
-		 foreground:      Null_Or( xb::Color ),	# Black by default.
+		 background:      Null_Or( xc::Rgb ),	# White by default.
+		 foreground:      Null_Or( xc::Rgb ),	# Black by default.
 		 radius:          Int			# Radius in pixels of widget. Raises BAD_ARG if < 4.
 	       }
 	    -> Toggleswitch;
@@ -114,9 +114,9 @@ herein
 	     :  w::Root_Window
 	     -> { state:          wt::Button_State,
 		  click_callback: Bool -> Void,
-		  background:     Null_Or( xb::Color ),	# White by default.
-		  foreground:     Null_Or( xb::Color ),	# Black by default.
-		  icon:           xb::Ro_Pixmap
+		  background:     Null_Or( xc::Rgb ),	# White by default.
+		  foreground:     Null_Or( xc::Rgb ),	# Black by default.
+		  icon:           xc::Ro_Pixmap
 		}
 	     -> Toggleswitch;
 

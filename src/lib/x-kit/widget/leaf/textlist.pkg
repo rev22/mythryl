@@ -204,20 +204,24 @@ herein
 
 	Result
 	    =
-	    { multi:  Bool,
-	      shades:  w::Shades,
+	    { multi:    Bool,
+	      shades:   w::Shades,
 	      fontinfo:  (xc::Font, Int, Int),
-	      fg:  xc::Color,
-	      bg:  xc::Color,
+	      #	
+	      fg:      xc::Rgb,
+	      bg:      xc::Rgb,
+	      sel_fg:  xc::Rgb,
+	      #	
 	      relief:  w::Relief,
 	      border_width:  Int,
 	      maxslen:  Ref( Int ),
 	      stipple:  xc::Ro_Pixmap,
-	      xincr:  Int,
-	      yincr:  Int,
-	      width:  Int,
+	      #	
+	      xincr:   Int,
+	      yincr:   Int,
+	      width:   Int,
 	      height:  Int,
-	      sel_fg:  xc::Color,
+	      #	
 	      sel_shades:  w::Shades,
 	      sel_border_width:  Int
 	    };

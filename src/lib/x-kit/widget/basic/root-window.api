@@ -56,10 +56,10 @@ herein
 
 	xsession_of:      Root_Window -> xc::Xsession;
 	screen_of:        Root_Window -> xc::Screen;
-	shades:           Root_Window -> xc::Color -> wb::Shades;
+	shades:           Root_Window -> xc::Rgb -> wb::Shades;
 
 	ro_pixmap:        Root_Window -> String -> xc::Ro_Pixmap;
-	color_of:         Root_Window -> xc::Color_Spec -> xc::Color;
+	color_of:         Root_Window -> xc::Color_Spec -> xc::Rgb;
 	open_font:        Root_Window -> String -> xc::Font;
 
 	get_standard_xcursor:	Root_Window -> xc::Standard_Xcursor -> xc::Xcursor;

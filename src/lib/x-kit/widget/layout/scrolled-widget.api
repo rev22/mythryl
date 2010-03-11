@@ -58,7 +58,7 @@ herein
 
 	      smooth_scrolling:  Bool,
 	      #
-	      color:                   Null_Or( xc::Color ),
+	      color:                   Null_Or ( xc::Rgb ),
 	      horizontal_scrollbar:    Null_Or { top:  Bool },
 	      vertical_scrollbar:      Null_Or { left: Bool }
 	    }

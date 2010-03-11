@@ -122,7 +122,7 @@ herein
 	make_topwindow
 	    :
 	    ( w::Widget,			# Root of widget-tree for window.
-	      Null_Or( xc::Color ),		# Background color; defaults to white.
+	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )
 	    ->
@@ -133,7 +133,7 @@ herein
 	    xg::Box
 	    ->
 	    ( w::Widget,			# Root of widget-tree for window.
-	      Null_Or( xc::Color ),		# Background color; defaults to white.
+	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )
 	    ->
@@ -167,7 +167,7 @@ herein
 	    xc::Window				# Main application topwindow; window manager will de/iconify us along with it.
 	    -> 
 	    ( w::Widget,			# Root of widget-tree for window.
-	      Null_Or( xc::Color ),		# Background color; defaults to white.
+	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )
 	    ->
@@ -180,7 +180,7 @@ herein
 	    xc::Window				# Main application topwindow; window manager will de/iconify us along with it.
 	    ->
 	    ( w::Widget,			# Root of widget-tree for window.
-	      Null_Or( xc::Color ),		# Background color; defaults to white.
+	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )
 	    ->

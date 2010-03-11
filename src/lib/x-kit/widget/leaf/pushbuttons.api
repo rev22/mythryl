@@ -112,9 +112,9 @@ herein
 	    :
 	    w::Root_Window
 	    ->
-	    { background:     Null_Or( xc::Color ),	# Background color for button; defaults to black.
+	    { background:     Null_Or( xc::Rgb ),	# Background color for button; defaults to black.
 	      direction:      Arrow_Direction,
-	      foreground:     Null_Or( xc::Color ),	# Foreground color for button; defaults to white.
+	      foreground:     Null_Or( xc::Rgb ),	# Foreground color for button; defaults to white.
 	      size:           Int			# Ideal size. BAD_ARG is raised if size < 4.
 	    }
 	    ->
@@ -125,9 +125,9 @@ herein
 	    w::Root_Window
 	    ->
 	    { click_callback: Void -> Void,
-	      background:     Null_Or( xc::Color ),	# Background color for button; defaults to black.
+	      background:     Null_Or( xc::Rgb ),	# Background color for button; defaults to black.
 	      direction:      Arrow_Direction,
-	      foreground:     Null_Or( xc::Color ),	# Foreground color for button; defaults to white.
+	      foreground:     Null_Or( xc::Rgb ),	# Foreground color for button; defaults to white.
 	      size:           Int			# Ideal size. BAD_ARG is raised if size < 4.
 	    }
 	    ->
@@ -138,8 +138,8 @@ herein
 	    w::Root_Window
 	    ->
 	    { rounded:        Bool,
-	      background:     Null_Or( xc::Color ),	# Background color for button; defaults to black.
-	      foreground:     Null_Or( xc::Color ),	# Foreground color for button; defaults to white.
+	      background:     Null_Or( xc::Rgb ),	# Background color for button; defaults to black.
+	      foreground:     Null_Or( xc::Rgb ),	# Foreground color for button; defaults to white.
 	      label:          String
 	    }
 	    ->
@@ -151,8 +151,8 @@ herein
 	    ->
 	    { rounded:        Bool,
 	      click_callback: Void -> Void,
-	      background:     Null_Or( xc::Color ),	# Background color for button; defaults to black.
-	      foreground:     Null_Or( xc::Color ),	# Foreground color for button; defaults to white.
+	      background:     Null_Or( xc::Rgb ),	# Background color for button; defaults to black.
+	      foreground:     Null_Or( xc::Rgb ),	# Foreground color for button; defaults to white.
 	      label:          String
 	    }
 	    ->

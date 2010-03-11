@@ -105,7 +105,7 @@ herein
 	  | BOOL_VAL        Bool
 	  #
 	  | FONT_VAL        xc::Font
-	  | COLOR_VAL       xc::Color
+	  | COLOR_VAL       xc::Rgb
 	  | COLOR_SPEC_VAL  xc::Color_Spec
 	  | TILE_VAL        xc::Ro_Pixmap
 	  | CURSOR_VAL      xc::Xcursor
@@ -149,7 +149,7 @@ herein
 	    same_value (FLOAT_VAL a,   FLOAT_VAL b)   =>   float::(====)(a, b);
 	    same_value (BOOL_VAL a,   BOOL_VAL b)   =>   a == b;
 	    same_value (FONT_VAL a,   FONT_VAL b)   =>   xc::same_font (a, b);
-	    same_value (COLOR_VAL a,  COLOR_VAL b)  =>   xc::same_color (a, b);
+	    same_value (COLOR_VAL a,  COLOR_VAL b)  =>   xc::same_rgb  (a, b);
 	    same_value (TILE_VAL a,   TILE_VAL b)   =>   xc::same_ro_pixmap (a, b);
 	    same_value (CURSOR_VAL a, CURSOR_VAL b) =>   xc::same_cursor (a, b);
 	    same_value (HALIGN_VAL a, HALIGN_VAL b) =>   a == b;

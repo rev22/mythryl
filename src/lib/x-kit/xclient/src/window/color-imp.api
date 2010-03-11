@@ -29,23 +29,12 @@ herein
 		     }
 	  ;
 
-	# A color.
-	# This type is opaque at the user level: 
-	#
-	Color
-	    =
-	    COLOR			  # A color in the colormap. 
-	      {
-# Now let's drop rgb8 from this record,
-# replacing its use everywhere by            (rgb8::from_rgb rgb)
-# (Of course, we'll first have to implement   rgb8::from_rgb  :-)
-# After that we should be able to collapse
-# Color to just Rgb.
-#		rgb8:  rgb8::Rgb8,	  # Its X-server 24-bit-int rgb value.
-		rgb:    rgb::Rgb	  # Its RGB value. 
-	      };
-
 	Color_Imp;
+
+	# RGB values (these are needed for
+	# coloring cursors, but will probably go away) 
+	#
+	Rgb;
 
 	make_color_imp
 	    :
@@ -56,32 +45,23 @@ herein
 	exception BAD_RGB;
 	exception NO_COLOR_CELL;
 
-	get_color:  Color_Imp -> Color_Spec -> Color;
+	get_color:  Color_Imp -> Color_Spec -> Rgb;
 	    #
 	    # Get the specified color.
 	    # Raise NO_COLOR_CELL if the color
 	    # map is already full.
 
 
-	black_of:  Color_Imp -> Color;
-	white_of:  Color_Imp -> Color;
+	black_of:  Color_Imp -> Rgb;
+	white_of:  Color_Imp -> Rgb;
 
-	same_color:  (Color, Color) -> Bool;
+	same_color:  (Rgb, Rgb) -> Bool;
 
-	color_from_floats: (Float, Float, Float) -> Color;
+	color_from_floats: (Float, Float, Float) -> Rgb;
 
-	# The following are used for
-	# drawing 0s or 1s on pixmaps:
-	#
-#	color0:  Color;
-#	color1:  Color;
 
-	# RGB values (these are needed for
-	# coloring cursors, but will probably go away) 
-	#
-	Rgb;
 
-	rgb_of_color:  Color -> Rgb;
+	rgb_of_color:  Rgb -> Rgb;
 
 	check_rgb:  Rgb -> Rgb;
 

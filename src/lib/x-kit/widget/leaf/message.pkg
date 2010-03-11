@@ -68,52 +68,46 @@ herein
 
 		fun loop (i, curx, end_word, end_word_x)
 		    =
-		      if   (endi == i)
-
-			   (i, curx);
+		      if (endi == i)
+			  #
+			  (i, curx);
 		      else 
-			   c = string::get (text, i);
+			  c = string::get (text, i);
 
-			   if   (c == '\n' )
+			  if (c == '\n' )
+			      #
+			      (i, curx);
+			  else
+			      my xf::CHAR_INFO { char_width, ... }
+				  =
+				  char_info (char::to_int c);
 
-				(i, curx);
-			   else
-				my xf::CHAR_INFO { char_width, ... }
-				    =
-				    char_info (char::to_int c);
+			      nextx = curx+char_width;
 
-				nextx = curx+char_width;
-
-				if   (nextx > maxx)
-
-				     if   (end_word > starti)
-
+			      if (nextx > maxx)
+				  #
+				  if (end_word > starti)
+				      #
+				      (end_word, end_word_x);
+				  else
+				      if (i > starti)  (i,   curx);
+				      else             (i+1, nextx);
+				      fi;
+				  fi;
+			      else
+				  my (end_word, end_word_x)
+				      =
+				      if (char::is_space c)
+					  #
+					  (i+1, nextx);
+				      else
 					  (end_word, end_word_x);
-				     else
-					  if   (i > starti)
+				      fi;
 
-					       (i, curx);
-					  else
-					       (i+1, nextx);
-					  fi;
-				     fi;
-				else
-				     my (end_word, end_word_x)
-					 =
-					 if   (char::is_space c)
-
-					      (i+1, nextx);
-					 else
-					      (end_word, end_word_x);
-					 fi;
-
-				     loop (i+1, nextx, end_word, end_word_x);
-				fi;
-
-			   fi;
-
+				  loop (i+1, nextx, end_word, end_word_x);
+			      fi;
+			  fi;
 		      fi;
-
 	    end;
 
 	fun make_text_info (root, aspect, text, width, fontinfo, bw, padx, pady)
@@ -241,8 +235,8 @@ herein
 
 	Result = { aspect:  Int,
 
-		   bg:  xc::Color,
-		   fg:  xc::Color,
+		   bg:  xc::Rgb,
+		   fg:  xc::Rgb,
 
 		   border_width:  Int,
 		   fontinfo:  Fontinfo,

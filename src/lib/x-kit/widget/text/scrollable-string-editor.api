@@ -37,8 +37,8 @@ herein
 	    :
 	    w::Root_Window
 	    ->
-	    { foreground:      Null_Or( xc::Color ),
-	      background:      Null_Or( xc::Color ),
+	    { foreground:      Null_Or( xc::Rgb ),
+	      background:      Null_Or( xc::Rgb ),
 	      #
 	      initial_string:  String,
 	      min_length:      Int

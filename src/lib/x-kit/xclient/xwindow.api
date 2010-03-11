@@ -26,13 +26,13 @@ api  Xwindow {
       = WA_BACKGROUND_NONE
       | WA_BACKGROUND_PARENT_RELATIVE
       | WA_BACKGROUND_RO_PIXMAP    	 xc::Ro_Pixmap
-      | WA_BACKGROUND_COLOR              xc::Color
+      | WA_BACKGROUND_COLOR              xc::Rgb
       | WA_BACKGROUND_RW_PIXMAP		 xc::Rw_Pixmap
       #
       | WA_BORDER_COPY_FROM_PARENT
       | WA_BORDER_RW_PIXMAP    		 xc::Rw_Pixmap
       | WA_BORDER_RO_PIXMAP        	 xc::Ro_Pixmap
-      | WA_BORDER_COLOR                  xc::Color
+      | WA_BORDER_COLOR                  xc::Rgb
       #
       | WA_BIT_GRAVITY                   xc::Gravity
       | WA_WINDOW_GRAVITY                xc::Gravity
@@ -72,7 +72,7 @@ api  Xwindow {
 	xc::Screen
 	->
 	{ site:              xg::Window_Site,
-	  border_color:      xc::Color,
+	  border_color:      xc::Rgb,
 	  background_color:  xc::Rgb8
         }
 	->
@@ -83,7 +83,7 @@ api  Xwindow {
 	Window
 	->
 	{ site:              xg::Window_Site,
-	  border_color:      Null_Or( xc::Color ),
+	  border_color:      Null_Or( xc::Rgb ),
 	  background_color:  Null_Or( xc::Rgb8  )
         }
         ->
@@ -94,7 +94,7 @@ api  Xwindow {
         xc::Window
         ->
         { site:              xg::Window_Site,
-	  border_color:      xc::Color,
+	  border_color:      xc::Rgb,
 	  background_color:  xc::Rgb8
         }
         ->
@@ -105,7 +105,7 @@ api  Xwindow {
         xc::Screen
         ->
         { site:              xg::Window_Site,
-	  border_color:      xc::Color,
+	  border_color:      xc::Rgb,
 	  background_color:  xc::Rgb8
         }
         ->
@@ -166,7 +166,7 @@ api  Xwindow {
 
     set_cursor:  Window ->  Null_Or( xc::Xcursor ) -> Void;
 
-    set_background_color:  Window -> Null_Or( xc::Color ) -> Void;
+    set_background_color:  Window -> Null_Or( xc::Rgb ) -> Void;
 	#
 	# Set the background color attribute of the window.
         #

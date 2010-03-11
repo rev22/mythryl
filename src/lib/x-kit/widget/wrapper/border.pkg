@@ -48,14 +48,14 @@ herein
 		   pady:  Int,
 		   border_width:  Int,
 		   relief:  w::Relief,
-		   background:  Null_Or( xc::Color )
+		   background:  Null_Or( xc::Rgb )
 		 };
 
 	Border
 	    =
 	    BORDER
 	      { widget:     w::Widget,
-		plea_slot:  Mailslot(  Null_Or(  xc::Color ))
+		plea_slot:  Mailslot(  Null_Or(  xc::Rgb ))
 	      };
 
 	fun make_resources (view, args)

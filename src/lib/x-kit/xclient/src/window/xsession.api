@@ -191,9 +191,9 @@ herein
 
 	# Screen functions:
 	#
-	color_of_screen:          Screen -> ci::Color_Spec -> ci::Color;
-	black_of_screen:          Screen                   -> ci::Color;
-	white_of_screen:          Screen                   -> ci::Color;
+	color_of_screen:          Screen -> ci::Color_Spec -> ci::Rgb;
+	black_of_screen:          Screen                   -> ci::Rgb;
+	white_of_screen:          Screen                   -> ci::Rgb;
 
 	xsession_of_screen:       Screen -> Xsession;
 	root_window_of_screen:    Screen -> xt::Window_Id;

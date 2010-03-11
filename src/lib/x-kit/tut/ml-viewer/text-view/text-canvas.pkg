@@ -39,8 +39,8 @@ herein
 		window:      xd::Window,		# The window.
 		drawable:    xd::Drawable_Window,	# The drawable surface.
 		font:        xf::Font,		# The default font.
-		foreground:  xd::Color,		# The default foreground color.
-		background:  xd::Color,		# The default background color.
+		foreground:  xc::Rgb,		# The default foreground color.
+		background:  xc::Rgb,		# The default background color.
 		default_pen: xd::Pen		# The default pen.
 	      };
 
@@ -174,8 +174,8 @@ herein
 		    =
 		    if *underline
 			#
-			if (xc::same_color(*fore, *under))   THE fore_pen;
-			else                                 THE (make_pen (under, back));
+			if (xc::same_rgb(*fore, *under))   THE fore_pen;
+			else                               THE (make_pen (under, back));
 			fi;
 		    else
 			NULL;

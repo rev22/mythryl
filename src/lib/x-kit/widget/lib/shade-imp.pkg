@@ -37,7 +37,7 @@ herein
 
 	Plea_Mail
 	    =
-	    GET_SHADES  xc::Color;
+	    GET_SHADES  xc::Rgb;
 
 	Reply_Mail
 	    =
@@ -119,7 +119,7 @@ herein
 
 			my (lt, dk)
 			    =
-			    xc::same_color (c, xc::white_of_screen screen)
+			    xc::same_rgb (c, xc::white_of_screen screen)
 			      ?? (lgray, dgray)
 			      :: (dgray, lgray);
 
@@ -139,7 +139,7 @@ herein
 
 			my (lt, dk)
 			    =
-			    xc::same_color (c, xc::white_of_screen screen)
+			    xc::same_rgb (c, xc::white_of_screen screen)
 			     ?? (lgray, dgray)
 			     :: (dgray, lgray);
 
@@ -168,8 +168,8 @@ herein
 			    }
 			    except _ = NULL;
 
-			if (xc::same_color (c, xc::white_of_screen screen)
-			or  xc::same_color (c, xc::black_of_screen screen)
+			if (xc::same_rgb (c, xc::white_of_screen screen)
+			or  xc::same_rgb (c, xc::black_of_screen screen)
 			)
 			     gray_shade (c, rgb);
 			else shade ();

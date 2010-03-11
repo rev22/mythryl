@@ -72,7 +72,7 @@ herein
 
 	# Modify the attributes of the canvas 
 	#
-	set_background_color:  Canvas -> Null_Or( xc::Color ) -> Void;
+	set_background_color:  Canvas -> Null_Or( xc::Rgb ) -> Void;
 	    #
 	    # Set the background color attribute of the window.
 	    #	

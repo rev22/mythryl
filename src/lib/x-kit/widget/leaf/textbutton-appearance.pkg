@@ -91,18 +91,22 @@ herein
 	     =
 	     BUTTON_APPEARANCE
 	       {
-		 align:  wt::Horizontal_Alignment,
-		 rounded:  Bool,
-		 width:  Null_Or( Int ),
-		 height:  Null_Or( Int ),
-		 border_width:  Int,
-		 labeldata:  Labeldata,
-		 fontdata:  Fontdata,
-		 stipple:  xc::Ro_Pixmap,
-		 shades:   w::Shades,
-		 forec:    xc::Color,
-		 color:    xc::Color,
-		 backc:    xc::Color
+		 align:        wt::Horizontal_Alignment,
+		 rounded:      Bool,
+		 #
+		 width:        Null_Or( Int ),
+		 height:       Null_Or( Int ),
+		 #
+		 border_width: Int,
+		 labeldata:    Labeldata,
+		 fontdata:     Fontdata,
+		 #
+		 stipple:      xc::Ro_Pixmap,
+		 shades:       w::Shades,
+		 #
+		 forec:        xc::Rgb,
+		 color:        xc::Rgb,
+		 backc:        xc::Rgb
 	       };
 
 	fun make_button_appearance (root, view, args)
@@ -233,7 +237,7 @@ herein
 		    =
 		    {   xd::clear_drawable d;
 
-			if (not (xc::same_color (backc, color)))
+			if (not (xc::same_rgb (backc, color)))
 			    #
 			    car::fill_cartouche d base { box=>r, corner_radius };
 			fi;

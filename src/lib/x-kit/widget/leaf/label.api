@@ -42,7 +42,7 @@
 
 stipulate
     package w  =  widget;		# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xb =  xcore;		# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package xc =  xcore;		# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
     package wt =  widget_types;		# widget_types	is from   src/lib/x-kit/widget/basic/widget-types.pkg
 herein
 
@@ -52,7 +52,7 @@ herein
 	Label;
 
 	Label_Type = TEXT  String
-		   | ICON  xb::Ro_Pixmap
+		   | ICON  xc::Ro_Pixmap
 		   ;
 
 	make_label'
@@ -68,8 +68,8 @@ herein
 	    { label:       String, 
 	      #
 	      font:        Null_Or( String ),
-	      foreground:  Null_Or( xb::Color ), 
-	      background:  Null_Or( xb::Color ), 
+	      foreground:  Null_Or( xc::Rgb ), 
+	      background:  Null_Or( xc::Rgb ), 
 	      #
 	      align:       wt::Horizontal_Alignment
 	    }
@@ -79,8 +79,8 @@ herein
 	 as_widget:       Label -> w::Widget;
 
 	 set_label:       Label -> Label_Type -> Void;
-	 set_background:  Label -> xb::Color  -> Void;
-	 set_foreground:  Label -> xb::Color  -> Void;
+	 set_background:  Label -> xc::Rgb  -> Void;
+	 set_foreground:  Label -> xc::Rgb  -> Void;
 
     };
 

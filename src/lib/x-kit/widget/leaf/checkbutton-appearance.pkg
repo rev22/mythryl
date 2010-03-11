@@ -48,10 +48,10 @@ herein
 		 relief:  w::Relief,
 		 shades:  w::Shades,
 		 stipple: xc::Ro_Pixmap,
-		 fg:      xc::Color,
-		 bg:      xc::Color,
-		 color:   xc::Color,
-		 readyc:  xc::Color,
+		 fg:      xc::Rgb,
+		 bg:      xc::Rgb,
+		 color:   xc::Rgb,
+		 readyc:  xc::Rgb,
 		 size:    Int
 	       };
 
@@ -103,7 +103,7 @@ herein
 		bwid = 2; 
 		pwid = 3; 
 
-		readyp = if (xc::same_color (v.bg, readyc))
+		readyp = if (xc::same_rgb (v.bg, readyc))
 			      NULL;
 			 else THE (make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color readyc))]);
 			 fi;

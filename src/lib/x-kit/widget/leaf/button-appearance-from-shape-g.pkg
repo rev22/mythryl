@@ -57,8 +57,8 @@ herein
 		 stipple:  xc::Ro_Pixmap,
 		 drawfn:   bst::Drawfn,
 
-		 fg:  Null_Or( xc::Color ),
-		 bg:  xc::Color,
+		 fg:  Null_Or( xc::Rgb ),
+		 bg:           xc::Rgb,
 
 		 size:  w::Widget_Size_Preference
 	       };
@@ -106,7 +106,7 @@ herein
 		    stipple,
 		    shades,
 
-		    rshades => (xc::same_color (color, readyc))
+		    rshades => (xc::same_rgb (color, readyc))
 				 ?? shades
 				 :: w::shades root readyc,
 		    drawfn,

@@ -48,8 +48,8 @@ herein
 	Plea_Mail
 	    = SET_LABEL  Label_Type
 	    #
-	    | SET_BC  xc::Color
-	    | SET_FC  xc::Color
+	    | SET_BC  xc::Rgb
+	    | SET_FC  xc::Rgb
 	    #
 	    | GET_SIZE_CONSTRAINT  Oneshot_Maildrop( w::Widget_Size_Preference )
 	    #
@@ -99,8 +99,8 @@ herein
 	    LABEL_VIEW
 	      {
 		label:   Ref( Label_Data   ), 
-		fg:      Ref( xc::Color ), 
-		bg:      Ref( xc::Color ), 
+		fg:      Ref( xc::Rgb ), 
+		bg:      Ref( xc::Rgb ), 
 		shades:  Ref( w::Shades    ),
 		#
 		relief:        w::Relief,

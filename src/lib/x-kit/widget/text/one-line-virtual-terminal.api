@@ -23,8 +23,8 @@ herein
 	   :
 	   w::Root_Window
 	   ->
-	   ( Null_Or( xc::Color ),
-	     Null_Or( xc::Color )
+	   ( Null_Or( xc::Rgb ),
+	     Null_Or( xc::Rgb )
 	   )
 	   ->
 	   One_Line_Virtual_Terminal;

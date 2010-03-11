@@ -95,8 +95,8 @@ herein
 	make_horizontal_scrollbar':  (w::Root_Window, w::View, List(w::Arg)) -> Scrollbar;
 	make_vertical_scrollbar':    (w::Root_Window, w::View, List(w::Arg)) -> Scrollbar;
 
-	make_horizontal_scrollbar:  w::Root_Window -> { color:  Null_Or( xc::Color ), size: Int } -> Scrollbar;
-	make_vertical_scrollbar:    w::Root_Window -> { color:  Null_Or( xc::Color ), size: Int } -> Scrollbar;
+	make_horizontal_scrollbar:  w::Root_Window -> { color:  Null_Or( xc::Rgb ), size: Int } -> Scrollbar;
+	make_vertical_scrollbar:    w::Root_Window -> { color:  Null_Or( xc::Rgb ), size: Int } -> Scrollbar;
 
 	as_widget:   Scrollbar -> w::Widget;
 

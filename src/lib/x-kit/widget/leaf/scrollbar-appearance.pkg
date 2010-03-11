@@ -43,7 +43,7 @@ herein
 
 	    realize
 		:
-		(w::Root_Window, xc::Color)
+		(w::Root_Window, xc::Rgb)
 		-> xd::Drawable_Window
 		-> xg::Size
 		-> Scrollbar_State

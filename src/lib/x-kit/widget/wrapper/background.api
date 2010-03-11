@@ -41,7 +41,7 @@ herein
 
 	make_background
 	    :
-	    { color:   Null_Or( xc::Color ),			# New background color. Defaults to white if not specified.
+	    { color:   Null_Or( xc::Rgb ),			# New background color. Defaults to white if not specified.
 	      widget:  w::Widget				# Affected widget-tree.
 	    }
 	    -> Background;

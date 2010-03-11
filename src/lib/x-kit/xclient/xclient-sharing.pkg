@@ -79,9 +79,6 @@ package xclient_sharing: api {
          ==       xcore::Ro_Pixmap;
 
 
-    sharing       xdraw::Color
-         ==       xcore::Color;
-
     sharing       xcore::Rgb8
          ==       xdraw::Rgb8;
 

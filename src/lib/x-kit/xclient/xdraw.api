@@ -41,7 +41,6 @@ api Xdraw {
     Rw_Pixmap;
     Ro_Pixmap;
     Font;
-    Color;
     Rgb8;
 
     Plane_Mask = PLANEMASK  Unt;	# This may belong elsewhere

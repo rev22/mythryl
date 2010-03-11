@@ -163,8 +163,8 @@ herein
 
 	fun make_string_editor  root_window
 	    {
-	      foreground:      Null_Or( xd::Color ),
-	      background:      Null_Or( xd::Color ),
+	      foreground:      Null_Or( xc::Rgb ),
+	      background:      Null_Or( xc::Rgb ),
 	      #
 	      initial_string:  String,
 	      min_length:      Int

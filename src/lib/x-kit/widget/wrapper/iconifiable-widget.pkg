@@ -107,9 +107,9 @@ herein
 		   fontinfo: (xc::Font, Int, Int),
 		   label:    (String, Int, Int),
 
-		   fg:        xc::Color,
-		   bg:        xc::Color,
-		   on_color:  xc::Color,
+		   fg:        xc::Rgb,
+		   bg:        xc::Rgb,
+		   on_color:  xc::Rgb,
 
 		   light_size:    Int,
 		   pady:          Int,

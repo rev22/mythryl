@@ -92,7 +92,7 @@ herein
 		  size:   Int, 
 
 		  ltype:  Light_Type, 
-		  color:  xc::Color
+		  color:  xc::Rgb
 		};
 
 
@@ -138,14 +138,18 @@ herein
 	      { light:  Null_Or( Light ), 
 		label:  Label_Data, 
 		relief:  w::Relief,
-		fg:      xc::Color, 
-		bg:      xc::Color, 
-		readyc:  xc::Color, 
+		#
+		fg:      xc::Rgb, 
+		bg:      xc::Rgb, 
+		readyc:  xc::Rgb, 
+		#
 		shades:  w::Shades,
 		stipple:  xc::Ro_Pixmap,
 		border_width:  Int,
+		#
 		font:  (xc::Font, Int, Int),
 		align:  wt::Horizontal_Alignment,
+		#
 		width:  Int,
 		height: Int,
 		padx:   Int,

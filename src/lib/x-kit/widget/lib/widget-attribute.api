@@ -108,7 +108,7 @@ herein
 	  | BOOL_VAL        Bool
           # 
 	  | FONT_VAL        xc::Font
-	  | COLOR_VAL       xc::Color
+	  | COLOR_VAL       xc::Rgb
 	  | COLOR_SPEC_VAL  xc::Color_Spec
           # 
 	  | TILE_VAL        xc::Ro_Pixmap
@@ -141,7 +141,7 @@ herein
 	get_bool:         	Value -> Bool;
 	get_string:       	Value -> String;
 	#
-	get_color:        	Value -> xc::Color;
+	get_color:        	Value -> xc::Rgb;
 	get_color_spec:   	Value -> xc::Color_Spec;
 	#
 	get_font:         	Value -> xc::Font;
@@ -161,7 +161,7 @@ herein
 	get_bool_opt:     	Value -> Null_Or( Bool );
 	get_string_opt:   	Value -> Null_Or( String );
 	#
-	get_color_opt:    	Value -> Null_Or( xc::Color );
+	get_color_opt:    	Value -> Null_Or( xc::Rgb );
 	get_color_spec_opt:	Value -> Null_Or( xc::Color_Spec );
 	#
 	get_font_opt:     	Value -> Null_Or( xc::Font );

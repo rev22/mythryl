@@ -90,7 +90,7 @@ herein
 
 	Window_Args
 	    =
-	    { background:  Null_Or( xc::Color ) };
+	    { background:  Null_Or( xc::Rgb ) };
 
 
 	fun make_child_window

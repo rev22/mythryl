@@ -59,8 +59,8 @@ herein
 	    w::Root_Window
 	    ->
 	    {
-	      foreground:     Null_Or( xc::Color ),		# Black by default.
-	      background:     Null_Or( xc::Color ),		# White by default.
+	      foreground:     Null_Or( xc::Rgb ),		# Black by default.
+	      background:     Null_Or( xc::Rgb ),		# White by default.
 	      initial_string: String,
 	      min_length:     Int
 	    }

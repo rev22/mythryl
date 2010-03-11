@@ -42,7 +42,7 @@
 
 stipulate
     package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xb =  xcore;			# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package xc =  xcore;			# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
     api Border {
@@ -53,7 +53,7 @@ herein
 
 	make_border
 	    :
-	    { color:  Null_Or( xb::Color ),		# Border color, defaults to paren't background color.
+	    { color:  Null_Or( xc::Rgb ),		# Border color, defaults to paren't background color.
 	      width:  Int, 				# Border width in pixels.
 	      child:  w::Widget				# Child widget.
 	    }
@@ -64,7 +64,7 @@ herein
 
 	as_widget:  Border -> w::Widget;
 
-	set_color:  Border -> Null_Or(xb::Color) -> Void;
+	set_color:  Border -> Null_Or(xc::Rgb) -> Void;
 	    #
 	    # Dynamically change border color.
     };

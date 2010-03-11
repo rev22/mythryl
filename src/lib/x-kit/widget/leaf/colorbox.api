@@ -35,7 +35,7 @@ herein
 	    :
 	    w::Root_Window
 	    -> 
-	    ( Null_Or(xc::Color),
+	    ( Null_Or(xc::Rgb),
 	      Void -> w::Widget_Size_Preference
 	    )
 	    ->
