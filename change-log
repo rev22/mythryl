@@ -1,3 +1,4 @@
+2010-03-10-13.22.20: src/lib/x-kit/xclient/src/color/: Rename rgb24.pkg -> rgb8.pkg because bits-per-color-component is a more practical general naming scheme.
 2010-03-10-03.05.01: src/lib/x-kit/xclient/src/color/: Split x11-color-name.pkg off from rgb24.pkg, partly to avoid cyclicity problems, partly because it is better in a separate package anyhow.
 2010-03-10-03.05.01: src/lib/x-kit/xclient/src/color/yiq.pkg: Total rewrite. :-)
 2010-03-10-01.59.35: Globally renamed xrgb -> rgb24, taking 24-bitness as primary and X protocol applications as secondary.

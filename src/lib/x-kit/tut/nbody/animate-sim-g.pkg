@@ -170,8 +170,8 @@ herein
 			end;
 		end;
 
-		draw_pen  =  xd::make_pen  [xd::FOREGROUND  white];
-		erase_pen =  xd::make_pen  [xd::FOREGROUND  black];
+		draw_pen  =  xd::make_pen  [xd::FOREGROUND  (xc::rgb8_from_int 0xFFFFFF)];
+		erase_pen =  xd::make_pen  [xd::FOREGROUND  (xc::rgb8_from_int 0x000000)];
 
 		timer     =  timeout_in' (time::from_milliseconds 20);
 
@@ -179,7 +179,7 @@ herein
 		    =
 		    {   color = the_else (null_or::map color_by_name cs, white);
 
-			pen = xd::make_pen [xd::FOREGROUND color];
+			pen = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color color))];
 
 			{ p, v, m, data => { pen, radius } };
 		    };

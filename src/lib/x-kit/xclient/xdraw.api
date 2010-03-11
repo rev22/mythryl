@@ -42,6 +42,7 @@ api Xdraw {
     Ro_Pixmap;
     Font;
     Color;
+    Rgb8;
 
     Plane_Mask = PLANEMASK  Unt;	# This may belong elsewhere
 
@@ -72,8 +73,8 @@ api Xdraw {
      Pen_Trait
       = FUNCTION  Graphics_Op
       | PLANE_MASK  Plane_Mask
-      | FOREGROUND  Color
-      | BACKGROUND  Color
+      | FOREGROUND  Rgb8
+      | BACKGROUND  Rgb8
       | LINE_WIDTH  Int
       | LINE_STYLE_SOLID
       | LINE_STYLE_ON_OFF_DASH

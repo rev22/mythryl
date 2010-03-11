@@ -90,11 +90,11 @@ herein
 	  | WC_REL_STACK_MODE  (dt::Window, xt::Stack_Mode)
 	  ;
 
-	# Extract the pixel from a color:
+	# Extract the Rgb8 from a color:
 	#
-	fun rgb8_of (ci::COLOR { rgb8, ... } )
+	fun rgb8_of (ci::COLOR { rgb, ... } )
 	    =
-	    rgb8;
+	    rgb8::from_rgb rgb;
 
 	# Map user-level window attributes
 	# to internal x-window attributes: 
@@ -224,7 +224,7 @@ herein
 			    attributes
 				=>
 				[ xt::wa::BORDER_PIXEL     (rgb8_of  border_color),
-				  xt::wa::BACKGROUND_PIXEL (rgb8_of  background_color),
+				  xt::wa::BACKGROUND_PIXEL  background_color,
 				  xt::wa::EVENT_MASK        standard_xevent_mask
 				]
 			  };
@@ -271,7 +271,7 @@ herein
 			    case background_color
 				#
 				NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
-				THE c =>   xt::wa::BACKGROUND_PIXEL (rgb8_of c);
+				THE c =>   xt::wa::BACKGROUND_PIXEL c;
 			    esac;
 
 
@@ -344,7 +344,7 @@ herein
 			xt::wa::OVERRIDE_REDIRECT TRUE,
 			xt::wa::SAVE_UNDER TRUE,
 			xt::wa::BORDER_PIXEL      (rgb8_of  border_color),
-			xt::wa::BACKGROUND_PIXEL  (rgb8_of  background_color),
+			xt::wa::BACKGROUND_PIXEL  background_color,
 			xt::wa::EVENT_MASK        popup_xevent_mask
 		      ]
 		  };
@@ -385,7 +385,7 @@ herein
 		    #
 		    attributes => [
 			xt::wa::BORDER_PIXEL     (rgb8_of  border_color),
-			xt::wa::BACKGROUND_PIXEL (rgb8_of  background_color),
+			xt::wa::BACKGROUND_PIXEL background_color,
 			xt::wa::EVENT_MASK       standard_xevent_mask
 		      ]
 		};

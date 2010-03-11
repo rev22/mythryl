@@ -84,7 +84,7 @@ herein
 
 		fun fillfn w::FLAT (d, r, c)
 			=>
-			{   p = xd::make_pen [xd::FOREGROUND c];
+			{   p = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color c))];
 
 			    fn () =  xd::fill_box d p r;
 			};

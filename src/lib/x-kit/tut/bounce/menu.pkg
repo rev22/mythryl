@@ -145,7 +145,7 @@ herein
 			=
 			xw::make_simple_popup_window  screen
 			  {
-			    background_color =>  xc::white_of_screen  screen,
+			    background_color =>  xc::rgb8_from_int 0xFFFFFF,
 			    border_color     =>  xc::black_of_screen  screen,
 			    #
 			    site =>  xg::WINDOW_SITE
@@ -184,8 +184,8 @@ herein
 			=
 			xf::font_high  font;
 
-		    fore_pen = xd::make_pen [xd::FOREGROUND (xc::black_of_screen screen)];
-		    back_pen = xd::make_pen [xd::FOREGROUND (xc::white_of_screen screen)];
+		    fore_pen = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_int 0x000000)];
+		    back_pen = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_int 0xFFFFFF)];
 
 		    create = create_menu screen;
 

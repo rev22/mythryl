@@ -41,7 +41,7 @@ herein
 # (Of course, we'll first have to implement   rgb8::from_rgb  :-)
 # After that we should be able to collapse
 # Color to just Rgb.
-		rgb8:  rgb8::Rgb8,	  # Its X-server 24-bit-int rgb value.
+#		rgb8:  rgb8::Rgb8,	  # Its X-server 24-bit-int rgb value.
 		rgb:    rgb::Rgb	  # Its RGB value. 
 	      };
 
@@ -68,11 +68,13 @@ herein
 
 	same_color:  (Color, Color) -> Bool;
 
+	color_from_floats: (Float, Float, Float) -> Color;
+
 	# The following are used for
 	# drawing 0s or 1s on pixmaps:
 	#
-	color0:  Color;
-	color1:  Color;
+#	color0:  Color;
+#	color1:  Color;
 
 	# RGB values (these are needed for
 	# coloring cursors, but will probably go away) 

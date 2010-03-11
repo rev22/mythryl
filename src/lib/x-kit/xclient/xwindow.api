@@ -73,7 +73,7 @@ api  Xwindow {
 	->
 	{ site:              xg::Window_Site,
 	  border_color:      xc::Color,
-	  background_color:  xc::Color
+	  background_color:  xc::Rgb8
         }
 	->
 	(Window, xinput::Kidplug, threadkit::Mailslot(Void));
@@ -84,7 +84,7 @@ api  Xwindow {
 	->
 	{ site:              xg::Window_Site,
 	  border_color:      Null_Or( xc::Color ),
-	  background_color:  Null_Or( xc::Color )
+	  background_color:  Null_Or( xc::Rgb8  )
         }
         ->
         Window;
@@ -95,7 +95,7 @@ api  Xwindow {
         ->
         { site:              xg::Window_Site,
 	  border_color:      xc::Color,
-	  background_color:  xc::Color
+	  background_color:  xc::Rgb8
         }
         ->
         (Window, xinput::Kidplug);
@@ -106,7 +106,7 @@ api  Xwindow {
         ->
         { site:              xg::Window_Site,
 	  border_color:      xc::Color,
-	  background_color:  xc::Color
+	  background_color:  xc::Rgb8
         }
         ->
         (Window, xinput::Kidplug);

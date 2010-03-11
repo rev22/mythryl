@@ -131,11 +131,11 @@ herein
 		#
 		size =   xc::size_of_rw_pixmap   on_pattern;
 
-		spen = xd::make_pen
+		spen = xd::make_pen					# "spen" may be "stipple pen"
                          [ xd::STIPPLE stipple,
 			   xd::FILL_STYLE_OPAQUE_STIPPLED,
-			   xd::FOREGROUND xc::color1,
-			   xd::BACKGROUND xc::color0, 
+			   xd::FOREGROUND (xc::rgb8_from_int 1),        # xc::color1,
+			   xd::BACKGROUND (xc::rgb8_from_int 0),	# xc::color0, 
 			   xd::FUNCTION   xd::OP_AND
 			 ]; 
 
@@ -202,8 +202,8 @@ herein
 			       };
 
 		on_pen = xd::make_pen
-                           [ xd::FOREGROUND v.fg,
-			     xd::BACKGROUND color,
+                           [ xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color v.fg)),
+			     xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color color)),
 			     xd::CLIP_MASK on_mask,
 			     xd::CLIP_ORIGIN pt
 			   ];
@@ -217,8 +217,8 @@ herein
 			  off_pen
 			);
 		    else
-			( xd::clone_pen (on_pen,  [xd::BACKGROUND readyc]),
-			  xd::clone_pen (off_pen, [xd::BACKGROUND readyc])
+			( xd::clone_pen (on_pen,  [xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color readyc))]),
+			  xd::clone_pen (off_pen, [xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color readyc))])
 			);
 		    fi;
 

@@ -104,18 +104,24 @@ api  Xcore {
 
     # NOTE: the following should go away soon,		# XXX BUGGO FIXME
     # but we need it for recolorCursor *
-    # Maybe not; see rgbOfColor function *
+    # Maybe not; see rgb_of_color function *
     #
 #    Rgb = RGB  { red:  Unt, green:  Unt, blue:  Unt };
     Rgb;
     #
-    rgb_of_color:  Color -> Rgb;
-    rgb_from_unts: (Unt, Unt, Unt) -> Rgb;
-    rgb_to_unts:   Rgb -> (Unt, Unt, Unt);
+    rgb_of_color:      Color -> Rgb;
+    color_from_floats: (Float, Float, Float) -> Color;
+    #
+    rgb_from_unts:    (Unt, Unt, Unt) -> Rgb;
+    rgb_to_unts:       Rgb -> (Unt, Unt, Unt);
+    #
+    rgb_from_floats:  (Float, Float, Float) -> Rgb;
+    rgb_to_floats:    Rgb -> (Float, Float, Float);
 
     rgb8_from_ints: (Int, Int, Int) -> Rgb8;
     rgb8_from_int:  Int             -> Rgb8;
     rgb8_from_name: String          -> Rgb8;
+    rgb8_from_rgb:  Rgb             -> Rgb8;
     #
     rgb8_to_ints:   Rgb8 -> (Int, Int, Int);
     rgb8_to_int:    Rgb8 -> Int;
@@ -287,13 +293,12 @@ api  Xcore {
     white:  Color_Spec;
     black:  Color_Spec;
     #
-    color0:  Color;
-    color1:  Color;
+#    color0:  Color;
+#    color1:  Color;
     #
     color_of_screen:  Screen -> Color_Spec -> Color;	# Express Color_Spec relative to Screen's colortable.
     black_of_screen:  Screen -> Color;
     white_of_screen:  Screen -> Color;
-
 
 
 

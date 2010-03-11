@@ -102,12 +102,12 @@ herein
 
 		fun make_p c
 		    =
-		    xd::make_pen [xd::FOREGROUND c];
+		    xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color c)) ];
 
 		fun make_p' t
 		    =
-		    xd::make_pen [ xd::FOREGROUND (xc::black_of_screen screen),
-				   xd::BACKGROUND (xc::white_of_screen screen),
+		    xd::make_pen [ xd::FOREGROUND (xc::rgb8_from_int 0x000000),
+				   xd::BACKGROUND (xc::rgb8_from_int 0xFFFFFF),
 				   xd::STIPPLE t,
 				   xd::FILL_STYLE_OPAQUE_STIPPLED
 				 ];

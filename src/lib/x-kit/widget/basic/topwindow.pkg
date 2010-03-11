@@ -208,7 +208,7 @@ herein
                               {
                                 site =>  xg::WINDOW_SITE { upperleft, size, border_width=>0 },
 				#
-			        background_color =>  color,
+			        background_color =>  (xc::rgb8_from_rgb (xc::rgb_of_color color)),
 			        border_color     =>  color   #  not used 
 			      };
 

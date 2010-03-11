@@ -41,15 +41,19 @@ herein
 
 	Color =
 	    COLOR  {		  		#  A color in the colormap 
-		rgb8:   rgb8::Rgb8,		#  Its X-server 24-bit-int RGB value.
+#		rgb8:   rgb8::Rgb8,		#  Its X-server 24-bit-int RGB value.
 		rgb:    Rgb		 	#  Its RGB value 
 	    };
+
+	fun color_from_floats colortriple
+	    =
+	    COLOR { rgb => rgb::from_floats colortriple };
 
 	# The following are used for drawing 0s or 1s on pixmaps.
 	# Note that the rgb fields are bogus.
 
-	color0 = COLOR { rgb8 => rgb8::from_int 0, rgb => black_rgb };
-	color1 = COLOR { rgb8 => rgb8::from_int 1, rgb => black_rgb };
+#	color0 = COLOR { rgb8 => rgb8::from_int 0, rgb => black_rgb };
+#	color1 = COLOR { rgb8 => rgb8::from_int 1, rgb => black_rgb };
 
 	Reply_Mail
 	  = REPLY_ERROR
@@ -181,7 +185,7 @@ herein
 					=
 					allocate_named_color  cname;
 
-				    c = COLOR { rgb8 => pixel, rgb => visual_rgb };
+				    c = COLOR { rgb => visual_rgb };
 
 				    cname_ins (key, c);
 				    rgb_ins (visual_rgb, c);
@@ -202,7 +206,7 @@ herein
 				    =
 				    allocate_rgbcolor rgb;
 
-				c =   COLOR { rgb8 => pixel, rgb=>visual_rgb };
+				c =   COLOR { rgb=>visual_rgb };
 
 				rgb_ins (rgb, c);
 
@@ -237,8 +241,8 @@ herein
 			give  (reply_slot,  result);
 		    };
 
-		black = COLOR { rgb8=>black_rgb8, rgb=>black_rgb };
-		white = COLOR { rgb8=>white_rgb8, rgb=>white_rgb };
+		black = COLOR { rgb=>black_rgb };
+		white = COLOR { rgb=>white_rgb };
 
 		  rgb_ins (black_rgb, black);
 		  rgb_ins (white_rgb, white);
@@ -293,13 +297,11 @@ herein
 	fun rgb_of_color (COLOR { rgb, ... } ) = rgb;
 
 	fun same_color
-            ( COLOR { rgb8=>rgb8_1, rgb=>rgb_1 },
-	      COLOR { rgb8=>rgb8_2, rgb=>rgb_2 }
+            ( COLOR { rgb=>rgb_1 },
+	      COLOR { rgb=>rgb_2 }
 	    )
 	    =
-	    rgb8::same (rgb8_1, rgb8_2)
-            or
-	    rgb::same (rgb_1, rgb_2);
+	    rgb8::same (rgb8::from_rgb rgb_1, rgb8::from_rgb rgb_2);
 
     };				# package color_imp 
 

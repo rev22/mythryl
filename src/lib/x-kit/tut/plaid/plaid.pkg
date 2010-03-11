@@ -111,7 +111,7 @@ herein
 	    where
 		screen = w::screen_of root_window;
 
-		pen = xd::make_pen [ xd::FOREGROUND xc::color1,
+		pen = xd::make_pen [ xd::FOREGROUND (xc::rgb8_from_int 1),
 				     xd::FUNCTION   xd::OP_XOR
 				   ];
 		idle_pen = pen;

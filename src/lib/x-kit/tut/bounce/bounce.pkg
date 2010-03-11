@@ -41,7 +41,7 @@ herein
 			xw::make_simple_top_window  screen
 			  {
 			    border_color     =>  xc::black_of_screen  screen,
-			    background_color =>  xc::color0,					# To get XOR to work.
+			    background_color =>  xc::rgb8_from_int 0,					# To get XOR to work.
 
 			    site =>
 				xg::WINDOW_SITE

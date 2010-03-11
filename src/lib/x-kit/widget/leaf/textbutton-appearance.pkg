@@ -154,7 +154,7 @@ herein
 
 		v ->  { border_width, labeldata, fontdata, ... };
 
-		text_pen = xd::make_pen [xd::FOREGROUND v.forec];
+		text_pen = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color v.forec)) ];
 
 		i_text_pen = xd::clone_pen
 			       ( text_pen,
@@ -211,7 +211,7 @@ herein
 
 		v ->  { backc, color, border_width, labeldata, fontdata, ... };
 
-		text_pen =  xd::make_pen [xd::FOREGROUND v.forec];
+		text_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color v.forec)) ];
 
 		i_text_pen = xd::clone_pen
 			       ( text_pen,

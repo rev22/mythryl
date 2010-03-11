@@ -344,7 +344,7 @@ herein
 
 		font_high  = font_ascent + font_descent;
 
-		txt_pen =  xd::make_pen [ xd::FOREGROUND result.fg ];
+		txt_pen =  xd::make_pen [ xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color result.fg)) ];
 
 		fun do_text (y, i)
 		    = 

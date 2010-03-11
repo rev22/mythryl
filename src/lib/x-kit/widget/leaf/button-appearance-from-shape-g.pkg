@@ -142,11 +142,11 @@ herein
 
 		my (fore, ifore)
 		    = 
-		    case fg   
-
+		    case fg
+			#
 			NULL  => (base, ibase);
-
-			THE c => {   forepen = make_pen [FOREGROUND c];
+			#
+			THE c => {   forepen = make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color c)) ];
 				     (forepen, add_stipple forepen);
 				 };
 		    esac;

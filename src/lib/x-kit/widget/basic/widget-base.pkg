@@ -115,7 +115,7 @@ herein
 
 		xw::make_simple_subwindow  parent_window
 		  {
-		    background_color =>  args.background,
+		    background_color =>  case args.background  THE color => THE (xc::rgb8_from_rgb (xc::rgb_of_color color)); NULL => NULL; esac,
 		    border_color     =>  NULL,		# Not used.
 		    #	
 		    site =>  xg::WINDOW_SITE

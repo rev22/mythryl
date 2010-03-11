@@ -79,7 +79,7 @@ herein
 
 		black = xc::black_of_screen (w::screen_of root_window);
 
-		pen = xd::make_pen  [ xd::FOREGROUND black ];
+		pen = xd::make_pen  [ xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)) ];
 
 		fun main size
 		    =

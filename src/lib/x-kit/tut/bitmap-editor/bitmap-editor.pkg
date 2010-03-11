@@ -123,16 +123,16 @@ herein
 
 		draw_sz = cell_size - 3;
 
-		on_pen =  xd::make_pen [ xd::FOREGROUND  xc::color1,
+		on_pen =  xd::make_pen [ xd::FOREGROUND  (xc::rgb8_from_int 1),
 				         xd::LINE_STYLE_ON_OFF_DASH,
 				         xd::DASH_OFFSET 0,
 				         xd::DASH_FIXED 1
 				       ];
 
-		off_pen  = xd::make_pen [ xd::FOREGROUND  xc::color0 ];
+		off_pen  = xd::make_pen [ xd::FOREGROUND  (xc::rgb8_from_int 0) ];
 
-		copy_pen = xd::make_pen [ xd::FOREGROUND  (xc::black_of_screen  screen),
-				          xd::BACKGROUND  (xc::white_of_screen  screen)
+		copy_pen = xd::make_pen [ xd::FOREGROUND  (xc::rgb8_from_int 0x000000),
+				          xd::BACKGROUND  (xc::rgb8_from_int 0xFFFFFF)
 				        ];
 
 		fun fill_pix_map  pm

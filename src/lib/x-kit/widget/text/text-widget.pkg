@@ -886,11 +886,11 @@ herein
 
 			      stipple =  w::ro_pixmap root_window "lightGray";
 
-			      ( xd::make_pen [xd::FOREGROUND black, xd::BACKGROUND white],
-				xd::make_pen [xd::FOREGROUND white, xd::BACKGROUND black],
+			      ( xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)), xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white))],
+				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white)), xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black))],
 				#
-				xd::make_pen [xd::FOREGROUND black, xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple],
-				xd::make_pen [xd::FOREGROUND white, xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple]
+				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)), xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple],
+				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white)), xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple]
 			      );
 			    };
 

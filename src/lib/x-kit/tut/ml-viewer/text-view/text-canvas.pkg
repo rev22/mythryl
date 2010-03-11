@@ -79,8 +79,8 @@ herein
 			=>
 			xd::make_pen
 			  [
-			    xd::FOREGROUND  foreground,
-			    xd::BACKGROUND  background
+			    xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color foreground)),
+			    xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color background))
 			  ]
 		  };
 	    };
@@ -164,8 +164,8 @@ herein
 		    xd::make_pen
 		      [
 			xd::FUNCTION   xd::OP_COPY,
-			xd::FOREGROUND(*f),
-			xd::BACKGROUND(*b)
+			xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *f)),
+			xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *b))
 		      ];
 
 		fore_pen = make_pen (fore, back);

@@ -32,8 +32,8 @@ herein
 		pen = xd::make_pen
 			  [
 			    xd::FUNCTION xd::OP_XOR,
-			    xd::FOREGROUND xc::color1,
-			    xd::BACKGROUND xc::color0
+			    xd::FOREGROUND (xc::rgb8_from_int 1),
+			    xd::BACKGROUND (xc::rgb8_from_int 0)
 			  ];
 
 		drawable = xd::drawable_of_window  window;

@@ -671,8 +671,8 @@ herein
 	    =
 	    {   graytile =  xc::make_ro_pixmap_from_cs_pixmap  screen  lt_gray_image;
 
-		xd::make_pen [ xd::FOREGROUND  (xc::black_of_screen  screen), 
-			       xd::BACKGROUND  (xc::white_of_screen  screen), 
+		xd::make_pen [ xd::FOREGROUND  (xc::rgb8_from_int 0x000000), 
+			       xd::BACKGROUND  (xc::rgb8_from_int 0xFFFFFF),
 			       xd::FILL_STYLE_OPAQUE_STIPPLED, 
 			       xd::STIPPLE graytile
 			     ];
@@ -691,10 +691,7 @@ herein
 		xc::GRAY_SCALE  =>  make_bw_pen screen;
 		_ 
 		    =>
-		    {   red =  xc::color_of_screen screen (xc::CMS_RGB { red=>0u65535, green=>0u0, blue=>0u0 } );
-
-			xd::make_pen [ xd::FOREGROUND red ];
-		    };
+		    xd::make_pen [ xd::FOREGROUND (xc::rgb8_from_int 0xFF0000) ];
 	    esac;
 
 	fun make_graph_viewer (fontserver, root_window) vg
@@ -716,14 +713,14 @@ herein
 
 		# Drawing pens:
 		#
-		draw_pen =  xd::make_pen [xd::FOREGROUND (xc::white_of_screen  (w::screen_of root_window))];
-		line_pen =  xd::make_pen [xd::FOREGROUND (xc::black_of_screen  (w::screen_of root_window))];
+		draw_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_int 0xFFFFFF)];
+		line_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_int 0x000000)];
 
 		pick_pen = make_pick_pen screen;
 
-		plea_slot =  make_mailslot ();
-		mouse_slot   =  make_mailslot ();
-		view_slot    =  make_mailslot ();
+		plea_slot  =  make_mailslot ();
+		mouse_slot =  make_mailslot ();
+		view_slot  =  make_mailslot ();
 
 		minsz = 30;
 

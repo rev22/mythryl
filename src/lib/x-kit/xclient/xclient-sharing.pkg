@@ -82,12 +82,15 @@ package xclient_sharing: api {
     sharing       xdraw::Color
          ==       xcore::Color;
 
+    sharing       xcore::Rgb8
+         ==       xdraw::Rgb8;
+
+
     sharing  xselection::Atom
          ==       xcore::Atom;
 
 
 }{
-
 
     package xgeometry: (weak)  Xgeometry		# Xgeometry		is from   src/lib/x-kit/xclient/xgeometry.api
         =
@@ -144,6 +147,13 @@ package xclient_sharing: api {
 	rgb8_from_name = rgb8::from_name;
 	rgb8_to_ints   = rgb8::to_ints;
 	rgb8_to_int    = rgb8::to_int;
+	rgb8_from_rgb  = rgb8::from_rgb;
+
+	rgb_from_floats = rgb::from_floats;
+	rgb_to_floats   = rgb::to_floats;
+
+        color_from_floats = color_imp::color_from_floats;
+        color_to_rgb      = color_imp::rgb_of_color;
     };
 
     package xauthentication: (weak)  Xauthentication {	# Xauthentication	is from   src/lib/x-kit/xclient/xauthentication.api
@@ -164,6 +174,8 @@ package xclient_sharing: api {
     };
 
     package xdraw: (weak)  Xdraw {			# Xdraw			is from   src/lib/x-kit/xclient/xdraw.api
+
+	Rgb8	       = rgb8::Rgb8;	
 
 	package xg = xgeometry;				# Defined above.
 	package xc = xcore;				# Declared above.

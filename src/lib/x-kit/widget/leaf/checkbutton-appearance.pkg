@@ -105,12 +105,12 @@ herein
 
 		readyp = if (xc::same_color (v.bg, readyc))
 			      NULL;
-			 else THE (make_pen [FOREGROUND readyc]);
+			 else THE (make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color readyc))]);
 			 fi;
 
 		shades ->  { light, base, dark };
 
-		check_pen = make_pen [ FOREGROUND v.fg, 
+		check_pen = make_pen [ FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color v.fg)), 
 				       LINE_WIDTH 3,
 				       JOIN_STYLE_MITER
 				     ];

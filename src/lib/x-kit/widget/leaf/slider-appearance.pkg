@@ -374,7 +374,7 @@ herein
 		offset = result.offset;
 		border_width = result.border_width;
 		val_to_pt = val_to_pt (size, result);
-		text_pen = make_pen [FOREGROUND result.fg];
+		text_pen = make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color result.fg))];
 		draw_vvalue = draw_vvalue (val_to_pt, high, d, text_pen, result);
 
 		result.fontinfo ->  (font, font_ascent, font_descent);
@@ -551,7 +551,7 @@ herein
 		fd = make_unbuffered_drawable d;
 		offset = result.offset;
 		val_to_pt = val_to_pt (size, result);
-		text_pen = make_pen [FOREGROUND result.fg];
+		text_pen = make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color result.fg))];
 		draw_hvalue = draw_hvalue (val_to_pt, wide, d, text_pen, result);
 
 		result.fontinfo ->   (font, font_ascent, font_descent);

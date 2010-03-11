@@ -123,8 +123,8 @@ herein
 
 		tower_pen
 		    = 
-		    xd::make_pen  [ xd::FOREGROUND (xc::black_of_screen  screen),
-				    xd::BACKGROUND (xc::white_of_screen  screen)
+		    xd::make_pen  [ xd::FOREGROUND (xc::rgb8_from_int 0x000000),
+				    xd::BACKGROUND (xc::rgb8_from_int 0xFFFFFF)
 			          ];
 
 		image_pen = tower_pen;

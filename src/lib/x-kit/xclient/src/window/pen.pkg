@@ -37,8 +37,8 @@ herein
 	Pen_Trait
 	  = FUNCTION    xt::Graphics_Op
 	  | PLANE_MASK  xt::Plane_Mask
-	  | FOREGROUND  ci::Color
-	  | BACKGROUND  ci::Color
+	  | FOREGROUND  rgb8::Rgb8
+	  | BACKGROUND  rgb8::Rgb8
 	  | LINE_WIDTH  Int
 	  | LINE_STYLE_SOLID
 	  | LINE_STYLE_ON_OFF_DASH
@@ -120,7 +120,7 @@ herein
 
 		trait_to_rep (PLANE_MASK (xt::PLANEMASK mask)) => (1, IS_WIRE mask);
 
-		trait_to_rep (FOREGROUND (ci::COLOR { rgb8, ... } ))
+		trait_to_rep (FOREGROUND rgb8)
 		    =>
 		    {   i = rgb8::to_int  rgb8;
 
@@ -128,7 +128,7 @@ herein
 				 ::   (2, IS_WIRE (unt::from_int i));
 		    };
 
-		trait_to_rep (BACKGROUND (ci::COLOR { rgb8, ... } ))
+		trait_to_rep (BACKGROUND rgb8)
                     =>
 		    {   i = rgb8::to_int  rgb8;
 

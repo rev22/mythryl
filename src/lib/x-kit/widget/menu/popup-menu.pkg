@@ -282,7 +282,7 @@ herein
 		    =
 		    xw::make_simple_popup_window  screen
 		      {
-			background_color =>  white,
+			background_color =>  xc::rgb8_from_int 0xFFFFFF,
 			border_color     =>  black,
 			#
 			site =>  xg::WINDOW_SITE
@@ -350,8 +350,8 @@ herein
 		    xw::destroy_window  window;
 
 
-		fore_pen =  xd::make_pen [xd::FOREGROUND black, xd::BACKGROUND white];
-		back_pen =  xd::make_pen [xd::FOREGROUND white, xd::BACKGROUND black];
+		fore_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)), xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white)) ];
+		back_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white)), xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)) ];
 
 
 		fun draw_item (LABEL { text_pos, text, ... } ) pen

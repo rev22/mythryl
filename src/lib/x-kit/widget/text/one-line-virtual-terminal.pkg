@@ -82,7 +82,7 @@ herein
 			    NULL  => default_foreground_color;
 			esac;
 
-		pen    =  xd::make_pen [xd::FOREGROUND forec];
+		pen    =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color forec))];
 		bltpen =  xd::make_pen [];		#  workaround for blt op bug.  XXX BUGGO FIXME
 
 		font_name = "9x15";
@@ -140,7 +140,7 @@ herein
 					   fn p = xd::clear_box  to  (xg::BOX { col=>p*fontw, row=>0, wide=>1, high=>font_high } )
 					 );
 
-				THE c => {   clrpen =  xd::make_pen  [xd::FOREGROUND c];
+				THE c => {   clrpen =  xd::make_pen  [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color c))];
 
 					     ( xd::fill_box to clrpen,
 					       draw_cursor clrpen

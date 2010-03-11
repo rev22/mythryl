@@ -103,7 +103,7 @@ herein
 	    ->
 	    { site:             g::Window_Site,
 	      border_color:     ci::Color,
-	      background_color: ci::Color
+	      background_color: rgb8::Rgb8
 	    }
 	    ->
 	    ( Window,
@@ -117,7 +117,7 @@ herein
 	    ->
 	    { site:             g::Window_Site,
 	      border_color:     Null_Or( ci::Color ),
-	      background_color: Null_Or( ci::Color )
+	      background_color: Null_Or( rgb8::Rgb8 )
 	    }
 	    ->
 	    Window;
@@ -128,7 +128,7 @@ herein
 	    ->
 	    { site:              g::Window_Site,
 	      border_color:      ci::Color,
-	      background_color:  ci::Color
+	      background_color:  rgb8::Rgb8
 	    }
 	    ->
 	    (Window, wc::Kidplug);
@@ -139,7 +139,7 @@ herein
 	    ->
 	    { site:              g::Window_Site,
 	      border_color:      ci::Color,
-	      background_color:  ci::Color
+	      background_color:  rgb8::Rgb8
 	    }
 	    ->
 	    (Window, wc::Kidplug);
