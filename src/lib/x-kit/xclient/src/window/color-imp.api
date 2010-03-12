@@ -29,26 +29,14 @@ herein
 		     }
 	  ;
 
-	Color_Imp;
-
 	# RGB values (these are needed for
 	# coloring cursors, but will probably go away) 
 	#
 	Rgb;
 
-	make_color_imp
-	    :
-	    (dy::Xdisplay, dy::Xscreen)
-	    ->
-	    Color_Imp;
-
-	exception NO_COLOR_CELL;
-
 	get_color:  Color_Spec -> Rgb;
 	    #
 	    # Get the specified color.
-	    # Raise NO_COLOR_CELL if the color
-	    # map is already full.
 
 
 

@@ -33,12 +33,12 @@
 stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
 
-    include xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
     include xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     include xinput;				# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
 
     include widget;				# widget		is from	  src/lib/x-kit/widget/basic/widget.pkg
 
+    package xc = xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
     package xd = xdraw;				# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
 
     package w  = widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
@@ -92,8 +92,8 @@ herein
 	      }
 	  | DO_REALIZE  {
 	      kidplug:  Kidplug,
-	      window:  Window,
-	      size:  Size
+	      window:   xc::Window,
+	      size:     Size
 	    };
 
 	# The variable "me" ranges over this type:
@@ -713,7 +713,7 @@ herein
 	    =
 	    {   color = case color
 			    THE c =>  c;
-			    NULL  =>  color_of_screen (screen_of root_window) (CMS_NAME "gray");
+			    NULL  =>  xc::get_color (xc::CMS_NAME "gray");
 			esac;
 
 		make_scroll (root_window, size, color, NULL, scroll_view);

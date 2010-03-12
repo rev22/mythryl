@@ -53,7 +53,6 @@ herein
 	    SCREEN_INFO
 	      {
 		xscreen:    dy::Xscreen,			# Xscreen	def in    src/lib/x-kit/xclient/src/wire/display.pkg
-		color_imp:  ci::Color_Imp,			# The colormap imp for this screen.
 		imps:       List( Screen_Depth_Imps ),		# The graphics-context and draw imps for the allowed depths.
 				  				# of this screen.
 		root_imps:  Screen_Depth_Imps
@@ -191,9 +190,7 @@ herein
 
 	# Screen functions:
 	#
-	color_of_screen:          Screen -> ci::Color_Spec -> ci::Rgb;
-#	black_of_screen:          Screen                   -> ci::Rgb;
-#	white_of_screen:          Screen                   -> ci::Rgb;
+	color_of_screen:          ci::Color_Spec -> ci::Rgb;
 
 	xsession_of_screen:       Screen -> Xsession;
 	root_window_of_screen:    Screen -> xt::Window_Id;

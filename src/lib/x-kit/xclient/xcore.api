@@ -278,21 +278,13 @@ api  Xcore {
     #	      -- p24 http:://mythryl.org/pub/exene/1993-lib.ps
     #            (Reppy + Gansner's 1993 eXene library manual.)
     #
-#    exception BAD_RGB;
-    exception NO_COLOR_CELL;
     #
     Color_Spec
       = CMS_NAME  String
       | CMS_RGB  { red:  Unt, green:  Unt, blue:  Unt }
       ;
-    #
-    white:  Color_Spec;
-    black:  Color_Spec;
-    #
-    color_of_screen:  Screen -> Color_Spec -> Rgb;	# Express Color_Spec relative to Screen's colortable.
-#    black_of_screen:  Screen -> Rgb;
-#    white_of_screen:  Screen -> Rgb;
 
+    get_color:  Color_Spec -> Rgb;
 
 
     # Cursors:

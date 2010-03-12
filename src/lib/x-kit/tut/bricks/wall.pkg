@@ -114,7 +114,7 @@ herein
 		plea_slot  =  make_mailslot ();
 		brick_slot =  make_mailslot ();
 
-		cvt_color =  xc::color_of_screen  screen ;
+		cvt_color =  xc::get_color;
 
 		palette = { brick           =>  cvt_color  brick_red,
 			    mark            =>  cvt_color  yellow,

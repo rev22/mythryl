@@ -449,14 +449,12 @@ herein
 		    except
                         _ = raise exception  BAD_ATTRIBUTE_VALUE;
 
-		color_of_screen = xc::color_of_screen screen;
-
 		fun convert (value, STRING)     => STRING_VAL value;
 		    convert (value, INT)        => INT_VAL (cvt_int value);
 		    convert (value, FLOAT)      => FLOAT_VAL (cvt_real value);
 		    convert (value, BOOL)       => BOOL_VAL (cvt_bool value);
 		    convert (value, FONT)       => FONT_VAL (cvt_font value);
-		    convert (value, COLOR)      => COLOR_VAL (color_of_screen (cvt_color_spec value));
+		    convert (value, COLOR)      => COLOR_VAL (xc::get_color (cvt_color_spec value));
 		    convert (value, COLOR_SPEC) => COLOR_SPEC_VAL (cvt_color_spec value);
 		    convert (value, TILE)       => TILE_VAL (cvt_tile value);
 		    convert (value, CURSOR)     => CURSOR_VAL (cvt_cursor value);
@@ -514,7 +512,7 @@ herein
 		    convert (v as ARROW_DIR_VAL _, ARROW_DIR)   =>  v;
 		    convert (v as GRAVITY_VAL _, GRAVITY)       =>  v;
 		    convert (v as COLOR_SPEC_VAL _, COLOR_SPEC) =>  v;
-		    convert (COLOR_SPEC_VAL c, COLOR)           =>  COLOR_VAL (xc::color_of_screen screen c);
+		    convert (COLOR_SPEC_VAL c, COLOR)           =>  COLOR_VAL (xc::get_color c);
 		    convert _                                   =>  raise exception NO_CONVERSION;
 		end;
 	    end; #  CvtAttrValue 

@@ -55,7 +55,7 @@ herein
 	    {   screen = xw::screen_of_window  window;
 
 		fun default_color (NULL, color) =>  color;
-		    default_color (THE c, _)    =>  xc::color_of_screen  screen  c;
+		    default_color (THE c, _)    =>  xc::get_color  c;
 		end;
 
 		foreground = default_color (foreground, xc::rgb_from_floats (0.0, 0.0, 0.0));
@@ -134,8 +134,8 @@ herein
 	    =
 	    {   font       = REF font;
 
-		foreground_color = REF xc::black;
-		background_color = REF xc::white;
+		foreground_color = REF (xc::CMS_NAME "black");
+		background_color = REF (xc::CMS_NAME "white");
 
 		fore = REF foreground;
 		back = REF background;
@@ -146,7 +146,7 @@ herein
 		underline = REF FALSE;
 		under     = REF foreground;
 
-		color_of = xc::color_of_screen (xw::screen_of_window  window);
+		color_of = xc::get_color;
 
 		fun do_val (TBV_FONT       f) =>  font      := f;
 		    do_val (TBV_LINEHEIGHT n) =>  line_high   := THE n;

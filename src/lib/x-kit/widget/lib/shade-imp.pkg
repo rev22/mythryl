@@ -98,7 +98,7 @@ herein
 
 		fun color (r, g, b)
 		    = 
-		    xc::color_of_screen screen (xc::CMS_RGB { red=>r, green=>g, blue=>b } );
+		    xc::get_color (xc::CMS_RGB { red=>r, green=>g, blue=>b } );
 
 		fun make_p c
 		    =
@@ -134,8 +134,8 @@ herein
 		fun gray_shade (c, rgb)
 		    =
 		    {
-			lgray =  xc::color_of_screen screen (xc::CMS_NAME "gray87");
-			dgray =  xc::color_of_screen screen (xc::CMS_NAME "gray44");
+			lgray =  xc::get_color (xc::CMS_NAME "gray87");
+			dgray =  xc::get_color (xc::CMS_NAME "gray44");
 
 			my (lt, dk)
 			    =

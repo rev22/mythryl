@@ -74,7 +74,7 @@ herein
 
 		color_by_name
 		    =
-		    (xc::color_of_screen screen) o xc::CMS_NAME;
+		    xc::get_color o xc::CMS_NAME;
 
 		stipulate
 		    recal_slot = make_mailslot ();

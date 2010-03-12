@@ -122,7 +122,7 @@ herein
 	    (ROOT_WINDOW { screen, ... } )
 	    color_spec
 	    =
-	    xc::color_of_screen  screen  color_spec;
+	    xc::get_color  color_spec;
 
 	fun open_font     (ROOT_WINDOW { screen, ... } )
 	    =

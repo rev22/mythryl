@@ -67,10 +67,10 @@ package ml_viewer:  Ml_Viewer {
 		    #
 		    background => xc::CMS_NAME "wheat1",
 		    #
-		    comm_face  => v::FACE { font=>THE font2, color => THE (xc::CMS_NAME "red") },
-		    kw_face    => v::FACE { font=>THE font3, color => THE (xc::black) },
-		    sym_face   => v::FACE { font=>THE font3, color => THE (xc::black) },
-		    id_face    => v::FACE { font=>NULL,      color => THE (xc::CMS_NAME "blue") }
+		    comm_face  => v::FACE { font=>THE font2, color => THE (xc::CMS_NAME "red"  ) },
+		    kw_face    => v::FACE { font=>THE font3, color => THE (xc::CMS_NAME "black") },
+		    sym_face   => v::FACE { font=>THE font3, color => THE (xc::CMS_NAME "black") },
+		    id_face    => v::FACE { font=>NULL,      color => THE (xc::CMS_NAME "blue" ) }
 		  };
 
 	    init_loc
