@@ -1,3 +1,4 @@
+2010-03-12-12.21.38: src/lib/x-kit/xclient/src/window/color-imp.api: Ripped out make_color_imp(), and with it nearly all remaining code in color-imp.pkg.
 2010-03-11-21.52.13: src/lib/x-kit/xclient/src/window/color-imp.api: Eliminate color_imp argument from get_color().
 2010-03-11-21.37.56: src/lib/x-kit/xclient/src/window/color-imp.api: Killed check_rgb, exception BAD_RGB. src/lib/x-kit/xclient/src/color/rgb.api: Add normalize() call to replace lost check_rgb().
 2010-03-11-20.32.31: src/lib/x-kit/xclient/src/window/color-imp.api: Delete same_color(), color_from_floats(), white_rgb, black_rgb.

@@ -190,7 +190,7 @@ herein
 
 	# Screen functions:
 	#
-	color_of_screen:          ci::Color_Spec -> ci::Rgb;
+	color_of_screen:          ci::Color_Spec -> rgb::Rgb;
 
 	xsession_of_screen:       Screen -> Xsession;
 	root_window_of_screen:    Screen -> xt::Window_Id;

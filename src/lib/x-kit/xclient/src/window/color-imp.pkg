@@ -18,8 +18,6 @@ herein
 
     package color_imp: (weak)  Color_Imp {					# Color_Imp		is from   src/lib/x-kit/xclient/src/window/color-imp.api
 
-        Rgb = rgb::Rgb;
-
 	# Color specifications.
 	# Eventually, this will be extended to R5
 	# device independent color specifications.
@@ -38,12 +36,6 @@ herein
 	    get_color (CMS_NAME  colorname)          =>  rgb::from_name colorname;
 	end;
 
-	fun same_color
-            ( rgb_1,
-	      rgb_2
-	    )
-	    =
-	    rgb8::same (rgb8::from_rgb rgb_1, rgb8::from_rgb rgb_2);
 
     };				# package color_imp 
 

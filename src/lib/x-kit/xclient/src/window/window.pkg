@@ -66,12 +66,12 @@ herein
 	  | WA_BACKGROUND_PARENT_RELATIVE
 	  | WA_BACKGROUND_RW_PIXMAP   	     dt::Rw_Pixmap
 	  | WA_BACKGROUND_RO_PIXMAP          dt::Ro_Pixmap
-	  | WA_BACKGROUND_COLOR              ci::Rgb
+	  | WA_BACKGROUND_COLOR              rgb::Rgb
 	  #
 	  | WA_BORDER_COPY_FROM_PARENT
 	  | WA_BORDER_RW_PIXMAP       	     dt::Rw_Pixmap
 	  | WA_BORDER_RO_PIXMAP              dt::Ro_Pixmap
-	  | WA_BORDER_COLOR                  ci::Rgb
+	  | WA_BORDER_COLOR                  rgb::Rgb
 	  #
 	  | WA_BIT_GRAVITY                   xt::Gravity
 	  | WA_WINDOW_GRAVITY                xt::Gravity

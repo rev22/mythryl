@@ -138,6 +138,7 @@ package xclient_sharing: api {
 	rgb_to_unts     =  rgb::to_unts;
 	rgb_normalize   =  rgb::normalize;
 
+	Rgb	        =  rgb::Rgb;
 	Rgb8	        =  rgb8::Rgb8;	
 	same_rgb8       =  rgb8::same;
 	rgb8_from_ints  =  rgb8::from_ints;

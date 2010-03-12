@@ -7,10 +7,6 @@
 
 # The color imp manages colors for a given screen.
 
-stipulate
-    package xt = xtypes;				# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    package dy = display;				# display	is from   src/lib/x-kit/xclient/src/wire/display.pkg
-herein
 
     api Color_Imp {
 
@@ -29,12 +25,7 @@ herein
 		     }
 	  ;
 
-	# RGB values (these are needed for
-	# coloring cursors, but will probably go away) 
-	#
-	Rgb;
-
-	get_color:  Color_Spec -> Rgb;
+	get_color:  Color_Spec -> rgb::Rgb;
 	    #
 	    # Get the specified color.
 
@@ -42,7 +33,7 @@ herein
 
     };
 
-end;
+
 
 ## COPYRIGHT (c) 1992 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,

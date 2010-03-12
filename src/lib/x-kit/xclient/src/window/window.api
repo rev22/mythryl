@@ -53,12 +53,12 @@ herein
 	  | WA_BACKGROUND_PARENT_RELATIVE
 	  | WA_BACKGROUND_RW_PIXMAP          dt::Rw_Pixmap
 	  | WA_BACKGROUND_RO_PIXMAP    	     dt::Ro_Pixmap
-	  | WA_BACKGROUND_COLOR              ci::Rgb
+	  | WA_BACKGROUND_COLOR              rgb::Rgb
 	  #
 	  | WA_BORDER_COPY_FROM_PARENT
 	  | WA_BORDER_RW_PIXMAP      	     dt::Rw_Pixmap
 	  | WA_BORDER_RO_PIXMAP        	     dt::Ro_Pixmap
-	  | WA_BORDER_COLOR                  ci::Rgb
+	  | WA_BORDER_COLOR                  rgb::Rgb
 	  #
 	  | WA_BIT_GRAVITY                   xt::Gravity
 	  | WA_WINDOW_GRAVITY                xt::Gravity
@@ -102,7 +102,7 @@ herein
 	    sn::Screen
 	    ->
 	    { site:             g::Window_Site,
-	      border_color:     ci::Rgb,
+	      border_color:     rgb::Rgb,
 	      background_color: rgb8::Rgb8
 	    }
 	    ->
@@ -116,7 +116,7 @@ herein
 	    Window
 	    ->
 	    { site:             g::Window_Site,
-	      border_color:     Null_Or( ci::Rgb ),
+	      border_color:     Null_Or( rgb::Rgb ),
 	      background_color: Null_Or( rgb8::Rgb8 )
 	    }
 	    ->
@@ -127,7 +127,7 @@ herein
 	    Window
 	    ->
 	    { site:              g::Window_Site,
-	      border_color:      ci::Rgb,
+	      border_color:      rgb::Rgb,
 	      background_color:  rgb8::Rgb8
 	    }
 	    ->
@@ -138,7 +138,7 @@ herein
 	    sn::Screen
 	    ->
 	    { site:              g::Window_Site,
-	      border_color:      ci::Rgb,
+	      border_color:      rgb::Rgb,
 	      background_color:  rgb8::Rgb8
 	    }
 	    ->
@@ -196,7 +196,7 @@ herein
 
 	set_cursor:  Window ->  Null_Or( xr::Xcursor ) -> Void;
 
-	set_background_color:  Window ->  Null_Or( ci::Rgb ) -> Void;
+	set_background_color:  Window ->  Null_Or( rgb::Rgb ) -> Void;
 	    #
 	    # Set the background color attribute of the window.
 	    # This does not have an immediate effect on the
@@ -222,7 +222,7 @@ herein
 
 	standard_xevent_mask: xt::Event_Mask;
 
-	rgb8_of:	      ci::Rgb -> rgb8::Rgb8;
+	rgb8_of:	      rgb::Rgb -> rgb8::Rgb8;
     };
 
 end;
