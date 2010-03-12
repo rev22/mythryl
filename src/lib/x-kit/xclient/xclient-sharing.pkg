@@ -128,8 +128,8 @@ package xclient_sharing: api {
 
         herein
 
-	    white = copy_rgb  white_rgb;
-	    black = copy_rgb  black_rgb;
+	    white = copy_rgb  (rgb::from_floats (1.0, 1.0, 1.0));
+	    black = copy_rgb  (rgb::from_floats (0.0, 0.0, 0.0));
 
 	end;
 

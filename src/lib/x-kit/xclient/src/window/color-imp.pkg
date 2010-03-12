@@ -36,8 +36,8 @@ herein
 		     }
 	  ;
 
-	white_rgb = rgb::from_unts (0uxffff, 0uxffff, 0uxffff);
-	black_rgb = rgb::from_unts (0ux0000, 0ux0000, 0ux0000);
+#	white_rgb = rgb::from_unts (0uxffff, 0uxffff, 0uxffff);
+#	black_rgb = rgb::from_unts (0ux0000, 0ux0000, 0ux0000);
 
 	fun color_from_floats colortriple
 	    =
@@ -230,11 +230,11 @@ herein
 			give  (reply_slot,  result);
 		    };
 
-		black = black_rgb;
-		white = white_rgb;
+		black = rgb::from_floats (0.0, 0.0, 0.0);
+		white = rgb::from_floats (1.0, 1.0, 1.0);
 
-		rgb_ins (black_rgb, black);
-		rgb_ins (white_rgb, white);
+		rgb_ins (black, black);
+		rgb_ins (white, white);
 		xtracing::xspawn("color_imp", imp_loop);
 		COLOR_IMP { plea_slot, reply_slot, black, white };
 	    };								# fun make_color_imp

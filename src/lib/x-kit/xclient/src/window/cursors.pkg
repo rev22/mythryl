@@ -157,8 +157,8 @@ herein
 			src_chr   => cursor,
 			mask_chr  => cursor+1,
 
-			foreground_rgb  => ci::black_rgb,
-			background_rgb  => ci::white_rgb
+			foreground_rgb  => rgb::from_floats (0.0, 0.0, 0.0),
+			background_rgb  => rgb::from_floats (1.0, 1.0, 1.0)
 		      }
 		  );
 
