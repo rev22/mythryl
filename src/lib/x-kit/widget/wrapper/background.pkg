@@ -47,8 +47,9 @@ herein
 	    {   root_window = w::root_window_of widget;
 
 		color = case color
+			    #
 			    THE color =>  color;
-			    NULL      =>  xc::white_of_screen (w::screen_of root_window);
+			    NULL      =>  xc::rgb_from_floats (1.0, 1.0, 1.0);
 			esac;
 
 		make_back (root_window, color, widget);

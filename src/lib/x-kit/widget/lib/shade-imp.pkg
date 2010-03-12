@@ -102,7 +102,7 @@ herein
 
 		fun make_p c
 		    =
-		    xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color c)) ];
+		    xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb c) ];
 
 		fun make_p' t
 		    =
@@ -119,7 +119,7 @@ herein
 
 			my (lt, dk)
 			    =
-			    xc::same_rgb (c, xc::white_of_screen screen)
+			    xc::same_rgb (c, xc::rgb_from_floats (1.0, 1.0, 1.0))
 			      ?? (lgray, dgray)
 			      :: (dgray, lgray);
 
@@ -139,7 +139,7 @@ herein
 
 			my (lt, dk)
 			    =
-			    xc::same_rgb (c, xc::white_of_screen screen)
+			    xc::same_rgb (c, xc::rgb_from_floats (1.0, 1.0, 1.0))
 			     ?? (lgray, dgray)
 			     :: (dgray, lgray);
 
@@ -168,8 +168,8 @@ herein
 			    }
 			    except _ = NULL;
 
-			if (xc::same_rgb (c, xc::white_of_screen screen)
-			or  xc::same_rgb (c, xc::black_of_screen screen)
+			if (xc::same_rgb (c, xc::rgb_from_floats (1.0, 1.0, 1.0))
+			or  xc::same_rgb (c, xc::rgb_from_floats (0.0, 0.0, 0.0))
 			)
 			     gray_shade (c, rgb);
 			else shade ();
@@ -178,16 +178,14 @@ herein
 
 		alloc_shade =   monochrome screen   ??   bw_shade   ::   color_shade;
 
-		fun do_plea (GET_SHADES c)
+		fun do_plea (GET_SHADES rgb)
 		    =
-		    {   rgb = xc::rgb_of_color c;
+		    case (rgb_find rgb)
+			#
+			NULL =>  alloc_shade (rgb, rgb);
+			s    =>  s;
+		    esac;
 
-			case (rgb_find rgb)
-
-			    NULL =>  alloc_shade (c, rgb);
-			    s    =>  s;
-			esac;
-		    };
 
 		plea_slot  =  make_mailslot ();
 		reply_slot =  make_mailslot ();

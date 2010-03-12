@@ -205,8 +205,8 @@ herein
 			       };
 
 		on_pen = xd::make_pen
-                           [ xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color v.fg)),
-			     xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color color)),
+                           [ xd::FOREGROUND (xc::rgb8_from_rgb v.fg),
+			     xd::BACKGROUND (xc::rgb8_from_rgb color),
 			     xd::CLIP_MASK on_mask,
 			     xd::CLIP_ORIGIN pt
 			   ];
@@ -220,8 +220,8 @@ herein
 			  off_pen
 			);
 		    else
-			( xd::clone_pen (on_pen,  [xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color readyc))]),
-			  xd::clone_pen (off_pen, [xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color readyc))])
+			( xd::clone_pen (on_pen,  [xd::BACKGROUND (xc::rgb8_from_rgb readyc)]),
+			  xd::clone_pen (off_pen, [xd::BACKGROUND (xc::rgb8_from_rgb readyc)])
 			);
 		    fi;
 

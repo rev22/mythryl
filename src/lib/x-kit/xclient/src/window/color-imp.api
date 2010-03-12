@@ -52,16 +52,16 @@ herein
 	    # map is already full.
 
 
-	black_of:  Color_Imp -> Rgb;
-	white_of:  Color_Imp -> Rgb;
+#	black_of:  Color_Imp -> Rgb;
+#	white_of:  Color_Imp -> Rgb;
 
 	same_color:  (Rgb, Rgb) -> Bool;
-
+#
 	color_from_floats: (Float, Float, Float) -> Rgb;
 
 
 
-	rgb_of_color:  Rgb -> Rgb;
+#	rgb_of_color:  Rgb -> Rgb;
 
 	check_rgb:  Rgb -> Rgb;
 

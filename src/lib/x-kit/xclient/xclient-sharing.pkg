@@ -149,8 +149,8 @@ package xclient_sharing: api {
 	rgb_from_floats = rgb::from_floats;
 	rgb_to_floats   = rgb::to_floats;
 
-        color_from_floats = color_imp::color_from_floats;
-        color_to_rgb      = color_imp::rgb_of_color;
+#        color_from_floats = color_imp::color_from_floats;
+#        color_to_rgb      = color_imp::rgb_of_color;
     };
 
     package xauthentication: (weak)  Xauthentication {	# Xauthentication	is from   src/lib/x-kit/xclient/xauthentication.api

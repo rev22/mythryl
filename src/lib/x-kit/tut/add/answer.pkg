@@ -77,9 +77,9 @@ herein
 		    =
 		    xi::ignore_mouse_and_keyboard  kidplug;
 
-		black = xc::black_of_screen (w::screen_of root_window);
+		black = xc::rgb_from_floats (0.0, 0.0, 0.0);
 
-		pen = xd::make_pen  [ xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)) ];
+		pen = xd::make_pen  [ xd::FOREGROUND (xc::rgb8_from_rgb  black) ];
 
 		fun main size
 		    =

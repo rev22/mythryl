@@ -117,6 +117,7 @@ LIBRARY_COMPONENTS
 	graph-view/graph-viewer.api
 	graph-view/graph-viewer.pkg
 
+	graph-view/graph-view.api
 	graph-view/graph-view.pkg
 
 	main/main.pkg

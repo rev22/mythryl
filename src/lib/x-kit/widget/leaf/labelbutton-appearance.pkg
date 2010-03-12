@@ -283,14 +283,14 @@ herein
 
 		xoff = bw + v.padx;
 
-		back_pen     =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color bg))];
-		ready_pen    =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color readyc))];
-		normal_pen   =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color fg)), xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color bg))];
-		inactive_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color fg))];
+		back_pen     =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb bg)];
+		ready_pen    =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb readyc)];
+		normal_pen   =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb fg), xd::BACKGROUND (xc::rgb8_from_rgb  bg)];
+		inactive_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb fg)];
 
 		inactive_pen =  xd::make_pen
-                                  [ xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color fg)),
-				    xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color bg)),
+                                  [ xd::FOREGROUND (xc::rgb8_from_rgb fg),
+				    xd::BACKGROUND (xc::rgb8_from_rgb bg),
 				    xd::FILL_STYLE_STIPPLED,
 				    xd::STIPPLE v.stipple
 				  ];
@@ -363,7 +363,7 @@ herein
 			     =>
 			     {   v.font ->  (font, font_ascent, font_descent);
 
-				 pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color fg))];
+				 pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb fg)];
 
 				 col = case v.align   
 					   #
@@ -444,11 +444,11 @@ herein
 		    #
 		    THE { ltype => CHECK_LIGHT, size, color, ... }
 			=> 
-			lsetf (draw_check (xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color color))], size));
+			lsetf (draw_check (xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb color)], size));
 
 		    THE { ltype => RADIO_LIGHT, size, color, ... }
 			=> 
-			lsetf (draw_radio (xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color color))], size));
+			lsetf (draw_radio (xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb color)], size));
 		esac;
 	    };
 

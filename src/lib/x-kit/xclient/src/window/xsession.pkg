@@ -454,8 +454,8 @@ herein
 	# Screen functions:
 	#
 	fun color_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::get_color color_imp;
-	fun black_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::black_of  color_imp;
-	fun white_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::white_of  color_imp;
+#	fun black_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::black_of  color_imp;
+#	fun white_of_screen (SCREEN { screen=>SCREEN_INFO { color_imp, ... }, ... } ) =  ci::white_of  color_imp;
 
 	fun xsession_of_screen (SCREEN { xsession, ... } )
 	    =

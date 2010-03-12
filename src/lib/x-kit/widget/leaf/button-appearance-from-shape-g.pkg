@@ -146,7 +146,7 @@ herein
 			#
 			NULL  => (base, ibase);
 			#
-			THE c => {   forepen = make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color c)) ];
+			THE c => {   forepen = make_pen [FOREGROUND (xc::rgb8_from_rgb c) ];
 				     (forepen, add_stipple forepen);
 				 };
 		    esac;

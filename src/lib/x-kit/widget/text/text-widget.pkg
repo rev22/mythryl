@@ -881,16 +881,16 @@ herein
 		      my (pen, highlighter, normal_stipple, highlight_stipple)
 			  =
 			  {
-			      black   =  xc::black_of_screen (xw::screen_of_window window);
-			      white   =  xc::white_of_screen (xw::screen_of_window window);
+			      black   =  xc::rgb_from_floats (0.0, 0.0, 0.0);
+			      white   =  xc::rgb_from_floats (1.0, 1.0, 1.0);
 
 			      stipple =  w::ro_pixmap root_window "lightGray";
 
-			      ( xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)), xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white))],
-				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white)), xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black))],
+			      ( xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb black), xd::BACKGROUND (xc::rgb8_from_rgb  white)],
+				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb white), xd::BACKGROUND (xc::rgb8_from_rgb  black)],
 				#
-				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color black)), xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple],
-				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color white)), xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple]
+				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb black), xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple],
+				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb white), xd::FILL_STYLE_STIPPLED, xd::STIPPLE stipple]
 			      );
 			    };
 

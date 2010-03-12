@@ -7,23 +7,7 @@
 # This package gets used in:
 #     src/lib/x-kit/tut/ml-viewer/main/main.pkg 
 
-api Graph_View {
-
-#  package vg:  ATTRIBUTE_GRAPH
-#  package w:  WIDGET
-#  package vf:  VIEW_FONT
-
-    View;
-
-    make_graph_view:  (view_font::Font_Imp,  widget::Root_Window) -> planar_subgraph_tree::Attributed_Graph -> View;
-
-    as_widget:  View -> widget::Widget;
-};
-
-						# graph_viewer		is from   src/lib/x-kit/tut/ml-viewer/graph-view/graph-viewer.pkg
-						# planar_subgraph_tree	is from   src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
-package graph_view:  Graph_View {
-
+stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     include xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
 
@@ -35,205 +19,213 @@ package graph_view:  Graph_View {
     package w   =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package vf  =  view_font;
     package lw  =  line_of_widgets;		# line_of_widgets	is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
-    package xb  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 
-    View = VIEW { widget:  w::Widget,
-		  viewer:  v::Graph_Viewer
+						# graph_viewer		is from   src/lib/x-kit/tut/ml-viewer/graph-view/graph-viewer.pkg
+						# planar_subgraph_tree	is from   src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
+herein
+
+    package graph_view:  Graph_View {		# Graph_View		is from   src/lib/x-kit/tut/ml-viewer/graph-view/graph-view.api
+
+
+	View = VIEW { widget:  w::Widget,
+		      viewer:  v::Graph_Viewer
+		    };
+
+	Vport = { min:    Int,
+		  size:   Int,
+		  total:  Int
 		};
 
-    Vport = { min:    Int,
-	      size:   Int,
-	      total:  Int
-	    };
+	State = (Vport, Vport);
 
-    State = (Vport, Vport);
+	scroll_bar_size = 10;
 
-    scroll_bar_size = 10;
+	fun make_graph_view (fs, root_window) graph
+	    =
+	    {   viewer    = v::make_graph_viewer (fs, root_window) graph ;
 
-    fun make_graph_view (fs, root_window) graph
-        =
-        {   viewer    = v::make_graph_viewer (fs, root_window) graph ;
+		vp_mailop = v::mailop_of  viewer;
 
-	    vp_mailop = v::mailop_of  viewer;
+		hsb = sb::make_horizontal_scrollbar root_window { color=>NULL, size=>scroll_bar_size };	    horizontal_scrollbar_change' = sb::scrollbar_change'_of  hsb;
+		vsb = sb::make_vertical_scrollbar   root_window { color=>NULL, size=>scroll_bar_size };	    vertical_scrollbar_change' = sb::scrollbar_change'_of  vsb;
 
-	    hsb = sb::make_horizontal_scrollbar root_window { color=>NULL, size=>scroll_bar_size };	    horizontal_scrollbar_change' = sb::scrollbar_change'_of  hsb;
-	    vsb = sb::make_vertical_scrollbar   root_window { color=>NULL, size=>scroll_bar_size };	    vertical_scrollbar_change' = sb::scrollbar_change'_of  vsb;
+		screen = w::screen_of root_window;
 
-	    screen = w::screen_of root_window;
+		black  = xc::rgb_from_floats (0.0, 0.0, 0.0);
 
-	    black  = xb::black_of_screen  screen;
+		widget = sbl::make_widget_with_scrollbars  root_window
+			   {
+			     scrolled_widget => v::as_widget viewer,
 
-	    widget = sbl::make_widget_with_scrollbars  root_window
-                       {
-			 scrolled_widget => v::as_widget viewer,
-
-			 horizontal_scrollbar
-			     =>
-                             THE { pad => 1, 
-				   top => FALSE,
-				   scrollbar
-                                       =>
-                                       b::as_widget
-					   (b::make_border
-					     {
-					       color => THE black,
-					       width => 1,
-					       child => lw::as_widget
-							    (lw::make_line_of_widgets  root_window
-								(lw::VT_CENTER
-								  [
-								    lw::SPACER { min_size=>1, ideal_size=>1, max_size=>THE 1 },
-								    lw::WIDGET (sb::as_widget hsb),
-								    lw::SPACER { min_size=>1, ideal_size=>1, max_size=>THE 1 }
-								  ]
+			     horizontal_scrollbar
+				 =>
+				 THE { pad => 1, 
+				       top => FALSE,
+				       scrollbar
+					   =>
+					   b::as_widget
+					       (b::make_border
+						 {
+						   color => THE black,
+						   width => 1,
+						   child => lw::as_widget
+								(lw::make_line_of_widgets  root_window
+								    (lw::VT_CENTER
+								      [
+									lw::SPACER { min_size=>1, ideal_size=>1, max_size=>THE 1 },
+									lw::WIDGET (sb::as_widget hsb),
+									lw::SPACER { min_size=>1, ideal_size=>1, max_size=>THE 1 }
+								      ]
+								    )
 								)
-							    )
-					     }
-					   )
+						 }
+					       )
 
-				 },
+				     },
 
-			 vertical_scrollbar
-			     =>
-                             THE { pad  => 1, 
-				   left => FALSE,
+			     vertical_scrollbar
+				 =>
+				 THE { pad  => 1, 
+				       left => FALSE,
 
-				   scrollbar
-				       =>
-                                        b::as_widget
-					    (b::make_border
-					      {
-						color =>  THE black,
-						width =>  1,
-						child =>  lw::as_widget
-							      (lw::make_line_of_widgets  root_window
-								  (lw::HZ_CENTER
-								    [
-								      lw::SPACER { min_size=>1,  ideal_size=>1, max_size=>THE 1 },
-								      lw::WIDGET (sb::as_widget vsb),
-								      lw::SPACER { min_size=>1,  ideal_size=>1, max_size=>THE 1 }
-								    ]
+				       scrollbar
+					   =>
+					    b::as_widget
+						(b::make_border
+						  {
+						    color =>  THE black,
+						    width =>  1,
+						    child =>  lw::as_widget
+								  (lw::make_line_of_widgets  root_window
+								      (lw::HZ_CENTER
+									[
+									  lw::SPACER { min_size=>1,  ideal_size=>1, max_size=>THE 1 },
+									  lw::WIDGET (sb::as_widget vsb),
+									  lw::SPACER { min_size=>1,  ideal_size=>1, max_size=>THE 1 }
+									]
+								      )
 								  )
-							      )
-					      }
-					    )
+						  }
+						)
 
 
-				 }
-		       };
+				     }
+			   };
 
-	    initstate
-	        =
-		( { min=>0, size=>0, total=>0 },
-		  { min=>0, size=>0, total=>0 }
-                );
+		initstate
+		    =
+		    ( { min=>0, size=>0, total=>0 },
+		      { min=>0, size=>0, total=>0 }
+		    );
 
-	    # hsb is probably "horizontal_scrollbar":
-	    #
-	    fun do_horizontal_scrollbar_change (sb::SCROLL_UP   r, state:  State) =>  state;
-		do_horizontal_scrollbar_change (sb::SCROLL_DOWN r, state:  State) =>  state;
+		# hsb is probably "horizontal_scrollbar":
+		#
+		fun do_horizontal_scrollbar_change (sb::SCROLL_UP   r, state:  State) =>  state;
+		    do_horizontal_scrollbar_change (sb::SCROLL_DOWN r, state:  State) =>  state;
 
-		do_horizontal_scrollbar_change (sb::SCROLL_END  r, state as ( { min, size, total }, v))
-		    =>
-		    {   min' = floor (r * (real total));
+		    do_horizontal_scrollbar_change (sb::SCROLL_END  r, state as ( { min, size, total }, v))
+			=>
+			{   min' = floor (r * (real total));
 
-			if (min' != min)
-			    #
-			    v::set_horz_view viewer min';
-
-			    ( { min=>min', size, total }, v);
-			else
-			    state;
-			fi;
-		    };
-
-		do_horizontal_scrollbar_change (_, state)
-		    =>
-		    state;
-	    end;
-
-	    # vsb is probably "vertical scrollbar":
-	    #
-	    fun do_vertical_scrollbar_change (sb::SCROLL_UP   r, state: State) =>  state;
-		do_vertical_scrollbar_change (sb::SCROLL_DOWN r, state: State) =>  state;
-
-		do_vertical_scrollbar_change (sb::SCROLL_END  r, state as (h, { min, size, total } ))
-		    =>
-		    {   min' = floor (r * (real total));
-
-			if (min' != min)
-			    #
-			    v::set_vert_view viewer min';
-
-			    (h, { min=>min', size, total } );
-			else
-			    state;
-			fi;
-		    };
-
-		do_vertical_scrollbar_change (_, state)
-		    =>
-		    state;
-	    end;
-
-	    fun handle_vp ( { horz=>v::VIEWDIM hz, vert=>v::VIEWDIM vt }, (h, v))
-		=
-		{
-		    fun change (sb, { min, size, total }:  Vport)
-			=
-			{   total = real total;
-
-			    sb::set_scrollbar_thumb
+			    if (min' != min)
 				#
-				sb
-				#
-				{ size =>  THE ((float::from_int size) // total),
-                                  top  =>  THE ((float::from_int min ) // total)
-                                };
+				v::set_horz_view viewer min';
+
+				( { min=>min', size, total }, v);
+			    else
+				state;
+			    fi;
 			};
 
-		    if (hz != h)   change (hsb, hz);  fi; 
-		    if (vt != v)   change (vsb, vt);  fi; 
+		    do_horizontal_scrollbar_change (_, state)
+			=>
+			state;
+		end;
 
-		    (hz, vt);
-		};
+		# vsb is probably "vertical scrollbar":
+		#
+		fun do_vertical_scrollbar_change (sb::SCROLL_UP   r, state: State) =>  state;
+		    do_vertical_scrollbar_change (sb::SCROLL_DOWN r, state: State) =>  state;
 
-	    fun loop state
-		=
-		for (;;) {
-		    #
-		    select [
+		    do_vertical_scrollbar_change (sb::SCROLL_END  r, state as (h, { min, size, total } ))
+			=>
+			{   min' = floor (r * (real total));
+
+			    if (min' != min)
+				#
+				v::set_vert_view viewer min';
+
+				(h, { min=>min', size, total } );
+			    else
+				state;
+			    fi;
+			};
+
+		    do_vertical_scrollbar_change (_, state)
+			=>
+			state;
+		end;
+
+		fun handle_vp ( { horz=>v::VIEWDIM hz, vert=>v::VIEWDIM vt }, (h, v))
+		    =
+		    {
+			fun change (sb, { min, size, total }:  Vport)
+			    =
+			    {   total = real total;
+
+				sb::set_scrollbar_thumb
+				    #
+				    sb
+				    #
+				    { size =>  THE ((float::from_int size) // total),
+				      top  =>  THE ((float::from_int min ) // total)
+				    };
+			    };
+
+			if (hz != h)   change (hsb, hz);  fi; 
+			if (vt != v)   change (vsb, vt);  fi; 
+
+			(hz, vt);
+		    };
+
+		fun loop state
+		    =
+		    for (;;) {
 			#
-			vp_mailop
-			    ==>
-			    (fn e = handle_vp  (e, state)),
+			select [
+			    #
+			    vp_mailop
+				==>
+				(fn e = handle_vp  (e, state)),
 
-			horizontal_scrollbar_change'
-			    ==>
-			    (fn e = do_horizontal_scrollbar_change (e, state)),
+			    horizontal_scrollbar_change'
+				==>
+				(fn e = do_horizontal_scrollbar_change (e, state)),
 
-			vertical_scrollbar_change'
-			    ==>
-			    (fn e = do_vertical_scrollbar_change (e, state))
-	            ];
+			    vertical_scrollbar_change'
+				==>
+				(fn e = do_vertical_scrollbar_change (e, state))
+			];
+		    };
+
+		make_thread  "graph_view"  .{
+		    #
+		    loop initstate;
 		};
 
-	    make_thread  "graph_view"  .{
-                #
-		loop initstate;
+		VIEW {
+		    viewer,
+		    widget => lw::as_widget widget
+		};
 	    };
 
-	    VIEW {
-		viewer,
-		widget => lw::as_widget widget
-	    };
-        };
+	fun as_widget (VIEW { widget, ... } )
+	    =
+	    widget;
 
-    fun as_widget (VIEW { widget, ... } )
-	=
-	widget;
-
-};				# package view 
+    };							# package graph_view 
+end;
 
 
 ##########################################################################

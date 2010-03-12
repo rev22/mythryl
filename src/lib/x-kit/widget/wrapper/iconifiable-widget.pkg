@@ -159,8 +159,8 @@ herein
 
 		font_high = font_ascent + font_descent;
 
-		txt_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color v.fg))];
-		on_pen  =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color v.on_color))];
+		txt_pen =  xd::make_pen [ xd::FOREGROUND (xc::rgb8_from_rgb  v.fg      ) ];
+		on_pen  =  xd::make_pen [ xd::FOREGROUND (xc::rgb8_from_rgb  v.on_color) ];
 
 		fun draw_light (is_on, relief)
 		    =

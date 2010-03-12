@@ -61,7 +61,7 @@ herein
 		color = case color_opt   
 			    #
 			    THE color =>  color;
-			    NULL      =>  xc::black_of_screen screen;
+			    NULL      =>  xc::rgb_from_floats (0.0, 0.0, 0.0);
 			esac;
 
 		crect (root_window, color, size_preference_thunk_of);

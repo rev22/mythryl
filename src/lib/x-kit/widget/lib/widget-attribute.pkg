@@ -328,12 +328,11 @@ herein
 
 	color_format = f::sprintf' "#%04x%04x%04x";
 
-	fun color_to_string c
+	fun color_to_string rgb
 	    =
 	    {   my (red, blue, green)
 		    =
-		    xc::rgb_to_unts (xc::rgb_of_color c);
-
+		    xc::rgb_to_unts  rgb;
 
 		color_format [f::UNT red, f::UNT green, f::UNT blue];
 	    };

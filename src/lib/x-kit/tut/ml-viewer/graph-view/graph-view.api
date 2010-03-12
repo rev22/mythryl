@@ -1,0 +1,21 @@
+## graph-view.pkg
+#
+
+# Compiled by:
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+
+# This package gets used in:
+#     src/lib/x-kit/tut/ml-viewer/main/main.pkg 
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/tut/ml-viewer/graph-view/graph-view.pkg
+
+api Graph_View {
+
+    View;
+
+    make_graph_view:  (view_font::Font_Imp,  widget::Root_Window) -> planar_subgraph_tree::Attributed_Graph -> View;
+
+    as_widget:  View -> widget::Widget;
+};

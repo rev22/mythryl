@@ -173,7 +173,7 @@ herein
 		color = case color_opt    
 			    #
 			    THE color =>  color;
-			    NULL      =>  xc::white_of_screen  screen;
+			    NULL      =>  xc::rgb_from_floats (1.0, 1.0, 1.0);
 			esac;
 
 		delete_slot = make_mailslot ();
@@ -208,8 +208,8 @@ herein
                               {
                                 site =>  xg::WINDOW_SITE { upperleft, size, border_width=>0 },
 				#
-			        background_color =>  (xc::rgb8_from_rgb (xc::rgb_of_color color)),
-			        border_color     =>  color   #  not used 
+			        background_color =>  (xc::rgb8_from_rgb  color),
+			        border_color     =>  color   				#  not used 
 			      };
 
 			fun give_hint { size_hints, nonsize_hints }

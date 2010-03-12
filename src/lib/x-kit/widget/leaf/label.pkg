@@ -276,14 +276,14 @@ herein
 		box  =  xg::BOX { col=>0, row=>0, wide, high };
 		xoff =  border_width + lv.padx;
 
-		fill_box dr (make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *bg))]) box;
+		fill_box  dr  (make_pen [FOREGROUND (xc::rgb8_from_rgb *bg)])  box;
 
 		case *label
 		    #
 		    ICON_DATA ro_pixmap
 			=>
-			{   pen = make_pen [ FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *fg)),
-					     BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *bg))
+			{   pen = make_pen [ FOREGROUND (xc::rgb8_from_rgb  *fg),
+					     BACKGROUND (xc::rgb8_from_rgb  *bg)
 					   ];
 
 			    my  xg::SIZE { wide=>twid, high=>tht }
@@ -310,7 +310,7 @@ herein
 		       =>
 		       {   lv.font -> FONT_INFO { font, fonta, fontd, ... };
 
-			   pen = make_pen [FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *fg))];
+			   pen = make_pen [FOREGROUND (xc::rgb8_from_rgb  *fg)];
 
 			   col = case lv.align   
 				     #

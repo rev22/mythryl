@@ -69,8 +69,8 @@ herein
 		screen   = w::screen_of    root_window;
 		xsession = w::xsession_of  root_window;
 
-		black = xc::black_of_screen  screen;
-		white = xc::white_of_screen  screen;
+		black = xc::rgb_from_floats (0.0, 0.0, 0.0);
+		white = xc::rgb_from_floats (1.0, 1.0, 1.0);
 
 		color_by_name
 		    =
@@ -179,7 +179,7 @@ herein
 		    =
 		    {   color = the_else (null_or::map color_by_name cs, white);
 
-			pen = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color color))];
+			pen = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb color)];
 
 			{ p, v, m, data => { pen, radius } };
 		    };

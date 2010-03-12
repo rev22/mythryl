@@ -54,12 +54,12 @@ herein
 	    =
 	    {   screen = xw::screen_of_window  window;
 
-		fun default_color (NULL, color_fn) =>  color_fn  screen;
-		    default_color (THE c, _)       =>  xc::color_of_screen  screen  c;
+		fun default_color (NULL, color) =>  color;
+		    default_color (THE c, _)    =>  xc::color_of_screen  screen  c;
 		end;
 
-		foreground = default_color (foreground, xc::black_of_screen);
-		background = default_color (background, xc::white_of_screen);
+		foreground = default_color (foreground, xc::rgb_from_floats (0.0, 0.0, 0.0));
+		background = default_color (background, xc::rgb_from_floats (1.0, 1.0, 1.0));
 
 		xw::change_window_attributes  window
 		  [
@@ -79,8 +79,8 @@ herein
 			=>
 			xd::make_pen
 			  [
-			    xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color foreground)),
-			    xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color background))
+			    xd::FOREGROUND (xc::rgb8_from_rgb  foreground),
+			    xd::BACKGROUND (xc::rgb8_from_rgb  background)
 			  ]
 		  };
 	    };
@@ -164,8 +164,8 @@ herein
 		    xd::make_pen
 		      [
 			xd::FUNCTION   xd::OP_COPY,
-			xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *f)),
-			xd::BACKGROUND (xc::rgb8_from_rgb (xc::rgb_of_color *b))
+			xd::FOREGROUND (xc::rgb8_from_rgb  *f),
+			xd::BACKGROUND (xc::rgb8_from_rgb  *b)
 		      ];
 
 		fore_pen = make_pen (fore, back);

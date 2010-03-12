@@ -392,12 +392,12 @@ herein
 
 		bw = result.border_width;
 
-		txt_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color result.fg))];
+		txt_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb  result.fg)];
 
 		i_txt_pen =  xd::clone_pen (txt_pen,
 				[xd::FILL_STYLE_STIPPLED, xd::STIPPLE result.stipple]);
 
-		sel_txt_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb (xc::rgb_of_color result.sel_fg))];
+		sel_txt_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb  result.sel_fg)];
 
 		i_sel_txt_pen =  xd::clone_pen (txt_pen,
 				[xd::FILL_STYLE_STIPPLED, xd::STIPPLE result.stipple]);

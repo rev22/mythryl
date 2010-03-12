@@ -275,7 +275,7 @@ herein
 					    (border::as_widget
 						(border::make_border
 						  {
-						    color =>  THE (xcore::black_of_screen  screen),
+						    color =>  THE (xc::rgb_from_floats (0.0, 0.0, 0.0)),
 						    width =>  1,
 						    child =>  tl::as_widget  op_list
 						  }

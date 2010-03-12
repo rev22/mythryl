@@ -108,8 +108,8 @@ api  Xcore {
 #    Rgb = RGB  { red:  Unt, green:  Unt, blue:  Unt };
     Rgb;
     #
-    rgb_of_color:      Rgb -> Rgb;
-    color_from_floats: (Float, Float, Float) -> Rgb;
+#    rgb_of_color:      Rgb -> Rgb;
+#    color_from_floats: (Float, Float, Float) -> Rgb;
     #
     rgb_from_unts:    (Unt, Unt, Unt) -> Rgb;
     rgb_to_unts:       Rgb -> (Unt, Unt, Unt);
@@ -292,8 +292,8 @@ api  Xcore {
     black:  Color_Spec;
     #
     color_of_screen:  Screen -> Color_Spec -> Rgb;	# Express Color_Spec relative to Screen's colortable.
-    black_of_screen:  Screen -> Rgb;
-    white_of_screen:  Screen -> Rgb;
+#    black_of_screen:  Screen -> Rgb;
+#    white_of_screen:  Screen -> Rgb;
 
 
 

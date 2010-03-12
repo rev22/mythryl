@@ -1,3 +1,4 @@
+2010-03-11-13.28.17: src/lib/x-kit/xclient/src/window/color-imp.api: Ripped out its beating heart by eliminating the Color type.
 2010-03-11-04.32.03: Steps toward eliminating colortable dependencies and thus color-imp.pkg:  src/lib/x-kit/xclient/xdraw.api: Pen_Trait: Change BACKGROUND, FOREGROUND from Color -> Rgb8.  src/lib/x-kit/xclient/src/window/color-imp.api: Eliminate color0, color1, drop Rgb8 component from COLOR.
 2010-03-10-13.22.20: src/lib/x-kit/xclient/src/color/: Rename rgb24.pkg -> rgb8.pkg because bits-per-color-component is a more practical general naming scheme.
 2010-03-10-03.05.01: src/lib/x-kit/xclient/src/color/: Split x11-color-name.pkg off from rgb24.pkg, partly to avoid cyclicity problems, partly because it is better in a separate package anyhow.
