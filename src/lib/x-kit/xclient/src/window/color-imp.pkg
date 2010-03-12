@@ -239,28 +239,6 @@ herein
 		COLOR_IMP { plea_slot, reply_slot, black, white };
 	    };								# fun make_color_imp
 
-#	exception BAD_RGB;
-#
-#	fun valid_rgb  { red, green, blue }
-#	    =
-#	    rc::valid_word16  red      and
-#	    rc::valid_word16  green    and
-#	    rc::valid_word16  blue;
-#
-#	fun check_rgbval c
-#	    =
-#	    if   (not (valid_rgb c)   )   raise exception BAD_RGB;   fi;
-#
-#	fun check_rgb  rgb
-#	    =
-#	    {   (rgb::to_unts rgb)
-#		    ->
-#		    (red, green, blue);
-#
-#                check_rgbval { red, green, blue };
-#		rgb;
-#	    };
-#
 	stipulate
 
 	    fun get (COLOR_IMP { plea_slot, reply_slot, ... }, color_spec)
@@ -280,10 +258,10 @@ herein
 	    end;
 	end;
 
-	fun black_of (COLOR_IMP { black, ... } ) = black;
-	fun white_of (COLOR_IMP { white, ... } ) = white;
 
-	fun rgb_of_color rgb = rgb;
+	fun get_color (CMS_RGB { red, green, blue }) =>  rgb::from_unts (red, green, blue);
+	    get_color (CMS_NAME  colorname)          =>  rgb::from_name colorname;
+	end;
 
 	fun same_color
             ( rgb_1,

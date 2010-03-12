@@ -42,18 +42,15 @@ herein
 	    ->
 	    Color_Imp;
 
-#	exception BAD_RGB;
 	exception NO_COLOR_CELL;
 
-	get_color:  Color_Imp -> Color_Spec -> Rgb;
+	get_color:  Color_Spec -> Rgb;
 	    #
 	    # Get the specified color.
 	    # Raise NO_COLOR_CELL if the color
 	    # map is already full.
 
 
-
-#	check_rgb:  Rgb -> Rgb;
 
     };
 
