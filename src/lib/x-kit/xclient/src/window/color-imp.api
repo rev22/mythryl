@@ -42,7 +42,7 @@ herein
 	    ->
 	    Color_Imp;
 
-	exception BAD_RGB;
+#	exception BAD_RGB;
 	exception NO_COLOR_CELL;
 
 	get_color:  Color_Imp -> Color_Spec -> Rgb;
@@ -53,16 +53,8 @@ herein
 
 
 
-#	same_color:  (Rgb, Rgb) -> Bool;
+#	check_rgb:  Rgb -> Rgb;
 
-#	color_from_floats: (Float, Float, Float) -> Rgb;
-
-
-
-	check_rgb:  Rgb -> Rgb;
-
-#	white_rgb:  Rgb;
-#	black_rgb:  Rgb;
     };
 
 end;

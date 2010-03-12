@@ -93,6 +93,32 @@ herein
 	    ;
 
 
+	# Ensure that all color components
+	# are in 0.0 -> 1.0 inclusive:
+	#
+	fun normalize rgb
+	    =
+	    {   (to_floats rgb) -> (red, green, blue);
+
+		if (red   >= 0.0   &&   red   <= 0.0
+                &&  green >= 0.0   &&   green <= 0.0
+                &&  blue  >= 0.0   &&   blue  <= 0.0
+		)
+		    rgb;
+		else
+		    red   =  red   >= 0.0  ??  red    ::  0.0;
+		    red   =  red   <= 1.0  ??  red    ::  1.0;
+		    #
+		    green =  green >= 0.0  ??  green  ::  0.0;
+		    green =  green <= 1.0  ??  green  ::  1.0;
+		    #
+		    blue  =  blue  >= 0.0  ??  blue   ::  0.0;
+		    blue  =  blue  <= 1.0  ??  blue   ::  1.0;
+		    #
+		    from_floats (red, green, blue);
+		fi;
+	    };
+
         fun from_name  colorname
 	    =
 	    from_floats  (x11_color_name::to_floats  colorname);

@@ -133,24 +133,22 @@ package xclient_sharing: api {
 
 	end;
 
-	same_rgb       =  rgb::same;
-	rgb_from_unts  =  rgb::from_unts;
-	rgb_to_unts    =  rgb::to_unts;
+	same_rgb        =  rgb::same;
+	rgb_from_unts   =  rgb::from_unts;
+	rgb_to_unts     =  rgb::to_unts;
+	rgb_normalize   =  rgb::normalize;
 
-	Rgb8	       = rgb8::Rgb8;	
-	same_rgb8      = rgb8::same;
-	rgb8_from_ints = rgb8::from_ints;
-	rgb8_from_int  = rgb8::from_int;
-	rgb8_from_name = rgb8::from_name;
-	rgb8_to_ints   = rgb8::to_ints;
-	rgb8_to_int    = rgb8::to_int;
-	rgb8_from_rgb  = rgb8::from_rgb;
+	Rgb8	        =  rgb8::Rgb8;	
+	same_rgb8       =  rgb8::same;
+	rgb8_from_ints  =  rgb8::from_ints;
+	rgb8_from_int   =  rgb8::from_int;
+	rgb8_from_name  =  rgb8::from_name;
+	rgb8_to_ints    =  rgb8::to_ints;
+	rgb8_to_int     =  rgb8::to_int;
+	rgb8_from_rgb   =  rgb8::from_rgb;
 
-	rgb_from_floats = rgb::from_floats;
-	rgb_to_floats   = rgb::to_floats;
-
-#        color_from_floats = color_imp::color_from_floats;
-#        color_to_rgb      = color_imp::rgb_of_color;
+	rgb_from_floats =  rgb::from_floats;
+	rgb_to_floats   =  rgb::to_floats;
     };
 
     package xauthentication: (weak)  Xauthentication {	# Xauthentication	is from   src/lib/x-kit/xclient/xauthentication.api

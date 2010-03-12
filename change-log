@@ -1,3 +1,4 @@
+2010-03-11-20.32.31: src/lib/x-kit/xclient/src/window/color-imp.api: Delete same_color(), color_from_floats(), white_rgb, black_rgb.
 2010-03-11-20.04.42: src/lib/x-kit/xclient/src/window/color-imp.api: Deleted black_of(), white_of(), rgb_of_color() as another step toward eliminating color_imp entirely.
 2010-03-11-13.28.17: src/lib/x-kit/xclient/src/window/color-imp.api: Ripped out its beating heart by eliminating the Color type.
 2010-03-11-04.32.03: Steps toward eliminating colortable dependencies and thus color-imp.pkg:  src/lib/x-kit/xclient/xdraw.api: Pen_Trait: Change BACKGROUND, FOREGROUND from Color -> Rgb8.  src/lib/x-kit/xclient/src/window/color-imp.api: Eliminate color0, color1, drop Rgb8 component from COLOR.

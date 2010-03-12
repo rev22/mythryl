@@ -105,11 +105,9 @@ api  Xcore {
     # but we need it for recolorCursor *
     # Maybe not; see rgb_of_color function *
     #
-#    Rgb = RGB  { red:  Unt, green:  Unt, blue:  Unt };
     Rgb;
     #
-#    rgb_of_color:      Rgb -> Rgb;
-#    color_from_floats: (Float, Float, Float) -> Rgb;
+    rgb_normalize:     Rgb -> Rgb;
     #
     rgb_from_unts:    (Unt, Unt, Unt) -> Rgb;
     rgb_to_unts:       Rgb -> (Unt, Unt, Unt);
@@ -280,7 +278,7 @@ api  Xcore {
     #	      -- p24 http:://mythryl.org/pub/exene/1993-lib.ps
     #            (Reppy + Gansner's 1993 eXene library manual.)
     #
-    exception BAD_RGB;
+#    exception BAD_RGB;
     exception NO_COLOR_CELL;
     #
     Color_Spec

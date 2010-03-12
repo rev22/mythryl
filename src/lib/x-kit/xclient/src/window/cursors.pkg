@@ -180,8 +180,8 @@ herein
 		v2w::encode_recolor_cursor
 		  {
 		    cursor     =>  id,
-		    foreground_color =>  ci::check_rgb foreground_rgb,
-		    background_color =>  ci::check_rgb background_rgb
+		    foreground_color =>  rgb::normalize  foreground_rgb,
+		    background_color =>  rgb::normalize  background_rgb
 		  }
 	      );
 
