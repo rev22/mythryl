@@ -1,0 +1,136 @@
+## widget-unit-test.pkg
+
+# Compiled by:
+#     src/lib/x-kit/widget/xkit-widget.make6
+
+# NB: We must compile this locally via
+#         xclient-internals.make6
+#     instead of globally via
+#         src/lib/test/unit-tests.make6
+#     like most unit tests, in order to have
+#     access to required library internals.
+
+# Run by:
+#     src/lib/test/all-unit-tests.pkg
+
+stipulate
+    include unit_test;
+#    include make7::scripting_globals;
+    include threadkit;						# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
+    package tr  =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+    package xtr =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    package sox =  socket_stuff;				# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
+    package xc  =  xcore;					# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+#    package xok =  xsocket;					# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+#    package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
+#    package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+#    package au  =  authentication;				# authentication		is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
+#    package v2w =  value_to_wire;				# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+#    package w   =  window;					# window			is from   src/lib/x-kit/xclient/src/window/window.pkg
+#    package g   =  geometry;					# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+#    package wio =  window_io;					# window_io			is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
+#    package hsv =  hue_saturation_value;			# hue_saturation_value		is from   src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg
+    #
+    tracefile   =  "widget-unit-test-trace.log";
+herein
+
+    package widget_unit_test {
+
+	name = "src/lib/x-kit/widget/lib/widget-unit-test.pkg";
+
+	trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
+
+	default_time_quantum					# Copied from src/lib/x-kit/widget/lib/run-xkit.pkg
+	    =
+	    time::from_milliseconds 20;
+
+
+	fun run ()
+	    =
+	    {   printf "\nDoing %s:\n" name;   
+
+		# Remove any old version of the tracefile:
+		#
+#		if (isfile tracefile)
+#		    #
+#		    unlink tracefile;
+#		fi;
+
+		# Open tracelog file and
+                # select tracing level:
+		#
+		{   include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+		    #
+		    log_trace_messages  (TO_FILE tracefile);
+		    #
+		    enable all_tracing;				# Gross overkill.
+#		    enable xtr::xkit_tracing;			# Lesser overkill.
+#		    enable xtr::io_tracing;			# Saner yet.	
+		};
+
+	        ctl::start_up_thread_scheduler'
+		    default_time_quantum
+		   .{
+			assert  (ctl::thread_scheduler_is_running ());
+
+#		        my  ( display_name:     String,						# Typically from $DISPLAY environment variable.
+#			      xauthentication:  Null_Or(xt::Xauthentication)			# Typically from ~/.Xauthority
+#			    )
+#			    =
+#			    au::get_xdisplay_string_and_xauthentication  NULL;
+#
+#			trace .{ sprintf "widget_unit_test: DISPLAY variable is set to '%s'" display_name; };
+#
+#			trace .{ sprintf "widget_unit_test: Now  calling dy::open_xdisplay"; };
+
+#   			{   xdisplay =  dy::open_xdisplay { display_name, xauthentication };	# Raises dy::XSERVER_CONNECT_ERROR on failure.
+#   				
+#   
+#   			    trace .{ sprintf "widget_unit_test: Done calling dy::open_xdisplay"; };
+#   
+#   			    exercise_window_stuff  xdisplay;
+#   
+#   #                           do_it (make_root_window NULL);
+#   
+#   			} except
+#   			    dy::XSERVER_CONNECT_ERROR string
+#   				=
+#   				{   fprintf file::stderr "widget_unit_test: Could not connect to X server: %s\n" string;
+#   				    fprintf file::stderr "widget_unit_test: *** OMITTING XCLIENT UNIT TESTS. ***\n";
+#   
+#   			            trace .{ sprintf "widget_unit_test: Could not connect to X server: %s" string; };
+#   			            trace .{         "widget_unit_test: *** OMITTING XCLIENT UNIT TESTS. ***";     };
+#   
+#   		                    assert FALSE;
+#   				};
+#   
+			trace .{ sprintf "xclient-unit-test.pkg: Now  calling ctl::shut_down_thread_scheduler"; };
+
+			ctl::shut_down_thread_scheduler  winix::process::success;
+		    };
+
+		# Close tracelog file:
+		#
+		{   include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+
+		    tracing_to =  currently_tracing_to ();
+
+		    log_trace_messages  TO_STDERR;
+
+		    case tracing_to
+			#
+			TO_STREAM stream =>  file::close_output stream;
+			#
+			_                =>  ();
+                    esac;
+		};
+
+		assert TRUE;
+
+		summarize_unit_tests  name;
+	    };
+    };
+
+end;

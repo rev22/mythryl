@@ -98,6 +98,8 @@ LIBRARY_GROUP_EXPORTS
 	pkg textbutton_appearance
 	pkg toggle_type
 	pkg toggleswitches
+	pkg widget_unit_test
+
 
 	generic pushbutton_behavior_g
 	generic toggleswitch_behavior_g
@@ -236,7 +238,7 @@ LIBRARY_GROUP_COMPONENTS
 	lib/widget-style.pkg
 	lib/button-group.api
 	lib/button-group.pkg
-
+	lib/widget-unit-test.pkg
 
 # COPYRIGHT (c) 1995 AT&T Bell Laboratories.
 # Subsequent changes by Jeff Prothero Copyright (c) 2010,

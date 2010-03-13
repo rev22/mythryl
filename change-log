@@ -1,3 +1,4 @@
+2010-03-13-01.45.25: src/lib/x-kit/widget/lib/: Renamed standard-cs-pixmaps.pkg -> standard-clientside-pixmaps.pkg.
 2010-03-12-23.01.43: src/lib/x-kit/xclient/xcore.api: Added convenience definitions for white, black, red, green, blue, cyan, magenta, yellow, all of type Rgb.
 2010-03-12-21.15.33: src/lib/x-kit/xclient/src/window/: Rename color-imp.api, color-imp.pkg ->  color-spec.api, color-spec.pkg: Colortable stuff is now Officially Dead! :-) :-) :-)
 2010-03-12-12.42.06: src/lib/x-kit/xclient/src/window/color-imp.api: Eliminate Rgb type definition (just a re-export of rgb::Rgb).

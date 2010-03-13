@@ -43,6 +43,7 @@ package all_unit_tests {
 	    threadkit_unit_test::run ();
 
 	    xclient_unit_test::run ();
+	    widget_unit_test::run ();
 
 	    gtk_via_pipe_unit_test::run ();
 	    gtk_unit_test::run ();
