@@ -104,6 +104,10 @@ herein
 			    THE root_window
 				=>
 				{   trace .{ sprintf "widget_unit_test: run: Successfully constructed root window"; };
+
+				    xsession = w::xsession_of root_window;
+				    screen   = w::screen_of   root_window;
+
 				    assert TRUE;
 				};
 			    NULL =>
