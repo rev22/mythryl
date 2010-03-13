@@ -6,9 +6,6 @@
 #     src/lib/x-kit/xclient/src/xclient.make6
 
 
-
-
-
 							# xclient_sharing	is from   src/lib/x-kit/xclient/xclient-sharing.pkg
 
 package xwindow

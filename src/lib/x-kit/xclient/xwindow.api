@@ -76,7 +76,10 @@ api  Xwindow {
 	  background_color:  xc::Rgb8
         }
 	->
-	(Window, xinput::Kidplug, threadkit::Mailslot(Void));
+	( Window,
+          xinput::Kidplug,
+          threadkit::Mailslot(Void)
+        );
 
     make_simple_subwindow
 	:

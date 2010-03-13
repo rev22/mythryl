@@ -54,9 +54,9 @@ herein
 				          }
 	      };
 
-	fun init  display_name
+	fun initialize  display_name
 	    =
-	    (screen, window, in_dictionary)
+	    (screen, window, kidplug)
 	    where
 # XXX BUGGO FIXME need xauthentication here:
 		xsession =  xc::open_xsession (display_name, NULL);
@@ -65,7 +65,7 @@ herein
 
 		win_sz   =  xg::SIZE { wide => 450, high => 400 };
 
-		my (window, in_dictionary, mailslot)			# 2009-12-10 CrT: Had to add 'mailslot' so it would compile.
+		my (window, kidplug, mailslot)			# 2009-12-10 CrT: Had to add 'mailslot' so it would compile.
 		    =
 		    xw::make_simple_top_window  screen
 		      {
@@ -101,11 +101,11 @@ herein
 		xw::show_window  window;
 	    end;
 
-	fun alloc_windows display_name
+	fun allocate_windows display_name
 	    =
-	    {   my (screen, top_window, top_dictionary)
+	    {   my (screen, top_window, top_kidplug)
 		    =
-		    init  display_name;
+		    initialize  display_name;
 
 		my (xg::SIZE { wide, high } )
 		    =
@@ -135,7 +135,7 @@ herein
 		xw::show_window  button_window;
 
 		{ top_window,
-		  top_env     => top_dictionary,
+		  top_kidplug,
 		  draw_window,
 		  button_window
 		};
@@ -347,9 +347,15 @@ herein
 
 	    end;					# fun make_draw_threads 
 
-	fun make_top_level_threads { top_window, top_env=>xi::KIDPLUG { from_keyboard', from_mouse', from_other', ... }, button_window, draw_window }
+	fun make_toplevel_threads
+            {
+              top_window,
+              top_kidplug  => xi::KIDPLUG { from_keyboard', from_mouse', from_other', ... },
+              button_window,
+              draw_window
+            }
 	    =
-	    {   make_thread "tri router" router;
+	    {   make_thread "triangle router" router;
 
 		{ button_kidplug,
 		  draw_kidplug
@@ -357,18 +363,16 @@ herein
 	    }
 	    where
 		(xi::make_widget_cable ()) ->   { kidplug => button_kidplug, momplug => button_momplug };
-		(xi::make_widget_cable ()) ->   { kidplug => draw_kidplug,   momplug => draw_momplug   };
+		(xi::make_widget_cable ()) ->   { kidplug =>   draw_kidplug, momplug =>   draw_momplug };
 		(xi::make_widget_cable ()) ->   { kidplug,                   momplug                   };
 
-		kidplug
-		    =
-		    xi::ignore_all  kidplug;
+		kidplug =  xi::ignore_all  kidplug;
 
 		fun find_cable  envelope
 		    =
 		    case (xi::route_envelope  envelope)
 			#
-			xi::TO_SELF _			# Envelope has reached its destination window/widget.
+			xi::TO_SELF _				# Envelope has reached its destination window/widget.
 			    =>
 			    momplug;
 
@@ -380,69 +384,55 @@ herein
 			    fi;
 		    esac;
 
-		keyboard_mailop
+		fun do_keyboard envelope
 		    =
-		    from_keyboard'
-			==>
-			(fn envelope
+		    {   my xi::MOMPLUG { keyboard_sink, ... }
 			    =
-			    {   my xi::MOMPLUG { keyboard_sink, ... }
-				    =
-				    find_cable  envelope;
+			    find_cable  envelope;
 
-				do_mailop (keyboard_sink envelope);
-			    }
-			);
+			do_mailop (keyboard_sink envelope);
+		    };
 
-		mouse_mailop
+		fun do_mouse envelope
 		    =
-		    from_mouse'
-			==>
-			(fn envelope
+		    {   my xi::MOMPLUG { mouse_sink, ... }
 			    =
-			    {   my xi::MOMPLUG { mouse_sink, ... }
-				    =
-				    find_cable  envelope;
+			    find_cable  envelope;
 
-				do_mailop (mouse_sink  envelope);
-			    }
-			);
+			do_mailop (mouse_sink  envelope);
+		    };
 
-		mom_mailop
+		fun do_other envelope
 		    =
-		    from_other'
-			==>
-			(fn envelope
+		    {   my xi::MOMPLUG { other_sink, ... }
 			    =
-			    {   my xi::MOMPLUG { other_sink, ... }
-				    =
-				    find_cable  envelope;
+			    find_cable  envelope;
 
-				do_mailop (other_sink  envelope);
-			    }
-			);
+			do_mailop (other_sink  envelope);
+		    };
 
 		fun router ()
 		    =
 		    for (;;) {
 			#
-			select [ keyboard_mailop,
-				    mouse_mailop,
-				      mom_mailop
+			select [ from_keyboard' ==> do_keyboard,
+				 from_mouse'    ==> do_mouse,
+				 from_other'    ==> do_other
 			       ];
 		    };
 
-	    end;			# fun make_top_level_threads
+	    end;			# fun make_toplevel_threads
 
 	fun triangle display
 	    =
-	    {   my (x as { button_window, draw_window, ... } )
-		    =
-		    alloc_windows display;
+	    {   (allocate_windows display)
+		    ->
+		    (x as { button_window, draw_window, ... } );
 
-		my { button_kidplug, draw_kidplug }
-		    =
-		    make_top_level_threads  x;
+		(make_toplevel_threads  x)
+		    ->
+		    { button_kidplug, draw_kidplug };
+		    
 
 		make_draw_threads
 		  ( draw_window,
