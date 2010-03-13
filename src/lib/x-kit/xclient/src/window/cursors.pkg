@@ -15,7 +15,6 @@ stipulate
     package xt  = xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package sn  = xsession;				# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
     package et  = event_types;				# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
-    package ci  = color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
     package fb  = font_base;				# font_base		is from   src/lib/x-kit/xclient/src/window/font-base.pkg
     package v2w = value_to_wire;			# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
 herein

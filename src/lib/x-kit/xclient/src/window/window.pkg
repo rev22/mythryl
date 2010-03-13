@@ -20,7 +20,6 @@ stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package a   =  atom;				# atom				is from   src/lib/x-kit/xclient/src/iccc/atom.pkg
-    package ci  =  color_imp;				# color_imp			is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
     package cs  =  cursors;				# cursors			is from   src/lib/x-kit/xclient/src/window/cursors.pkg
     package di  =  draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package dt  =  draw_types;				# draw_types			is from   src/lib/x-kit/xclient/src/window/draw-types.pkg

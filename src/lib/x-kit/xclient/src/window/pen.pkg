@@ -15,7 +15,6 @@
 # Support for symbolic names for pen component values.
 
 stipulate
-    package ci  =  color_imp;					# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
     package rc  =  range_check;					# range_check		is from   src/lib/x-kit/xclient/src/stuff/range-check.pkg
     package dt  =  draw_types;					# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
     package xt  =  xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg

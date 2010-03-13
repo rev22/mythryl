@@ -107,7 +107,7 @@ package xclient_sharing: api {
         include font_base;				# font_base		is from   src/lib/x-kit/xclient/src/window/font-base.pkg
         include xsession;				# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
         include cursors;				# cursors		is from   src/lib/x-kit/xclient/src/window/cursors.pkg
-        include color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
+        include color_spec;				# color_spec		is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
         include rw_pixmap;				# rw_pixmap		is from   src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
         include cs_pixmap;				# cs_pixmap		is from   src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
         include ro_pixmap;				# ro_pixmap		is from   src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
@@ -178,7 +178,7 @@ package xclient_sharing: api {
 
 	include xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
         include font_base;				# font_base		is from   src/lib/x-kit/xclient/src/window/font-base.pkg
-        include color_imp;				# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
+        include color_spec;				# color_spec		is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
         include draw_types;				# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
         include pen_guts;				# pen_guts		is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
         include pen;					# pen			is from	  src/lib/x-kit/xclient/src/window/pen.pkg

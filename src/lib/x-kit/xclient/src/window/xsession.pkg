@@ -147,7 +147,7 @@ stipulate
     package xok = xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package dy  = display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package ai  = atom_imp;				# atom_imp			is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
-    package ci  = color_imp;				# color_imp			is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
+    package cs  = color_spec;				# color_spec			is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
     package di  = draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package fti = font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
     package gci = graphics_context_imp;			# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
@@ -453,7 +453,7 @@ herein
 	#
 	color_of_screen 
 	    =
-            ci::get_color;
+            cs::get_color;
 
 	fun xsession_of_screen (SCREEN { xsession, ... } )
 	    =

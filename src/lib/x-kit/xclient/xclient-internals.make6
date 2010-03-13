@@ -65,8 +65,8 @@ LIBRARY_GROUP_COMPONENTS
 	src/to-string/xserver-info-to-string.pkg
 	src/to-string/xtype-to-string.pkg
 
-	src/window/color-imp.api
-	src/window/color-imp.pkg
+	src/window/color-spec.api
+	src/window/color-spec.pkg
 	src/window/cs-pixmap.api
 	src/window/cs-pixmap.pkg
 	src/window/cursors.pkg

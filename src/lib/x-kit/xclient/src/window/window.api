@@ -34,7 +34,6 @@ stipulate
     package xt =  xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package g  =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xr =  cursors;			# cursors		is from   src/lib/x-kit/xclient/src/window/cursors.pkg
-    package ci =  color_imp;			# color_imp		is from   src/lib/x-kit/xclient/src/window/color-imp.pkg
     package sn =  xsession;			# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
     package ip =  iccc_property;		# iccc_property		is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
     package wc =  widget_cable;			# widget_cable		is from   src/lib/x-kit/xclient/src/window/widget-cable.pkg
@@ -78,21 +77,6 @@ herein
 	  ;
 
 	exception BAD_WINDOW_SITE;
-
-    # **** OBSOLETE ****
-    #     my allocSimpleTopWin:  sn::screen
-    #       -> (window * WindowDict::in_env * ( {
-    #           geometry:  g::window_shape,
-    #           border:    ci::color,
-    #           background:  ci::color
-    #         } -> window))
-    #     my allocSimpleSubwin:  window
-    #       -> (window * ( {
-    #           geometry:  g::window_shape,
-    #           border:  Null_Or( ci::color ),
-    #           background:  Null_Or( ci::color )
-    #         } -> window))
-    #
 
 	# Window location is relative to parent and
 	# does not take border width into account.

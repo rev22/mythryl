@@ -8,7 +8,7 @@
 # Internal users include:
 #
 #     src/lib/x-kit/xclient/src/stuff/xgripe.pkg
-#     src/lib/x-kit/xclient/src/window/color-imp.pkg
+#     src/lib/x-kit/xclient/src/window/color-spec.pkg
 #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
 #     src/lib/x-kit/xclient/src/window/font-imp.pkg
 #     src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg

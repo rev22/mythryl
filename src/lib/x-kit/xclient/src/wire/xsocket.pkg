@@ -73,7 +73,7 @@
 #     src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
 #     src/lib/x-kit/xclient/src/wire/window-io.pkg
 #
-#     src/lib/x-kit/xclient/src/window/color-imp.pkg
+#     src/lib/x-kit/xclient/src/window/color-spec.pkg
 #     src/lib/x-kit/xclient/src/window/cursor.pkg
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
 #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
