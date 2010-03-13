@@ -49,7 +49,7 @@ herein
 		color = case color
 			    #
 			    THE color =>  color;
-			    NULL      =>  xc::rgb_from_floats (1.0, 1.0, 1.0);
+			    NULL      =>  xc::white;
 			esac;
 
 		make_back (root_window, color, widget);

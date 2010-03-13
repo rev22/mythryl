@@ -101,11 +101,20 @@ api  Xcore {
 	    data:     unt8_vector::Vector				# For   MIT-MAGIC-COOKIE-1 this is 16 bytes (128 bits) of random data.
 	  };
 
-    # NOTE: the following should go away soon,		# XXX BUGGO FIXME
-    # but we need it for recolorCursor *
-    # Maybe not; see rgb_of_color function *
-    #
+    # This is our preferred vanilla color representation,
+    # based on a (red, green, blue) float triple representation:
     Rgb;
+    #
+    # Predefine a few common colors for convenience:
+    #
+    black:   Rgb;
+    white:   Rgb;
+    red:     Rgb;
+    green:   Rgb;
+    blue:    Rgb;
+    cyan:    Rgb;
+    magenta: Rgb;
+    yellow:  Rgb;
     #
     rgb_normalize:     Rgb -> Rgb;
     #

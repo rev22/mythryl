@@ -62,7 +62,7 @@ herein
 
 	fun make_mixer (root_window, view)
 	    =
-	    {   white =  xc::rgb_from_floats (1.0, 1.0, 1.0);
+	    {   white =  xc::white;
 
 		color_of =  rw::color_of root_window;
 

@@ -146,7 +146,7 @@ herein
 			xw::make_simple_popup_window  screen
 			  {
 			    background_color =>  xc::rgb8_from_int 0xFFFFFF,
-			    border_color     =>  xc::rgb_from_floats (0.0, 0.0, 0.0),
+			    border_color     =>  xc::black,
 			    #
 			    site =>  xg::WINDOW_SITE
 				       { upperleft    =>  xg::sub_pt (menu_origin, xg::POINT { col=>1, row=>1 } ),

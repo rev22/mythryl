@@ -115,23 +115,6 @@ package xclient_sharing: api {
 
 	include xkit_version;				# xkit_version		is from   src/lib/x-kit/xclient/src/stuff/xkit-version.pkg
 
-        stipulate
-
-            fun copy_rgb rgb
-		=
-		{   (rgb::to_unts rgb)
-			->
-			(red, green, blue);
-
-		    CMS_RGB { red, green, blue };
-		};
-
-        herein
-
-	    white = copy_rgb  (rgb::from_floats (1.0, 1.0, 1.0));
-	    black = copy_rgb  (rgb::from_floats (0.0, 0.0, 0.0));
-
-	end;
 
 	same_rgb        =  rgb::same;
 	rgb_from_unts   =  rgb::from_unts;
@@ -139,6 +122,15 @@ package xclient_sharing: api {
 	rgb_normalize   =  rgb::normalize;
 
 	Rgb	        =  rgb::Rgb;
+	white		=  rgb::white;
+	black		=  rgb::black;
+	red		=  rgb::red;
+	green		=  rgb::green;
+	blue		=  rgb::blue;
+	cyan		=  rgb::cyan;
+	magenta		=  rgb::magenta;
+	yellow		=  rgb::yellow;
+
 	Rgb8	        =  rgb8::Rgb8;	
 	same_rgb8       =  rgb8::same;
 	rgb8_from_ints  =  rgb8::from_ints;

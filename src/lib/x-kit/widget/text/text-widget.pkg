@@ -881,8 +881,8 @@ herein
 		      my (pen, highlighter, normal_stipple, highlight_stipple)
 			  =
 			  {
-			      black   =  xc::rgb_from_floats (0.0, 0.0, 0.0);
-			      white   =  xc::rgb_from_floats (1.0, 1.0, 1.0);
+			      black   =  xc::black;
+			      white   =  xc::white;
 
 			      stipple =  w::ro_pixmap root_window "lightGray";
 

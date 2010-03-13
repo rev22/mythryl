@@ -1,3 +1,4 @@
+2010-03-12-21.15.33: src/lib/x-kit/xclient/src/window/: Rename color-imp.api, color-imp.pkg ->  color-spec.api, color-spec.pkg: Colortable stuff is now Officially Dead! :-) :-) :-)
 2010-03-12-12.42.06: src/lib/x-kit/xclient/src/window/color-imp.api: Eliminate Rgb type definition (just a re-export of rgb::Rgb).
 2010-03-12-12.21.38: src/lib/x-kit/xclient/src/window/color-imp.api: Ripped out make_color_imp(), and with it nearly all remaining code in color-imp.pkg.
 2010-03-11-21.52.13: src/lib/x-kit/xclient/src/window/color-imp.api: Eliminate color_imp argument from get_color().

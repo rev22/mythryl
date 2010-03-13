@@ -26,7 +26,7 @@ stipulate
     package pms =  standard_cs_pixmaps;				# standard_cs_pixmaps	is from   src/lib/x-kit/widget/lib/standard-cs-pixmaps.pkg
 herein
 
-    package shade_imp: (weak)  Shade_Imp {			# Shade_Imp	is from   src/lib/x-kit/widget/util/shade-imp.api
+    package shade_imp: (weak)  Shade_Imp {			# Shade_Imp		is from   src/lib/x-kit/widget/lib/shade-imp.api
 
 	exception BAD_SHADE;
 
@@ -119,7 +119,7 @@ herein
 
 			my (lt, dk)
 			    =
-			    xc::same_rgb (c, xc::rgb_from_floats (1.0, 1.0, 1.0))
+			    xc::same_rgb (c, xc::white)
 			      ?? (lgray, dgray)
 			      :: (dgray, lgray);
 
@@ -139,7 +139,7 @@ herein
 
 			my (lt, dk)
 			    =
-			    xc::same_rgb (c, xc::rgb_from_floats (1.0, 1.0, 1.0))
+			    xc::same_rgb (c, xc::white)
 			     ?? (lgray, dgray)
 			     :: (dgray, lgray);
 
@@ -168,8 +168,8 @@ herein
 			    }
 			    except _ = NULL;
 
-			if (xc::same_rgb (c, xc::rgb_from_floats (1.0, 1.0, 1.0))
-			or  xc::same_rgb (c, xc::rgb_from_floats (0.0, 0.0, 0.0))
+			if (xc::same_rgb (c, xc::white)
+			or  xc::same_rgb (c, xc::black)
 			)
 			     gray_shade (c, rgb);
 			else shade ();

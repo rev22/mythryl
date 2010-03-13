@@ -151,7 +151,7 @@ herein
 	    where
 		xsession =  xw::xsession_of_window  window;
 
-		black =  xc::rgb_from_floats (0.0, 0.0, 0.0);
+		black =  xc::black;
 
 		pen = xd::make_pen [ xd::FUNCTION    xd::OP_XOR,
 				     xd::FOREGROUND  (xc::rgb8_from_int 1)

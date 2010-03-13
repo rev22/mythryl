@@ -52,7 +52,7 @@ herein
 
 		screen = w::screen_of root_window;
 
-		black  = xc::rgb_from_floats (0.0, 0.0, 0.0);
+		black  = xc::black;
 
 		widget = sbl::make_widget_with_scrollbars  root_window
 			   {

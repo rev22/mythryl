@@ -71,7 +71,7 @@ herein
 		      {
 			site =>  xg::WINDOW_SITE { upperleft => xg::POINT { col=>0, row=>0 }, size=>win_sz, border_width=>1 },
 			#
-			border_color     =>  xc::rgb_from_floats (0.0, 0.0, 0.0),
+			border_color     =>  xc::black,
 			background_color =>  xc::rgb8_from_int 0xFFFFFF
 		      };
 
@@ -117,7 +117,7 @@ herein
 		      {
 			site => draw_window_site (wide, high),
 			#
-			border_color     => THE (xc::rgb_from_floats (0.0, 0.0, 0.0)),
+			border_color     => THE  xc::black,
 			background_color => THE (xc::rgb8_from_int 0)
 		      };
 

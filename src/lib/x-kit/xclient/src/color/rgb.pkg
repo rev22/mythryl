@@ -124,6 +124,16 @@ herein
 	    from_floats  (x11_color_name::to_floats  colorname);
 
 
+	# Predefine a few common colors for convenience:
+	#
+	black   = from_floats (0.0, 0.0, 0.0);
+	white   = from_floats (1.0, 1.0, 1.0);
+	red     = from_floats (1.0, 0.0, 0.0);
+	green   = from_floats (0.0, 1.0, 0.0);
+	blue    = from_floats (0.0, 0.0, 1.0);
+	cyan    = from_floats (0.0, 1.0, 1.0);
+	magenta = from_floats (1.0, 0.0, 1.0);
+	yellow  = from_floats (1.0, 1.0, 0.0);
     };
 end;
 

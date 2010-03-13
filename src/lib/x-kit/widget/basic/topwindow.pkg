@@ -173,7 +173,7 @@ herein
 		color = case color_opt    
 			    #
 			    THE color =>  color;
-			    NULL      =>  xc::rgb_from_floats (1.0, 1.0, 1.0);
+			    NULL      =>  xc::white;
 			esac;
 
 		delete_slot = make_mailslot ();

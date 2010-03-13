@@ -77,7 +77,7 @@ herein
 		    =
 		    xi::ignore_mouse_and_keyboard  kidplug;
 
-		black = xc::rgb_from_floats (0.0, 0.0, 0.0);
+		black = xc::black;
 
 		pen = xd::make_pen  [ xd::FOREGROUND (xc::rgb8_from_rgb  black) ];
 

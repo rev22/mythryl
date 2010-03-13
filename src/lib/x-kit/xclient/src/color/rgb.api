@@ -21,6 +21,17 @@ api Rgb {
     #
     Rgb;
 
+    # Predefine a few common colors for convenience:
+    #
+    black:   Rgb;
+    white:   Rgb;
+    red:     Rgb;
+    green:   Rgb;
+    blue:    Rgb;
+    cyan:    Rgb;
+    magenta: Rgb;
+    yellow:  Rgb;
+
     # We primarily think of color components as
     # ranging from 0.0 -> 1.0 inclusive:
     #

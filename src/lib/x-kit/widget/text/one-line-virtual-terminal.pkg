@@ -73,8 +73,8 @@ herein
 	    =
 	    {   screen =  w::screen_of  root;
 
-		default_background_color =  xc::rgb_from_floats (1.0, 1.0, 1.0);
-		default_foreground_color =  xc::rgb_from_floats (0.0, 0.0, 0.0);
+		default_background_color =  xc::white;
+		default_foreground_color =  xc::black;
 
 		forec = case foreground   
 			    #

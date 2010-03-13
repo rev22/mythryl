@@ -75,7 +75,7 @@ herein
 		    xw::make_simple_top_window
 			screen
 			{
-			  border_color     =>  xc::rgb_from_floats (0.0, 0.0, 0.0),
+			  border_color     =>  xc::black,
 			  background_color =>  xc::rgb8_from_int 0xFFFFFF,
 			  #	
 			  site  => xg::WINDOW_SITE
