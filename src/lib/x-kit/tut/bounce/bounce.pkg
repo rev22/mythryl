@@ -53,9 +53,9 @@ herein
 
 		    my (mouse_mailop, keyboard_mailop, mom_mailop)
 			=
-			{   my  xi::KIDPLUG { from_mouse', from_keyboard', from_other', ... }
-				=
-				xi::ignore_keyboard  in_kidplug;
+			{   (xi::ignore_keyboard  in_kidplug)
+				->
+                                xi::KIDPLUG { from_mouse', from_keyboard', from_other', ... };
 
 			    ( from_mouse'    ==>  xi::envelope_contents,
 			      from_keyboard' ==>  xi::envelope_contents,
@@ -227,86 +227,86 @@ herein
 			=
 			{
 
-			  fun do_mouse (xi::MOUSE_LAST_UP { button=>xi::MOUSEBUTTON 1, window_point, timestamp, ... } )
-				  =>
-				  {
-				      sec =  xc::xserver_timestamp::to_float (xc::xserver_timestamp::(-) (timestamp, t0));
+			    fun do_mouse (xi::MOUSE_LAST_UP { button=>xi::MOUSEBUTTON 1, window_point, timestamp, ... } )
+				    =>
+				    {
+					sec =  xc::xserver_timestamp::to_float (xc::xserver_timestamp::(-) (timestamp, t0));
 
-				      my xg::POINT { col=>x, row=>y }
-					  =
-					  xg::sub_pt (window_point, p0);
+					my xg::POINT { col=>x, row=>y }
+					    =
+					    xg::sub_pt (window_point, p0);
 
-				      dt = sec * (real bl::updates_per_sec);
+					dt = sec * (real bl::updates_per_sec);
 
-				      fun limit a
-					  =
-					  {	  r  = (real a) // dt;
+					fun limit a
+					    =
+					    {	  r  = (real a) // dt;
 
-					      da = float::truncate r;
+						da = float::truncate r;
 
-					      my (abs, sign)
-						  =
-						  if (float::(!=) (r, 0.0))   (-da, -1);
-						  else                        ( da,  1);
-						  fi;
+						my (abs, sign)
+						    =
+						    if (float::(!=) (r, 0.0))   (-da, -1);
+						    else                        ( da,  1);
+						    fi;
 
-					      if (da == 0)
-						  if (float::(!=) (r, 0.0))   sign;
-						  else                           0;
-						  fi;
-					      else
-						  if (abs*bl::updates_per_sec > 1000)
-						      #
-						      int::quot (sign*200, bl::updates_per_sec);
-						  else
-						      da;
-						  fi;
-					      fi;  
-					  };
+						if (da == 0)
+						    if (float::(!=) (r, 0.0))   sign;
+						    else                           0;
+						    fi;
+						else
+						    if (abs*bl::updates_per_sec > 1000)
+							#
+							int::quot (sign*200, bl::updates_per_sec);
+						    else
+							da;
+						    fi;
+						fi;  
+					    };
 
-					new_ball (seqn, window_point, xg::POINT { col => limit x,  row => limit y }, size);
+					  new_ball (seqn, window_point, xg::POINT { col => limit x,  row => limit y }, size);
+					  back_up (seqn, size);
+				      };
+
+				do_mouse (xi::MOUSE_LAST_UP _) =>  back_up (seqn, size);
+				do_mouse (xi::MOUSE_LEAVE   _) =>  back_up (seqn, size);
+
+				do_mouse _
+				    =>
+				    down_loop (seqn, size, p0, t0);
+			    end;
+
+
+			    fun do_mom (xi::ETC_REDRAW _)
+				    =>
+				    {   redraw  (seqn+1, size);
+					back_up (seqn+1, size);
+				    };
+
+				do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
+				    =>
+				    {   size = xg::SIZE { wide, high };
+
+					redraw  (seqn, size);
 					back_up (seqn, size);
 				    };
 
-			      do_mouse (xi::MOUSE_LAST_UP _) =>  back_up (seqn, size);
-			      do_mouse (xi::MOUSE_LEAVE   _) =>  back_up (seqn, size);
+				do_mom (xi::ETC_OWN_DEATH)
+				    =>
+				    quit ();
 
-			      do_mouse _
-				  =>
-				  down_loop (seqn, size, p0, t0);
-			  end;
-
-
-			  fun do_mom (xi::ETC_REDRAW _)
-				  =>
-				  {   redraw  (seqn+1, size);
-				      back_up (seqn+1, size);
-				  };
-
-			      do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
-				  =>
-				  {   size = xg::SIZE { wide, high };
-
-				      redraw  (seqn, size);
-				      back_up (seqn, size);
-				  };
-
-			      do_mom (xi::ETC_OWN_DEATH)
-				  =>
-				  quit ();
-
-			      do_mom _
-				  =>
-				  ();
-			  end;
+				do_mom _
+				    =>
+				    ();
+			    end;
 
 
-			  do_mailop
-			      (choose
-				[ mouse_mailop ==>  do_mouse,
-				  mom_mailop   ==>  do_mom
-				]
-			      );
+			    do_mailop
+				(choose
+				  [ mouse_mailop ==>  do_mouse,
+				    mom_mailop   ==>  do_mom
+				  ]
+				);
 			}
 
 		    also

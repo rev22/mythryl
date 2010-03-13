@@ -325,14 +325,15 @@ herein
 
 	fun plaid root_window
 	    =
-	    {   style = w::style_from_strings (root_window, []);
-
-		name = wy::make_view
+	    {   name = wy::make_view
 			 { name    =>   wy::style_name [],
 			   aliases => [ wy::style_name [] ]
 			 };
 
+		style = w::style_from_strings (root_window, []);
+
 		view = (name, style);
+
 		plaid = make_plaid root_window;
 
 		args = [ (wa::title,     wa::STRING_VAL "Plaid"),

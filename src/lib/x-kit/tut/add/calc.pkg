@@ -279,9 +279,9 @@ herein
 	fun make_calc (root_window: w::Root_Window)
 	    =
 	    {
-		plea_slot =  make_mailslot ();
-		reply_slot   =  make_mailslot ();
-		answer_slot  =  make_mailslot ();
+		plea_slot   =  make_mailslot ();
+		reply_slot  =  make_mailslot ();
+		answer_slot =  make_mailslot ();
 
 		seed = get_seed ();
 
@@ -394,6 +394,7 @@ herein
 				fun check v
 				    =
 				    if (ans == v)
+					#
 					give (reply_slot, RIGHT);
 					round ();
 				    else
@@ -416,7 +417,7 @@ herein
 
 				select [
 				    take' plea_slot  ==>  do_req,
-				    get'  ans_1shot     ==>  check
+				    get'  ans_1shot  ==>  check
 				];
 			    };
 

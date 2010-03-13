@@ -1,4 +1,4 @@
 app use [
   "icon-bitmap.pkg",
-  "tri.pkg"
+  "triangle.pkg"
 ];
