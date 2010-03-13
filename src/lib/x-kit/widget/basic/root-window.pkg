@@ -62,8 +62,8 @@ herein
 
 	init_images
 	    =
-	    [ (quark::quark "lightGray", standard_cs_pixmaps::light_gray),
-	      (quark::quark "gray",      standard_cs_pixmaps::gray      )
+	    [ (quark::quark "lightGray", standard_clientside_pixmaps::light_gray),
+	      (quark::quark "gray",      standard_clientside_pixmaps::gray      )
 	    ];
 
 	fun make_root_window

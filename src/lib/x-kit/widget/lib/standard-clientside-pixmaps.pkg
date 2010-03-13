@@ -1,4 +1,4 @@
-## standard-cs-pixmaps.pkg
+## standard-clientside-pixmaps.pkg
 
 # Compiled by:
 #     src/lib/x-kit/widget/xkit-widget.make6
@@ -9,7 +9,7 @@ stipulate
     package xg =  xgeometry;		# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
 herein
 				
-    package standard_cs_pixmaps {
+    package standard_clientside_pixmaps {
 
 	light_gray
 	    =

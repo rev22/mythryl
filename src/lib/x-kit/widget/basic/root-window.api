@@ -16,7 +16,8 @@
 # resources such as fonts; the Root_Window to use is usually
 # supplied to them at creation time.
 # 
-# x-kit apps bec
+# Also, by X convention, various things get published by
+# posting them as properties on the root window.
 
 
 # Compiled by:
@@ -42,7 +43,13 @@ herein
 	Root_Window;
 	Style;
 
-	make_root_window:  (String,  Null_Or( xc::Xauthentication )) -> Root_Window;
+	make_root_window
+	    :
+	    ( String,				# X server spec, typically taken from DISPLAY environment variable, e.g. ":0.0" or "foo.com:0.0" or such.
+              Null_Or( xc::Xauthentication )	# See  Xauthentication comments in    src/lib/x-kit/xclient/xcore.api
+            )
+            ->
+            Root_Window;
 
 	delete_root_window:  Root_Window -> Void;
 	    #

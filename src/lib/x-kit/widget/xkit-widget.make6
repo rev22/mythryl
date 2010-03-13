@@ -226,7 +226,7 @@ LIBRARY_GROUP_COMPONENTS
 	lib/shade-imp.pkg
 	lib/ro-pixmap-cache.api
 	lib/ro-pixmap-cache.pkg
-	lib/standard-cs-pixmaps.pkg
+	lib/standard-clientside-pixmaps.pkg
 	lib/image-imp.api
 	lib/image-imp.pkg
 	lib/list-indexing.api

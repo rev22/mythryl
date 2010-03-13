@@ -19,14 +19,14 @@
 
 
 stipulate
-    include threadkit;						# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;						# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package xc  =  xcore;					# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
-    package xd  =  xdraw;					# xdraw			is from   src/lib/x-kit/xclient/xcore.pkg
-    package pms =  standard_cs_pixmaps;				# standard_cs_pixmaps	is from   src/lib/x-kit/widget/lib/standard-cs-pixmaps.pkg
+    package xc  =  xcore;					# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd  =  xdraw;					# xdraw				is from   src/lib/x-kit/xclient/xcore.pkg
+    package pms =  standard_clientside_pixmaps;			# standard_clientside_pixmaps	is from   src/lib/x-kit/widget/lib/standard-clientside-pixmaps.pkg
 herein
 
-    package shade_imp: (weak)  Shade_Imp {			# Shade_Imp		is from   src/lib/x-kit/widget/lib/shade-imp.api
+    package shade_imp: (weak)  Shade_Imp {			# Shade_Imp			is from   src/lib/x-kit/widget/lib/shade-imp.api
 
 	exception BAD_SHADE;
 

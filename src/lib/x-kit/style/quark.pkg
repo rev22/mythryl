@@ -6,7 +6,7 @@
 # but there are problems with creating names
 # that are statically initialized in threadkit.
 #
-# Once there is a "threadkit shell, " we can
+# Once there is a "threadkit shell" we can
 # replace this by the THREADKIT_Name package.
 
 # Compiled by:
