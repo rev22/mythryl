@@ -15,7 +15,7 @@
 
 stipulate
     include unit_test;
-#    include make7::scripting_globals;
+    include make7::scripting_globals;
     include threadkit;						# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package ctl =  thread_scheduler_control;			# thread_scheduler_control	is from   src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
@@ -23,15 +23,6 @@ stipulate
     package xtr =  xtracing;					# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     package sox =  socket_stuff;				# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
     package xc  =  xcore;					# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
-#    package xok =  xsocket;					# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-#    package dy  =  display;					# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
-#    package xt  =  xtypes;					# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-#    package au  =  authentication;				# authentication		is from   src/lib/x-kit/xclient/src/stuff/authentication.pkg
-#    package v2w =  value_to_wire;				# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
-#    package w   =  window;					# window			is from   src/lib/x-kit/xclient/src/window/window.pkg
-#    package g   =  geometry;					# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-#    package wio =  window_io;					# window_io			is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
-#    package hsv =  hue_saturation_value;			# hue_saturation_value		is from   src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg
     #
     tracefile   =  "widget-unit-test-trace.log";
 herein
@@ -53,10 +44,10 @@ herein
 
 		# Remove any old version of the tracefile:
 		#
-#		if (isfile tracefile)
-#		    #
-#		    unlink tracefile;
-#		fi;
+		if (isfile tracefile)
+		    #
+		    unlink tracefile;
+		fi;
 
 		# Open tracelog file and
                 # select tracing level:

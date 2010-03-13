@@ -110,6 +110,7 @@ LIBRARY_GROUP_EXPORTS
 LIBRARY_GROUP_COMPONENTS
 
 	$ROOT/src/lib/std/stdlib.make6
+	$ROOT/src/lib/core/make7/make7.make6
 
 	../xclient/xclient.make6
 	../draw/xkit-draw.make6
