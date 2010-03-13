@@ -32,7 +32,7 @@ stipulate
     package wio =  window_io;					# window_io			is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
     package hsv =  hue_saturation_value;			# hue_saturation_value		is from   src/lib/x-kit/xclient/src/color/hue-saturation-value.pkg
     #
-    tracefile   =  "xclient-unit-test-trace.log";
+    tracefile   =  "xclient-unit-test.trace.log";
 herein
 
     package xclient_unit_test {
@@ -120,7 +120,7 @@ herein
 			    xok::request  xsocket  (v2w::encode_map_window { window_id });
 			    xok::flush    xsocket;
 
-			    do_mailop (timeout_in' (time::from_seconds 10));
+			    do_mailop (timeout_in' (time::from_milliseconds 100));
 
 trace .{ sprintf "xclient_unit_test: Now  writing create_window_request to socket."; };
 #			    sox::send_vector (socket, create_window_request);

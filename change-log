@@ -1,3 +1,4 @@
+2010-03-13-02.38.24: src/lib/x-kit/widget/lib/widget-unit-test.pkg: Restore access to make7::scripting_globals, restore old-tracefile deletion logic.
 2010-03-13-02.08.06: src/lib/x-kit/widget/lib/: Established widget-unit-test.pkg.
 2010-03-13-01.45.25: src/lib/x-kit/widget/lib/: Renamed standard-cs-pixmaps.pkg -> standard-clientside-pixmaps.pkg.
 2010-03-12-23.01.43: src/lib/x-kit/xclient/xcore.api: Added convenience definitions for white, black, red, green, blue, cyan, magenta, yellow, all of type Rgb.

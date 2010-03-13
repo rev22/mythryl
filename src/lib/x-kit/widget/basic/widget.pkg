@@ -24,7 +24,6 @@ stipulate
     package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xw =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
     #
-    package si =  shade_imp;			# shade_imp		is from   src/lib/x-kit/widget/util/shade-imp.pkg
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
 herein
 
