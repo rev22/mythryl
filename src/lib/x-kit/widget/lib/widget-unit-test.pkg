@@ -40,6 +40,37 @@ herein
 	    time::from_milliseconds 20;
 
 
+	fun make_root_window
+                display_or_null								# Allow overriding of the DISPLAY environment variable setting.
+	    =
+	    {   my  ( xdisplay,								# Typically from $DISPLAY environment variable.
+                      xauthentication:  Null_Or(xc::Xauthentication)			# Typically from ~/.Xauthority
+                    )
+		    =
+		    xau::get_xdisplay_string_and_xauthentication  display_or_null;
+
+		trace .{ sprintf "widget_unit_test: DISPLAY variable is set to '%s'" xdisplay; };
+
+		trace .{ sprintf "widget_unit_test: Now  calling w::make_root_window"; };
+
+		THE (w::make_root_window (xdisplay, xauthentication))
+		except
+		    xcore::XSERVER_CONNECT_ERROR s
+			=
+			{   file::write
+				( file::stderr,
+				  string::cat
+				    [ "run_xkit: unable to open display \"",   xdisplay,   "\"\n",
+				      "  ",   s,   "\n"
+				    ]
+				);
+
+		            trace .{ sprintf "widget_unit_test: make_root_window: Unable to open display %s: %s" xdisplay s; };
+
+			    NULL;
+			};
+	      };
+
 	fun run ()
 	    =
 	    {   printf "\nDoing %s:\n" name;   
@@ -68,15 +99,28 @@ herein
 		   .{
 			assert  (ctl::thread_scheduler_is_running ());
 
-		        my  ( display_name:     String,						# Typically from $DISPLAY environment variable.
-			      xauthentication:  Null_Or(xcore::Xauthentication)			# Typically from ~/.Xauthority
-			    )
-			    =
-			    xau::get_xdisplay_string_and_xauthentication  NULL;
+                        case (make_root_window NULL)
+			    #
+			    THE root_window
+				=>
+				{   trace .{ sprintf "widget_unit_test: run: Successfully constructed root window"; };
+				    assert TRUE;
+				};
+			    NULL =>
+				{   trace .{ sprintf "widget_unit_test: run: Failed to construct root window, skipping remaining tests"; };
+				    assert FALSE;
+				};
+			esac;	
 
-			trace .{ sprintf "widget_unit_test: DISPLAY variable is set to '%s'" display_name; };
+#		        my  ( display_name:     String,						# Typically from $DISPLAY environment variable.
+#			      xauthentication:  Null_Or(xcore::Xauthentication)			# Typically from ~/.Xauthority
+#			    )
+#			    =
+#			    xau::get_xdisplay_string_and_xauthentication  NULL;
 
-			trace .{ sprintf "widget_unit_test: Now  calling dy::open_xdisplay"; };
+#			trace .{ sprintf "widget_unit_test: DISPLAY variable is set to '%s'" display_name; };
+
+#			trace .{ sprintf "widget_unit_test: Now  calling dy::open_xdisplay"; };
 
 #   			{   xdisplay =  dy::open_xdisplay { display_name, xauthentication };	# Raises dy::XSERVER_CONNECT_ERROR on failure.
 #   				
