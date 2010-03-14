@@ -81,11 +81,11 @@ herein
 			background_color =>  xc::rgb8_white
 		      };
 
-		icon_ro_pixmap
+		icon_ro_pixmap								# serverside
 		    =
 		    xc::make_readonly_pixmap_from_clientside_pixmap
 			screen
-			icon_bitmap::icon_bitmap;
+			ib::icon_bitmap;						# clientside
 
 
 											# commandline		is from   src/lib/std/commandline.pkg
@@ -110,6 +110,9 @@ herein
 		xw::show_window  window;
 	    end;
 
+	# Divide the topwindow into a
+	# drawing window over a button window:
+	#
 	fun make_drawing_and_button_windows  display_name
 	    =
 	    {   (make_topwindow  display_name)
@@ -152,63 +155,16 @@ herein
 	    };
 
 
-	fun make_button_threads (window, kidplug)
+	fun make_button_threads (button_window, button_kidplug)
 	    =
-	    {   make_thread "tri" loop;
+	    {   make_thread "triangle button" loop;
 		take' reset_slot;
 	    }
 	    where
 
-		my xi::KIDPLUG { from_mouse', from_other', ... }
-		    =
-		    xi::ignore_keyboard  kidplug;
-
-		mouse_mailop
-		    =
-		    from_mouse' ==> xi::envelope_contents;
-
-		cmd_mailop
-		    =
-		    from_other' ==> xi::envelope_contents;
-
-		drawable =  xd::drawable_of_window  window;
-
-		pen = xd::make_pen
-			[
-			  xd::FUNCTION xd::OP_COPY,
-			  xd::FOREGROUND  xc::rgb8_black
-			];
-
-		draw_cartouche
-		    =
-		    che::draw_cartouche  drawable  pen;
-
-		text = "RESET";
-
-		font =  xf::open_font
-			    #
-			    (xw::xsession_of_window  window)
-			    #
-			    "9x15";
-
-		text_pt
-		    =
-		    {   text_width = xf::text_width font text;
-
-			my { ascent, descent }
-			    =
-			    xf::font_high  font;
-
-			xg::POINT {
-			    col => ( button_wide - text_width) / 2,
-			    row => ((button_high - (ascent + descent)) / 2) + ascent
-			  };
-		    };
-
-		draw_string
-		    =
-		    xd::draw_transparent_string drawable pen font;
-
+		# Define a function to re/draw the
+		# button as "RESET" inside a cartouche:
+		#
 		fun redraw ()
 		    =
 		    {   draw_cartouche
@@ -223,41 +179,92 @@ herein
 					     }
 			  };
 
-			draw_string (text_pt, text);
-		    };
+			draw_string (text_point, text);
+		    }
+		    where
+			drawable =  xd::drawable_of_window  button_window;
+
+			pen = xd::make_pen
+				[
+				  xd::FUNCTION    xd::OP_COPY,
+				  xd::FOREGROUND  xc::rgb8_black
+				];
+
+			draw_cartouche
+			    =
+			    che::draw_cartouche  drawable  pen;
+
+			text = "RESET";
+
+			font =  xf::open_font
+				    #
+				    (xw::xsession_of_window  button_window)
+				    #
+				    "9x15";
+
+			text_point
+			    =
+			    {   text_width =  xf::text_width  font  text;
+
+				my { ascent, descent }
+				    =
+				    xf::font_high  font;
+
+				xg::POINT
+				  {
+				    col => ( button_wide - text_width) / 2,
+				    row => ((button_high - (ascent + descent)) / 2) + ascent
+				  };
+			    };
+
+			draw_string
+			    =
+			    xd::draw_transparent_string  drawable  pen  font;
+		    end;
+
+		# Define the main thread loop animating the button.
+		# We respond to ETC_REDRAW by redrawing our button;
+		# we respond to a click by resetting the draw thread:
+		#
+		(xi::ignore_keyboard  button_kidplug)
+		    ->
+		    xi::KIDPLUG { from_mouse', from_other', ... };
+
+		from_mouse' =   from_mouse' ==> xi::envelope_contents;
+		from_other' =   from_other' ==> xi::envelope_contents;
 
 		reset_slot = make_mailslot ();
 
 		fun loop ()
 		    =
-		    {   fun mouse_fn (xi::MOUSE_FIRST_DOWN _)
+		    {   fun do_mouse (xi::MOUSE_FIRST_DOWN _)
 				=>
 				give (reset_slot, ());
 
-			    mouse_fn _
+			    do_mouse _
 				=>
 				();
 			end;
 
 
-			fun cmd_fn (xi::ETC_REDRAW _) =>  redraw ();
-			    cmd_fn xi::ETC_OWN_DEATH  =>  ();
-			    cmd_fn _	        =>  ();
+			fun do_other (xi::ETC_REDRAW _)  =>  redraw ();
+			    do_other  xi::ETC_OWN_DEATH  =>  ();
+			    do_other _	  	         =>  ();
 			end;
 
 
 			for (;;) {
 			    #
 			    select [
-				mouse_mailop ==> mouse_fn,
-				cmd_mailop   ==> cmd_fn
+				from_mouse' ==>  do_mouse,
+				from_other' ==>  do_other
 			    ];
 			};
 		    };
 
 	    end;				# fun make_button_threads 
 
-	fun make_draw_threads (window, reset_mailop, kidplug)
+	fun make_draw_threads (drawing_window, reset_mailop, draw_kidplug)
 	    =
 	    {   make_thread "tri draw mouse"  mouse_thread;
 		make_thread "tri draw"       .{ loop []; };
@@ -266,7 +273,7 @@ herein
 	    where
 		my xi::KIDPLUG { from_mouse', from_other', ... }
 		    =
-		    xi::ignore_keyboard  kidplug;
+		    xi::ignore_keyboard  draw_kidplug;
 
 		mouse_mailop =    from_mouse' ==> xi::envelope_contents;
 		cmd_mailop   =    from_other' ==> xi::envelope_contents;
@@ -289,7 +296,7 @@ herein
 
 		draw_mailop = take' draw_slot;
 
-		drawable = xd::drawable_of_window  window;
+		drawable = xd::drawable_of_window  drawing_window;
 
 		pen = xd::make_pen
 			[
