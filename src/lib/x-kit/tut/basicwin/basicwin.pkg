@@ -91,7 +91,7 @@ herein
 		# xsession here.
 
 
-		icon_ro_pixmap = xc::make_ro_pixmap_from_cs_pixmap
+		icon_ro_pixmap = xc::make_readonly_pixmap_from_clientside_pixmap
 				#
 				screen
 				#

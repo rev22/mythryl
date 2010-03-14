@@ -118,8 +118,8 @@ herein
 		climb_bound =  top_margin + climb_increment + climb_height - 1;
 		stand_image =  rw_vector::get (image_array, im::stand_index);
 
-		land_ro_pixmap  =  xc::make_ro_pixmap_from_ascii  screen   land_data;
-		water_ro_pixmap =  xc::make_ro_pixmap_from_ascii  screen  water_data;
+		land_ro_pixmap  =  xc::make_readonly_pixmap_from_ascii  screen   land_data;
+		water_ro_pixmap =  xc::make_readonly_pixmap_from_ascii  screen  water_data;
 
 		tower_pen
 		    = 

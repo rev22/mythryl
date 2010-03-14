@@ -220,7 +220,7 @@ api  Xcore {
 
     exception BAD_CS_PIXMAP_DATA;
 
-    make_cs_pixmap_from_ascii						# make_cs_pixmap_from_ascii	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_clientside_pixmap_from_ascii						# make_clientside_pixmap_from_ascii	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
         :
         (Int, List( List( String ) ))
         ->
@@ -231,18 +231,18 @@ api  Xcore {
     #
     exception BAD_PIXMAP_PARAMETER;
 
-    make_rw_pixmap:                         Screen -> (xg::Size, Int)            -> Rw_Pixmap;		# make_rw_pixmap			def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
-    make_rw_pixmap_from_ascii_data:         Screen -> (Int, List( List(String))) -> Rw_Pixmap;		# make_rw_pixmap_from_ascii_data	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-    make_rw_pixmap_from_cs_pixmap:  	    Screen -> Cs_Pixmap                  -> Rw_Pixmap;		# make_rw_pixmap_from_cs_pixmap		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_readwrite_pixmap:                         Screen -> (xg::Size, Int)            -> Rw_Pixmap;		# make_readwrite_pixmap				def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
+    make_readwrite_pixmap_from_ascii_data:         Screen -> (Int, List( List(String))) -> Rw_Pixmap;		# make_readwrite_pixmap_from_ascii_data		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_readwrite_pixmap_from_clientside_pixmap:  Screen -> Cs_Pixmap                  -> Rw_Pixmap;		# make_readwrite_pixmap_from_clientside_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
 
-    destroy_rw_pixmap: 			    Rw_Pixmap -> Void;						# destory_rw_pixmap			def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
+    destroy_rw_pixmap: 			    	    Rw_Pixmap -> Void;						# destroy_rw_pixmap				def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
 
-    make_ro_pixmap_from_ascii:              Screen -> (Int, List(List(String))) -> Ro_Pixmap;		# make_ro_pixmap_from_ascii		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
-    make_ro_pixmap_from_cs_pixmap:  	    Screen -> Cs_Pixmap         	-> Ro_Pixmap;		# make_ro_pixmal_from_cs_pixmap		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
-    make_ro_pixmap_from_rw_pixmap:          Rw_Pixmap                           -> Ro_Pixmap;		# make_ro_pixmal_from_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
+    make_readonly_pixmap_from_ascii:		    Screen -> (Int, List(List(String))) -> Ro_Pixmap;		# make_readonly_pixmap_from_ascii		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
+    make_readonly_pixmap_from_clientside_pixmap:    Screen -> Cs_Pixmap         	-> Ro_Pixmap;		# make_ro_pixmal_from_clientside_pixmap		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
+    make_readonly_pixmap_from_readwrite_pixmap:	    Rw_Pixmap                           -> Ro_Pixmap;		# make_ro_pixmal_from_rw_pixmap			def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
 
-    make_cs_pixmap_from_rw_pixmap:  	    Rw_Pixmap -> Cs_Pixmap;					# make_cs_pixmap_from_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-    make_cs_pixmap_from_ro_pixmap:  	    Ro_Pixmap -> Cs_Pixmap;					# make_cs_pixmap_from_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_clientside_pixmap_from_readwrite_pixmap:   Rw_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readwrite_pixmap			def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_clientside_pixmap_from_readonly_pixmap:    Ro_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readonly_pixmap			def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
 
 
     # Window hash tables:

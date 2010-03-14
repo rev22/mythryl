@@ -34,7 +34,7 @@ herein
 
     package rockerbutton_appearance: (weak)  Button_Appearance {	# Button_Appearance	is from   src/lib/x-kit/widget/leaf/button-view.pkg
 
-	on_switch_data = xc::make_cs_pixmap_from_ascii (32, [[
+	on_switch_data = xc::make_clientside_pixmap_from_ascii (32, [[
 	  "0x0C000000", "0x1B000000", "0x28C00000", "0x5A300000",
 	  "0xA88C0000", "0xDA230000", "0xA888FFFE", "0xDA228002",
 	  "0xA888AAAA", "0xDA228002", "0xA888AAAA", "0xDA228002",
@@ -43,7 +43,7 @@ herein
 	  "0x7FFFFFFC"
 	]]);
 
-	on_switch_mask = xc::make_cs_pixmap_from_ascii (32, [[
+	on_switch_mask = xc::make_clientside_pixmap_from_ascii (32, [[
 	  "0x0c000000", "0x1f000000", "0x3fc00000", "0x7ff00000",
 	  "0xfffc0000", "0xffff0000", "0xfffffffe", "0xfffffffe",
 	  "0xfffffffe", "0xfffffffe", "0xfffffffe", "0xfffffffe",
@@ -52,7 +52,7 @@ herein
 	  "0x7ffffffc"
 	]]);
 
-	off_switch_data = xc::make_cs_pixmap_from_ascii (32, [[
+	off_switch_data = xc::make_clientside_pixmap_from_ascii (32, [[
 	  "0x00000060", "0x000001B0", "0x00000628", "0x000018B4",
 	  "0x0000622A", "0x000188B6", "0xFFFE222A", "0x800288B6",
 	  "0xAAAA222A", "0x800288B6", "0xAAAA222A", "0x800288B6",
@@ -61,7 +61,7 @@ herein
 	  "0x7FFFFFFC"
 	]]);
 
-	off_switch_mask = xc::make_cs_pixmap_from_ascii (32, [[
+	off_switch_mask = xc::make_clientside_pixmap_from_ascii (32, [[
 	  "0x00000060", "0x000001f0", "0x000007f8", "0x00001ffc",
 	  "0x00007ffe", "0x0001fffe", "0xfffffffe", "0xfffffffe",
 	  "0xfffffffe", "0xfffffffe", "0xfffffffe", "0xfffffffe",
@@ -121,14 +121,14 @@ herein
 
 		stipple = w::ro_pixmap root "gray";
 
-		on_src      = xc::make_ro_pixmap_from_cs_pixmap screen on_switch_data;
-		off_src     = xc::make_ro_pixmap_from_cs_pixmap screen off_switch_data;
+		on_src      = xc::make_readonly_pixmap_from_clientside_pixmap screen on_switch_data;
+		off_src     = xc::make_readonly_pixmap_from_clientside_pixmap screen off_switch_data;
 
-		on_pattern  = xc::make_rw_pixmap_from_cs_pixmap screen on_switch_mask;
-		off_pattern = xc::make_rw_pixmap_from_cs_pixmap screen off_switch_mask;
+		on_pattern  = xc::make_readwrite_pixmap_from_clientside_pixmap screen on_switch_mask;
+		off_pattern = xc::make_readwrite_pixmap_from_clientside_pixmap screen off_switch_mask;
 
-		on_mask     = xc::make_ro_pixmap_from_rw_pixmap   on_pattern;
-		off_mask    = xc::make_ro_pixmap_from_rw_pixmap  off_pattern;
+		on_mask     = xc::make_readonly_pixmap_from_readwrite_pixmap   on_pattern;
+		off_mask    = xc::make_readonly_pixmap_from_readwrite_pixmap  off_pattern;
 
 		# Create stippled masks:
 		#
@@ -145,8 +145,8 @@ herein
 		xd::fill_box (xd::drawable_of_rw_pixmap  off_pattern) spen (xg::make_box (xg::point_00, size));
 		xd::fill_box (xd::drawable_of_rw_pixmap   on_pattern) spen (xg::make_box (xg::point_00, size));
 
-		inactive_on_mask  = xc::make_ro_pixmap_from_rw_pixmap   on_pattern;
-		inactive_off_mask = xc::make_ro_pixmap_from_rw_pixmap  off_pattern;
+		inactive_on_mask  = xc::make_readonly_pixmap_from_readwrite_pixmap   on_pattern;
+		inactive_off_mask = xc::make_readonly_pixmap_from_readwrite_pixmap  off_pattern;
 
 		my { size=>xg::SIZE { wide=>twid, high=>tht }, ... }
 		    =

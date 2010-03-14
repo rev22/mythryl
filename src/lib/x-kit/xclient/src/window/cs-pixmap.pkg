@@ -372,7 +372,7 @@ herein
 	# extract_row function extract rows already
 	# padded correctly for the display when possible. XXX BUGGO FIXME
 	#
-	fun copy_from_cs_pixmap_to_pixmap pm { from=>CS_PIXMAP { size, data }, from_box, to_point }
+	fun copy_from_clientside_pixmap_to_pixmap pm { from=>CS_PIXMAP { size, data }, from_box, to_point }
 	    =
 	    {   #  Clip from_box to clientside window:
 		#
@@ -403,7 +403,7 @@ herein
 		#
 		available = (int::min (dpy_info.max_request_length, 65536) - request_size) * 4;
 
-		fun copy_from_cs_pixmap_to_pixmap_request (r as g::BOX { col, row, wide, high }, to_point)
+		fun copy_from_clientside_pixmap_to_pixmap_request (r as g::BOX { col, row, wide, high }, to_point)
 		    =
 		    {
 			left_pad
@@ -475,9 +475,9 @@ herein
 				  }
 			      }
 			    );
-		      };					# fun copy_from_cs_pixmap_to_pixmap_request
+		      };					# fun copy_from_clientside_pixmap_to_pixmap_request
 
-		# Decompose copy_from_cs_pixmap_to_pixmap
+		# Decompose copy_from_clientside_pixmap_to_pixmap
 		# into multiple requests smaller than max size.
 		#
 		# First try to use as many rows as possible;
@@ -496,7 +496,7 @@ herein
 
 			if ((bytes_per_row * high) <= available)
 			    #
-			    copy_from_cs_pixmap_to_pixmap_request (r, pt);
+			    copy_from_clientside_pixmap_to_pixmap_request (r, pt);
 			else
 			    if (high > 1)
 				#
@@ -515,13 +515,13 @@ herein
 
 		put_sub_image (from_box', g::add_pt (to_point, delta));
 
-	    };				# fun copy_from_cs_pixmap_to_pixmap 
+	    };				# fun copy_from_clientside_pixmap_to_pixmap 
 
 
 
 	#  Create image data from an ascii representation 
 	#
-	fun make_cs_pixmap_from_ascii (wide, p0 ! rest)
+	fun make_clientside_pixmap_from_ascii (wide, p0 ! rest)
 		=>
 		{   fun mk (n, [],    l) =>   (n, reverse l);
 			mk (n, s ! r, l) =>   mk (n+1, r, string_to_data (wide, s) ! l);
@@ -549,7 +549,7 @@ herein
 		    };
 	       };
 
-	    make_cs_pixmap_from_ascii (wide, [])
+	    make_clientside_pixmap_from_ascii (wide, [])
 		=>
 		raise exception BAD_CS_PIXMAP_DATA;
 	end;
@@ -559,7 +559,7 @@ herein
 	# Create a server-side offscreen window from
 	# data in a client-side window:
 	#
-	fun make_rw_pixmap_from_cs_pixmap
+	fun make_readwrite_pixmap_from_clientside_pixmap
 		screen
 		(cs_pixmap as CS_PIXMAP { size, data } )
 	    =
@@ -569,11 +569,11 @@ herein
 
 		pixmap
 		    =
-		    wpm::make_rw_pixmap
+		    wpm::make_readwrite_pixmap
 			screen
 			(size, depth);
 
-		copy_from_cs_pixmap_to_pixmap
+		copy_from_clientside_pixmap_to_pixmap
 		    pixmap
 		    {
 		      from     =>  cs_pixmap, 
@@ -585,13 +585,13 @@ herein
 
 	# Create an pixmap from ascii data:
 	#
-	fun make_rw_pixmap_from_ascii_data
+	fun make_readwrite_pixmap_from_ascii_data
 		screen
 		(wide, ascii_rep)
 	    =
-	    make_rw_pixmap_from_cs_pixmap
+	    make_readwrite_pixmap_from_clientside_pixmap
 		screen
-		(make_cs_pixmap_from_ascii (wide, ascii_rep));
+		(make_clientside_pixmap_from_ascii (wide, ascii_rep));
 
 	# Create a client-side window from
 	# a server-side offscreen window.
@@ -602,7 +602,7 @@ herein
 	# draw_imp flush has occurred before we
 	# ask for the clientside window.	XXX BUGGO FIXME
 	#
-	fun make_cs_pixmap_from_rw_pixmap (dt::RW_PIXMAP { id, size => size as g::SIZE szinfo, screen_depth, screen } )
+	fun make_clientside_pixmap_from_readwrite_pixmap (dt::RW_PIXMAP { id, size => size as g::SIZE szinfo, screen_depth, screen } )
 	    =
 	    {   screen_depth -> sn::SCREEN_DEPTH_IMPS { depth, draw_fn, ... };
 
@@ -662,12 +662,12 @@ herein
 		    ::  (make_line (0, start)) ! (make_plane (i+1, start+bytes_per_plane));
 
 		  CS_PIXMAP { size, data=>make_plane (0, 0) };
-	      };						# fun make_cs_pixmap_from_rw_pixmap 
+	      };						# fun make_clientside_pixmap_from_readwrite_pixmap 
 
 
-	fun make_cs_pixmap_from_ro_pixmap (dt::RO_PIXMAP pm)
+	fun make_clientside_pixmap_from_readonly_pixmap (dt::RO_PIXMAP pm)
 	    =
-	    make_cs_pixmap_from_rw_pixmap   pm;
+	    make_clientside_pixmap_from_readwrite_pixmap   pm;
 
     };									# package cs_pixmap
 

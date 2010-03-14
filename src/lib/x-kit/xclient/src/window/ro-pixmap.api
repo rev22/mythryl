@@ -41,15 +41,15 @@ herein
 
 	Ro_Pixmap;
 
-	make_ro_pixmap_from_rw_pixmap:     dt::Rw_Pixmap -> Ro_Pixmap;
+	make_readonly_pixmap_from_readwrite_pixmap:     dt::Rw_Pixmap -> Ro_Pixmap;
 	    #
 	    # Make read-only window with pixel contents 
 	    # taken from given offscreen window.  Subsequent
 	    # changes to the input offscreen window will not
 	    # affect the resulting read-only window.
 
-	make_ro_pixmap_from_cs_pixmap:  xsession::Screen -> cw::Cs_Pixmap -> Ro_Pixmap;
-	make_ro_pixmap_from_ascii:		xsession::Screen -> (Int, List(List(String))) -> Ro_Pixmap;
+	make_readonly_pixmap_from_clientside_pixmap:  xsession::Screen -> cw::Cs_Pixmap -> Ro_Pixmap;
+	make_readonly_pixmap_from_ascii:	      xsession::Screen -> (Int, List(List(String))) -> Ro_Pixmap;
     };
 end;
 

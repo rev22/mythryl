@@ -52,7 +52,7 @@ herein
 	    =
 	    string_table::Hash_Table( xc::Ro_Pixmap );
 
-	fun make_ro_pixmap_cache
+	fun make_readonly_pixmap_cache
 	    ( screen,
 	      name_to_cs_pixmap
 	    )
@@ -90,18 +90,18 @@ herein
 			    =
 			    parse_file (fd, bio::read_bitmap);
 
-			t = xc::make_ro_pixmap_from_cs_pixmap
+			t = xc::make_readonly_pixmap_from_clientside_pixmap
 				screen
 				image;
 
 			note_window (quark, t); THE t;
 		    };
 
-		fun make_window_from_cs_pixmap  quark
+		fun make_window_from_clientside_pixmap  quark
 		    =
 		    {   window
 			    =
-			    xc::make_ro_pixmap_from_cs_pixmap
+			    xc::make_readonly_pixmap_from_clientside_pixmap
 				screen
 				(name_to_cs_pixmap  quark);
 
@@ -116,7 +116,7 @@ herein
 			#
 			make_window_from_file  arg;
 		    else
-			make_window_from_cs_pixmap  q;
+			make_window_from_clientside_pixmap  q;
 		    fi
 		    except _ = NULL;
 

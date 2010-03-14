@@ -658,7 +658,7 @@ herein
 
 	lt_gray_image
 	    =
-	    xc::make_cs_pixmap_from_ascii
+	    xc::make_clientside_pixmap_from_ascii
 	      ( 16,
 		[ [ "0x2222", "0x8888", "0x2222", "0x8888",
 		    "0x2222", "0x8888", "0x2222", "0x8888",
@@ -669,7 +669,7 @@ herein
 
 	fun make_bw_pen screen
 	    =
-	    {   graytile =  xc::make_ro_pixmap_from_cs_pixmap  screen  lt_gray_image;
+	    {   graytile =  xc::make_readonly_pixmap_from_clientside_pixmap  screen  lt_gray_image;
 
 		xd::make_pen [ xd::FOREGROUND  (xc::rgb8_from_int 0x000000), 
 			       xd::BACKGROUND  (xc::rgb8_from_int 0xFFFFFF),

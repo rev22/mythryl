@@ -114,8 +114,8 @@ herein
 
 		fun bw_shade (c, rgb)
 		    =
-		    {   lgray = xc::make_ro_pixmap_from_cs_pixmap  screen  pms::light_gray;
-			dgray = xc::make_ro_pixmap_from_cs_pixmap  screen  pms::dark_gray;
+		    {   lgray = xc::make_readonly_pixmap_from_clientside_pixmap  screen  pms::light_gray;
+			dgray = xc::make_readonly_pixmap_from_clientside_pixmap  screen  pms::dark_gray;
 
 			my (lt, dk)
 			    =

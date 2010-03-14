@@ -106,7 +106,7 @@ herein
 		pix_wide =  horz_cells*cell_size + 1;
 		pix_high =  vert_cells*cell_size + 1;
 
-		pixmap =  xc::make_rw_pixmap  screen  (xg::SIZE { wide=>pix_wide, high=>pix_high }, 1);
+		pixmap =  xc::make_readwrite_pixmap  screen  (xg::SIZE { wide=>pix_wide, high=>pix_high }, 1);
 
 		pm =  xd::drawable_of_rw_pixmap  pixmap;
 

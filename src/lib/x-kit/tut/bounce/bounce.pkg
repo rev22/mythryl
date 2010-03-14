@@ -63,7 +63,7 @@ herein
 			    );
 			};
 
-		    icon =  xc::make_ro_pixmap_from_cs_pixmap  screen  hd::att_data;
+		    icon =  xc::make_readonly_pixmap_from_clientside_pixmap  screen  hd::att_data;
 
 		    xw::set_window_manager_properties  window
 		      {

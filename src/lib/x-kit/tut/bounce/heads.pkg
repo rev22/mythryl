@@ -9,7 +9,7 @@ herein
 
     package heads {
 
-	xlogo_data = xc::make_cs_pixmap_from_ascii (32, [[
+	xlogo_data = xc::make_clientside_pixmap_from_ascii (32, [[
 		"0b11111111000000000000000000000011",
 		"0b01111111100000000000000000000011",
 		"0b00111111110000000000000000000110",
@@ -44,7 +44,7 @@ herein
 		"0b01100000000000000000000011111111"
 	      ]]);
 
-	north_data = xc::make_cs_pixmap_from_ascii (48, [[
+	north_data = xc::make_clientside_pixmap_from_ascii (48, [[
 		"0b000000000000000000000000000000000000000000000000",
 		"0b000000000000000000000101000000000000000000000000",
 		"0b000000000000000000111111111000000000000000000000",
@@ -95,7 +95,7 @@ herein
 		"0b000000000000111100000100000000000001100000000000"
 	      ]]);
 
-	bala_data = xc::make_cs_pixmap_from_ascii (48, [[
+	bala_data = xc::make_clientside_pixmap_from_ascii (48, [[
 		"0x000000000000", "0x000000000000",
 		"0x00001ffe0000", "0x00007fff8000",
 		"0x0001ffffe000", "0x0003fffff000",
@@ -122,7 +122,7 @@ herein
 		"0x000044d07000", "0x00073a908800"
 	      ]]);
 
-	rob_data = xc::make_cs_pixmap_from_ascii (48, [[
+	rob_data = xc::make_clientside_pixmap_from_ascii (48, [[
 		"0x000000000000", "0x00000FBE0000",
 		"0x00015E7FC000", "0x000505018000",
 		"0x00055300B800", "0x000407C0E400",
@@ -149,7 +149,7 @@ herein
 		"0x00006CDEB000", "0x000013256000"
 	      ]]);
 
-	dbm_data = xc::make_cs_pixmap_from_ascii (48, [[
+	dbm_data = xc::make_clientside_pixmap_from_ascii (48, [[
 		"0x000002800000", "0x00003EBC0000",
 		"0x0000EA850000", "0x0001B801C000",
 		"0x0007C0004000", "0x000500000000",
@@ -176,7 +176,7 @@ herein
 		"0x00017FFFA000", "0x00418554C010"
 	      ]]);
 
-	dgb_data = xc::make_cs_pixmap_from_ascii (48, [[
+	dgb_data = xc::make_clientside_pixmap_from_ascii (48, [[
 		"0x000000000000", "0x000000040000",
 		"0x000003ff8000", "0x00001fffc000",
 		"0x00003fffe000", "0x00007ffff000",
@@ -203,7 +203,7 @@ herein
 		"0x00b8ba800800", "0x001c15001000"
 	      ]]);
 
-	att_data = xc::make_cs_pixmap_from_ascii (38, [[
+	att_data = xc::make_clientside_pixmap_from_ascii (38, [[
 		"0b00000000000000111111111000000000000000",
 		"0b00000000000111111111111111000000000000",
 		"0b00000000001111111111111111110000000000",

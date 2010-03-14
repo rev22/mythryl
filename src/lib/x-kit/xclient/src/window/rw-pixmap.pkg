@@ -41,7 +41,7 @@ herein
 
         # Create uninitialized pixel array:
 	#
-	fun make_rw_pixmap  screen  (size, depth)
+	fun make_readwrite_pixmap  screen  (size, depth)
             =
             {   screen -> sn::SCREEN
                             {

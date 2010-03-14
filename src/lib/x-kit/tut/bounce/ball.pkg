@@ -65,7 +65,7 @@ herein
 		=
 		{   ball_icons
 			=
-			map (xc::make_ro_pixmap_from_cs_pixmap (xw::screen_of_window window))
+			map (xc::make_readonly_pixmap_from_clientside_pixmap (xw::screen_of_window window))
 			    hd::head_data_list;
 
 		    n    = list::length ball_icons;

@@ -21,7 +21,7 @@ herein
 	    fun make_image screen (pt, image)
 		= 
 		{ origin =>  pt,
-		  data   =>  xc::make_ro_pixmap_from_cs_pixmap  screen  image
+		  data   =>  xc::make_readonly_pixmap_from_clientside_pixmap  screen  image
 		}
 		: Image;
 

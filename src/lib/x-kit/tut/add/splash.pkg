@@ -61,7 +61,7 @@ herein
 			    pts' =  map (fn p = xg::sub_pt (p, del_pt))
 					pts;
 
-			    pixmap =  xc::make_rw_pixmap  screen  (xg::SIZE { wide, high }, 1);
+			    pixmap =  xc::make_readwrite_pixmap  screen  (xg::SIZE { wide, high }, 1);
 
 			    draww  =  xd::drawable_of_rw_pixmap  pixmap;
 
@@ -76,7 +76,7 @@ herein
 
 			    ro_pixmap
                                 =
-                                xc::make_ro_pixmap_from_rw_pixmap
+                                xc::make_readonly_pixmap_from_readwrite_pixmap
 				       pixmap;
 
 			    xc::destroy_rw_pixmap  pixmap;

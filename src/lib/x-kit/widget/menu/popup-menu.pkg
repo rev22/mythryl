@@ -652,7 +652,7 @@ herein
 		    =
 		    layout_menu (font, menu, label);
 
-		icon =   has_submenu menu   ??   THE (xc::make_ro_pixmap_from_cs_pixmap screen submenu_image)
+		icon =   has_submenu menu   ??   THE (xc::make_readonly_pixmap_from_clientside_pixmap screen submenu_image)
 					    ::   NULL;
 
 		fun realize { kidplug as xi::KIDPLUG { from_mouse', ... }, window, size }
@@ -757,7 +757,7 @@ herein
 		font     =  xf::open_font  xsession  menu_font;
 		menu_rep =  layout_menu (font, menu, label);
 
-		icon =   has_submenu menu   ??   THE (xc::make_ro_pixmap_from_cs_pixmap screen submenu_image)
+		icon =   has_submenu menu   ??   THE (xc::make_readonly_pixmap_from_clientside_pixmap screen submenu_image)
 					    ::   NULL;
 
 		fun do_pop (mbut, menupt, screen_pt, m)

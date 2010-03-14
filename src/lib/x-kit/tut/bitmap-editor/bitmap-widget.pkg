@@ -63,7 +63,7 @@ herein
 			       high => vert_cells
 			     };
 
-		pixmap =  make_rw_pixmap screen (psize, 1);
+		pixmap =  make_readwrite_pixmap screen (psize, 1);
 
 		pm     =  drawable_of_pixmap pixmap;
 
@@ -109,7 +109,7 @@ herein
 		fun send_image  reply_1shot
 		    =
 		    set ( reply_1shot,
-			  make_cs_pixmap_from_rw_pixmap  pixmap
+			  make_clientside_pixmap_from_readwrite_pixmap  pixmap
 			);
 
 

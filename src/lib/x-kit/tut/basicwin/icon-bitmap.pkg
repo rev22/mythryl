@@ -19,7 +19,7 @@ herein
 
 	icon_bitmap
 	    =
-	    xc::make_cs_pixmap_from_ascii
+	    xc::make_clientside_pixmap_from_ascii
 	      (
 		40,
 

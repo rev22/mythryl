@@ -37,17 +37,17 @@ herein
 	end;
 
 
-	fun make_ro_pixmap_from_cs_pixmap screen im
+	fun make_readonly_pixmap_from_clientside_pixmap screen im
 	    =
-	    dt::RO_PIXMAP (cw::make_rw_pixmap_from_cs_pixmap screen im);
+	    dt::RO_PIXMAP (cw::make_readwrite_pixmap_from_clientside_pixmap screen im);
 
 
-	fun make_ro_pixmap_from_ascii screen data
+	fun make_readonly_pixmap_from_ascii screen data
 	    =
-	    dt::RO_PIXMAP (cw::make_rw_pixmap_from_ascii_data screen data);
+	    dt::RO_PIXMAP (cw::make_readwrite_pixmap_from_ascii_data screen data);
 
 
-	fun make_ro_pixmap_from_rw_pixmap (pm as dt::RW_PIXMAP { screen, size, screen_depth, ... } )
+	fun make_readonly_pixmap_from_readwrite_pixmap (pm as dt::RW_PIXMAP { screen, size, screen_depth, ... } )
 	    =
 	    {   screen_depth
 		    ->
@@ -55,7 +55,7 @@ herein
 
 		new_pixmap
 		    =
-		    wp::make_rw_pixmap
+		    wp::make_readwrite_pixmap
 			screen
 			(size, depth);
 

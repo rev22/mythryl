@@ -84,7 +84,7 @@ herein
 
 		is =  ii::make_image_imp  init_images;
 
-		ts =  pxc::make_ro_pixmap_cache  (screen,  ii::get_image  is);
+		ts =  pxc::make_readonly_pixmap_cache  (screen,  ii::get_image  is);
 
 		shade_imp =  si::make_shade_imp  screen;
 
