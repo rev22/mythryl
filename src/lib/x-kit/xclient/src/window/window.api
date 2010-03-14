@@ -155,8 +155,8 @@ herein
 	      size_hints:               List( wh::Window_Manager_Size_Hint ),
 	      nonsize_hints:            List( wh::Window_Manager_Nonsize_Hint ),
 	      #
-	      ilk_hints:     Null_Or { res_ilk:   String,
-                                       res_name:  String
+	      class_hints:   Null_Or { resource_class:   String,
+                                       resource_name:  String
                                      }
 	    }
 	    ->

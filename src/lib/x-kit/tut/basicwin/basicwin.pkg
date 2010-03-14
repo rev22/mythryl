@@ -113,7 +113,7 @@ herein
 				       ],
 
 			nonsize_hints => [ xs::HINT_ICON_RO_PIXMAP  icon_ro_pixmap ],
-			ilk_hints     => THE { res_name => "basicwin", res_ilk => "Basicwin" },
+			class_hints   => THE { resource_name => "basicwin", resource_class => "Basicwin" },
 
 			commandline_arguments => commandline::get_arguments ()
 		      };

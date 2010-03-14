@@ -100,8 +100,9 @@ herein
 			xs::HINT_PSIZE,
 			xs::HINT_PMIN_SIZE min_sz
 		      ],
+		    #
 		    nonsize_hints  =>  [ xs::HINT_ICON_RO_PIXMAP icon_ro_pixmap ],
-		    ilk_hints      =>  THE { res_name=>"triangle", res_ilk=>"Triangle" },
+		    class_hints    =>  THE { resource_name=>"triangle", resource_class=>"Triangle" },
 		    #
 		    commandline_arguments =>  commandline::get_arguments ()
 		  };

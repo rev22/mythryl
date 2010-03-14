@@ -462,7 +462,7 @@ herein
 		  commandline_arguments,			# Typically from:   commandline::get_arguments ().
 		  size_hints,
 		  nonsize_hints,
-		  ilk_hints
+		  class_hints
 		}
 	    =
 	    {   window ->  dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... };
@@ -481,13 +481,13 @@ herein
 		put_property (sa::atom_wm_normal_hints, ip::make_window_manager_size_hints        size_hints);
 		put_property (sa::atom_wm_hints,        ip::make_window_manager_nonsize_hints  nonsize_hints);
 
-		case ilk_hints
+		case class_hints
 		    #	      
-		    THE { res_name, res_ilk }
+		    THE { resource_name, resource_class }
 			=>
 			put_property
 			  ( sa::atom_wm_ilk,
-			    ip::make_string_property (string::cat [res_name, "\000", res_ilk])
+			    ip::make_string_property (string::cat [resource_name, "\000", resource_class])
 			  );
 
 		    NULL => ();

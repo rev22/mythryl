@@ -77,8 +77,10 @@ herein
 					 xs::HINT_PSIZE,
 					 xs::HINT_PMIN_SIZE (xg::SIZE { wide => 200, high => 200 } )
 				       ],
+
 			nonsize_hints    => [ xs::HINT_ICON_RO_PIXMAP icon ],
-			ilk_hints   => NULL,
+
+			class_hints      => NULL,
 
 			commandline_arguments =>  commandline::get_arguments ()
 		      };

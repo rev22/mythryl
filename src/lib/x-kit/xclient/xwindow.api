@@ -134,16 +134,16 @@ api  Xwindow {
 	Window
 	->
 	{
-          window_name:   Null_Or( String ),
-          icon_name:     Null_Or( String ),
+          window_name:              Null_Or( String ),
+          icon_name:                Null_Or( String ),
           #
           commandline_arguments:    List( String ),					# Typically from:   commandline::get_arguments ().
           size_hints:    	    List( xselection::Window_Manager_Size_Hint ),
           nonsize_hints:	    List( xselection::Window_Manager_Nonsize_Hint ),
           #
-          ilk_hints:     Null_Or { res_ilk:   String,
-                                   res_name:  String
-                                 }
+          class_hints:              Null_Or { resource_class:   String,
+                                              resource_name:  String
+                                            }
         }
 	->
 	Void;

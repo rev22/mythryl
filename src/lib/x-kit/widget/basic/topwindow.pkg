@@ -41,7 +41,7 @@ herein
 	    {    size_hints:  List( xs::Window_Manager_Size_Hint    ),
 	      nonsize_hints:  List( xs::Window_Manager_Nonsize_Hint )
 		  #
-#		  ilk_hints:  Null_Or  { res_ilk:  String, res_name:  String }
+#	        class_hints:  Null_Or  { resource_class:  String, resource_name:  String }
 	    };
 
 	fun make_window_manager_hints a
@@ -222,7 +222,7 @@ herein
 				commandline_arguments =>  [],
 				window_name           =>  NULL,
 				icon_name             =>  NULL,
-				ilk_hints             =>  NULL
+				class_hints           =>  NULL
 			      };
 
 											# commandline		is from   src/lib/std/commandline.pkg
@@ -236,7 +236,7 @@ herein
 			    size_hints            =>  set_size_hints bounds,
 			    #
 			    nonsize_hints         =>  [],
-			    ilk_hints             =>  NULL
+			    class_hints           =>  NULL
 			  };
 
 			apply give_hint (reverse hintlist);
@@ -289,7 +289,7 @@ herein
 					commandline_arguments =>  [],
 					window_name           =>  NULL,
 					icon_name             =>  NULL,
-					ilk_hints             =>  NULL
+					class_hints           =>  NULL
 				      };                
 
 				      xw::resize_window
