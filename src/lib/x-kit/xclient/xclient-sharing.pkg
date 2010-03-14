@@ -139,6 +139,16 @@ package xclient_sharing: api {
 	rgb8_to_ints    =  rgb8::to_ints;
 	rgb8_to_int     =  rgb8::to_int;
 	rgb8_from_rgb   =  rgb8::from_rgb;
+	rgb8_color0     =  rgb8::color0;
+	rgb8_color1     =  rgb8::color1;
+	rgb8_white      =  rgb8::white;
+	rgb8_black      =  rgb8::black;
+	rgb8_red        =  rgb8::red;
+	rgb8_green      =  rgb8::green;
+	rgb8_blue       =  rgb8::blue;
+	rgb8_cyan       =  rgb8::cyan;
+	rgb8_magenta    =  rgb8::magenta;
+	rgb8_yellow     =  rgb8::yellow;
 
 	rgb_from_floats =  rgb::from_floats;
 	rgb_to_floats   =  rgb::to_floats;

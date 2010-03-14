@@ -1,3 +1,4 @@
+2010-03-14-12.49.33: src/lib/x-kit/xclient/xwindow.api: set_window_manager_properties: Rename ilk_hints, res_ilk, res_name -> class_hints, resource_class, resource name.
 2010-03-14-12.36.46: src/lib/x-kit/xclient/xwindow.api: set_window_manager_properties(): Rename argv -> commandline_arguments for clarity.
 2010-03-14-01.42.33: src/lib/x-kit/tut/triangle/triangle.pkg: Tidying.  src/lib/x-kit/xclient/xcore.api: Renaming for clarity.
 2010-03-13-13.58.09: src/lib/x-kit/tut/triangle/triangle.pkg: More cleaning. Related maintainance in Makefile.

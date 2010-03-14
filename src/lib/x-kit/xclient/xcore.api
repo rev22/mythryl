@@ -116,6 +116,17 @@ api  Xcore {
     magenta: Rgb;
     yellow:  Rgb;
     #
+    rgb8_color0:   Rgb8;
+    rgb8_color1:   Rgb8;
+    rgb8_white:    Rgb8;
+    rgb8_black:    Rgb8;
+    rgb8_red:      Rgb8;
+    rgb8_green:    Rgb8;
+    rgb8_blue:     Rgb8;
+    rgb8_cyan:     Rgb8;
+    rgb8_magenta:  Rgb8;
+    rgb8_yellow:   Rgb8;
+    #
     rgb_normalize:     Rgb -> Rgb;
     #
     rgb_from_unts:    (Unt, Unt, Unt) -> Rgb;

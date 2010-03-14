@@ -127,6 +127,21 @@ package rgb8: Rgb8 {				# Rgb8		is from   src/lib/x-kit/xclient/src/color/rgb8.a
     fun from_name  colorname
 	=
 	from_ints  (x11_color_name::to_ints  colorname);
+
+
+    color0  = from_int 0;
+    color1  = from_int 1;
+    #
+    white   = from_int 0xFFFFFF;
+    black   = from_int 0x000000;
+    #
+    red     = from_int 0xFF0000;
+    green   = from_int 0x00FF00;
+    blue    = from_int 0x0000FF;
+    #
+    cyan    = from_int 0x00FFFF;
+    magenta = from_int 0xFF00FF;
+    yellow  = from_int 0xFFFF00;
 };
 
 
