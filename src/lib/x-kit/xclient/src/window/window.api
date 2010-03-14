@@ -136,7 +136,8 @@ herein
 	# InputOnly windows.
 	exception INPUT_ONLY;
 
-							    # iccc_property		is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
+											# iccc_property		is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
+											# commandline		is from   src/lib/std/commandline.pkg
 	# Set the properties of a top-level window.
 	#
 	# This should be done before showing (mapping)
@@ -150,9 +151,9 @@ herein
 	      window_name:   Null_Or( String ),
 	      icon_name:     Null_Or( String ),
 	      #
-	      argv:          List( String ),						# Typically from:   commandline::get_arguments ().
-	      size_hints:    List( wh::Window_Manager_Size_Hint ),
-	      nonsize_hints: List( wh::Window_Manager_Nonsize_Hint ),
+	      commandline_arguments:    List( String ),					# Typically from:   commandline::get_arguments ().
+	      size_hints:               List( wh::Window_Manager_Size_Hint ),
+	      nonsize_hints:            List( wh::Window_Manager_Nonsize_Hint ),
 	      #
 	      ilk_hints:     Null_Or { res_ilk:   String,
                                        res_name:  String

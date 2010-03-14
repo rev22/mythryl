@@ -31,6 +31,8 @@ herein
 
 	button_corner_radius = 8;
 
+	# Put button window at bottom of topwindow:
+	# 
 	fun button_window_site  (topwindow_size as { wide: Int, high: Int })
 	    =
 	    xg::WINDOW_SITE
@@ -44,6 +46,8 @@ herein
 		border_width =>  0
 	      };
 
+	# Let drawing window fill the rest of topwindow:
+	# 
 	fun drawing_window_site (topwindow_size as { wide: Int, high: Int })
 	    =
 	    xg::WINDOW_SITE
@@ -83,10 +87,10 @@ herein
 			screen
 			icon_bitmap::icon_bitmap;
 
+
+											# commandline		is from   src/lib/std/commandline.pkg
 		xw::set_window_manager_properties  window
 		  {
-		    argv => commandline::get_arguments (),
-		    #
 		    window_name => THE "Triangle",
 		    icon_name   => THE "triangle",
 		    #
@@ -96,8 +100,10 @@ herein
 			xs::HINT_PSIZE,
 			xs::HINT_PMIN_SIZE min_sz
 		      ],
-		    nonsize_hints  => [ xs::HINT_ICON_RO_PIXMAP icon_ro_pixmap ],
-		    ilk_hints => THE { res_name=>"triangle", res_ilk=>"Triangle" }
+		    nonsize_hints  =>  [ xs::HINT_ICON_RO_PIXMAP icon_ro_pixmap ],
+		    ilk_hints      =>  THE { res_name=>"triangle", res_ilk=>"Triangle" },
+		    #
+		    commandline_arguments =>  commandline::get_arguments ()
 		  };
 
 		xw::show_window  window;

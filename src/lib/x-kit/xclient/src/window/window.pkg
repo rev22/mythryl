@@ -446,6 +446,7 @@ herein
 	    end;
 
 
+								# commandline		is from   src/lib/std/commandline.pkg
 	# Set the standard window-manager
 	# properties of a top-level window.
 	#
@@ -458,7 +459,7 @@ herein
 
 		{ window_name,
 		  icon_name,
-		  argv,
+		  commandline_arguments,			# Typically from:   commandline::get_arguments ().
 		  size_hints,
 		  nonsize_hints,
 		  ilk_hints
@@ -492,10 +493,13 @@ herein
 		    NULL => ();
 		esac;
 
-		case argv
+		case commandline_arguments
 		    #	      
 		    [] => ();
-		    _  => put_property (sa::atom_wm_command, ip::make_command_hints (argv));
+		    _  => put_property
+                            ( sa::atom_wm_command,
+                              ip::make_command_hints  commandline_arguments
+                            );
 		esac;
 	    };
 

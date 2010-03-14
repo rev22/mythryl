@@ -104,7 +104,6 @@ herein
 		xw::set_window_manager_properties
 		    window
 		      {
-			argv        => commandline::get_arguments (),
 			window_name => THE "Basic Window Program",
 			icon_name   => THE "basicwin",
 
@@ -114,7 +113,9 @@ herein
 				       ],
 
 			nonsize_hints => [ xs::HINT_ICON_RO_PIXMAP  icon_ro_pixmap ],
-			ilk_hints     => THE { res_name => "basicwin", res_ilk => "Basicwin" }
+			ilk_hints     => THE { res_name => "basicwin", res_ilk => "Basicwin" },
+
+			commandline_arguments => commandline::get_arguments ()
 		      };
 
 		xw::show_window  window;
@@ -122,7 +123,7 @@ herein
 		(xsession, screen, in_dict, window);
 	    };
 
-									    # drawing	is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+									    # drawing		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 									    # pen		is from	  src/lib/x-kit/xclient/src/window/pen.pkg
 									    # PV_FOREGROUND	def in    src/lib/x-kit/xclient/src/window/pen.pkg
 	fun make_pen screen

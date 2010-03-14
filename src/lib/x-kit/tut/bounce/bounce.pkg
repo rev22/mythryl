@@ -63,11 +63,13 @@ herein
 			    );
 			};
 
-		    icon =  xc::make_readonly_pixmap_from_clientside_pixmap  screen  hd::att_data;
+		    icon =  xc::make_readonly_pixmap_from_clientside_pixmap
+                                screen
+                                hd::att_data;
 
+											# commandline		is from   src/lib/std/commandline.pkg
 		    xw::set_window_manager_properties  window
 		      {
-			argv        =>  commandline::get_arguments (),
 			window_name =>  THE "Bounce",
 			icon_name   =>  THE "bounce",
 
@@ -76,7 +78,9 @@ herein
 					 xs::HINT_PMIN_SIZE (xg::SIZE { wide => 200, high => 200 } )
 				       ],
 			nonsize_hints    => [ xs::HINT_ICON_RO_PIXMAP icon ],
-			ilk_hints   => NULL
+			ilk_hints   => NULL,
+
+			commandline_arguments =>  commandline::get_arguments ()
 		      };
 
 		    xw::show_window  window;

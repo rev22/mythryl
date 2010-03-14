@@ -219,23 +219,24 @@ herein
 				size_hints,
 				nonsize_hints,
 				#
-				argv        =>  [],
-				window_name =>  NULL,
-				icon_name   =>  NULL,
-				ilk_hints   =>  NULL
+				commandline_arguments =>  [],
+				window_name           =>  NULL,
+				icon_name             =>  NULL,
+				ilk_hints             =>  NULL
 			      };
 
+											# commandline		is from   src/lib/std/commandline.pkg
 			xw::set_window_manager_properties  twin
                           {
-			    argv          =>  commandline::get_arguments(),
+			    commandline_arguments =>  commandline::get_arguments(),
 			    #
-			    window_name   =>  wm_args.window_name,
-			    icon_name     =>  wm_args.icon_name,
+			    window_name           =>  wm_args.window_name,
+			    icon_name             =>  wm_args.icon_name,
 			    #
-			    size_hints    =>  set_size_hints bounds,
+			    size_hints            =>  set_size_hints bounds,
 			    #
-			    nonsize_hints =>  [],
-			    ilk_hints     =>  NULL
+			    nonsize_hints         =>  [],
+			    ilk_hints             =>  NULL
 			  };
 
 			apply give_hint (reverse hintlist);
@@ -282,14 +283,13 @@ herein
 
 				    xw::set_window_manager_properties twin
 				      {
-					argv          =>  [],
+					size_hints =>  set_size_hints  bounds,
 					#
-					window_name   =>  NULL,
-					icon_name     =>  NULL,
-					ilk_hints     =>  NULL,
-					#
-					size_hints    =>  set_size_hints bounds,
-					nonsize_hints =>  []
+					nonsize_hints         =>  [],
+					commandline_arguments =>  [],
+					window_name           =>  NULL,
+					icon_name             =>  NULL,
+					ilk_hints             =>  NULL
 				      };                
 
 				      xw::resize_window
