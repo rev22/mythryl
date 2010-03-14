@@ -137,9 +137,9 @@ herein
 		spen = xd::make_pen					# "spen" may be "stipple pen"
                          [ xd::STIPPLE stipple,
 			   xd::FILL_STYLE_OPAQUE_STIPPLED,
-			   xd::FOREGROUND (xc::rgb8_from_int 1),        # xc::color1,
-			   xd::BACKGROUND (xc::rgb8_from_int 0),	# xc::color0, 
-			   xd::FUNCTION   xd::OP_AND
+			   xd::FOREGROUND  xc::rgb8_color1,
+			   xd::BACKGROUND  xc::rgb8_color0,
+			   xd::FUNCTION    xd::OP_AND
 			 ]; 
 
 		xd::fill_box (xd::drawable_of_rw_pixmap  off_pattern) spen (xg::make_box (xg::point_00, size));

@@ -106,8 +106,8 @@ herein
 
 		fun make_p' t
 		    =
-		    xd::make_pen [ xd::FOREGROUND (xc::rgb8_from_int 0x000000),
-				   xd::BACKGROUND (xc::rgb8_from_int 0xFFFFFF),
+		    xd::make_pen [ xd::FOREGROUND  xc::rgb8_black,
+				   xd::BACKGROUND  xc::rgb8_white,
 				   xd::STIPPLE t,
 				   xd::FILL_STYLE_OPAQUE_STIPPLED
 				 ];

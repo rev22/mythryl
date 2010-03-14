@@ -76,7 +76,7 @@ herein
 			screen
 			{
 			  border_color     =>  xc::black,
-			  background_color =>  xc::rgb8_from_int 0xFFFFFF,
+			  background_color =>  xc::rgb8_white,
 			  #	
 			  site  => xg::WINDOW_SITE
 				     { upperleft    =>  xg::POINT {  col => 0,  row => 0  },
@@ -130,13 +130,13 @@ herein
 	    =
 	    xd::make_pen
 	      [
-		xd::FOREGROUND (xc::rgb8_from_int 0x000000),
-		xd::LINE_WIDTH 6,
+		xd::FOREGROUND   xc::rgb8_black,
+		xd::LINE_WIDTH   6,
 		xd::LINE_STYLE_ON_OFF_DASH,
 		xd::CAP_STYLE_ROUND,
 		xd::JOIN_STYLE_ROUND,
-		xd::DASH_OFFSET 0,
-		xd::DASH_LIST [12, 24]
+		xd::DASH_OFFSET  0,
+		xd::DASH_LIST    [12, 24]
 	      ];
 
 									    # font		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg

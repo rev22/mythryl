@@ -49,7 +49,7 @@ herein
 			=
 			xd::make_pen [ xd::FILL_STYLE_STIPPLED, 
 				       xd::STIPPLE     water_ro_pixmap,
-				       xd::FOREGROUND  (xc::rgb8_from_int 1)
+				       xd::FOREGROUND  xc::rgb8_color1
 				     ];
 
 		    fun mks pts

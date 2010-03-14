@@ -282,7 +282,7 @@ herein
 		    =
 		    xw::make_simple_popup_window  screen
 		      {
-			background_color =>  xc::rgb8_from_int 0xFFFFFF,
+			background_color =>  xc::rgb8_white,
 			border_color     =>  black,
 			#
 			site =>  xg::WINDOW_SITE

@@ -170,8 +170,8 @@ herein
 			end;
 		end;
 
-		draw_pen  =  xd::make_pen  [xd::FOREGROUND  (xc::rgb8_from_int 0xFFFFFF)];
-		erase_pen =  xd::make_pen  [xd::FOREGROUND  (xc::rgb8_from_int 0x000000)];
+		draw_pen  =  xd::make_pen  [xd::FOREGROUND  xc::rgb8_white ];
+		erase_pen =  xd::make_pen  [xd::FOREGROUND  xc::rgb8_black ];
 
 		timer     =  timeout_in' (time::from_milliseconds 20);
 

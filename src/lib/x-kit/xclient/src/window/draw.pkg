@@ -523,7 +523,7 @@ herein
 
 		clear_pen
 		    =
-		    pen::make_pen  [  pen::FOREGROUND  (rgb8::from_int  0)  ];
+		    pen::make_pen  [  pen::FOREGROUND  rgb8::color0  ];
 
 	    herein
 

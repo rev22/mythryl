@@ -78,7 +78,7 @@ herein
 			site =>  xg::WINDOW_SITE { upperleft => xg::POINT { col=>0, row=>0 }, size=>window_size, border_width=>1 },
 			#
 			border_color     =>  xc::black,
-			background_color =>  xc::rgb8_from_int 0xFFFFFF
+			background_color =>  xc::rgb8_white
 		      };
 
 		icon_ro_pixmap
@@ -128,7 +128,7 @@ herein
 			site => drawing_window_site  topwindow_size,
 			#
 			border_color     => THE  xc::black,
-			background_color => THE (xc::rgb8_from_int 0)
+			background_color => THE  xc::rgb8_color0
 		      };
 
 		button_window
@@ -138,7 +138,7 @@ herein
 			site =>  button_window_site  topwindow_size,
 			#
 			border_color     =>  NULL,
-			background_color =>  THE (xc::rgb8_from_int 0xFFFFFF)		
+			background_color =>  THE  xc::rgb8_white
 		      };
 
 		xw::show_window  drawing_window;
@@ -176,7 +176,7 @@ herein
 		pen = xd::make_pen
 			[
 			  xd::FUNCTION xd::OP_COPY,
-			  xd::FOREGROUND (xc::rgb8_from_int 0x000000)
+			  xd::FOREGROUND  xc::rgb8_black
 			];
 
 		draw_cartouche
@@ -293,8 +293,8 @@ herein
 
 		pen = xd::make_pen
 			[
-			  xd::FUNCTION xd::OP_COPY,
-			  xd::FOREGROUND (xc::rgb8_from_int 0x000000)
+			  xd::FUNCTION    xd::OP_COPY,
+			  xd::FOREGROUND  xc::rgb8_black
 			];
 
 		draw = xd::fill_polygon drawable pen;

@@ -154,7 +154,7 @@ herein
 		black =  xc::black;
 
 		pen = xd::make_pen [ xd::FUNCTION    xd::OP_XOR,
-				     xd::FOREGROUND  (xc::rgb8_from_int 1)
+				     xd::FOREGROUND  xc::rgb8_color1
 			           ];
 
 		reply_slot = make_mailslot ();

@@ -58,7 +58,7 @@ herein
 
 		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, black_rgb8, white_rgb8, ... };
 
-		green_pixel =  rgb8::from_int  0x00FF00;
+		green_pixel =  rgb8::green;
 
 		background_pixel = green_pixel;
 		border_pixel     = black_rgb8;
