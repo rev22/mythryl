@@ -328,7 +328,7 @@ herein
 	#
 	fun make_topwindow_to_widget_router
 	    ( screen       as sn::SCREEN { xsession, ... },
-	      screen_depth as sn::SCREEN_DEPTH_IMPS  { gc_imp, ... },
+	      screen_depth as sn::SCREEN_DEPTH_IMPS  { gcontext_imp, ... },
 	      window_id
 	    )
 	    =
@@ -341,7 +341,7 @@ herein
 		dm = di::make_draw_imp
 			  (
 			    take'  dm_config_slot,
-			    gc_imp,
+			    gcontext_imp,
 			    xsocket_to_topwindow_router,
 			    xsocket
 			  );

@@ -201,7 +201,7 @@ herein
 							# for a given  depth of a screen.
 		depth:      Int,    
 
-		gc_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
+		gcontext_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
 
 		draw_fn:    di::Draw_Mail -> Void	# The draw-imp connection for
 							# the root  window of the screen. 
@@ -269,7 +269,7 @@ herein
 
 		fun make_screen_info (xscreen as dy::XSCREEN { root_window_id, root_visual, visuals, ... } )
 		    =
-		    {   fun make_screen_depth (depth, gc_imp)
+		    {   fun make_screen_depth (depth, gcontext_imp)
 			    =
 			    {
 				config_slot =  make_mailslot ();
@@ -278,23 +278,23 @@ herein
 
 				SCREEN_DEPTH_IMPS {
 				    depth,
-				    gc_imp,
+				    gcontext_imp,
 				    draw_fn
 					=>
 					di::make_draw_imp
 					  ( take'  config_slot,
-					    gc_imp,
+					    gcontext_imp,
 					    xsocket_to_topwindow_router,
                                             xsocket
                                           )
 				};
 			    };
 
-			fun make_gc_imps ([], l)
+			fun make_gcontext_imps ([], l)
 				=>
 				l;
 
-			    make_gc_imps (vd ! r, l)
+			    make_gcontext_imps (vd ! r, l)
 				=>
 				{
 				    d = dy::depth_of_visual vd;
@@ -331,7 +331,7 @@ herein
                                     end;
 
 
-				    make_gc_imps (r, get l);
+				    make_gcontext_imps (r, get l);
 				};
 			end;
 
@@ -343,8 +343,8 @@ herein
 				gci::make_graphics_context_imp  (display, root_window_id)
 			      );
 
-			imps = make_gc_imps (visuals, [root_imps]);
-			imps = make_gc_imps([xt::NO_VISUAL_FOR_THIS_DEPTH 1], imps);
+			imps = make_gcontext_imps (visuals, [root_imps]);
+			imps = make_gcontext_imps([xt::NO_VISUAL_FOR_THIS_DEPTH 1], imps);
 
 			SCREEN_INFO {
 			    xscreen,

@@ -434,7 +434,7 @@ herein
 	  # This requires aquiring actual server graphics contexts
 	  # for the operations from the GC-imp.
 	  #
-	  fun flush_buf (gc_imp, connection)
+	  fun flush_buf (gcontext_imp, connection)
 	      =
 	      flush
 	      where 
@@ -445,12 +445,12 @@ herein
 		    | WITH_FONT xt::Font_Id
 		    | SET_FONT  xt::Font_Id;
 
-		  acq_gc =  gi::acquire_graphics_context  gc_imp;
-		  rel_gc =  gi::release_graphics_context  gc_imp;
+		  acq_gc =  gi::acquire_graphics_context  gcontext_imp;
+		  rel_gc =  gi::release_graphics_context  gcontext_imp;
 
-		  acq_gcwith_font    =   gi::acquire_graphics_context_with_font     gc_imp;
-		  acq_gcand_set_font =   gi::acquire_graphics_context_and_set_font  gc_imp;
-		  rel_gcand_font     =   gi::release_graphics_context_and_font      gc_imp;
+		  acq_gcwith_font    =   gi::acquire_graphics_context_with_font     gcontext_imp;
+		  acq_gcand_set_font =   gi::acquire_graphics_context_and_set_font  gcontext_imp;
+		  rel_gcand_font     =   gi::release_graphics_context_and_font      gcontext_imp;
 
 		  request_dop
 		      =
@@ -689,14 +689,14 @@ herein
 	    #     src/lib/x-kit/xclient/src/window/xsession.pkg
 	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 	    #
-	    fun make_draw_imp (configure', gc_imp, lock_imp, connection)
+	    fun make_draw_imp (configure', gcontext_imp, lock_imp, connection)
 		=
 		{   # Need to check state transitions to insure no deadlock *  XXX BUGGO FIXME
 
 		    plea_slot    =   make_mailslot ();
 		    plea'        =   take'  plea_slot;
 
-		    flush        =   flush_buf (gc_imp, connection);
+		    flush        =   flush_buf (gcontext_imp, connection);
 
 		    flush_delay' =   timeout_in' (time::from_milliseconds 40);
 

@@ -167,7 +167,7 @@ herein
 
 	fun make_button_threads (button_window, button_kidplug)
 	    =
-	    {   make_thread "triangle button" loop;
+	    {   xtr::make_thread "triangle button" loop;
 		take' reset_slot;
 	    }
 	    where
@@ -301,8 +301,8 @@ trace .{ "button loop TOP"; };
 	#
 	fun make_draw_threads (drawing_window, reset', draw_kidplug)
 	    =
-	    {   make_thread "triangle draw mouse"  mouse_thread;
-		make_thread "triangle draw"       .{ loop []; };
+	    {   xtr::make_thread "triangle draw mouse"  mouse_thread;
+		xtr::make_thread "triangle draw"       .{ loop []; };
 		();
 	    }
 	    where
@@ -431,7 +431,7 @@ trace .{ "drawing_window loop -- doing select []"; };
               drawing_window
             }
 	    =
-	    {   make_thread "triangle router" router;
+	    {   xtr::make_thread "triangle router" router;
 
 		{ button_kidplug,
 		  draw_kidplug

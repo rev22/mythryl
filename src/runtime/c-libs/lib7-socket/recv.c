@@ -58,7 +58,7 @@ lib7_val_t _lib7_Sock_recv (lib7_state_t *lib7_state, lib7_val_t arg)
 
 /*  } while (n < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
-    print_if(   "recv.c/after: n d=%d errno d=%d\n", n, errno);
+    print_if(   "recv.c/after: n d=%d errno d=%d (%s)\n", n, errno, errno ? strerror(errno) : "");
     hexdump_if( "recv.c/after: Received data: ", PTR_LIB7toC(unsigned char, vec), n );
 
     if (n < 0)

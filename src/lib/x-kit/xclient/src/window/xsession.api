@@ -72,7 +72,7 @@ herein
 							# for a given  depth of a screen.
 		depth:      Int,    
 
-		gc_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
+		gcontext_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
 
 		draw_fn:    di::Draw_Mail -> Void	# The draw-imp connection for
 							# the root  window of the screen. 

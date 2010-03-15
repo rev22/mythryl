@@ -152,7 +152,7 @@ herein
 		where
 		    fun f []
 			    =>
-			    xgripe::impossible "[Gc_Imp: lost used GC]";
+			    xgripe::impossible "[Gcontext_Imp: lost used GC]";
 
 			f ((x as USED { gc, ... } ) ! r)
 			    =>
@@ -199,7 +199,7 @@ herein
 				    (gc, _)
 					=>
 					xgripe::impossible (string::cat [
-					    "[Gc_Imp::findUsedGC: bogus used GC; fontUsed = ",
+					    "[Gcontext_Imp::findUsedGC: bogus used GC; fontUsed = ",
 					    bool::to_string font_used, ", gc = ", used_gc2s gc, "]"
 					]);
 				esac;
@@ -482,7 +482,7 @@ herein
 				    (_,                  NULL) =>  (FALSE, NO_FONT);
 				    (NO_FONT,        THE fid ) =>  (TRUE, USED_FONT (fid, 1));
 				    (SOME_FONT fid1, THE fid2) =>  ((fid1 != fid2), USED_FONT (fid2, 1));
-				    (USED_FONT _,           _) =>  xgripe::impossible "[Gc_Imp: used font in avail gc]";
+				    (USED_FONT _,           _) =>  xgripe::impossible "[Gcontext_Imp: used font in avail gc]";
 				esac;
 
 			      if (default_mask != 0u0)
@@ -635,7 +635,7 @@ herein
 
 						match (AVAIL { font => (USED_FONT _), ... } )
 						    =>
-						    xgripe::impossible "[Gc_Imp: used font in avail gc]";
+						    xgripe::impossible "[Gcontext_Imp: used font in avail gc]";
 					    end;
 
 					    fun make_used (AVAIL { gc, desc, ... } )
@@ -825,7 +825,7 @@ herein
 
 
 
-		    xtracing::make_thread  "gc_imp"  .{
+		    xtracing::make_thread  "gcontext_imp"  .{
 			#
 			imp_loop (0, 0, [default_gc], []);
 		    };
@@ -841,7 +841,7 @@ herein
 		    case (take  reply_slot)
 
 			REPLY_GC id =>  id;
-			_           =>  xgripe::impossible "[Gc_Imp::acquireFn: bad reply]";
+			_           =>  xgripe::impossible "[Gcontext_Imp::acquireFn: bad reply]";
 		    esac;
 		};
 
@@ -859,7 +859,7 @@ herein
 			     arg;
 
 			 _   =>
-			     xgripe::impossible "[Gc_Imp::acquireGCWithFont: bad reply]";
+			     xgripe::impossible "[Gcontext_Imp::acquireGCWithFont: bad reply]";
 		    esac;
 		};
 
