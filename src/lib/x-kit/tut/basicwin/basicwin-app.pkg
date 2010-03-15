@@ -3,7 +3,7 @@
 ## Copyright 1989 O'Reilly and Associates, Inc.
 
 # Compiled by:
-#     src/lib/x-kit/tut/basicwin/basicwin.make6
+#     src/lib/x-kit/tut/basicwin/basicwin-app.make6
 
 stipulate
     include threadkit;						# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg

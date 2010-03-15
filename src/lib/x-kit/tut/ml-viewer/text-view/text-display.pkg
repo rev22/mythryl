@@ -1,7 +1,7 @@
 # text-display.pkg
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 							# Text_Pool	is from   src/lib/x-kit/tut/ml-viewer/text-view/text-pool.api
 
 # This generic is compile-time expanded by :

@@ -5,7 +5,7 @@
 # It clears the drawing window when the RESET button is clicked.
 
 # Compiled by:
-#     src/lib/x-kit/tut/triangle/tri.make6
+#     src/lib/x-kit/tut/triangle/triangle-app.make6
 
 # This api is implemented in:
 #

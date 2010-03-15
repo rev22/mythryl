@@ -1,5 +1,7 @@
 ## export.pkg
 
+# Compiled by:
+#     src/lib/x-kit/tut/bricks/bricks-app.make6
 
 package export {
 

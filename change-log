@@ -1,3 +1,4 @@
+2010-03-15-13.22.54: src/lib/x-kit/tut/basicwin/: Renamed basicwin* -> basicwin-app*;  src/lib/x-kit/tut/bounce/: Renamed bounce* -> bounce-app*
 2010-03-15-13.07.32: src/lib/x-kit/tut/bricks/: Renamed bricks* -> bricks-app*;  src/lib/x-kit/tut/bricks/: Rename calc* calc-app*.
 2010-03-15-12.49.14: src/lib/x-kit/tut/: Rnamed nbody/nbody* -> nbody/nbody-app*, mixer/mixer* ->  mixer/mixer-app*, plaid/plaid* -> plaid/plaid-app*.
 2010-03-14-22.53.27: src/lib/x-kit/tut/triangle/triangle-app.pkg: Added (many) trace calls.

@@ -1,7 +1,7 @@
 # text-pool.api
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # This specified the argument type to generic package text_display_g,
 # which no longer exists.

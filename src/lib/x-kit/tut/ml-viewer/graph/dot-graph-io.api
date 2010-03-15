@@ -4,7 +4,7 @@
 # I/O of graphs using the "dot" syntax.
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # Implemented by:
 #     src/lib/x-kit/tut/ml-viewer/graph/dot-graph-io-g.pkg

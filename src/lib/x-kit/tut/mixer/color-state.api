@@ -2,7 +2,7 @@
 ## See COPYRIGHT file for details.
 
 # Compiled by:
-#     src/lib/x-kit/tut/mixer/mixer.make6
+#     src/lib/x-kit/tut/mixer/mixer-app.make6
 
 # This api is implemented in:
 #     src/lib/x-kit/tut/mixer/color-state.pkg

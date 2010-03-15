@@ -1,7 +1,7 @@
 ## brick.pkg
 
 # Compiled by:
-#     src/lib/x-kit/tut/bricks/bricks.make6
+#     src/lib/x-kit/tut/bricks/bricks-app.make6
 
 stipulate
     include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg

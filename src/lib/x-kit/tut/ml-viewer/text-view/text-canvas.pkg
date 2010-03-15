@@ -7,7 +7,7 @@
 # the background.
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 stipulate
     package w : (weak)  Widget = widget;

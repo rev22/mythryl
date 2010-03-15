@@ -5,7 +5,7 @@
 # graphs used to hold graphs once planar layout is done.
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # Compare to:
 #     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree-attributes.pkg

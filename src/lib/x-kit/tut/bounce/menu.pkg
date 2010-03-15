@@ -1,7 +1,7 @@
 ## menu.pkg
 
 # Compiled by:
-#     src/lib/x-kit/tut/bounce/bounce.make6
+#     src/lib/x-kit/tut/bounce/bounce-app.make6
 
 
 # This is a very simple menu for the bounce demo; it just returns the selected

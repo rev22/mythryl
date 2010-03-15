@@ -5,7 +5,7 @@
 # unique names (and parser tokens).
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 ###              "The eternal mystery of the world is its comprehensibility."
 ###

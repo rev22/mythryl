@@ -3,7 +3,7 @@
 # The calculator interface.
 
 # Compiled by:
-#     src/lib/x-kit/tut/calc/calc.make6
+#     src/lib/x-kit/tut/calc/calc-app.make6
 
 # This api is implemented in:
 #     src/lib/x-kit/tut/calc/calc-app.pkg

@@ -3,7 +3,7 @@
 # The accumulator of the calculator.
 
 # Compiled by:
-#     src/lib/x-kit/tut/calc/calc.make6
+#     src/lib/x-kit/tut/calc/calc-app.make6
 
 
 # This api is implemented in:

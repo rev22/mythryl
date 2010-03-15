@@ -1,7 +1,7 @@
 ## get-mouse-selection.api
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # Various geometric utility routines.
 # This assumes a mechanism for allowing only

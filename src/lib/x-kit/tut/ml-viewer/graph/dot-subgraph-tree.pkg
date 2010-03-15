@@ -1,7 +1,7 @@
 ## dot-subgraph-tree.pkg
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # Implement the per-graph, per-node and per-edge
 # information maintained by the dot-subgraph-tree

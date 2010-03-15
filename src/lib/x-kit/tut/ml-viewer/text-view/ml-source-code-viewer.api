@@ -4,7 +4,7 @@
 # the new text widget.
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # This api is implemented in:
 #     src/lib/x-kit/tut/ml-viewer/text-view/ml-source-code-viewer.pkg

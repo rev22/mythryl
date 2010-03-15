@@ -3,7 +3,7 @@
 # This is the buffer (text-pool) for the viewer.
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # 2009-12-26 CrT: Commented out because it is nowhere referenced, and
 #                 right now I'm just trying to get things to compile.

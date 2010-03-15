@@ -4,7 +4,7 @@
 #     src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree.api
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # This generic package gets expanded in:
 #     src/lib/x-kit/tut/ml-viewer/graph/dot-subgraph-tree.pkg

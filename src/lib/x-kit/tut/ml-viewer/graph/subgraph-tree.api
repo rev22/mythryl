@@ -17,7 +17,7 @@
 #     src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree.pkg
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # This api is implemented by:
 #     src/lib/x-kit/tut/ml-viewer/graph/subgraph-tree-g.pkg

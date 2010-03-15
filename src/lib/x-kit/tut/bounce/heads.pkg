@@ -1,7 +1,7 @@
 ## heads.pkg
 
 # Compiled by:
-#     src/lib/x-kit/tut/bounce/bounce.make6
+#     src/lib/x-kit/tut/bounce/bounce-app.make6
 
 stipulate
     package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg

@@ -1,7 +1,7 @@
 ## dotgraph-to-planargraph.api
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 # Dotgraphs are the raw abstract graphs as read in from disk.
 # Vgraphs are the same graphs embedded in a plane for drawing.

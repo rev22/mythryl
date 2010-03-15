@@ -217,7 +217,7 @@ rest3:	bin/mythryl-yacc \
 	src/lib/compiler/lower/tools/Match-Compiler.make6.frozen \
 	bin/c-glue-maker \
 	bin/nowhere \
-	src/lib/x-kit/tut/add/add.make6.frozen \
+	src/lib/x-kit/tut/add/add-app.make6.frozen \
 	src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen \
 	src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
 	src/lib/x-kit/tut/bounce/bounce-app.make6.frozen \
@@ -228,7 +228,7 @@ rest3:	bin/mythryl-yacc \
 	src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
 	src/lib/x-kit/tut/triangle/triangle-app.make6.frozen \
 	src/lib/x-kit/tut/widget/widgets.make6.frozen \
-	src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
+	src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6.frozen
 
 
 summary:
@@ -268,7 +268,7 @@ summary:
 		src/lib/compiler/lower/tools/source-map.make6.frozen \
 		src/lib/reactive/reactive-lib.make6.frozen \
 		src/lib/unix/unix-lib.make6.frozen \
-		src/lib/x-kit/tut/add/add.make6.frozen \
+		src/lib/x-kit/tut/add/add-app.make6.frozen \
 		src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen \
 		src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
 		src/lib/x-kit/tut/bounce/bounce-app.make6.frozen \
@@ -279,7 +279,7 @@ summary:
 		src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
 		src/lib/x-kit/tut/triangle/triangle-app.make6.frozen \
 		src/lib/x-kit/tut/widget/widgets.make6.frozen \
-		src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
+		src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6.frozen
 
 # Stuff related to src/lib/src/make-gtk-glue:
 
@@ -361,8 +361,8 @@ src/lib/compiler/lower/tools/Match-Compiler.make6.frozen:
 bin/c-glue-maker: src/lib/c-kit/src/c-kit-lib.make6.frozen
 	(cd src/app/c-glue-maker; ./build)
 
-src/lib/x-kit/tut/add/add.make6.frozen:
-	@src/lib/x-kit/tut/add/build-add
+src/lib/x-kit/tut/add/add-app.make6.frozen:
+	@src/lib/x-kit/tut/add/build-add-app
 
 src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen:
 	@src/lib/x-kit/tut/basicwin/build-basicwin-app
@@ -394,8 +394,8 @@ src/lib/x-kit/tut/triangle/triangle-app.make6.frozen:
 src/lib/x-kit/tut/widget/widgets.make6.frozen:
 	@src/lib/x-kit/tut/widget/build-widgets
 
-src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen:
-	@src/lib/x-kit/tut/ml-viewer/build-ml-viewer
+src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6.frozen:
+	@src/lib/x-kit/tut/ml-viewer/build-ml-viewer-app
 
 bin/nowhere: src/lib/compiler/lower/tools/Lowcode-Prettyprinter.make6.frozen \
 	     src/lib/compiler/lower/tools/source-map.make6.frozen \
@@ -659,14 +659,14 @@ rest-unfrozen:
 	@-rm -f src/lib/compiler/lower/tools/source-map.make6.frozen
 	@-rm -f src/lib/reactive/reactive-lib.make6.frozen
 	@-rm -f src/lib/unix/unix-lib.make6.frozen
-	@-rm -f src/lib/x-kit/tut/add/add.make6.frozen
+	@-rm -f src/lib/x-kit/tut/add/add-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bounce/bounce-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bricks/bricks-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/calc/calc-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/mixer/mixer-app.make6.frozen
-	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
+	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/nbody/nbody-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/plaid/plaid-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/triangle/triangle-app.make6.frozen

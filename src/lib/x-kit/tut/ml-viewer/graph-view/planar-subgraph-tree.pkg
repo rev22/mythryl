@@ -1,7 +1,7 @@
 # planar-subgraph-tree.pkg
 
 # Compiled by:
-#     src/lib/x-kit/tut/ml-viewer/ml-viewer.make6
+#     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 					# attributed_subgraph_tree_g		is from   src/lib/x-kit/tut/ml-viewer/graph/attributed-subgraph-tree-g.pkg
 					# planar_subgraph_tree_attributes	is from   src/lib/x-kit/tut/ml-viewer/graph-view/planar-subgraph-tree-attributes.pkg

@@ -1,7 +1,7 @@
 ## plaid-app.api
 
 # Compiled by:
-#     src/lib/x-kit/tut/plaid/plaid.make6
+#     src/lib/x-kit/tut/plaid/plaid-app.make6
 
 api Plaid_App {
     do_it:    Void -> Void;
