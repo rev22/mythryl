@@ -1,3 +1,4 @@
+2010-03-14-14.18.28: src/lib/x-kit/tut/triangle/triangle.pkg:  Cleaning and commenting of button_window logic.
 2010-03-14-13.25.48: Pervasively use new rgb8 abstract colornames where applicable.
 2010-03-14-13.02.40: src/lib/x-kit/xclient/src/color/rgb8.api: Add predefined colors color0, color1, red, green, blue, cyan, magenta, yellow.
 2010-03-14-12.49.33: src/lib/x-kit/xclient/xwindow.api: set_window_manager_properties: Rename ilk_hints, res_ilk, res_name -> class_hints, resource_class, resource name.

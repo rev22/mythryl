@@ -1,0 +1,553 @@
+## triangle.pkg
+#
+# This app displays a drawing window and a RESET button.
+# It puts a triangle wherever the user clicks in the drawing window;
+# It clears the drawing window when the RESET button is clicked.
+
+
+# Compiled by:
+#     src/lib/x-kit/tut/triangle/tri.make6
+
+stipulate
+    include make7::scripting_globals;
+    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc  =  xcore;				# xdraw			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd  =  xdraw;				# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xf  =  xfont;				# xfont			is from   src/lib/x-kit/xclient/xfont.pkg
+    package xg  =  xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;				# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
+    package xs  =  xselection;				# xselection		is from   src/lib/x-kit/xclient/xselection.pkg
+    package xw  =  xwindow;				# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
+    package xau =  xauthentication;			# xauthentication	is from   src/lib/x-kit/xclient/src/stuff/xauthentication.pkg
+    package xtr =  xtracing;				# xtracing		is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    #
+    package che =  cartouche;				# cartouche		is from   src/lib/x-kit/draw/cartouche.pkg
+    #
+    package ib  =  icon_bitmap;				# icon_bitmap		is from   src/lib/x-kit/tut/triangle/icon-bitmap.pkg
+    #
+    tracefile   =  "triangle-app.trace.log";
+herein
+
+    package triangle_app: Triangle_App {		# Triangle_App		is from   src/lib/x-kit/tut/triangle/triangle-app.api
+
+	trace =  xtr::print_if  xtr::io_tracing;	# Conditionally write strings to tracing.log or whatever.
+
+	min_wide =  300;
+	min_high =  300;
+
+	min_sz   =  xg::SIZE { wide => min_wide, high => min_high };
+
+	button_wide = 100;
+	button_high =  30;
+
+	button_corner_radius = 8;
+
+	# Put button window at bottom of topwindow:
+	# 
+	fun button_window_site  (topwindow_size as { wide: Int, high: Int })
+	    =
+	    xg::WINDOW_SITE
+	      {
+		upperleft    =>  xg::POINT { col => (wide -  button_wide)/2,
+				             row => (high - (button_high+10))
+				           },
+		size         =>  xg::SIZE  { wide => button_wide,
+                                             high => button_high
+                                           },
+		border_width =>  0
+	      };
+
+	# Let drawing window fill the rest of topwindow:
+	# 
+	fun drawing_window_site (topwindow_size as { wide: Int, high: Int })
+	    =
+	    xg::WINDOW_SITE
+	      {
+		border_width =>  1,
+		upperleft    =>  xg::POINT { col => 5, row => 5 },
+		#
+		size         =>  xg::SIZE { wide => wide - 10,
+				            high => high - (button_high+25)
+				          }
+	      };
+
+	fun make_topwindow  xdisplay  xauthentication
+	    =
+	    (screen, window, kidplug)
+	    where
+		xsession =  xc::open_xsession (xdisplay, xauthentication);
+
+		screen   =  xc::default_screen_of  xsession;
+
+		window_size   =  xg::SIZE { wide => 450, high => 400 };
+
+		my (window, kidplug, mailslot)			# 2009-12-10 CrT: Had to add 'mailslot' so it would compile.
+		    =
+		    xw::make_simple_top_window  screen
+		      {
+			site =>  xg::WINDOW_SITE { upperleft => xg::POINT { col=>0, row=>0 }, size=>window_size, border_width=>1 },
+			#
+			border_color     =>  xc::black,
+			background_color =>  xc::rgb8_white
+		      };
+
+		icon_ro_pixmap								# serverside
+		    =
+		    xc::make_readonly_pixmap_from_clientside_pixmap
+			screen
+			ib::icon_bitmap;						# clientside
+
+
+											# commandline		is from   src/lib/std/commandline.pkg
+		xw::set_window_manager_properties  window
+		  {
+		    window_name => THE "Triangle",
+		    icon_name   => THE "triangle",
+		    #
+		    size_hints =>
+		      [
+			xs::HINT_PPOSITION,
+			xs::HINT_PSIZE,
+			xs::HINT_PMIN_SIZE min_sz
+		      ],
+		    #
+		    nonsize_hints  =>  [ xs::HINT_ICON_RO_PIXMAP icon_ro_pixmap ],
+		    class_hints    =>  THE { resource_name=>"triangle", resource_class=>"Triangle" },
+		    #
+		    commandline_arguments =>  commandline::get_arguments ()
+		  };
+
+		xw::show_window  window;
+	    end;
+
+	# Divide the topwindow into a
+	# drawing window over a button window:
+	#
+	fun make_drawing_and_button_windows  xdisplay  xauthentication
+	    =
+	    {   (make_topwindow  xdisplay  xauthentication)
+		    ->
+		    (screen, top_window, top_kidplug);
+		    
+
+		(xc::size_of_window  top_window)
+		    ->
+		    xg::SIZE topwindow_size;
+
+		drawing_window
+		    =
+		    xw::make_simple_subwindow  top_window
+		      {
+			site => drawing_window_site  topwindow_size,
+			#
+			border_color     => THE  xc::black,
+			background_color => THE  xc::rgb8_color0
+		      };
+
+		button_window
+		    =
+		    xw::make_simple_subwindow  top_window
+		      {
+			site =>  button_window_site  topwindow_size,
+			#
+			border_color     =>  NULL,
+			background_color =>  THE  xc::rgb8_white
+		      };
+
+		xw::show_window  drawing_window;
+		xw::show_window  button_window;
+
+		{ top_window,
+		  top_kidplug,
+		  drawing_window,
+		  button_window
+		};
+	    };
+
+
+	fun make_button_threads (button_window, button_kidplug)
+	    =
+	    {   make_thread "triangle button" loop;
+		take' reset_slot;
+	    }
+	    where
+
+		# Define a function to re/draw the
+		# button as "RESET" inside a cartouche:
+		#
+		fun redraw ()
+		    =
+		    {   draw_cartouche
+			  {
+			    corner_radius =>  button_corner_radius,
+			    #
+			    box  =>  xg::BOX { col  => 0,
+					       row  => 0,
+					       #	
+					       high => button_high - 1,
+					       wide => button_wide - 1
+					     }
+			  };
+
+			draw_string (text_point, text);
+		    }
+		    where
+			drawable =  xd::drawable_of_window  button_window;
+
+			pen = xd::make_pen
+				[
+				  xd::FUNCTION    xd::OP_COPY,
+				  xd::FOREGROUND  xc::rgb8_black
+				];
+
+			draw_cartouche
+			    =
+			    che::draw_cartouche  drawable  pen;
+
+			text = "RESET";
+
+			font =  xf::open_font
+				    #
+				    (xw::xsession_of_window  button_window)
+				    #
+				    "9x15";
+
+			text_point
+			    =
+			    {   text_width =  xf::text_width  font  text;
+
+				my { ascent, descent }
+				    =
+				    xf::font_high  font;
+
+				xg::POINT
+				  {
+				    col => ( button_wide - text_width) / 2,
+				    row => ((button_high - (ascent + descent)) / 2) + ascent
+				  };
+			    };
+
+			draw_string
+			    =
+			    xd::draw_transparent_string  drawable  pen  font;
+		    end;
+
+		# Define the main thread loop animating the button.
+		# We respond to ETC_REDRAW by redrawing our button;
+		# we respond to a click by resetting the draw thread:
+		#
+		(xi::ignore_keyboard  button_kidplug)
+		    ->
+		    xi::KIDPLUG { from_mouse', from_other', ... };
+
+		from_mouse'' =   from_mouse' ==> xi::envelope_contents;
+		from_other'' =   from_other' ==> xi::envelope_contents;
+
+		reset_slot = make_mailslot ();
+
+		fun loop ()
+		    =
+		    {   fun do_mouse (xi::MOUSE_FIRST_DOWN _)
+				=>
+				give (reset_slot, ());
+
+			    do_mouse _
+				=>
+				();
+			end;
+
+
+			fun do_other (xi::ETC_REDRAW _)  =>  redraw ();
+			    do_other  xi::ETC_OWN_DEATH  =>  ();
+			    do_other _	  	         =>  ();
+			end;
+
+
+			for (;;) {
+			    #
+			    select [
+				from_mouse'' ==>  do_mouse,
+				from_other'' ==>  do_other
+			    ];
+			};
+		    };
+
+	    end;				# fun make_button_threads 
+
+	# Define drawing_window logic to put
+	# a triangle at each spot the user
+	# clicks on:
+	#
+	fun make_draw_threads (drawing_window, reset', draw_kidplug)
+	    =
+	    {   make_thread "triangle draw mouse"  mouse_thread;
+		make_thread "triangle draw"       .{ loop []; };
+		();
+	    }
+	    where
+		my xi::KIDPLUG { from_mouse', from_other', ... }
+		    =
+		    xi::ignore_keyboard  draw_kidplug;
+
+		mouse' =   from_mouse' ==> xi::envelope_contents;
+		other' =   from_other' ==> xi::envelope_contents;
+
+		draw_slot = make_mailslot ();
+
+		fun mouse_thread ()
+		    =
+		    for (;;) {
+			#
+			case (do_mailop  mouse')
+			    #
+			    xi::MOUSE_FIRST_DOWN { window_point, ... }
+				=>
+				give (draw_slot, window_point);
+			    #
+			    _   => ();
+			esac;
+		    };
+
+		draw' = take' draw_slot;
+
+		drawable = xd::drawable_of_window  drawing_window;
+
+		pen = xd::make_pen
+			[
+			  xd::FUNCTION    xd::OP_COPY,
+			  xd::FOREGROUND  xc::rgb8_black
+			];
+
+		draw = xd::fill_polygon drawable pen;
+
+
+		fun draw_triangle (xg::POINT { col, row } )
+		    =
+		    draw
+		      {
+			shape => xd::CONVEX_SHAPE,
+			#
+			verts => [ xg::POINT { col => col,       row => row - 10 },
+				   xg::POINT { col => col - 8,   row => row +  6 },
+				   xg::POINT { col => col + 8,   row => row +  6 }
+				 ]
+		      };
+
+
+		fun loop state
+		    =
+		    {   fun do_reset ()
+			    =
+			    {   xd::clear_drawable  drawable;
+				loop [];
+			    };
+
+
+			fun do_other (xi::ETC_REDRAW _)
+				=>
+				{   xd::clear_drawable  drawable;
+
+				    apply draw_triangle state;
+
+				    loop state;
+				};
+
+			    do_other xi::ETC_OWN_DEATH
+				=>
+				();
+
+			    do_other _
+				=>
+				loop state;
+			end;
+
+
+			fun do_draw pt
+			    =
+			    {   draw_triangle pt;
+				loop (pt ! state);
+			    };
+
+			select [
+			    #
+			    reset' ==>  do_reset,
+			    other' ==>  do_other,
+			    draw'  ==>  do_draw
+			];
+		    };
+	    end;					# fun make_draw_threads 
+
+	fun make_toplevel_threads
+            {
+              top_window,
+              top_kidplug  => xi::KIDPLUG { from_keyboard', from_mouse', from_other', ... },
+              button_window,
+              drawing_window
+            }
+	    =
+	    {   make_thread "triangle router" router;
+
+		{ button_kidplug,
+		  draw_kidplug
+		};
+	    }
+	    where
+		(xi::make_widget_cable ()) ->   { kidplug => button_kidplug, momplug => button_momplug };
+		(xi::make_widget_cable ()) ->   { kidplug =>   draw_kidplug, momplug =>   draw_momplug };
+		(xi::make_widget_cable ()) ->   { kidplug,                   momplug                   };
+
+		kidplug =  xi::ignore_all  kidplug;
+
+		fun find_cable  envelope
+		    =
+		    case (xi::route_envelope  envelope)
+			#
+			xi::TO_SELF _				# Envelope has reached its destination window/widget.
+			    =>
+			    momplug;
+
+			xi::TO_CHILD msg'			# Envelope needs to be passed on down the widget hierarchy.
+			    =>
+			    if   (xi::to_window (msg',   drawing_window))   draw_momplug;
+			    elif (xi::to_window (msg', button_window))   button_momplug;
+			    else                                         raise exception FAIL "find_cable";
+			    fi;
+		    esac;
+
+		fun do_keyboard envelope
+		    =
+		    {   my xi::MOMPLUG { keyboard_sink, ... }
+			    =
+			    find_cable  envelope;
+
+			do_mailop (keyboard_sink envelope);
+		    };
+
+		fun do_mouse envelope
+		    =
+		    {   my xi::MOMPLUG { mouse_sink, ... }
+			    =
+			    find_cable  envelope;
+
+			do_mailop (mouse_sink  envelope);
+		    };
+
+		fun do_other envelope
+		    =
+		    {   my xi::MOMPLUG { other_sink, ... }
+			    =
+			    find_cable  envelope;
+
+			do_mailop (other_sink  envelope);
+		    };
+
+		fun router ()
+		    =
+		    for (;;) {
+			#
+			select [ from_keyboard' ==> do_keyboard,
+				 from_mouse'    ==> do_mouse,
+				 from_other'    ==> do_other
+			       ];
+		    };
+
+	    end;			# fun make_toplevel_threads
+
+	fun run_triangle_app  xdisplay  xauthentication
+	    =
+	    {   (make_drawing_and_button_windows  xdisplay  xauthentication)
+		    ->
+		    (x as { button_window, drawing_window, ... } );
+
+		(make_toplevel_threads  x)
+		    ->
+		    { button_kidplug, draw_kidplug };
+		    
+
+		make_draw_threads
+		  ( drawing_window,
+		    make_button_threads (button_window, button_kidplug),
+		    draw_kidplug
+		  );
+	    };
+
+	fun do_it' (flgs, display_name)
+	    =
+	    {   xtracing::init flgs;
+
+printf "triangle-app: do_it': Checking for existing %s file...\n" tracefile;
+		# Remove any old version of the tracefile:
+		#
+		if (isfile tracefile)
+		    #
+printf "triangle-app: do_it': Removing pre-existing %s file...\n" tracefile;
+		    unlink tracefile;
+		fi;
+
+		# Open tracelog file and
+                # select tracing level:
+		#
+		{   include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+		    #
+printf "triangle-app: do_it': Creating new %s file...\n" tracefile;
+		    log_trace_messages  (TO_FILE tracefile);
+		    enable all_tracing;				# Gross overkill.
+		};
+
+	        my  ( xdisplay,								# Typically from $DISPLAY environment variable.
+                      xauthentication:  Null_Or(xc::Xauthentication)			# Typically from ~/.Xauthority
+                    )
+		    =
+		    xau::get_xdisplay_string_and_xauthentication
+			#
+			case display_name
+			    #
+			    "" => NULL;
+			    _  => THE display_name;
+			esac;
+
+trace .{ sprintf "widget_unit_test: DISPLAY variable is set to '%s'" xdisplay; };
+
+		start_up_thread_scheduler'
+		    #
+		    (time::from_milliseconds 20)
+		    #
+		   .{   xtracing::xspawn("triangle",  .{ run_triangle_app  xdisplay  xauthentication; } );
+			();
+		    };
+	    };
+
+	fun do_it s
+	    =
+	    do_it' ([], s);
+
+	fun main (program, server ! _) =>  do_it  server;
+	    main _                     =>  do_it  "";
+	end;
+    };								# package  main 
+
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1992 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

@@ -226,7 +226,7 @@ rest3:	bin/mythryl-yacc \
 	src/lib/x-kit/tut/mixer/mixer.make6.frozen \
 	src/lib/x-kit/tut/nbody/nbody.make6.frozen \
 	src/lib/x-kit/tut/plaid/plaid.make6.frozen \
-	src/lib/x-kit/tut/triangle/triangle.make6.frozen \
+	src/lib/x-kit/tut/triangle/triangle-app.make6.frozen \
 	src/lib/x-kit/tut/widget/widgets.make6.frozen \
 	src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
 
@@ -277,7 +277,7 @@ summary:
 		src/lib/x-kit/tut/mixer/mixer.make6.frozen \
 		src/lib/x-kit/tut/nbody/nbody.make6.frozen \
 		src/lib/x-kit/tut/plaid/plaid.make6.frozen \
-		src/lib/x-kit/tut/triangle/triangle.make6.frozen \
+		src/lib/x-kit/tut/triangle/triangle-app.make6.frozen \
 		src/lib/x-kit/tut/widget/widgets.make6.frozen \
 		src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
 
@@ -388,8 +388,8 @@ src/lib/x-kit/tut/nbody/nbody.make6.frozen:
 src/lib/x-kit/tut/plaid/plaid.make6.frozen:
 	@src/lib/x-kit/tut/plaid/build-plaid
 
-src/lib/x-kit/tut/triangle/triangle.make6.frozen:
-	@src/lib/x-kit/tut/triangle/build-triangle
+src/lib/x-kit/tut/triangle/triangle-app.make6.frozen:
+	@src/lib/x-kit/tut/triangle/build-triangle-app
 
 src/lib/x-kit/tut/widget/widgets.make6.frozen:
 	@src/lib/x-kit/tut/widget/build-widgets
@@ -669,7 +669,7 @@ rest-a7-clean:
 	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
 	@-rm -f src/lib/x-kit/tut/nbody/nbody.make6.frozen
 	@-rm -f src/lib/x-kit/tut/plaid/plaid.make6.frozen
-	@-rm -f src/lib/x-kit/tut/triangle/triangle.make6.frozen
+	@-rm -f src/lib/x-kit/tut/triangle/triangle-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/widget/widgets.make6.frozen
 	@-rm -f src/lib/x-kit/xkit.make6.frozen
 
