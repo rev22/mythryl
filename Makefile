@@ -223,9 +223,9 @@ rest3:	bin/mythryl-yacc \
 	src/lib/x-kit/tut/bounce/bounce.make6.frozen \
 	src/lib/x-kit/tut/bricks/bricks.make6.frozen \
 	src/lib/x-kit/tut/calc/calc.make6.frozen \
-	src/lib/x-kit/tut/mixer/mixer.make6.frozen \
-	src/lib/x-kit/tut/nbody/nbody.make6.frozen \
-	src/lib/x-kit/tut/plaid/plaid.make6.frozen \
+	src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
+	src/lib/x-kit/tut/nbody/nbody-app.make6.frozen \
+	src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
 	src/lib/x-kit/tut/triangle/triangle-app.make6.frozen \
 	src/lib/x-kit/tut/widget/widgets.make6.frozen \
 	src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
@@ -274,9 +274,9 @@ summary:
 		src/lib/x-kit/tut/bounce/bounce.make6.frozen \
 		src/lib/x-kit/tut/bricks/bricks.make6.frozen \
 		src/lib/x-kit/tut/calc/calc.make6.frozen \
-		src/lib/x-kit/tut/mixer/mixer.make6.frozen \
-		src/lib/x-kit/tut/nbody/nbody.make6.frozen \
-		src/lib/x-kit/tut/plaid/plaid.make6.frozen \
+		src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
+		src/lib/x-kit/tut/nbody/nbody-app.make6.frozen \
+		src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
 		src/lib/x-kit/tut/triangle/triangle-app.make6.frozen \
 		src/lib/x-kit/tut/widget/widgets.make6.frozen \
 		src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
@@ -379,14 +379,14 @@ src/lib/x-kit/tut/bricks/bricks.make6.frozen:
 src/lib/x-kit/tut/calc/calc.make6.frozen:
 	@src/lib/x-kit/tut/calc/build-calc
 
-src/lib/x-kit/tut/mixer/mixer.make6.frozen:
-	@src/lib/x-kit/tut/mixer/build-mixer
+src/lib/x-kit/tut/mixer/mixer-app.make6.frozen:
+	@src/lib/x-kit/tut/mixer/build-mixer-app
 
-src/lib/x-kit/tut/nbody/nbody.make6.frozen:
-	@src/lib/x-kit/tut/nbody/build-nbody
+src/lib/x-kit/tut/nbody/nbody-app.make6.frozen:
+	@src/lib/x-kit/tut/nbody/build-nbody-app
 
-src/lib/x-kit/tut/plaid/plaid.make6.frozen:
-	@src/lib/x-kit/tut/plaid/build-plaid
+src/lib/x-kit/tut/plaid/plaid-app.make6.frozen:
+	@src/lib/x-kit/tut/plaid/build-plaid-app
 
 src/lib/x-kit/tut/triangle/triangle-app.make6.frozen:
 	@src/lib/x-kit/tut/triangle/build-triangle-app
@@ -665,10 +665,10 @@ rest-a7-clean:
 	@-rm -f src/lib/x-kit/tut/bounce/bounce.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bricks/bricks.make6.frozen
 	@-rm -f src/lib/x-kit/tut/calc/calc.make6.frozen
-	@-rm -f src/lib/x-kit/tut/mixer/mixer.make6.frozen
+	@-rm -f src/lib/x-kit/tut/mixer/mixer-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
-	@-rm -f src/lib/x-kit/tut/nbody/nbody.make6.frozen
-	@-rm -f src/lib/x-kit/tut/plaid/plaid.make6.frozen
+	@-rm -f src/lib/x-kit/tut/nbody/nbody-app.make6.frozen
+	@-rm -f src/lib/x-kit/tut/plaid/plaid-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/triangle/triangle-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/widget/widgets.make6.frozen
 	@-rm -f src/lib/x-kit/xkit.make6.frozen

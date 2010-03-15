@@ -1,0 +1,402 @@
+## plaid-app.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/plaid/plaid.make6
+
+stipulate
+    include threadkit;				# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+
+    package rx  =  run_xkit;			# run_xkit			is from   src/lib/x-kit/widget/lib/run-xkit.pkg
+    package xc  =  xcore;			# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd  =  xdraw;			# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg  =  xgeometry;			# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;			# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+
+    package top =  topwindow;			# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
+    package w   =  widget;			# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa  =  widget_attribute;		# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package wy  =  widget_style;		# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
+
+    package sz  =  size_preference_wrapper;	# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+herein
+
+    package plaid_app: Plaid_App {		# Plaid_App			is from   src/lib/x-kit/tut/plaid/plaid-app.api
+
+	empty_box
+	    =
+	    xg::BOX
+	      { col  => 0,
+		row  => 0,
+		wide => 0,
+		high => 0
+	      };
+
+	fun middle_of_box (xg::BOX { col, row, wide, high } )
+	    =
+	    xg::POINT { col => col+(wide / 2),
+		        row => row+(high / 2)
+		      };
+
+	fun center_box (xg::BOX { wide, high, ... }, xg::POINT { col, row } )
+	    = 
+	    xg::BOX
+	      { wide,
+		high,
+		col => col - (wide / 2),
+		row => row - (high / 2)
+	      };
+
+	# The symmetric difference of two sets contains all
+	# elements in either set but not both sets -- in other
+	# words, the union minus the intersection:
+	#
+	#     http://en.wikipedia.org/wiki/Symmetric_difference
+	#
+	# Here we compute the symmetric difference of two
+	# rectangles and return it as a list of rectangles:
+	# 
+	fun symmetric_difference (r, r')
+	    =
+	    difference (r', r, difference (r, r',[]))
+	    where
+		fun difference (r as xg::BOX { col=>x, row=>y, wide, high }, r', result_list)
+		    =
+		    {   my xg::BOX { col=>ix, row=>iy, wide=>iwide, high=>ihigh }		# "i-" for "intersection-".
+			    =
+			    xg::intersection (r, r');
+
+			icx = ix + iwide;		# Opposite corner of
+			icy = iy + ihigh;		# intersection box.
+
+			# (x,y) is one corner of a rectangle,
+			# (cx,cy is the opposite corner.
+			#	
+			# Cyclically identify all parts of the rectangle
+			# which project outside the borders of the above
+			# intersection rectangle, adding each of them to
+			# the result list and then shrinking the argument
+			# rectangle correspondingly:
+			#
+			fun pare (x, y, cx, cy, result_list)
+			    =
+			    if   (  x < ix)  pare (ix,  y,  cx,  cy, (xg::BOX { col=>x,   row=>y,   high=>cy-y,   wide=>ix-x   } ) ! result_list);	# Pare off the part to the left.
+			    elif (  y < iy)  pare ( x, iy,  cx,  cy, (xg::BOX { col=>x,   row=>y,   high=>iy-y,   wide=>cx-x   } ) ! result_list);	# Pare off the part above. (Assuming y==0 is at top.)
+			    elif (icx < cx)  pare ( x,  y, icx,  cy, (xg::BOX { col=>icx, row=>y,   high=>cy-y,   wide=>cx-icx } ) ! result_list);	# Pare off the part to the right.
+			    elif (icy < cy)  pare ( x,  y,  cx, icy, (xg::BOX { col=>x,   row=>icy, high=>cy-icy, wide=>cx-x   } ) ! result_list);	# Pare off the part below.
+			    else
+				result_list;
+			    fi;
+
+			pare (x, y, x+wide, y+high, result_list);
+		    }
+		    except
+			xg::INTERSECTION = r ! result_list;
+
+	    end;
+
+	fun make_plaid root_window
+	    =
+	    {   bounds = w::make_tight_size_preference (300, 200);
+
+		sz::make_loose_size_preference_wrapper
+		    (w::make_widget
+		      {
+			size_preference_thunk_of =>  .{ bounds; },
+			args      =>  .{ { background => NULL }; },
+			root_window,
+			realize   => realize_plaid
+		      }
+		    );
+	    }
+	    where
+		screen = w::screen_of root_window;
+
+		pen = xd::make_pen [ xd::FOREGROUND xc::rgb8_color1,
+				     xd::FUNCTION   xd::OP_XOR
+				   ];
+		idle_pen = pen;
+
+		timeout' =  timeout_in' (time::from_milliseconds 100);
+
+		fun realize_plaid { window, size, kidplug }
+		    =
+		    {   make_thread "plaid" .{ do_idle size;  };
+			();
+		    }
+		    where
+			drawwin     = xd::drawable_of_window  window;
+
+			autodrawwin = xd::make_unbuffered_drawable  drawwin;
+
+			idle_fill = xd::fill_boxes drawwin     idle_pen;
+			fill      = xd::fill_boxes autodrawwin idle_pen;
+
+			my xi::KIDPLUG { from_mouse', from_other', ... }
+			    =
+			    xi::ignore_keyboard  kidplug;
+
+			fun do_active (size as xg::SIZE { wide, high } )
+			    =
+			    start_over ()
+			    where
+				my middle as (xg::POINT { col=>midx, row=>midy } )
+				    = 
+				    middle_of_box (xg::make_box (xg::point_00, size));
+
+
+				# Given a point (x,y) with a velocity (dx,dy),
+				# make it bounce off walls to stay within
+				#    0 < x < wide
+				#    0 < y < high
+				# by appropriately adjusting point and velocity
+				# whenever it strays outside that area:	
+				#
+				fun adjust (arg as ( xg::POINT { col=>x,  row=>y },
+						     xg::POINT { col=>dx, row=>dy }
+					   )       )
+				    =
+				    if   (x < 0)     adjust (xg::POINT { col=> -x,             row=>  y             }, xg::POINT { col=> -dx, row=>  dy } );
+				    elif (x >= wide) adjust (xg::POINT { col=> 2*wide - x - 2, row=>  y             }, xg::POINT { col=> -dx, row=>  dy } );
+				    elif (y < 0)     adjust (xg::POINT { col=> x,              row=> -y             }, xg::POINT { col=>  dx, row=> -dy } );
+				    elif (y >= high) adjust (xg::POINT { col=> x,              row=> 2*high - y - 2 }, xg::POINT { col=>  dx, row=> -dy } );
+				    else arg;
+				    fi;
+
+
+				fun update { p, delta_p, prev_box, odd_cycle }
+				    =
+				    {   # Move the point per velocity,
+					# bouncing off walls appropriately:
+					#	
+					my (p' as xg::POINT { col=>x, row=>y }, delta_p')
+					    =
+					    adjust (xg::add_pt (p, delta_p), delta_p);
+
+					box = xg::BOX
+						 { col  => 0,
+						   row  => 0,
+						   #
+						   wide => 2*abs (x - midx),
+						   high => 2*abs (y - midy)
+						 };
+
+					box = center_box (box, middle);
+
+					if odd_cycle
+					    #
+					    fill (symmetric_difference (box, prev_box));
+					fi;
+
+					{ p=>p', delta_p=>delta_p', prev_box=>box, odd_cycle=>not odd_cycle };
+				    };
+
+
+				fun do_mom (xi::ETC_REDRAW _)
+					=>
+					start_over ();
+
+				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
+					=>
+					do_active (xg::SIZE { wide, high } );
+
+				    do_mom _
+					=>
+					();
+				end
+
+				also
+				fun loop me
+				    = 
+				    select [
+					#
+					timeout'
+					    ==>
+					   .{  loop (update me);  },
+
+					from_mouse'
+					    ==>
+					    (fn mailop
+						=
+						case (xi::envelope_contents  mailop)
+						    #
+						    xi::MOUSE_FIRST_DOWN _
+							=>
+							do_idle size;
+
+						    _   =>
+							loop me;
+						esac
+					    ),
+
+					from_other'
+					    ==>
+					    do_mom o xi::envelope_contents
+				    ]
+
+				also
+				fun start_over ()
+				    =
+				    for (;;) {
+					#
+					xd::clear_drawable  drawwin;
+
+					loop
+					  { p         =>  middle,
+					    prev_box  =>  empty_box,
+					    odd_cycle =>  FALSE,
+					    delta_p   =>  xg::POINT { col=>1, row=>1 }
+					  };
+				    };
+			    end			# fun do_active
+
+			also
+			fun do_idle (size as xg::SIZE { wide, high } )
+			    =
+			    loop ()
+			    where
+
+				fun redraw ()
+				    =
+				    {   xd::clear_drawable  drawwin;
+					redraw_loop 1;
+				    }
+				    where	
+					bnd = int::min (wide, high) / 2;
+
+					fun redraw_loop i
+					    = 
+					    if (i <= bnd)
+						#
+						idle_fill
+						  [
+						    xg::BOX { col=>i,            row=>i,            wide=>1,          high=>high-(2*i) },
+						    xg::BOX { col=>wide - i - 1, row=>i,            wide=>1,          high=>high-(2*i) },
+						    xg::BOX { col=>i,            row=>i,            wide=>wide-(2*i), high=>1 },
+						    xg::BOX { col=>i,            row=>high - i - 1, wide=>wide-(2*i), high=>1 }
+						  ];
+
+						redraw_loop (i+2);
+					    fi;
+
+				    end;
+
+
+				fun do_mom (xi::ETC_REDRAW _)
+					=>
+					redraw ();
+
+				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
+					=>
+					do_idle (xg::SIZE { wide, high } );
+
+				    do_mom _
+					=>
+					();
+				end;
+
+
+				fun loop ()
+				    = 
+				    select [
+					#
+					from_mouse'
+					    ==>
+					    (fn envelope
+						=
+						case (xi::envelope_contents  envelope)
+						    #
+						    xi::MOUSE_FIRST_DOWN _
+							=>
+							do_active size;
+
+						    _   => loop ();
+						esac
+
+					    ),
+
+					from_other'
+					    ==>
+					    loop  o  do_mom  o  xi::envelope_contents
+				    ];
+			    end;					# fun do_idle
+		    end;						# fun realize_plaid
+	    end;							# fun make_plaid
+
+
+	fun plaid root_window
+	    =
+	    {   name = wy::make_view
+			 { name    =>   wy::style_name [],
+			   aliases => [ wy::style_name [] ]
+			 };
+
+		style = w::style_from_strings (root_window, []);
+
+		view = (name, style);
+
+		plaid = make_plaid root_window;
+
+		args = [ (wa::title,     wa::STRING_VAL "Plaid"),
+			 (wa::icon_name, wa::STRING_VAL "Plaid")
+		       ];
+
+		topwindow
+		    =
+		    top::topwindow (root_window, view, args) plaid;
+
+		top::start  topwindow;
+	    };
+
+
+	fun do_it' (debug_flags, server)
+	    =
+	    {   xtracing::init debug_flags;
+
+		rx::run_xkit'
+		    #
+		    plaid
+		    #
+		    { display => THE server,
+		      time_quantum_in_milliseconds => NULL
+		    };
+	    };
+
+
+	fun do_it ()
+	    =
+	    rx::run_xkit  plaid;
+
+
+	fun main (program ! server ! _, _)
+		=>
+		do_it' ([], server);
+
+	    main _
+		=>
+		do_it ();
+	end;
+    };				# package plaid
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1991, 1995 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

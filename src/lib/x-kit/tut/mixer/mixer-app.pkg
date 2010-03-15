@@ -1,0 +1,311 @@
+## mixer-app.pkg
+##
+
+# Compiled by:
+#     src/lib/x-kit/tut/mixer/mixer.make6
+
+stipulate
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    #
+    package bdr =  border;				# border			is from   src/lib/x-kit/widget/wrapper/border.pkg
+    package sld =  slider;				# slider			is from   src/lib/x-kit/widget/leaf/slider.pkg
+    package lbl =  label;				# label				is from   src/lib/x-kit/widget/leaf/label.pkg
+    package top =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
+    package rw  =  root_window;				# root_window			is from   src/lib/x-kit/widget/basic/root-window.pkg
+    package rx  =  run_xkit;				# run_xkit			is from   src/lib/x-kit/widget/lib/run-xkit.pkg
+    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa  =  widget_attribute;			# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package wy  =  widget_style;			# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
+    #
+    package cs  =  color_state;
+    package low =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
+    package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    package ts  =  toggleswitches;			# toggleswitches		is from   src/lib/x-kit/widget/leaf/toggleswitches.pkg
+herein
+
+    package mixer_app: api {
+
+	do_it':  (List( String ), String) -> Void;
+	do_it:   Void -> Void;
+	main:    (List(String), X) -> Void;
+
+    }{
+
+	resources = ["*background: gray"];
+
+	maxcolor =  0u65535;
+	medcolor =  maxcolor / 0u2;
+	mincolor =  0u0;
+
+	border_width =    4;
+	slider_width =   20;
+	hue_box_dim  =   25;
+	big_spot_ht  =  400;
+	big_spot_wid =  150;
+
+	horizontal_spacer =  low::SPACER { min_size=>5,  ideal_size=>5, max_size=>THE 5 };
+	vertical_spacer   =  low::SPACER { min_size=>1,  ideal_size=>5, max_size=>NULL  };
+
+	pause = time::from_milliseconds 500;
+
+	redc   = xc::rgb_from_unts (medcolor, 0u0,      0u0      );
+	greenc = xc::rgb_from_unts (0u0,      medcolor, 0u0      );
+	bluec  = xc::rgb_from_unts (0u0,      0u0,      medcolor );
+	blackc = xc::rgb_from_unts (0u0,      0u0,      0u0      );
+
+	fun make_red   n =  xc::rgb_from_unts (n,        mincolor, mincolor );
+	fun make_green n =  xc::rgb_from_unts (mincolor, n,        mincolor );
+	fun make_blue  n =  xc::rgb_from_unts (mincolor, mincolor, n        );
+
+	fun make_mixer (root_window, view)
+	    =
+	    {   white =  xc::white;
+
+		color_of =  rw::color_of root_window;
+
+		fun quit ()
+		    =
+		    {   fun q ()
+			    =
+			    do_mailop (timeout_in' pause); 
+
+			rw::delete_root_window  root_window; 
+
+			shut_down_thread_scheduler  winix::process::success;
+
+			make_thread "mixer" q;
+
+			();
+		    };
+
+		switch = ts::make_rocker_toggleswitch'
+			     (root_window, view,[])
+			     (fn _ = quit ());
+
+		switch_line
+		    =
+		    low::HZ_CENTER
+		      [
+			vertical_spacer,
+			low::WIDGET (ts::as_widget switch),
+			horizontal_spacer
+		      ];
+
+		fun make_display_box c w
+		    =
+		    {   args = [ (wa::background,   wa::COLOR_VAL  c),
+				 (wa::border_width, wa::INT_VAL  border_width)
+			       ];
+
+			display
+			    =
+			    bdr::border
+				(root_window, view, args)
+				(sz::make_tight_size_preference_wrapper w);
+
+			low::HZ_CENTER
+			  [ vertical_spacer,
+			    low::WIDGET (bdr::as_widget display),
+			    vertical_spacer
+			  ];
+		    };
+
+		fun paint_spot spot c
+		    = 
+		    spot::set_spot spot c
+		    except
+			_ = {   file::print "out of color cells\n";
+				quit();
+			    };
+
+		spot = spot::spot
+			 (root_window, view) 
+			 { color => blackc,
+			   high  => big_spot_ht,
+			   wide  => big_spot_wid
+			 };
+
+		paint =  paint_spot  spot;
+
+		color_screen
+		    =
+		    make_display_box  white  (spot::as_widget spot);
+
+		cc        =  cs::make_color_state       blackc;
+		send_cc   =  cs::send_change_color      cc;
+		cc_mailop =  cs::mailop_of_color_state  cc;
+
+
+		fun painter ()
+		    =
+		    painter (paint (do_mailop  cc_mailop)) ;
+
+
+		fun make_color_complex  rgb  make_color  mkmsg
+		    =
+		    (line, printer_loop)
+		    where
+			(xc::rgb_to_unts rgb)
+			    ->
+			    (red, green, blue);
+
+			color = color_of (xc::CMS_RGB { red, green, blue });
+
+			l_args = [ (wa::label,      wa::STRING_VAL "          0"),
+				   (wa::background, wa::COLOR_VAL  color)
+				 ];
+
+			label = lbl::make_label' (root_window, view, l_args);
+
+			display = make_display_box color (lbl::as_widget label);
+
+			s_args = [ (wa::is_vertical, wa::BOOL_VAL TRUE),
+				   (wa::background,  wa::STRING_VAL "gray"),
+				   (wa::width,       wa::INT_VAL slider_width),
+				   (wa::from_value,  wa::INT_VAL 0),
+				   (wa::to_value,    wa::INT_VAL (unt::to_int_x maxcolor))
+				 ];
+
+			slider = sld::make_slider (root_window, view, s_args);
+
+			spot = spot::spot
+				 (root_window, view) 
+				 { color => blackc,
+				   high  => hue_box_dim,
+				   wide  => hue_box_dim
+				 };
+
+			screen = make_display_box white (spot::as_widget spot);
+
+			line = low::HZ_CENTER
+				 [
+				   horizontal_spacer, 
+				   screen, 
+				   horizontal_spacer, 
+				   low::WIDGET (sld::as_widget slider), 
+				   horizontal_spacer,
+				   display, 
+				   horizontal_spacer
+				 ];
+
+			set = lbl::set_label label;
+
+			slider_motion'
+			    =
+			    sld::slider_motion'_of  slider
+				==>
+				unt::from_int;
+
+			paint = paint_spot spot;
+
+			fun printer_loop ()
+			    =
+			    for (;;) {
+
+				n = do_mailop  slider_motion';
+
+				set (lbl::TEXT (unt::format number_string::DECIMAL n));
+
+				paint (make_color n);
+
+				send_cc (mkmsg n);
+			    };
+		    end;
+
+		my (red_line,   red_printer_loop  ) = make_color_complex redc   make_red   cs::CHANGE_R;
+		my (green_line, green_printer_loop) = make_color_complex greenc make_green cs::CHANGE_G;
+		my (blue_line,  blue_printer_loop ) = make_color_complex bluec  make_blue  cs::CHANGE_B;
+
+
+		make_thread "mixer red"      red_printer_loop; 
+		make_thread "mixer green"    green_printer_loop;
+		make_thread "mixer blue"     blue_printer_loop ;
+		make_thread "mixer painter"  painter;
+
+		low::as_widget
+		    (low::make_line_of_widgets  root_window
+			(low::VT_CENTER
+			  [				vertical_spacer,
+			    color_screen,		vertical_spacer,        
+			    switch_line,		vertical_spacer,
+			    red_line,		vertical_spacer,
+			    green_line,		vertical_spacer,
+			    blue_line,		vertical_spacer
+			  ]
+		    )   );
+	    };				# fun make_mixer 
+
+
+	fun init root_window
+	    =
+	    {   style = w::style_from_strings (root_window, resources);
+
+		name = wy::make_view
+			 { name    =>   wy::style_name [],
+			   aliases => [ wy::style_name [] ]
+			 };
+		view = (name, style);
+
+		mix = make_mixer (root_window, view);
+
+		args =  [ (wa::title,     wa::STRING_VAL "RGB Mixer"),
+			  (wa::icon_name, wa::STRING_VAL "MIX")
+			];
+
+		topwindow = top::topwindow (root_window, view, args) mix;
+
+		top::start  topwindow;
+	    };
+
+	fun do_it' (debug_flags, server)
+	    =
+	    {   xtracing::init debug_flags;
+
+		rx::run_xkit'  init
+		  { display => THE server,
+		    time_quantum_in_milliseconds => NULL
+		  };
+	    };
+
+
+	fun do_it ()
+	    =
+	    rx::run_xkit  init;
+
+
+	fun main (program ! server ! _, _)
+		=>
+		do_it' ([], server);
+
+	    main _
+		=>
+		do_it ();
+	end;
+    };				# package mixer 
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1991, 1995 by AT&T Bell Laboratories.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.
