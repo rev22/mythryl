@@ -221,8 +221,8 @@ rest3:	bin/mythryl-yacc \
 	src/lib/x-kit/tut/basicwin/basicwin.make6.frozen \
 	src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
 	src/lib/x-kit/tut/bounce/bounce.make6.frozen \
-	src/lib/x-kit/tut/bricks/bricks.make6.frozen \
-	src/lib/x-kit/tut/calc/calc.make6.frozen \
+	src/lib/x-kit/tut/bricks/bricks-app.make6.frozen \
+	src/lib/x-kit/tut/calc/calc-app.make6.frozen \
 	src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
 	src/lib/x-kit/tut/nbody/nbody-app.make6.frozen \
 	src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
@@ -272,8 +272,8 @@ summary:
 		src/lib/x-kit/tut/basicwin/basicwin.make6.frozen \
 		src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
 		src/lib/x-kit/tut/bounce/bounce.make6.frozen \
-		src/lib/x-kit/tut/bricks/bricks.make6.frozen \
-		src/lib/x-kit/tut/calc/calc.make6.frozen \
+		src/lib/x-kit/tut/bricks/bricks-app.make6.frozen \
+		src/lib/x-kit/tut/calc/calc-app.make6.frozen \
 		src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
 		src/lib/x-kit/tut/nbody/nbody-app.make6.frozen \
 		src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
@@ -373,11 +373,11 @@ src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen:
 src/lib/x-kit/tut/bounce/bounce.make6.frozen:
 	@src/lib/x-kit/tut/bounce/build-bounce
 
-src/lib/x-kit/tut/bricks/bricks.make6.frozen:
-	@src/lib/x-kit/tut/bricks/build-bricks
+src/lib/x-kit/tut/bricks/bricks-app.make6.frozen:
+	@src/lib/x-kit/tut/bricks/build-bricks-app
 
-src/lib/x-kit/tut/calc/calc.make6.frozen:
-	@src/lib/x-kit/tut/calc/build-calc
+src/lib/x-kit/tut/calc/calc-app.make6.frozen:
+	@src/lib/x-kit/tut/calc/build-calc-app
 
 src/lib/x-kit/tut/mixer/mixer-app.make6.frozen:
 	@src/lib/x-kit/tut/mixer/build-mixer-app
@@ -641,7 +641,7 @@ dist-clean:	clean
 # so we define this make target to remove those .frozen files, allowing
 # 'make rest' to recompile all changed (and dependent) sourcefiles:
 #
-rest-a7-clean:
+rest-unfrozen:
 	@-rm -f src/app/make7/pgraph/pgraph-util.make6.frozen
 	@-rm -f src/lib/c-glue-lib/c.make6.frozen
 	@-rm -f src/lib/c-glue-lib/internals/c-internals.make6.frozen
@@ -663,8 +663,8 @@ rest-a7-clean:
 	@-rm -f src/lib/x-kit/tut/basicwin/basicwin.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bounce/bounce.make6.frozen
-	@-rm -f src/lib/x-kit/tut/bricks/bricks.make6.frozen
-	@-rm -f src/lib/x-kit/tut/calc/calc.make6.frozen
+	@-rm -f src/lib/x-kit/tut/bricks/bricks-app.make6.frozen
+	@-rm -f src/lib/x-kit/tut/calc/calc-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/mixer/mixer-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer.make6.frozen
 	@-rm -f src/lib/x-kit/tut/nbody/nbody-app.make6.frozen

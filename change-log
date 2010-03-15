@@ -1,3 +1,4 @@
+2010-03-15-12.49.14: src/lib/x-kit/tut/: Rnamed nbody/nbody* -> nbody/nbody-app*, mixer/mixer* ->  mixer/mixer-app*, plaid/plaid* -> plaid/plaid-app*.
 2010-03-14-22.53.27: src/lib/x-kit/tut/triangle/triangle-app.pkg: Added (many) trace calls.
 2010-03-14-21.39.35: src/lib/x-kit/tut/triangle/triangle-app.pkg: Pass authentication info to X server.  Now connects successfully.
 2010-03-14-14.18.28: src/lib/x-kit/tut/triangle/triangle.pkg:  Cleaning and commenting of button_window logic.

@@ -6,7 +6,7 @@
 #     src/lib/x-kit/tut/calc/calc.make6
 
 # This api is implemented in:
-#     src/lib/x-kit/tut/calc/calc.pkg
+#     src/lib/x-kit/tut/calc/calc-app.pkg
 
 stipulate
     package w   =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg

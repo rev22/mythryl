@@ -22,7 +22,7 @@ stipulate
     package acc =  accumulator;				# accumulator			is from   src/lib/x-kit/tut/calc/accumulator.pkg
 herein
 
-    package calc:  Calc {					# Calc				is from   src/lib/x-kit/tut/calc/calc.api
+    package calc:  Calc {				# Calc				is from   src/lib/x-kit/tut/calc/calc.api
 
 	fun make_display_line  w
 	    =
