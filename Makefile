@@ -218,9 +218,9 @@ rest3:	bin/mythryl-yacc \
 	bin/c-glue-maker \
 	bin/nowhere \
 	src/lib/x-kit/tut/add/add.make6.frozen \
-	src/lib/x-kit/tut/basicwin/basicwin.make6.frozen \
+	src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen \
 	src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
-	src/lib/x-kit/tut/bounce/bounce.make6.frozen \
+	src/lib/x-kit/tut/bounce/bounce-app.make6.frozen \
 	src/lib/x-kit/tut/bricks/bricks-app.make6.frozen \
 	src/lib/x-kit/tut/calc/calc-app.make6.frozen \
 	src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
@@ -269,9 +269,9 @@ summary:
 		src/lib/reactive/reactive-lib.make6.frozen \
 		src/lib/unix/unix-lib.make6.frozen \
 		src/lib/x-kit/tut/add/add.make6.frozen \
-		src/lib/x-kit/tut/basicwin/basicwin.make6.frozen \
+		src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen \
 		src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
-		src/lib/x-kit/tut/bounce/bounce.make6.frozen \
+		src/lib/x-kit/tut/bounce/bounce-app.make6.frozen \
 		src/lib/x-kit/tut/bricks/bricks-app.make6.frozen \
 		src/lib/x-kit/tut/calc/calc-app.make6.frozen \
 		src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
@@ -364,14 +364,14 @@ bin/c-glue-maker: src/lib/c-kit/src/c-kit-lib.make6.frozen
 src/lib/x-kit/tut/add/add.make6.frozen:
 	@src/lib/x-kit/tut/add/build-add
 
-src/lib/x-kit/tut/basicwin/basicwin.make6.frozen:
-	@src/lib/x-kit/tut/basicwin/build-basicwin
+src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen:
+	@src/lib/x-kit/tut/basicwin/build-basicwin-app
 
 src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen:
 	@src/lib/x-kit/tut/bitmap-editor/build-bitmap-editor
 
-src/lib/x-kit/tut/bounce/bounce.make6.frozen:
-	@src/lib/x-kit/tut/bounce/build-bounce
+src/lib/x-kit/tut/bounce/bounce-app.make6.frozen:
+	@src/lib/x-kit/tut/bounce/build-bounce-app
 
 src/lib/x-kit/tut/bricks/bricks-app.make6.frozen:
 	@src/lib/x-kit/tut/bricks/build-bricks-app
@@ -660,9 +660,9 @@ rest-unfrozen:
 	@-rm -f src/lib/reactive/reactive-lib.make6.frozen
 	@-rm -f src/lib/unix/unix-lib.make6.frozen
 	@-rm -f src/lib/x-kit/tut/add/add.make6.frozen
-	@-rm -f src/lib/x-kit/tut/basicwin/basicwin.make6.frozen
+	@-rm -f src/lib/x-kit/tut/basicwin/basicwin-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen
-	@-rm -f src/lib/x-kit/tut/bounce/bounce.make6.frozen
+	@-rm -f src/lib/x-kit/tut/bounce/bounce-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bricks/bricks-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/calc/calc-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/mixer/mixer-app.make6.frozen

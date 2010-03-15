@@ -1,0 +1,381 @@
+## bounce-app.pkg
+
+# Compiled by:
+#     src/lib/x-kit/tut/bounce/bounce.make6
+
+stipulate
+    include threadkit;							# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+#    include xcore;							# xcore		is from   src/lib/x-kit/xclient/src/xcore.pkg
+#    include xgeometry;							# xgeometry	is from   src/lib/x-kit/xclient/src/xgeometry.pkg
+
+#    include ball;
+
+    package xc  =  xcore;						# xcore		is from   src/lib/x-kit/xclient/src/xcore.pkg
+    package xg  =  xgeometry;						# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;						# xinput	is from   src/lib/x-kit/xclient/xinput.pkg
+    package xrs =  xcursors;						# xcursors	is from   src/lib/x-kit/xclient/xcursors.pkg
+    package xs  =  xselection;						# xselection	is from   src/lib/x-kit/xclient/xselection.pkg
+    package xw  =  xwindow;						# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+    #
+    package bd  =  bounce_dm;						# bounce_dm	is from   src/lib/x-kit/tut/bounce/bounce-dm.pkg
+    package bl  =  ball;						# ball		is from   src/lib/x-kit/tut/bounce/ball.pkg
+    package hd  =  heads;						# ball		is from   src/lib/x-kit/tut/bounce/heads.pkg
+herein
+
+    package bounce_app {
+
+	stipulate
+
+	    # Create and map the bounce window: 
+	    #
+	    fun init_bounce display_name
+		=
+		{
+# XXX BUGGO FIXME need xauthentication here:
+		    xsession =  xc::open_xsession (display_name, NULL);
+		    screen   =  xc::default_screen_of  xsession;
+
+		    my (window, in_kidplug, mailslot)				# 2009-12-09 CrT: Added 'mailslot' to make it compile. 
+			=
+			xw::make_simple_top_window  screen
+			  {
+			    border_color     =>  xc::black,
+			    background_color =>  xc::rgb8_color0,					# To get XOR to work.
+
+			    site =>
+				xg::WINDOW_SITE
+				  { upperleft    =>  xg::POINT { col=>0, row=>0 },
+				    size         =>  xg::SIZE { wide=>400, high=>400 },
+				    border_width =>  1
+				  }
+			  };
+
+		    my (mouse_mailop, keyboard_mailop, mom_mailop)
+			=
+			{   (xi::ignore_keyboard  in_kidplug)
+				->
+                                xi::KIDPLUG { from_mouse', from_keyboard', from_other', ... };
+
+			    ( from_mouse'    ==>  xi::envelope_contents,
+			      from_keyboard' ==>  xi::envelope_contents,
+			      from_other'    ==>  xi::envelope_contents
+			    );
+			};
+
+		    icon =  xc::make_readonly_pixmap_from_clientside_pixmap
+                                screen
+                                hd::att_data;
+
+											# commandline		is from   src/lib/std/commandline.pkg
+		    xw::set_window_manager_properties  window
+		      {
+			window_name =>  THE "Bounce",
+			icon_name   =>  THE "bounce",
+
+			size_hints  => [ xs::HINT_PPOSITION,
+					 xs::HINT_PSIZE,
+					 xs::HINT_PMIN_SIZE (xg::SIZE { wide => 200, high => 200 } )
+				       ],
+
+			nonsize_hints    => [ xs::HINT_ICON_RO_PIXMAP icon ],
+
+			class_hints      => NULL,
+
+			commandline_arguments =>  commandline::get_arguments ()
+		      };
+
+		    xw::show_window  window;
+
+		    # How do we sync on the mapping?  Do we need to?		XXX BUGGO FIXME
+
+		    (xsession, window, mouse_mailop, mom_mailop);
+
+		};						# fun init_bounce 
+
+	    fun run_bounce  display_name
+		=
+		{   my (xsession, window, mouse_mailop, mom_mailop)
+			=
+			init_bounce  display_name;
+
+		    window_sz = .size (xc::shape_of_window  window);
+
+		    draw_slot = bd::bounce_dm  window;
+
+		    mailcaster = make_mailcaster ();
+
+		    fun redraw (seqn, size)
+			=
+			{   give (draw_slot, bd::REDRAW seqn);
+			    transmit (mailcaster, bl::REDRAW_BALL (seqn, size));
+			};
+
+		    fun kill pt    = transmit (mailcaster, bl::KILL pt);
+		    fun kill_all() = transmit (mailcaster, bl::KILL_ALL);
+
+		    new_ball =  bl::make_ball_fn (window, mailcaster, draw_slot);
+
+		    fun make_cursor c
+			=
+			{   cursor =  xc::get_standard_xcursor  xsession  c;
+
+			    xc::recolor_cursor
+			      {
+				cursor,
+				foreground_rgb =>  xc::rgb_from_unts (0u65535, 0u65535, 0u655350),
+				background_rgb =>  xc::rgb_from_unts (0u0,     0u0,     0u0     )
+			      };
+
+			    cursor;
+			};
+
+
+		    normal_cursor = make_cursor  xrs::crosshair;
+		    ball_cursor   = make_cursor  xrs::dot;
+
+		    fun set_cursor c
+			=
+			xw::set_cursor window (THE c);
+
+		    fun quit ()
+			=
+			{   xc::close_xsession  xsession;
+
+			    shut_down_thread_scheduler
+				#
+				winix::process::success;
+			};
+
+		    popup_menu = menu::popup_menu  window;
+
+		    fun wait_loop (seqn, size)
+			=
+			{
+			    fun do_mouse (xi::MOUSE_FIRST_DOWN { button=>xi::MOUSEBUTTON 1, window_point, timestamp, ... } )
+				    =>
+				    {   set_cursor ball_cursor;
+					down_loop (seqn, size, window_point, timestamp);
+				    };
+
+				do_mouse (xi::MOUSE_FIRST_DOWN { button=>xi::MOUSEBUTTON 2, window_point, timestamp, ... } )
+				    =>
+				    {   kill window_point;
+					wait_loop (seqn, size);
+				    };
+
+				do_mouse (xi::MOUSE_FIRST_DOWN { button as xi::MOUSEBUTTON 3, window_point, timestamp, ... } )
+				    =>
+				    case (do_mailop (popup_menu (button, window_point, timestamp, mouse_mailop)))
+					#
+					NULL =>
+					    wait_loop (seqn, size);
+
+					THE "Refresh"
+					    =>
+					    {   redraw    (seqn+1, size);
+						wait_loop (seqn+1, size);
+					    };
+
+					THE "Kill All"
+					    =>
+					    {   kill_all ();
+						wait_loop (seqn, size);
+					    };
+
+					THE "Quit"
+					    =>
+					    quit ();
+
+					_   =>
+					    raise exception  lib_base::IMPOSSIBLE "Bounce: menu";
+				     esac;
+
+				do_mouse _
+				    =>
+				    wait_loop (seqn, size);
+			    end;
+
+
+			  fun do_mom (xi::ETC_REDRAW _)
+				  =>
+				  {   redraw    (seqn+1, size);
+				      wait_loop (seqn+1, size);
+				  };
+
+			      do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
+				  =>
+				  {   size = xg::SIZE { wide, high };
+
+				      redraw    (seqn, size);
+				      wait_loop (seqn, size);
+				  };
+
+			      do_mom (xi::ETC_OWN_DEATH)
+				  =>
+				  quit ();
+
+			      do_mom _
+				  =>
+				  ();
+			  end;	
+
+			  do_mailop					# doesn't <<do_mailop choose>> == <<select>> ?
+			      (choose
+				[ mouse_mailop ==>  do_mouse,
+				  mom_mailop   ==>  do_mom
+				]
+			      );
+		      }
+
+		    also
+		    fun down_loop (seqn, size, p0, t0)
+			=
+			{
+
+			    fun do_mouse (xi::MOUSE_LAST_UP { button=>xi::MOUSEBUTTON 1, window_point, timestamp, ... } )
+				    =>
+				    {
+					sec =  xc::xserver_timestamp::to_float (xc::xserver_timestamp::(-) (timestamp, t0));
+
+					my xg::POINT { col=>x, row=>y }
+					    =
+					    xg::sub_pt (window_point, p0);
+
+					dt = sec * (real bl::updates_per_sec);
+
+					fun limit a
+					    =
+					    {	  r  = (real a) // dt;
+
+						da = float::truncate r;
+
+						my (abs, sign)
+						    =
+						    if (float::(!=) (r, 0.0))   (-da, -1);
+						    else                        ( da,  1);
+						    fi;
+
+						if (da == 0)
+						    if (float::(!=) (r, 0.0))   sign;
+						    else                           0;
+						    fi;
+						else
+						    if (abs*bl::updates_per_sec > 1000)
+							#
+							int::quot (sign*200, bl::updates_per_sec);
+						    else
+							da;
+						    fi;
+						fi;  
+					    };
+
+					  new_ball (seqn, window_point, xg::POINT { col => limit x,  row => limit y }, size);
+					  back_up (seqn, size);
+				      };
+
+				do_mouse (xi::MOUSE_LAST_UP _) =>  back_up (seqn, size);
+				do_mouse (xi::MOUSE_LEAVE   _) =>  back_up (seqn, size);
+
+				do_mouse _
+				    =>
+				    down_loop (seqn, size, p0, t0);
+			    end;
+
+
+			    fun do_mom (xi::ETC_REDRAW _)
+				    =>
+				    {   redraw  (seqn+1, size);
+					back_up (seqn+1, size);
+				    };
+
+				do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
+				    =>
+				    {   size = xg::SIZE { wide, high };
+
+					redraw  (seqn, size);
+					back_up (seqn, size);
+				    };
+
+				do_mom (xi::ETC_OWN_DEATH)
+				    =>
+				    quit ();
+
+				do_mom _
+				    =>
+				    ();
+			    end;
+
+
+			    do_mailop
+				(choose
+				  [ mouse_mailop ==>  do_mouse,
+				    mom_mailop   ==>  do_mom
+				  ]
+				);
+			}
+
+		    also
+		    fun back_up (seqn, size)
+			=
+			{   set_cursor  normal_cursor;
+
+			    wait_loop  (seqn, size);
+			};
+
+		    set_cursor  normal_cursor;
+
+		    wait_loop (0, window_sz);
+		};					# fun run_bounce 
+
+	herein
+
+	    fun do_it' (flgs, display_name)
+		=
+		{   xtracing::init flgs;
+
+		    start_up_thread_scheduler'
+			#
+			(time::from_milliseconds 10)
+			#
+		       .{   xtracing::xspawn ("bounce",  fn () = run_bounce  display_name);
+			    ();
+			};
+
+		    winix::process::success;
+		}; 
+
+	    fun do_it s
+		=
+		do_it' ([], s);
+
+	    fun main (program, server ! _) =>  do_it  server;
+		main _                     =>  do_it  "";
+	    end;
+
+	end;			# stipulate
+    };				# package bounce 
+end;
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

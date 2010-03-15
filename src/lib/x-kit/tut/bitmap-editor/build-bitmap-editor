@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Install-time build script for pixmap-editor.make6.
+# Install-time build script for bitmap-editor.make6.
 #
 # We will normally be run as a result of a toplevel "make rest".
 #
