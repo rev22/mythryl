@@ -178,7 +178,9 @@ herein
 		#
 		fun redraw ()
 		    =
-		    {   draw_cartouche
+		    {
+trace .{ "button redraw()/TOP -- drawing cartouche"; };
+                        draw_cartouche
 			  {
 			    corner_radius =>  button_corner_radius,
 			    #
@@ -190,7 +192,9 @@ herein
 					     }
 			  };
 
+trace .{ "button redraw()/MID -- drawing text"; };
 			draw_string (text_point, text);
+trace .{ "button redraw()/BOT"; };
 		    }
 		    where
 			drawable =  xd::drawable_of_window  button_window;
@@ -248,24 +252,41 @@ herein
 
 		fun loop ()
 		    =
-		    {   fun do_mouse (xi::MOUSE_FIRST_DOWN _)
+		    {   fun do_mouse' (xi::MOUSE_FIRST_DOWN _)
 				=>
 				give (reset_slot, ());
 
-			    do_mouse _
+			    do_mouse' _
 				=>
 				();
 			end;
 
 
-			fun do_other (xi::ETC_REDRAW _)  =>  redraw ();
-			    do_other  xi::ETC_OWN_DEATH  =>  ();
-			    do_other _	  	         =>  ();
+fun do_mouse x
+    =
+    {
+trace .{ "button loop do_mouse'/TOP"; };
+        do_mouse' x;
+trace .{ "button loop do_mouse'/BOT"; };
+    };
+
+			fun do_other' (xi::ETC_REDRAW _)  =>  redraw ();
+			    do_other'  xi::ETC_OWN_DEATH  =>  ();
+			    do_other' _	  	         =>  ();
 			end;
+
+fun do_other x
+    =
+    {
+trace .{ "button loop do_other/TOP"; };
+        do_other' x;
+trace .{ "button loop do_other/BOT"; };
+    };
 
 
 			for (;;) {
 			    #
+trace .{ "button loop TOP"; };
 			    select [
 				from_mouse'' ==>  do_mouse,
 				from_other'' ==>  do_other
@@ -322,7 +343,7 @@ herein
 		draw = xd::fill_polygon drawable pen;
 
 
-		fun draw_triangle (xg::POINT { col, row } )
+		fun draw_triangle' (xg::POINT { col, row } )
 		    =
 		    draw
 		      {
@@ -334,48 +355,73 @@ herein
 				 ]
 		      };
 
+fun draw_triangle x
+    =
+    {
+trace .{ "drawing_window draw_triangle/TOP"; };
+        draw_triangle' x;
+trace .{ "drawing_window draw_trianbel/BOT"; };
+    };
+
 
 		fun loop state
 		    =
 		    {   fun do_reset ()
 			    =
-			    {   xd::clear_drawable  drawable;
+			    {
+trace .{ "drawing_window loop do_reset()/TOP -- clearing drawable"; };
+                                xd::clear_drawable  drawable;
+trace .{ "drawing_window loop do_reset()/BOT"; };
 				loop [];
 			    };
 
 
 			fun do_other (xi::ETC_REDRAW _)
 				=>
-				{   xd::clear_drawable  drawable;
+				{
+trace .{ "drawing_window loop do_other/ETC_REDRAW/TOP -- clearing drawable"; };
+                                    xd::clear_drawable  drawable;
 
+trace .{ "drawing_window loop do_other/ETC_REDRAW/MID -- drawing triangles"; };
 				    apply draw_triangle state;
 
+trace .{ "drawing_window loop do_other/ETC_REDRAW/BOT"; };
 				    loop state;
 				};
 
 			    do_other xi::ETC_OWN_DEATH
 				=>
-				();
+				{
+trace .{ "drawing_window loop do_other/ETC_OWN_DEATH"; };
+                                    ();
+				};
 
 			    do_other _
 				=>
-				loop state;
+				{
+trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
+				    loop state;
+				};
 			end;
 
 
 			fun do_draw pt
 			    =
-			    {   draw_triangle pt;
+			    {
+trace .{ "drawing_window loop do_draw/TOP -- drawing_triangle being called"; };
+			        draw_triangle pt;
+trace .{ "drawing_window loop do_draw/BOT -- adding point to list and continuing"; };
 				loop (pt ! state);
 			    };
 
+trace .{ "drawing_window loop -- doing select []"; };
 			select [
 			    #
 			    reset' ==>  do_reset,
 			    other' ==>  do_other,
 			    draw'  ==>  do_draw
 			];
-		    };
+		    };					# fun loop
 	    end;					# fun make_draw_threads 
 
 	fun make_toplevel_threads
@@ -417,28 +463,37 @@ herein
 
 		fun do_keyboard envelope
 		    =
-		    {   my xi::MOMPLUG { keyboard_sink, ... }
+		    {
+trace .{ "main do_keyboard/TOP -- find_cable being called"; };
+                        my xi::MOMPLUG { keyboard_sink, ... }
 			    =
 			    find_cable  envelope;
 
+trace .{ "main do_keyboard/MID -- do_mailop (keyboard_sink envelope) being called"; };
 			do_mailop (keyboard_sink envelope);
 		    };
 
 		fun do_mouse envelope
 		    =
-		    {   my xi::MOMPLUG { mouse_sink, ... }
+		    {
+trace .{ "main do_mouse/TOP -- find_cable being called"; };
+		        my xi::MOMPLUG { mouse_sink, ... }
 			    =
 			    find_cable  envelope;
 
+trace .{ "main do_keyboard/MID -- do_mailop (mouse_sink envelope) being called"; };
 			do_mailop (mouse_sink  envelope);
 		    };
 
 		fun do_other envelope
 		    =
-		    {   my xi::MOMPLUG { other_sink, ... }
+		    {
+trace .{ "main do_other/TOP -- find_cable being called"; };
+		        my xi::MOMPLUG { other_sink, ... }
 			    =
 			    find_cable  envelope;
 
+trace .{ "main do_other/MID -- do_mailop (mouse_sink envelope) being called"; };
 			do_mailop (other_sink  envelope);
 		    };
 
@@ -446,6 +501,7 @@ herein
 		    =
 		    for (;;) {
 			#
+trace .{ "main router for (;;) -- above select []"; };
 			select [ from_keyboard' ==> do_keyboard,
 				 from_mouse'    ==> do_mouse,
 				 from_other'    ==> do_other
@@ -456,20 +512,25 @@ herein
 
 	fun run_triangle_app  xdisplay  xauthentication
 	    =
-	    {   (make_drawing_and_button_windows  xdisplay  xauthentication)
+	    {
+trace .{ "run_triangle_app -- above make_drawing_and_button_windows ()"; };
+	        (make_drawing_and_button_windows  xdisplay  xauthentication)
 		    ->
 		    (x as { button_window, drawing_window, ... } );
 
+trace .{ "run_triangle_app -- above make_toplevel_threads ()"; };
 		(make_toplevel_threads  x)
 		    ->
 		    { button_kidplug, draw_kidplug };
 		    
 
+trace .{ "run_triangle_app -- above make_draw_threads ()"; };
 		make_draw_threads
 		  ( drawing_window,
 		    make_button_threads (button_window, button_kidplug),
 		    draw_kidplug
 		  );
+trace .{ "run_triangle_app -- DONE"; };
 	    };
 
 	fun do_it' (flgs, display_name)
@@ -507,13 +568,16 @@ printf "triangle-app: do_it': Creating new %s file...\n" tracefile;
 			    _  => THE display_name;
 			esac;
 
-trace .{ sprintf "widget_unit_test: DISPLAY variable is set to '%s'" xdisplay; };
+trace .{ sprintf "triangle-app: DISPLAY variable is set to '%s'" xdisplay; };
 
 		start_up_thread_scheduler'
 		    #
 		    (time::from_milliseconds 20)
 		    #
-		   .{   xtracing::xspawn("triangle",  .{ run_triangle_app  xdisplay  xauthentication; } );
+		   .{
+trace .{ "triangle-app: Thread scheduler now running -- above run_triangle_app call."; };
+                        xtracing::xspawn("triangle",  .{ run_triangle_app  xdisplay  xauthentication; } );
+trace .{ "triangle-app: Back from run_triangle_app call."; };
 			();
 		    };
 	    };
