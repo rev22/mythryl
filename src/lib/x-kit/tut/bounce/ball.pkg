@@ -4,14 +4,14 @@
 #     src/lib/x-kit/tut/bounce/bounce-app.make6
 
 stipulate
-    include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
 
-    package xc =  xcore;			# xdraw		is from   src/lib/x-kit/xclient/xcore.pkg
-    package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xw =  xwindow;			# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+    package xc =  xcore;			# xdraw			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xw =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
     #
-    package bd =  bounce_dm;			# bounce_dm	is from   src/lib/x-kit/tut/bounce/bounce-dm.pkg
-    package hd =  heads;			# heads		is from   src/lib/x-kit/tut/bounce/heads.pkg
+    package bd =  bounce_drawmaster;		# bounce_drawmaster	is from   src/lib/x-kit/tut/bounce/bounce-drawmaster.pkg
+    package hd =  heads;			# heads			is from   src/lib/x-kit/tut/bounce/heads.pkg
 herein
 
     package ball {
@@ -82,7 +82,7 @@ herein
 			    loop (i+1);
 			fi;
 
-		    xtracing::xspawn("newIcon", fn () = loop 0);
+		    xtracing::make_thread  "make_icon"  .{ loop 0; };
 
 		    .{  take slot;  };
 		};
@@ -199,10 +199,10 @@ herein
 
 			      end;
 
-			    xtracing::xspawn
-			      ( "Ball",
-				fn () = ball (receive' (make_readqueue  mailcaster), pos, vec, clip_fn)
-			      );
+			    xtracing::make_thread  "Ball"  .{
+				#
+				ball (receive' (make_readqueue  mailcaster), pos, vec, clip_fn);
+			    };
 
 			    ();
 			};					# fun new_ball

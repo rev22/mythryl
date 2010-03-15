@@ -470,7 +470,7 @@ herein
 				      loop();
 				    };
 
-		    xtracing::xspawn ("WinReg", loop);
+		    xtracing::make_thread  "WinReg"  loop;
 
 		    XSOCKET_TO_TOPWINDOW_ROUTER
 		      {

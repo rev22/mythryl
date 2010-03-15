@@ -149,7 +149,7 @@ api Tracing {
 	#		 FALSE  xtracing::color_tracing
 	#		 FALSE  xtracing::font_tracing
 	#		 FALSE  xtracing::io_tracing
-	#	     FALSE  xtracing::xspawn_tracing
+	#	     FALSE  xtracing::make_thread_tracing
 	#	     TRUE   xtracing::error_tracing
 	#	 TRUE   thread_deathwatch::tracing
 

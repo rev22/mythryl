@@ -534,7 +534,7 @@ trace .{ "run_triangle_app -- DONE"; };
 
 	fun do_it' (flgs, display_name)
 	    =
-	    {   xtracing::init flgs;
+	    {   xtr::init flgs;
 
 printf "triangle-app: do_it': Checking for existing %s file...\n" tracefile;
 		# Remove any old version of the tracefile:
@@ -575,7 +575,7 @@ trace .{ sprintf "triangle-app: DISPLAY variable is set to '%s'" xdisplay; };
 		    #
 		   .{
 trace .{ "triangle-app: Thread scheduler now running -- above run_triangle_app call."; };
-                        xtracing::xspawn("triangle",  .{ run_triangle_app  xdisplay  xauthentication; } );
+                        xtr::make_thread  "triangle"  .{ run_triangle_app  xdisplay  xauthentication; };
 trace .{ "triangle-app: Back from run_triangle_app call."; };
 			();
 		    };

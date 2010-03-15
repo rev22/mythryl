@@ -197,7 +197,7 @@ herein
 			=
 			{	xc::change_active_grab_cursor  xsession  menu_cursor;
 
-			    xtracing::xspawn ("Menu: track_mouse", track_mouse);
+			    xtracing::make_thread  "Menu: track_mouse"  track_mouse;
 
 			    take' reply_slot;
 			}

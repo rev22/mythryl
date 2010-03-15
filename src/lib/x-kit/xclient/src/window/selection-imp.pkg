@@ -579,7 +579,7 @@ herein
 			do_mailop  mailop;
 		    };
 
-		xtracing::xspawn ("selection_imp", loop);
+		xtracing::make_thread  "selection_imp"  loop;
 
 		(xevent_slot, SELECTION_IMP plea_slot);
 

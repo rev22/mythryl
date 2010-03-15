@@ -385,7 +385,7 @@ herein
 											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: go"; };
 		  };
 
-		  xtracing::xspawn("TopLevelWin::router", init_router);
+		  xtracing::make_thread  "TopLevelWin::router"  init_router;
 
 
 		  (kidplug, top_window, del_slot);

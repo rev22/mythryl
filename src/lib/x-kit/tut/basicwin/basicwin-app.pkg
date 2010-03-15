@@ -332,7 +332,7 @@ herein
 		    #
 		    (time::from_milliseconds tq)
 		    #
-		    (fn ()  =   {   xtracing::xspawn("basicwin", fn () = basicwin xsession);
+		    (fn ()  =   {   xtracing::make_thread  "basicwin"   .{ basicwin xsession; };
 				    ();
 				}
 		    );

@@ -4,23 +4,23 @@
 #     src/lib/x-kit/tut/bounce/bounce-app.make6
 
 stipulate
-    include threadkit;							# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-#    include xcore;							# xcore		is from   src/lib/x-kit/xclient/src/xcore.pkg
-#    include xgeometry;							# xgeometry	is from   src/lib/x-kit/xclient/src/xgeometry.pkg
+#    include xcore;							# xcore			is from   src/lib/x-kit/xclient/src/xcore.pkg
+#    include xgeometry;							# xgeometry		is from   src/lib/x-kit/xclient/src/xgeometry.pkg
 
 #    include ball;
 
-    package xc  =  xcore;						# xcore		is from   src/lib/x-kit/xclient/src/xcore.pkg
-    package xg  =  xgeometry;						# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xi  =  xinput;						# xinput	is from   src/lib/x-kit/xclient/xinput.pkg
-    package xrs =  xcursors;						# xcursors	is from   src/lib/x-kit/xclient/xcursors.pkg
-    package xs  =  xselection;						# xselection	is from   src/lib/x-kit/xclient/xselection.pkg
-    package xw  =  xwindow;						# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
+    package xc  =  xcore;						# xcore			is from   src/lib/x-kit/xclient/src/xcore.pkg
+    package xg  =  xgeometry;						# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;						# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
+    package xrs =  xcursors;						# xcursors		is from   src/lib/x-kit/xclient/xcursors.pkg
+    package xs  =  xselection;						# xselection		is from   src/lib/x-kit/xclient/xselection.pkg
+    package xw  =  xwindow;						# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
     #
-    package bd  =  bounce_dm;						# bounce_dm	is from   src/lib/x-kit/tut/bounce/bounce-dm.pkg
-    package bl  =  ball;						# ball		is from   src/lib/x-kit/tut/bounce/ball.pkg
-    package hd  =  heads;						# ball		is from   src/lib/x-kit/tut/bounce/heads.pkg
+    package bd  =  bounce_drawmaster;					# bounce_drawmaster	is from   src/lib/x-kit/tut/bounce/bounce-dm.pkg
+    package bl  =  ball;						# ball			is from   src/lib/x-kit/tut/bounce/ball.pkg
+    package hd  =  heads;						# ball			is from   src/lib/x-kit/tut/bounce/heads.pkg
 herein
 
     package bounce_app {
@@ -338,7 +338,7 @@ herein
 			#
 			(time::from_milliseconds 10)
 			#
-		       .{   xtracing::xspawn ("bounce",  fn () = run_bounce  display_name);
+		       .{   xtracing::make_thread  "bounce"   .{  run_bounce  display_name;  };
 			    ();
 			};
 

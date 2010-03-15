@@ -1,6 +1,6 @@
 ## thread-deathwatch.api
 #
-# Thread watching for detecting  thread termination.
+# Detect and report unexpected thread terminations.
 #
 # See also:
 #     src/lib/src/lib/thread-kit/src/lib/tracing.api
@@ -11,17 +11,21 @@
 
 api Thread_Deathwatch {
 
-    tracing:  tracing::Trace_Tree_Node;
-	#
-	# Controls printing of thread watching messages.
+    tracing:  tracing::Trace_Tree_Node;		# Controls printing of thread watching messages.
 
-    start_thread_deathwatch:  (String, threadkit::Thread_Id) -> Void;
-	#
-	# Watch the given thread for unexpected termination.
+    start_thread_deathwatch			# Watch the given thread for unexpected termination.
+	:
+	( String,				# Name of thread. This is for human consumption only -- not used algorithmically.
+	  threadkit::Thread_Id			# Id of thread to watch.
+        )
+        ->
+        Void;
 
-    stop_thread_deathwatch:  threadkit::Thread_Id -> Void;
-	#
-	# Stop watching the given thread.
+    stop_thread_deathwatch			# Stop watching the given thread.
+	:
+	threadkit::Thread_Id
+	->
+	Void;
 };
 
 

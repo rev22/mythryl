@@ -678,7 +678,7 @@ herein
 			  ];
 		      };
 
-		      xtracing::xspawn("OverlayBuffer", .{ loop []; } );
+		      xtracing::make_thread  "OverlayBuffer"  .{ loop []; };
 
 		      get' flush_done_1shot;
 	      };							 #  fun make_overlay_buffer 
@@ -976,7 +976,7 @@ herein
 			esac;
 
 
-		    xtracing::xspawn("draw_imp", initialize_imp);
+		    xtracing::make_thread  "draw_imp"  initialize_imp;
 
 		    fn msg =   give  (plea_slot, msg);
 

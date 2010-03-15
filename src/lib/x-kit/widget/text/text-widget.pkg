@@ -1803,11 +1803,10 @@ herein
 				);
 			    };
 
-			  xtracing::xspawn
-			    (
-			      "text_widget_imp",
-			      .{  imp_loop  text;  }
-			    );
+			  xtracing::make_thread  "text_widget_imp"  .{
+			      #
+			      imp_loop  text;
+			  };
 
 			  ();
 		      };

@@ -825,10 +825,10 @@ herein
 
 
 
-		    xtracing::xspawn
-		      ( "gc_imp",
-			.{  imp_loop (0, 0, [default_gc], []);  }
-		      );
+		    xtracing::make_thread  "gc_imp"  .{
+			#
+			imp_loop (0, 0, [default_gc], []);
+		    };
 
 		    GRAPHICS_CONTEXT_IMP { plea_slot, reply_slot };
 

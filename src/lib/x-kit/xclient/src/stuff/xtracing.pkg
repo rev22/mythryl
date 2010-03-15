@@ -72,223 +72,227 @@
 ###                       -- Assyrian clay tablet circa 2800 B.C.
 
 
-package xtracing {
-
-    package dw = thread_deathwatch;
-
-		    
-    # The root of all x-kit trace modules:
+stipulate
+    include threadkit;						# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    xkit_tracing = tracing::make_trace_tree_leaf { parent => tracing::all_tracing, name => "xtracing::xkit_tracing" };
+    package dw = thread_deathwatch;				# thread_deathwatch	is from   src/lib/src/lib/thread-kit/src/lib/thread-deathwatch.pkg
+herein
 
-    # A trace module for controlling
-    # the printing of error messages:
-    #
-    error_tracing  = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::error_tracing" };
+    package xtracing {
 
-    # A trace module for controlling xspawn output:
-    #
-    xspawn_tracing = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::xspawn_tracing" };
+	# The root of all x-kit trace modules:
+	#
+	xkit_tracing = tracing::make_trace_tree_leaf { parent => tracing::all_tracing, name => "xtracing::xkit_tracing" };
 
-    # x-kit library-level trace modules 
-    #
-    lib_tracing    = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::lib_tracing"  };
-    #
-    io_tracing     = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::io_tracing"    };
-    font_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::font_tracing"  };
-    color_tracing  = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::color_tracing" };
-    #
-    draw_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::draw_tracing"  };
-    dm_tracing     = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::dm_tracing" };
-    #
-    winreg_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::winreg_tracing"      };
-    toplevel_tracing = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::toplevel_tracing"   };
-    #
-    graphics_context_tracing = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::graphics_context_tracing" };
-    selection_tracing        = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::selection_tracing"        };
+	# A trace module for controlling
+	# the printing of error messages:
+	#
+	error_tracing  = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::error_tracing" };
 
-    # The root of the widgets trace modules:
-    #
-    widgets_tracing = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::widgets_tracing" };
+	# A trace module for controlling make_thread output:
+	#
+	make_thread_tracing = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::make_thread_tracing" };
 
-    print_if = tracing::print_if;
+	# x-kit library-level trace modules 
+	#
+	lib_tracing    = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::lib_tracing"  };
+	#
+	io_tracing     = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::io_tracing"    };
+	font_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::font_tracing"  };
+	color_tracing  = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::color_tracing" };
+	#
+	draw_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::draw_tracing"  };
+	dm_tracing     = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::dm_tracing" };
+	#
+	winreg_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::winreg_tracing"      };
+	toplevel_tracing = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::toplevel_tracing"   };
+	#
+	graphics_context_tracing = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::graphics_context_tracing" };
+	selection_tracing        = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::selection_tracing"        };
 
-    fun err_trace f
-        =
-        print_if error_tracing f;
+	# The root of the widgets trace modules:
+	#
+	widgets_tracing = tracing::make_trace_tree_leaf { parent => xkit_tracing, name => "xtracing::widgets_tracing" };
 
-    fun reset ()
-        =
-        {   tracing::disable  xkit_tracing;
-	    tracing::enable   error_tracing;
-        };
+	print_if = tracing::print_if;
 
-								my _ =
-    reset ();	# Make sure error reporting is turned on.
-
-    # Initialiize the state of the trace modules
-    # according to the argument list.
-    # 
-    # The format of an argument is:
-    # 
-    #   [!|-|+]name
-    # 
-    # where
-    # 
-    #     "-name" means tracing::disenable   "name"
-    #     "+name" means tracing::enable      "name"
-    #     "!name" means tracing::enable_only "name"
-    #      "name" is an abbreviation for "+name".
-    #
-    fun init args
-        =
-        {   fun tail s
-                =
-                substring (s, 1, size s - 1);
-
-
-	    fun do_arg ""
-		    =>
-		    ();
-
-	        do_arg s
-		    =>
-		    case (string::get (s, 0))
-			#
-			'+' => tracing::enable      (tracing::node_by_name (tail s));
-			'-' => tracing::disable     (tracing::node_by_name (tail s));
-			'!' => tracing::enable_node (tracing::node_by_name (tail s));
-			 _  => tracing::enable      (tracing::node_by_name s);
-		    esac;
-            end;
-
-	    reset ();
-
-	    apply  do_arg  args;
-	};
-/***
-    listLen = REF 16
-    lineLen = REF 20
-
-    fun prBuf lvl s = let
-	  pr = pr lvl
-	  fun f (i, 1, 0) = (pr "\n  "; pr (makestring (ordof (s, i))))
-	    | f (i, 1, _) = pr (makestring (ordof (s, i)))
-	    | f (i, n, 0) = (pr "\n  "; f (i, n, *lineLen))
-	    | f (i, n, k) = (
-		pr (makestring (ordof (s, i)));
-		pr ", ";
-		f (i+1, n - 1, k - 1))
-	  n = string::size s
-	  in
-	    pr "[ ";
-	    if (n <= *listLen)
-	      then (f (0, n, *lineLen); pr " ]\n")
-	      else (f (0, *listLen, *lineLen); pr " ...]\n")
-	  end
-***/
-
-    stipulate
-
-        # NOTE: The "raised_at" function
-        # should  probably be provided by Lib7.		XXX BUGGO FIXME
-
-	fun raised_at exn
+	fun err_trace f
 	    =
-	    case (list::reverse (lib7::exception_history exn))
+	    print_if error_tracing f;
+
+	fun reset ()
+	    =
+	    {   tracing::disable  xkit_tracing;
+		tracing::enable   error_tracing;
+	    };
+
+								    my _ =
+	reset ();	# Make sure error reporting is turned on.
+
+	# Initialiize the state of the trace modules
+	# according to the argument list.
+	# 
+	# The format of an argument is:
+	# 
+	#   [!|-|+]name
+	# 
+	# where
+	# 
+	#     "-name" means tracing::disenable   "name"
+	#     "+name" means tracing::enable      "name"
+	#     "!name" means tracing::enable_only "name"
+	#      "name" is an abbreviation for "+name".
+	#
+	fun init args
+	    =
+	    {   fun tail s
+		    =
+		    substring (s, 1, size s - 1);
+
+
+		fun do_arg ""
+			=>
+			();
+
+		    do_arg s
+			=>
+			case (string::get (s, 0))
+			    #
+			    '+' => tracing::enable      (tracing::node_by_name (tail s));
+			    '-' => tracing::disable     (tracing::node_by_name (tail s));
+			    '!' => tracing::enable_node (tracing::node_by_name (tail s));
+			     _  => tracing::enable      (tracing::node_by_name s);
+			esac;
+		end;
+
+		reset ();
+
+		apply  do_arg  args;
+	    };
+    /***
+	listLen = REF 16
+	lineLen = REF 20
+
+	fun prBuf lvl s = let
+	      pr = pr lvl
+	      fun f (i, 1, 0) = (pr "\n  "; pr (makestring (ordof (s, i))))
+		| f (i, 1, _) = pr (makestring (ordof (s, i)))
+		| f (i, n, 0) = (pr "\n  "; f (i, n, *lineLen))
+		| f (i, n, k) = (
+		    pr (makestring (ordof (s, i)));
+		    pr ", ";
+		    f (i+1, n - 1, k - 1))
+	      n = string::size s
+	      in
+		pr "[ ";
+		if (n <= *listLen)
+		  then (f (0, n, *lineLen); pr " ]\n")
+		  else (f (0, *listLen, *lineLen); pr " ...]\n")
+	      end
+    ***/
+
+	stipulate
+
+	    # NOTE: The "raised_at" function
+	    # should  probably be provided by Lib7.		XXX BUGGO FIXME
+
+	    fun raised_at exn
+		=
+		case (list::reverse (lib7::exception_history exn))
+		    #
+		    []      => "";
+		    (s ! _) => "raised at " + s;
+		esac;
+
+	    fun handle_xerror (thread_id, exn as xgripe::XERROR s)
+		    =>
+		    {   tracing::print_if error_tracing .{
+			    cat [ "exception (XERROR ", s, ") in ",
+				  threadkit::thread_id_to_string  thread_id,
+				  raised_at exn
+				];
+			  };
+
+			TRUE;
+		    };
+
+		handle_xerror _
+		    =>
+		    FALSE;
+	    end;
+
+	herein
+								    my _ = 
+	    threadkit_uncaught_exception_reporting::add_uncaught_exception_action
 		#
-		[]      => "";
-		(s ! _) => "raised at " + s;
-	    esac;
+		handle_xerror;
 
-	fun handle_xerror (thread_id, exn as xgripe::XERROR s)
-		=>
-		{   tracing::print_if error_tracing .{
-                        cat [ "exception (XERROR ", s, ") in ",
-                              threadkit::thread_id_to_string  thread_id,
-		              raised_at exn
-		            ];
-                      };
-
-		    TRUE;
-                };
-
-	    handle_xerror _
-                =>
-                FALSE;
 	end;
 
-    herein
-        							my _ = 
-        threadkit_uncaught_exception_reporting::add_uncaught_exception_action
-	    #
-	    handle_xerror;
+										# thread_deathwatch	is from   src/lib/src/lib/thread-kit/src/lib/thread-deathwatch.pkg
+	fun make_thread
+	      (thread_name: String)						# Name of thread for reporting purposes -- not used algorithmically.
+	      (thread_body: Void -> Void)					# Code for thread to run.
+	    =
+	    {   fun thread_body_wrapper ()
+		    =
+		    {   thread_id = get_thread_id ();
 
-    end;
+			dw::start_thread_deathwatch (thread_name, thread_id);
 
-									# thread_deathwatch	is from   src/lib/src/lib/thread-kit/src/lib/thread-deathwatch.pkg
-    fun xspawn (name, f)
-        =
-        {   include threadkit;						# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+			print_if make_thread_tracing .{ cat [ "make_thread '", thread_name, "' ", thread_id_to_string thread_id ]; };
 
-	    fun wrapf ()
-                =
-                {   thread_id = get_thread_id ();
+			thread_body ();
 
-		    dw::start_thread_deathwatch (name, thread_id);
+			print_if make_thread_tracing .{ cat [ "thread '", thread_name, "' ", thread_id_to_string thread_id, " exiting." ]; };
 
-		    print_if xspawn_tracing .{ cat [ "xspawn ", name, " ", thread_id_to_string thread_id ]; };
+			dw::stop_thread_deathwatch  thread_id;
+		    }
+		    except
+			ex = {   fun f (s, l)
+				     =  "  ** "
+				     !  s
+				     !  "\n"
+				     !  l
+				     ;
 
-		    f ();
+				 trace_back
+				    =
+				    list::fold_right f [] (lib7::exception_history ex);
 
-		    print_if xspawn_tracing .{ cat [ "thread ", name, " ", thread_id_to_string thread_id, "exiting." ]; };
+				 case ex
 
-		    dw::stop_thread_deathwatch  thread_id;
-		}
-		except
-                    ex = {   fun f (s, l)
-				 =  "  ** "
-                                 !  s
-                                 !  "\n"
-                                 !  l
-                                 ;
+				     xgripe::XERROR s
+					 =>
+					 print_if error_tracing .{ cat ([ "exception (XERROR ", s, ") in thread '", thread_name, "'\n" ] @ trace_back); };
 
-			     trace_back
-				=
-				list::fold_right f [] (lib7::exception_history ex);
+				     FAIL s
+					 =>
+					 print_if error_tracing .{ cat ([ "exception FAIL(", s, ") in thread '", thread_name, "'\n" ] @ trace_back); };
 
-			     case ex
+				      _  => 
+					 print_if error_tracing .{ cat ([ "exception ", exception_message ex, " in thread '", thread_name, "'\n" ] @ trace_back); };
+				 esac;
 
-				 xgripe::XERROR s
-                                     =>
-                                     print_if error_tracing .{ cat ([ "exception (XERROR ", s, ") in ", name, " thread\n" ] @ trace_back); };
+				 dw::stop_thread_deathwatch
+				    (get_thread_id ());
+			  };
 
-				 FAIL s
-                                     =>
-                                     print_if error_tracing .{ cat ([ "exception FAIL(", s, ") in ", name, " thread\n" ] @ trace_back); };
+		threadkit::make_thread  thread_name  thread_body_wrapper;
+	    };
 
-				  _  => 
-                                     print_if error_tracing .{ cat ([ "exception ", exception_message ex, " in ", name, " thread\n" ] @ trace_back); };
-                             esac;
+	# Wrapper to report uncaught exceptions:
+	# 
+	fun diag (f, s) x
+	    =
+	    (f x)
+	    except
+		ex = {   print_if error_tracing .{ cat [ "exception ", exception_name ex, " in ", s ]; };
+			 raise exception ex;
+		     };
 
-			     dw::stop_thread_deathwatch
-				(get_thread_id ());
-		      };
-
-	      make_thread "xtracing III" wrapf;
-	  };
-
-    # Wrapper to report uncaught exceptions:
-    # 
-    fun diag (f, s) x
-        =
-        (f x)
-        except
-            ex = {   print_if error_tracing .{ cat [ "exception ", exception_name ex, " in ", s ]; };
-		     raise exception ex;
-                 };
-
-};		#  Xtracing 
+    };		#  Xtracing 
+end;
 
 
 ##########################################################################

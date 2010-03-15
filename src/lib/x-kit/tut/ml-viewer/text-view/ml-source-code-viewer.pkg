@@ -95,7 +95,7 @@ herein
 		    =
 		    {   set (oneshot, text_display);
 
-    #		    x_debug::xspawn("viewer::server", server);
+    #		    x_debug::make_thread  "viewer::server"  server;
 
 			();
 		    }

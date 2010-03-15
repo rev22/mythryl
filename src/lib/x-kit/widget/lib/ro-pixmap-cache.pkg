@@ -142,7 +142,7 @@ herein
 			give  (reply_slot,   do_plea (take  plea_slot));
 		    };
 
-		xtracing::xspawn("ro_pixmap_cache", loop);
+		xtracing::make_thread  "ro_pixmap_cache"  loop;
 
 		RO_PIXMAP_CACHE { plea_slot, reply_slot };
 	    };

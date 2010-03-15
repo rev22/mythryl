@@ -10,7 +10,7 @@ LIBRARY_COMPONENTS
 	$ROOT/src/lib/x-kit/xkit.make6
 
 	heads.pkg
-	bounce-dm.pkg
+	bounce-drawmaster.pkg
 	ball.pkg
 	menu.pkg
 	bounce-app.pkg

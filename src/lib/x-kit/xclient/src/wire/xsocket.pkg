@@ -1304,8 +1304,7 @@ trace  .{  "xsocket.pkg: make_xsocket/EEE";  };
     ******/
 trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
     /* DEBUG */
-                xtracing::xspawn
-		  ( "Sequencer_Imp",
+                xtracing::make_thread  "Sequencer_Imp"  (
 		    sequencer_imp
 		      ( client_to_sequencer_slot,
 			inbuf_to_sequencer_slot,
@@ -1315,12 +1314,9 @@ trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
 		      )
 		  );
 
-trace  .{  "xsocket.pkg: make_xsocket/GGG";  };
-		xtracing::xspawn ("inbuf_imp",    inbuf_imp  ( inbuf_to_sequencer_slot, socket));
-trace  .{  "xsocket.pkg: make_xsocket/HHH";  };
-		xtracing::xspawn ("outbuf_imp",   outbuf_imp (sequencer_to_outbuf_slot, socket));
-trace  .{  "xsocket.pkg: make_xsocket/III";  };
-		xtracing::xspawn ("xbuf_imp",     xbuf_imp   (  sequencer_to_xbuf_slot, xbuf_to_client_slot));
+		xtracing::make_thread  "inbuf_imp"    (inbuf_imp  ( inbuf_to_sequencer_slot, socket));
+		xtracing::make_thread  "outbuf_imp"   (outbuf_imp (sequencer_to_outbuf_slot, socket));
+		xtracing::make_thread  "xbuf_imp"     (xbuf_imp   (  sequencer_to_xbuf_slot, xbuf_to_client_slot));
 
 trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 		XSOCKET

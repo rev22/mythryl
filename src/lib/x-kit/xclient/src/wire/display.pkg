@@ -371,7 +371,7 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 
 		#  make_thread "xdisplay"  .{ loop base; }; 
 
-		xtr::xspawn ("xid-factory", .{ loop base; } );
+		xtr::make_thread  "xid-factory"  .{ loop base; };
 
 		.{ take  result_slot; };
 	    };
@@ -534,7 +534,7 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 			err_handler ();
 		    };
 
-		xtr::xspawn ("err_handler", err_handler);
+		xtr::make_thread  "err_handler"  err_handler;
 
 		display;
 	  };

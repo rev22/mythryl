@@ -258,7 +258,7 @@ herein
 			loop ();
 		    };
 
-		xtracing::xspawn("font_imp", loop);
+		xtracing::make_thread  "font_imp"  loop;
 
 		FONT_IMP { plea_slot, reply_slot };
 	    };							# fun make_font_imp

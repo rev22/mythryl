@@ -144,7 +144,7 @@ herein
 		    #
 		    (time::from_milliseconds  timeslice_quantum)
 		    #
-		   .{  xtracing::xspawn("bad_bricks", fn () = bad_bricks display);
+		   .{  xtracing::make_thread  "bad_bricks"   .{ bad_bricks display; };
 		       ();
 		    };
 	    };

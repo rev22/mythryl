@@ -403,7 +403,8 @@ herein
 
 		    end;
 
-		  xtracing::xspawn ("keymap_imp", imp);
+		  xtracing::make_thread  "keymap_imp"  imp;
+
 	    end;		# fun make_keymap_imp 
 
 

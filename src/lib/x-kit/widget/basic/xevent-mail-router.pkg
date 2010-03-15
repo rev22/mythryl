@@ -186,7 +186,8 @@ herein
 
 
 		init out_list;
-		xtracing::xspawn ("Router", loop);
+
+		xtracing::make_thread  "Router"  loop;
 
 		XEVENT_MAIL_ROUTER
 		  { plea_slot   => route_plea_slot,
@@ -248,7 +249,7 @@ herein
 			 )     );
 
 
-		xtracing::xspawn ("Router2", loop);
+		xtracing::make_thread  "Router2"  loop;
 
 		();
 	    };

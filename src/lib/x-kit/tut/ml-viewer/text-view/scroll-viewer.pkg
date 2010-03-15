@@ -249,8 +249,7 @@ herein
 			       };
 			 fi;
 
-		  xtracing::xspawn
-		    ("scroll_viewer::scroller", scroll_server);
+		  xtracing::make_thread  "scroll_viewer::scroller"  scroll_server;
 
 		  low::as_widget  layout;
 	    };

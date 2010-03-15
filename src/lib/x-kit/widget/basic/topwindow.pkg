@@ -389,7 +389,7 @@ herein
 		    esac;
 
 
-		xtracing::xspawn ("topwindow",  .{ start_loop ([], TRUE); });
+		xtracing::make_thread  "topwindow"  .{ start_loop ([], TRUE); };
 
 		TOPWINDOW (plea_slot, delete_slot);
 

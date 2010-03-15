@@ -1,4 +1,4 @@
-## bounce-dm.pkg
+## bounce-drawmaster.pkg
 
 # Compiled by:
 #     src/lib/x-kit/tut/bounce/bounce-app.make6
@@ -12,7 +12,7 @@ stipulate
     package xx =  xwindow;					# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
 herein
 
-    package bounce_dm {
+    package bounce_drawmaster {
 
 
 	Dm_Msg
@@ -116,7 +116,7 @@ herein
 			    };
 		    esac;
 
-		xtracing::xspawn("bounce_dm", fn () = loop2 0);
+		xtracing::make_thread  "bounce_drawmaster"   .{ loop2 0; };
 
 		draw_slot;
 	    };
