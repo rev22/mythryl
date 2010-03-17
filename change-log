@@ -1,3 +1,4 @@
+2010-03-17-17.26.36: src/lib/x-kit/xclient/src/wire/xsocket.pkg: More diagnostic logic tweaking.
 2010-03-17-17.14.51: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Lightly tweak diagnostic reporting logic.
 2010-03-15-16.58.21: src/runtime/c-libs/lib7-socket/recv.c: Tracelog errno in string as well as int form.
 2010-03-15-16.25.34: src/lib/x-kit/xclient/src/stuff/xtracing.pkg: For consistency with vanilla make_thread, changed xspawn(name,body) -> (make_thread name body).
