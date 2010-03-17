@@ -159,7 +159,7 @@ herein
 
 		header = rse::do_syscall_retry_on_eintr					# We need this retry mechanism because our 50Hz SIGALRM
 			     #								# timer may hit before the X server reply gets back to us.
-                             sox::receive_vector (socket, 8)
+                             sox::receive_vector (socket, 8)				# XXX BUGGO FIXME this retry_on_eintr crap sucks sucks sucks.
                          except
                              winix::SYSTEM_ERROR("closed socket", NULL)
                                  =

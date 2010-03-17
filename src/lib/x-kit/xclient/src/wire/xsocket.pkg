@@ -115,23 +115,24 @@
 ###                                -- Ken Thompson 
 
 
-							# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
-							# xerrors		is from   src/lib/x-kit/xclient/src/wire/xerrors.pkg
+							# event_types			is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
+							# xerrors			is from   src/lib/x-kit/xclient/src/wire/xerrors.pkg
 
 stipulate
-    include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package u   = unt;					# unt			is from   src/lib/std/unt.pkg
-#   package wv8 = rw_unt8_vector;			# rw_unt8_vector	is from   src/lib/std/src/rw-unt8-vector.pkg
-    package v8  = unt8_vector;				# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
+    package u   =  unt;					# unt				is from   src/lib/std/unt.pkg
+#   package wv8 =  rw_unt8_vector;			# rw_unt8_vector		is from   src/lib/std/src/rw-unt8-vector.pkg
+    package v8  =  unt8_vector;				# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
+    package rse =  retry_syscall_on_eintr;		# retry_syscall_on_eintr	is from   src/lib/std/src/threadkit/unix/retry-syscall-on-eintr.pkg
     #
-    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package xtr =  xtracing;				# xtracing		is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    package g   = geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     #
     trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 herein
 
-    package xsocket: (weak)  Xsocket {			# Xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.api
+    package xsocket: (weak)  Xsocket {			# Xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.api
 
 	exception LOST_REPLY;
 	exception ERROR_REPLY  xerrors::Xerror;
@@ -324,7 +325,10 @@ herein
 
 				read (n, vl)
 				    =>
-				    {   v = socket::receive_vector (socket, n);
+				    {
+trace  .{  "xsocket.pkg: inbuf_imp: read_vector: ABOVE call to socket::receive_vector";  };
+                                        v = rse::do_syscall_retry_on_eintr socket::receive_vector (socket, n);	# 2010-03-15 CrT: Added rse::do_syscall_retry_on_eintr here, not sure why it was apparently not needed in SML/NJ version.
+trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_vector";  };
 
 					case (v8::length v)
 					    #
@@ -747,6 +751,10 @@ herein
 			    };
 		      end;
 		end;
+# fun pending_reply_n_exists (n, q)
+#    =
+#    {
+#    };
 
 
 	    # Extract the pending-reply queue entry 
@@ -757,9 +765,9 @@ herein
 	    # send the extracted reply to the requesting
 	    # client.
 	    #
-	    fun handle_reply_message (n, reply, pending_reply_queue)
+	    fun handle_reply_message (seqn, reply, pending_reply_queue)
 		=
-		case (pending_reply_n_exists (n, pending_reply_queue))
+		case (pending_reply_n_exists (seqn, pending_reply_queue))
 		    #
 		    (TRUE, (ONE_REPLY(_, slot) ! r, rear))
 			=>
@@ -779,11 +787,12 @@ herein
                             );
 			fi;
 
-		   _ => 
+		    _   => 
 			{   # Debug support:
 			    #	
-			    show_pending_reply_queue (n, pending_reply_queue);
-			    xgripe::impossible "[xok::handle_reply_message: bogus pending reply queue]";
+trace  .{                   sprintf "ERROR: xsocket::handle_reply_message(seqn==%s,...): BOGUS PENDING REPLY QUEUE, dumping queue." (seqn_to_string seqn);  };
+			    show_pending_reply_queue (seqn, pending_reply_queue);
+			    xgripe::impossible (sprintf "ERROR: xsocket::handle_reply_message(seqn==%s,...): BOGUS PENDING REPLY QUEUE, done dumping queue." (seqn_to_string seqn));
 			};
 	       esac;
 
@@ -812,7 +821,7 @@ herein
 
      /* +DEBUG 
      (dumpPendingQ (n, q);
-     xgripe::impossible "[xok::handle_expose_message: bogus pending reply queue]")
+     xgripe::impossible "ERROR: xsocket::handle_expose_message: bogus pending reply queue]")
      -DEBUG */
 		};
 
@@ -854,7 +863,7 @@ herein
 
 		    _   =>
     /* DEBUG */         {   show_pending_reply_queue (n, pending_reply_queue);
-			    xgripe::impossible "[xok::handle_error_message: bogus pending reply queue]";
+			    xgripe::impossible "ERROR: xsocket::handle_error_message: bogus pending reply queue]";
     /* DEBUG */         };
 		esac;
 
@@ -1291,7 +1300,7 @@ trace  .{  "xsocket.pkg: make_xsocket/EEE";  };
 		    =
 		    {   xtracing::print_if xtracing::io_tracing .{ "close connection."; };
 
-			flush_fn();
+			flush_fn ();
 
 			give (client_to_sequencer_slot, PLEA_QUIT);
 		    };

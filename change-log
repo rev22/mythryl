@@ -1,3 +1,4 @@
+2010-03-15-16.58.21: src/runtime/c-libs/lib7-socket/recv.c: Tracelog errno in string as well as int form.
 2010-03-15-16.25.34: src/lib/x-kit/xclient/src/stuff/xtracing.pkg: For consistency with vanilla make_thread, changed xspawn(name,body) -> (make_thread name body).
 2010-03-15-13.45.25: src/lib/x-kit/tut/add/: Renamed add* -> add-app*; src/lib/x-kit/tut/ml-viewer/: Rename ml-viewer* -> ml-viewer-app*.
 2010-03-15-13.22.54: src/lib/x-kit/tut/basicwin/: Renamed basicwin* -> basicwin-app*;  src/lib/x-kit/tut/bounce/: Renamed bounce* -> bounce-app*

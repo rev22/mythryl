@@ -10,6 +10,9 @@
 # For a longer discussion see comments at bottom of:
 #
 #     src/runtime/c-libs/lib7-socket/connect.c
+#
+# This hack gets used in:
+#     src/lib/x-kit/xclient/src/wire/display.pkg
 
 # Compiled by:
 #     src/lib/std/stdlib.make6
