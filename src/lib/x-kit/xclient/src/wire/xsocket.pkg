@@ -609,7 +609,7 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 
 	    fun show_pending_reply_queue (seqn, ([], []))
 		    =>
-		    xtracing::err_trace .{ cat [ "PendingQ(", seqn_to_string seqn, "): empty\n" ]; };
+		    xtracing::err_trace .{ cat [ "show pending reply queue(", seqn_to_string seqn, "): empty\n" ]; };
 
 		show_pending_reply_queue (seqn, (front, rear))
 		    =>
@@ -626,7 +626,7 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 
 			xtracing::err_trace .{ 
 
-			    cat ( "PendingQ("
+			    cat ( "show pending reply queue("
 				! (seqn_to_string seqn)
 				! "):\n"
 				! (queue_to_strings (front @ (reverse rear), []))
@@ -642,7 +642,7 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 		seqn_of (EXPOSURE_REPLY (seqn, _      )) =>  seqn;
 	    end;
 
-	    # Spawn throwaway thread to deliver
+	    # Spawn throw-away thread to deliver
 	    # X server reply to requesting client
 	    # application thread.  This avoids
 	    # blocking our own thread until the
@@ -650,11 +650,14 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 	    # 
 	    fun send_reply arg
 		=
-		{   make_thread "xsocket reply" .{  give arg;  };
+		{
+trace  .{ "xsocket::send_reply now  spawning send-reply thread...)"; };
+                    make_thread "xsocket reply" .{  give arg;  };
+trace  .{ "xsocket::send_reply done spawning send-reply thread.)"; };
 		    ();
 		};
 
-	    # Spawn throwaway thread to deliver
+	    # Spawn throw-away thread to deliver
 	    # multiple X server replies.  This is
 	    # to handle the currently-unused MULTI_REPLY:
 	    #
@@ -790,7 +793,7 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 		    _   => 
 			{   # Debug support:
 			    #	
-trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_message(seqn==%s,...): BOGUS PENDING REPLY QUEUE, dumping queue." (seqn_to_string seqn);  };
+trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_message(seqn==%s, reply x=%s (%d bytes)...): BOGUS PENDING REPLY QUEUE, dumping queue." (seqn_to_string seqn) (bytes_to_hex reply) (v8::length reply);  };
 			    show_pending_reply_queue (seqn, pending_reply_queue);
 trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_message(seqn==%s,...): BOGUS PENDING REPLY QUEUE, done dumping queue." (seqn_to_string seqn);  };
 			    xgripe::impossible (sprintf "XERROR: xsocket::handle_reply_message(seqn==%s,...): BOGUS PENDING REPLY QUEUE" (seqn_to_string seqn));
@@ -1039,6 +1042,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
                                 }
 				=
 				{
+trace  .{ "xsocket::sequencer_imp: do_from_x/TOP"; };
 				    # NOTE: this doesn't work if there are 2**17
 				    # outgoing messages between replies/events.
 				    #
@@ -1068,6 +1072,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 
 						    seqn = get_seq_n();
 
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling error message %s.)" (seqn_to_string seqn); };
 						    give (error_sink_slot, (seqn, msg));
 
 						    (seqn, last_seqn_sent, handle_error_message (seqn, msg, pending_reply_queue));
@@ -1078,6 +1083,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 
 						    seqn = get_seq_n();
 
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling reply message %s.)" (seqn_to_string seqn); };
 						    (seqn, last_seqn_sent, handle_reply_message (seqn, msg, pending_reply_queue));
 						};
 
@@ -1097,6 +1103,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 
 						    seqn = get_seq_n();
 
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling GraphicsExpose event %s.)" (seqn_to_string seqn); };
 						    include event_types;
 
 						    boxes = read_expose_event_train ([], wire_to_value::decode_graphics_expose msg)
@@ -1135,6 +1142,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 					0u14 => {   # NoExpose event:
 
 						    seqn = get_seq_n();
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling NoExpose event %s.)" (seqn_to_string seqn); };
 
 						    (seqn, last_seqn_sent, handle_expose_message (seqn, [], pending_reply_queue));
 						};
@@ -1143,6 +1151,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 					_    => {   # Other event messages:
 
 						    seqn = get_seq_n();
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.)" (seqn_to_string seqn); };
 
 						    give (to_xbuf_slot, (code, msg));
 
