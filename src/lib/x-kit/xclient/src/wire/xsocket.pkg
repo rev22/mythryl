@@ -607,6 +607,12 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 		u::format  number_string::DECIMAL  n;
 
 
+	    fun queue_element_to_string (ERROR_CHECK       (n, _)) => "  ERROR_CHECK #"    + (seqn_to_string n) + "\n";
+		queue_element_to_string (ONE_REPLY         (n, _)) => "  ONE_REPLY #"      + (seqn_to_string n) + "\n";
+		queue_element_to_string (MULTI_REPLY (n, _, _, _)) => "  MULTI_REPLY #"    + (seqn_to_string n) + "\n";
+		queue_element_to_string (EXPOSURE_REPLY    (n, _)) => "  EXPOSURE_REPLY #" + (seqn_to_string n) + "\n";
+	    end;
+
 	    fun show_pending_reply_queue (seqn, ([], []))
 		    =>
 		    xtracing::err_trace .{ cat [ "show pending reply queue(", seqn_to_string seqn, "): empty\n" ]; };
@@ -614,11 +620,6 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 		show_pending_reply_queue (seqn, (front, rear))
 		    =>
 		    {
-			fun queue_element_to_string (ERROR_CHECK       (n, _)) => "  ERROR_CHECK #"    + (seqn_to_string n) + "\n";
-			    queue_element_to_string (ONE_REPLY         (n, _)) => "  ONE_REPLY #"      + (seqn_to_string n) + "\n";
-			    queue_element_to_string (MULTI_REPLY (n, _, _, _)) => "  MULTI_REPLY #"    + (seqn_to_string n) + "\n";
-			    queue_element_to_string (EXPOSURE_REPLY    (n, _)) => "  EXPOSURE_REPLY #" + (seqn_to_string n) + "\n";
-			end;
 
 			fun queue_to_strings ([], l)    =>  reverse l;
 			    queue_to_strings (x ! r, l) =>  queue_to_strings (r, (queue_element_to_string x) ! l);
@@ -685,7 +686,10 @@ trace  .{ "xsocket::send_reply done spawning send-reply thread.)"; };
 
 	    fun add_to_pending_reply_queue (pending_reply, (front, rear))
 		=
+{ trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s) ...)" (queue_element_to_string pending_reply); };
+
 		(front, pending_reply ! rear);
+};
 
 
 
