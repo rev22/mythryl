@@ -1,3 +1,4 @@
+2010-03-19-18.02.56: src/lib/x-kit/xclient/src/wire/wire-to-value.pkg: Additional tracelogging.
 2010-03-19-15.17.17: src/lib/x-kit/xclient/src/wire/: Demoted value-to-wire.pkg to value-to-wire-core.pkg and established a value-to-wire.pkg set of debug wrappers.
 2010-03-17-17.38.58: src/lib/x-kit/xclient/src/wire/xsocket.pkg: More minor diagnostic logic tweaking.
 2010-03-17-17.26.36: src/lib/x-kit/xclient/src/wire/xsocket.pkg: More diagnostic logic tweaking.

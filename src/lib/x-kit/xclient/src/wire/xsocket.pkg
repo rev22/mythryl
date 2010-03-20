@@ -607,32 +607,24 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 		u::format  number_string::DECIMAL  n;
 
 
-	    fun queue_element_to_string (ERROR_CHECK       (n, _)) => "  ERROR_CHECK #"    + (seqn_to_string n) + "\n";
-		queue_element_to_string (ONE_REPLY         (n, _)) => "  ONE_REPLY #"      + (seqn_to_string n) + "\n";
-		queue_element_to_string (MULTI_REPLY (n, _, _, _)) => "  MULTI_REPLY #"    + (seqn_to_string n) + "\n";
-		queue_element_to_string (EXPOSURE_REPLY    (n, _)) => "  EXPOSURE_REPLY #" + (seqn_to_string n) + "\n";
+	    fun queue_element_to_string (ERROR_CHECK       (n, _)) => "  ERROR_CHECK #"    + (seqn_to_string n);
+		queue_element_to_string (ONE_REPLY         (n, _)) => "  ONE_REPLY #"      + (seqn_to_string n);
+		queue_element_to_string (MULTI_REPLY (n, _, _, _)) => "  MULTI_REPLY #"    + (seqn_to_string n);
+		queue_element_to_string (EXPOSURE_REPLY    (n, _)) => "  EXPOSURE_REPLY #" + (seqn_to_string n);
 	    end;
 
-	    fun show_pending_reply_queue (seqn, ([], []))
+	    fun pending_reply_queue_to_string ([], [])
 		    =>
-		    xtracing::err_trace .{ cat [ "show pending reply queue(", seqn_to_string seqn, "): empty\n" ]; };
+		    "(pending reply queue is empty)";
 
-		show_pending_reply_queue (seqn, (front, rear))
+		pending_reply_queue_to_string (front, rear)
 		    =>
 		    {
-
 			fun queue_to_strings ([], l)    =>  reverse l;
-			    queue_to_strings (x ! r, l) =>  queue_to_strings (r, (queue_element_to_string x) ! l);
+			    queue_to_strings (x ! r, l) =>  queue_to_strings (r, ((queue_element_to_string x) + ";  ") ! l);
 			end;
 
-			xtracing::err_trace .{ 
-
-			    cat ( "show pending reply queue("
-				! (seqn_to_string seqn)
-				! "):\n"
-				! (queue_to_strings (front @ (reverse rear), []))
-				);
-			};
+			"(" + (cat (queue_to_strings (front @ (reverse rear), []))) + ")";
 		    };
 	    end;
     #  -DEBUG 
@@ -686,9 +678,11 @@ trace  .{ "xsocket::send_reply done spawning send-reply thread.)"; };
 
 	    fun add_to_pending_reply_queue (pending_reply, (front, rear))
 		=
-{ trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s) ...)" (queue_element_to_string pending_reply); };
+{ trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s)/TOP pending_reply_queue = %s" (queue_element_to_string pending_reply) (pending_reply_queue_to_string (front,rear)); }; result =
 
 		(front, pending_reply ! rear);
+
+trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s)/BOT pending_reply_queue = %s" (queue_element_to_string pending_reply) (pending_reply_queue_to_string result); }; result;
 };
 
 
@@ -717,7 +711,7 @@ trace  .{ "xsocket::send_reply done spawning send-reply thread.)"; };
             #        of pending_queue' has
 	    #        sequence number n.
 	    #	
-	    fun pending_reply_n_exists (n, q)
+	    fun pending_reply_n_exists' (n, q)
 		=
 		drop_outdated_pending_replies q
 		where
@@ -734,15 +728,15 @@ trace  .{ "xsocket::send_reply done spawning send-reply thread.)"; };
 		    end;
 
 
-		    fun drop_outdated_pending_replies (q' as ([], []))
+		    fun drop_outdated_pending_replies' (q' as ([], []))
 			    =>
 			    (FALSE, q');
 
-			drop_outdated_pending_replies ([], rear)
+			drop_outdated_pending_replies' ([], rear)
 			    =>
-			    drop_outdated_pending_replies (reverse rear, []);
+			    drop_outdated_pending_replies' (reverse rear, []);
 
-			drop_outdated_pending_replies (q' as ((pending_reply ! r), rear))
+			drop_outdated_pending_replies' (q' as ((pending_reply ! r), rear))
 			    =>
 			    {   seqn = seqn_of pending_reply;
 
@@ -750,18 +744,33 @@ trace  .{ "xsocket::send_reply done spawning send-reply thread.)"; };
 				    #
 				    drop_outdated_reply  pending_reply;
 				    #
-				    drop_outdated_pending_replies (r, rear);
+				    drop_outdated_pending_replies' (r, rear);
 				else
 				    seqn > n  ??   (FALSE, q')
 					      ::   (TRUE,  q');
 				fi;
 			    };
 		      end;
+
+fun drop_outdated_pending_replies q
+    =
+    {
+trace  .{ sprintf "xsocket::drop_outdated_pending_replies/TOP: n =%s q =%s" (seqn_to_string n) (pending_reply_queue_to_string q); }; result =
+drop_outdated_pending_replies' q;
+trace  .{ sprintf "xsocket::drop_outdated_pending_replies/TOP: n =%s q =%s" (seqn_to_string n) (pending_reply_queue_to_string q); }; result;
+    }; 
+
 		end;
-# fun pending_reply_n_exists (n, q)
-#    =
-#    {
-#    };
+
+fun pending_reply_n_exists (n, q)
+    =
+    {
+trace  .{ sprintf "xsocket::pending_reply_n_exists( %d, q)/TOP queue = %s" (unt::to_int n) (pending_reply_queue_to_string q); };
+
+my result as (bool, queue) = pending_reply_n_exists' (n, q);
+trace  .{ sprintf "xsocket::pending_reply_n_exists( %d, q)/MID result = (%s, q) -- queue = %s" (unt::to_int n) (bool ?? "TRUE" :: "FALSE") (pending_reply_queue_to_string queue); };
+result;
+    };
 
 
 	    # Extract the pending-reply queue entry 
@@ -797,9 +806,7 @@ trace  .{ "xsocket::send_reply done spawning send-reply thread.)"; };
 		    _   => 
 			{   # Debug support:
 			    #	
-trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_message(seqn==%s, reply x=%s (%d bytes)...): BOGUS PENDING REPLY QUEUE, dumping queue." (seqn_to_string seqn) (bytes_to_hex reply) (v8::length reply);  };
-			    show_pending_reply_queue (seqn, pending_reply_queue);
-trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_message(seqn==%s,...): BOGUS PENDING REPLY QUEUE, done dumping queue." (seqn_to_string seqn);  };
+trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_message(seqn==%s, reply x=%s (%d bytes)...): BOGUS PENDING REPLY QUEUE, queue =%s" (seqn_to_string seqn) (bytes_to_hex reply) (v8::length reply) (pending_reply_queue_to_string pending_reply_queue);  };
 			    xgripe::impossible (sprintf "XERROR: xsocket::handle_reply_message(seqn==%s,...): BOGUS PENDING REPLY QUEUE" (seqn_to_string seqn));
 			};
 	       esac;
@@ -870,7 +877,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 			pending_reply_queue';
 
 		    _   =>
-    /* DEBUG */         {   show_pending_reply_queue (n, pending_reply_queue);
+    /* DEBUG */         {   trace .{ sprintf "IMPOSSIBLE ERROR: xsocket::handle_error_message(n==%s: BOGUS PENDING REPLY QUEUE, queue =%s" (seqn_to_string n) (pending_reply_queue_to_string pending_reply_queue);  };
 			    xgripe::impossible "ERROR: xsocket::handle_error_message: bogus pending reply queue]";
     /* DEBUG */         };
 		esac;
@@ -1007,13 +1014,16 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 			    #
                             (imp_state as (last_seqn_read, last_seqn_sent, pending_reply_queue))
 			=
-			for (;;) {
-			    #
-			    select [
+			{
+trace  .{ sprintf "xsocket::sequencer_imp_main_loop/TOP: last_seqn_read s=%s last_seqn_sent s=%s pending_reply_queue=%s" (seqn_to_string last_seqn_read) (seqn_to_string last_seqn_sent) (pending_reply_queue_to_string pending_reply_queue); };
+			    sequencer_imp_main_loop (
 				#
-				request' ==>  do_plea,		# Handle request to X server from an application thread.
-				from_x'  ==>  do_from_x		# Handle reply/error/event from X server.
-			    ];
+				select [
+				    #
+				    request' ==>  do_plea,		# Handle request to X server from an application thread.
+				    from_x'  ==>  do_from_x		# Handle reply/error/event from X server.
+				]
+			    );
 			}
 			where
 			    # Handle a request from a client
