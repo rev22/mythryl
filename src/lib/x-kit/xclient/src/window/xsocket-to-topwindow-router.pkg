@@ -193,7 +193,7 @@ herein
 
 		extract_dst e => {
 		   xgripe::warning (string::cat [
-		     "[WinReg: unexpected ", xevent_to_string::xevent_name e, " event]\n"]);
+		     "[xsocket-to-topwin: unexpected ", xevent_to_string::xevent_name e, " event]\n"]);
 		   TO_TRASH;};
 	      end;
     #  +DEBUG 
@@ -421,7 +421,7 @@ herein
 
 						remove_child []
 						    =>
-						    {   xgripe::warning "[WinReg: missing child]";
+						    {   xgripe::warning "[xsocket-to-topwin: missing child]";
 							[];
 						    };
 					    end;
@@ -440,7 +440,7 @@ herein
 
 			    TO_KEYMAP_IMP
 				=>
-				{   xgripe::warning "[WinReg: unexpected ToKeymapServer]";
+				{   xgripe::warning "[xsocket-to-topwin: unexpected ToKeymapServer]";
 				    ();
 				};
 
@@ -470,7 +470,7 @@ herein
 				      loop();
 				    };
 
-		    xtracing::make_thread  "WinReg"  loop;
+		    xtracing::make_thread  "xsocket-to-topwin"  loop;
 
 		    XSOCKET_TO_TOPWINDOW_ROUTER
 		      {

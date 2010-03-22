@@ -284,7 +284,7 @@ herein
 		fun debug_router (result as (_, xevent))
 		    = 
 		    {   xtracing::print_if xtracing::toplevel_tracing
-			    .{ cat [ "TopLevelWin::router: get ", xevent_to_string::xevent_name xevent ];  };
+			    .{ cat [ "topwin2widget: get ", xevent_to_string::xevent_name xevent ];  };
 
 			result;
 		    };
@@ -385,7 +385,7 @@ herein
 											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: go"; };
 		  };
 
-		  xtracing::make_thread  "TopLevelWin::router"  init_router;
+		  xtracing::make_thread  "topwin2widget"  init_router;
 
 
 		  (kidplug, top_window, del_slot);

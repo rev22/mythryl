@@ -1217,11 +1217,17 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.
 
 		fun decode (k, s)
 		    =
+{ trace  .{  "xsocket.pkg: xbuf_imp: decode:   calling wire_to_value::decode_xevent ...";  }; result =
 		    #2 (wire_to_value::decode_xevent (k, s));
+  trace  .{  "xsocket.pkg: xbuf_imp: decode: back from wire_to_value::decode_xevent.";  }; result;
+};
 
 		fun pack_expose_events (e as EXPOSE_XEVENT { window, ... } )
 		    =
-		    EXPOSE_XEVENT { window, boxes => pack([], e), count => 0 }
+{ trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events:   calling pack() ...";  }; result =
+		    EXPOSE_XEVENT { window, boxes => pack([], e), count => 0 };
+  trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events: back from pack.";  }; result;
+}
 		    where
 			fun pack (rl, EXPOSE_XEVENT { boxes, count=>0, ... } )
 				=>
@@ -1241,6 +1247,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.
 
 		fun do_xevent (msg, q)
 		    =
+{ trace  .{  "xsocket.pkg: xbuf_imp: do_xevent/TOP ...";  }; result =
 		    case (decode msg)
 			#
 			(e as EXPOSE_XEVENT _)
@@ -1249,7 +1256,8 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.
 
 			e => (e ! q);
 		    esac;
-
+  trace  .{  "xsocket.pkg: xbuf_imp: do_xevent/BOT.";  }; result;
+};
 		take_xevent' = take'  from_sequencer_slot;
 
 		fun route_p ()
@@ -1258,26 +1266,63 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.
 		    where
 			fun loop ([], [])
 				=>
-				loop  (do_xevent  (take  from_sequencer_slot,  []),  []);
+#				loop  (do_xevent  (take  from_sequencer_slot,  []),  []);
+{
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],[])/TOP";  }; result =
+ (do_xevent  (take  from_sequencer_slot,  []),  []);
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],[])/BOT";  };
+ loop result;
+};
 
 			    loop ([], rear)
 				=>
-				loop (reverse rear, []);
+#				loop (reverse rear, []);
+{
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],rear)/TOP";  }; result =
+ (reverse rear, []);
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],rear)/BOT";  };
+ loop result;
+};
 
 			    loop (front as (x ! rest), rear)
 				=>
-				loop (
-				    select [
-					#
-					take_xevent'
-					    ==>
-					    (fn mail = (front, do_xevent (mail, rear))),
+#				loop (
+#				    select [
+#					#
+#					take_xevent'
+#					    ==>
+#					    (fn mail = (front, do_xevent (mail, rear))),
+#
+#					give' (to_widget_slot, x)
+#					    ==>
+#					    .{  (rest, rear);  }
+#				    ]
+#				);
+{
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop (front as (x ! rest), rear)/TOP";  }; result =
+ select [
+     #
+     take_xevent'
+	 ==>
+	 (fn mail
+             =
+             {
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop: Did take_xevent' branch";  };
+                 (front, do_xevent (mail, rear));
+             }
+         ),
 
-					give' (to_widget_slot, x)
-					    ==>
-					    .{  (rest, rear);  }
-				    ]
-				);
+     give' (to_widget_slot, x)
+	 ==>
+	 .{
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop: Did give' (to_widget_slot, x) branch";  };
+              (rest, rear);
+          }
+ ];
+ trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop (front as (x ! rest), rear)/BOT";  };
+ loop result;
+};
+
 			end;
 		    end;
 	    end;					# fun xbuf_imp

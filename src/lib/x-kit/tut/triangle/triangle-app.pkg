@@ -264,14 +264,14 @@ trace .{ "button redraw()/BOT"; };
 fun do_mouse x
     =
     {
-trace .{ "button loop do_mouse'/TOP"; };
+trace .{ "button loop do_mouse/TOP"; };
         do_mouse' x;
-trace .{ "button loop do_mouse'/BOT"; };
+trace .{ "button loop do_mouse/BOT"; };
     };
 
 			fun do_other' (xi::ETC_REDRAW _)  =>  redraw ();
 			    do_other'  xi::ETC_OWN_DEATH  =>  ();
-			    do_other' _	  	         =>  ();
+			    do_other' _	  	          =>  ();
 			end;
 
 fun do_other x
@@ -319,6 +319,7 @@ trace .{ "button loop TOP"; };
 		    =
 		    for (;;) {
 			#
+trace .{ "mouse thread/TOP"; };
 			case (do_mailop  mouse')
 			    #
 			    xi::MOUSE_FIRST_DOWN { window_point, ... }
@@ -336,7 +337,7 @@ trace .{ "button loop TOP"; };
 		pen = xd::make_pen
 			[
 			  xd::FUNCTION    xd::OP_COPY,
-			  xd::FOREGROUND  xc::rgb8_black
+			  xd::FOREGROUND  xc::rgb8_green
 			];
 
 		draw = xd::fill_polygon drawable pen;

@@ -1,3 +1,4 @@
+2010-03-20-14.38.44: src/lib/x-kit/xclient/src/wire/xsocket.pkg: sequencer_imp_main_loop: FIXED: I had incorrectly transformed   fun loop x = loop( select ... ); -> fun loop x = for (;;) { select ... ; }; in a case where the  select  returned a non-Void value.
 2010-03-19-18.02.56: src/lib/x-kit/xclient/src/wire/wire-to-value.pkg: Additional tracelogging.
 2010-03-19-15.17.17: src/lib/x-kit/xclient/src/wire/: Demoted value-to-wire.pkg to value-to-wire-core.pkg and established a value-to-wire.pkg set of debug wrappers.
 2010-03-17-17.38.58: src/lib/x-kit/xclient/src/wire/xsocket.pkg: More minor diagnostic logic tweaking.
