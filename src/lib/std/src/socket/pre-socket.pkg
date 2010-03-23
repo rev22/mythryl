@@ -25,7 +25,7 @@ herein
 
 	# The raw representation of an address family:
 	#
-	Raw_Address_Family = c_interface::System_Const;
+	Raw_Address_Family = c_interface::System_Constant;
 
 	# The raw representation of a socket:
 	#   a file descriptor for now and a mutable flag indicating
@@ -65,7 +65,7 @@ herein
 
 	package socket {
 	    # Socket types:
-	    Socket_Type =  SOCKET_TYPE c_interface::System_Const;
+	    Socket_Type =  SOCKET_TYPE c_interface::System_Constant;
 	};
 
 	Shutdown_Mode

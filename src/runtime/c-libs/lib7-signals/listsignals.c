@@ -1,5 +1,8 @@
 /* listsignals.c
  *
+ * This gets bound in:
+ *
+ *     src/lib/std/src/nj/internal-signals.pkg
  */
 
 #include "../../config.h"
@@ -14,9 +17,9 @@
  */
 lib7_val_t _lib7_Sig_listsigs (lib7_state_t *lib7_state, lib7_val_t arg)
 {
-    return ListSignals (lib7_state);		/* See, e.g., src/runtime/machine-dependent/unix-signal.c */
-
-} /* end of _lib7_Sig_pause */
+    return ListSignals (lib7_state);		/* See src/runtime/machine-dependent/unix-signal.c
+						*/
+}
 
 
 

@@ -1,5 +1,8 @@
 /* setsigmask.c
  *
+ * This gets bound in:
+ *
+ *     src/lib/std/src/nj/internal-signals.pkg
  */
 
 #include "../../config.h"
@@ -18,8 +21,7 @@ lib7_val_t _lib7_Sig_setsigmask (lib7_state_t *lib7_state, lib7_val_t arg)
     SetSignalMask (arg);
 
     return LIB7_void;
-
-} /* end of _lib7_Sig_setsigmask */
+}
 
 
 /* COPYRIGHT (c) 1995 by AT&T Bell Laboratories.

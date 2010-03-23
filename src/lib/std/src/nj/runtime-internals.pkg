@@ -9,7 +9,7 @@
 package runtime_internals: (weak)  Runtime_Internals {				# Runtime_Internals	is from   src/lib/std/src/nj/runtime-internals.api
 
     package at                 =   at;			# at			is from   src/lib/std/src/nj/at.pkg
-    package profiling_control  =   profiling_control;	# profiling_control	is from   src/lib/std/src/nj/prof-control.pkg
+    package profiling_control  =   profiling_control;	# profiling_control	is from   src/lib/std/src/nj/profiling-control.pkg
     package garbage_collection =   garbage_collection;	# garbage_collection	is from   src/lib/std/src/nj/garbage-collection.pkg
 
     print_hook = print_hook::print_hook;

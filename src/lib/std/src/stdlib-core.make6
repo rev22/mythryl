@@ -248,8 +248,8 @@ LIBRARY_GROUP_COMPONENTS
 	$ROOT/src/lib/std/src/nj/interval-timer.pkg
 	$ROOT/src/lib/std/src/nj/host-info.api
 	$ROOT/src/lib/std/src/nj/host-info.pkg
-	$ROOT/src/lib/std/src/nj/prof-control.api
-	$ROOT/src/lib/std/src/nj/prof-control.pkg
+	$ROOT/src/lib/std/src/nj/profiling-control.api
+	$ROOT/src/lib/std/src/nj/profiling-control.pkg
 	$ROOT/src/lib/std/src/nj/garbage-collection.api
 	$ROOT/src/lib/std/src/nj/garbage-collection.pkg
 	$ROOT/src/lib/std/src/nj/print-hook.pkg

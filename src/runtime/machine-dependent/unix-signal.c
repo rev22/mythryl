@@ -1,6 +1,6 @@
 /* unix-signal.c
  *
- * Unix specific code to support Lib7 signals.
+ * Unix specific code to support Mythryl-level handling of unix signals.
  */
 
 #include "../config.h"
@@ -34,8 +34,9 @@ Addr_t		SavedPC;
 extern		ZeroLimitPtr[];
 #endif
 
-/* local routines */
-static SigReturn_t CSigHandler (/* int sig, SigInfo_t info, SigContext_t *scp */);
+/* local routines
+ */
+static SigReturn_t   CSigHandler   (/* int sig, SigInfo_t info, SigContext_t *scp */);
 
 
 lib7_val_t   ListSignals   (lib7_state_t *lib7_state)		/* Called from src/runtime/c-libs/lib7-signals/listsignals.c	*/
@@ -82,7 +83,7 @@ void   SetSignalState   (vproc_state_t *vsp, int sig_num, int sigState) {
 		break;
 
 	    case LIB7_SIG_ENABLED:
-		SIG_SetHandler (sig_num, CSigHandler);
+		SIG_SetHandler (sig_num, CSigHandler);			/* SIG_SetHandler 	#define in   src/runtime/machine-dependent/signal-sysdep.h			*/
 		break;
 
 	    default:
@@ -130,12 +131,20 @@ static SigReturn_t   CSigHandler   (int sig, siginfo_t *si, void *c)
 {
     /* This is the C signal handler for
      * signals that are to be passed to
-     * the Lib7 handler:
+     * the Mythryl level via signal_handler in
+     *
+     *     src/lib/std/src/nj/internal-signals.pkg
      */
 
     ucontext_t	    *scp = (ucontext_t *)c;
     vproc_state_t   *vsp = SELF_VPROC;
 
+    /* Remember that we have seen signal number 'sig'.
+     *
+     * This will eventually get noticed by  ChooseSignal()  in
+     *
+     *     src/runtime/machine-dependent/signal-util.c
+     */
     vsp->vp_sigCounts[sig].nReceived++;
     vsp->vp_totalSigCount.nReceived++;
 
@@ -249,8 +258,7 @@ void SetSignalMask (lib7_val_t sigList)
     }
 
     SIG_SetMask(mask);
-
-} /* end of SetSignalMask */
+}
 
 
 /* GetSignalMask:
@@ -291,8 +299,7 @@ lib7_val_t GetSignalMask (lib7_state_t *lib7_state)		/* Called from src/runtime/
 
     OPTION_SOME(lib7_state, result, sigList);
     return result;
-
-} /* end of GetSignalMask */
+}
 
 
 /* COPYRIGHT (c) 1992 by AT&T Bell Laboratories.

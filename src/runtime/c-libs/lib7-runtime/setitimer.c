@@ -1,5 +1,16 @@
 /* setitimer.c
  *
+ * "set interval timer" -- have Linux kernel generate periodic
+ * SIGALRM signals to us, typically at 50Hz.  We use this to
+ * drive preemptive thread scheduling in support of concurrent
+ * threads -- see  set_interval_timer()  call in
+ *
+ *      src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
+ *
+ * which invokes the interface logic in
+ *
+ *      src/lib/std/src/nj/interval-timer.pkg 
+ *
  * NOTE: This implementation is UNIX specific right now.
  *
  * I would like to define an OS abstraction layer
@@ -55,8 +66,10 @@ lib7_val_t   _lib7_runtime_setitimer   (   lib7_state_t*   lib7_state,
         /* Turn on the timer:
         */
 	tmp = OPTION_get(arg);
+
 	new_itv.it_interval.tv_sec	=
 	new_itv.it_value.tv_sec		= REC_SELINT32(tmp, 0);
+
 	new_itv.it_interval.tv_usec	=
 	new_itv.it_value.tv_usec	= REC_SELINT(tmp, 1);
     }

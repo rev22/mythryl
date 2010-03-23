@@ -24,27 +24,27 @@ package posix_error {
         c_interface::c_function "POSIX-Error" x;
 
 
-    my errors:  List( c_interface::System_Const )
+    my errors:  List(c_interface::System_Constant)
        =
        cfun "listerrors" ();				# listerrors	is in   src/runtime/c-libs/posix-error/listerrors.c
 
 
     fun os_val s
         =
-        #1 (c_interface::bind_sys_const (s, errors));
+        #1 (c_interface::bind_system_constant (s, errors));
 
 
     fun syserror s
         =
-        case (c_interface::find_sys_const (s, errors))
-	  
-	     THE (e, _) =>  THE e;
-	     NULL       =>  NULL;
+        case (c_interface::find_system_constant (s, errors))
+	    #
+	    THE (e, _) =>  THE e;
+	    NULL       =>  NULL;
         esac;
 
 
     my errmsg:    Int -> String = cfun "errmsg";
-    my geterror:  Int -> c_interface::System_Const = cfun "geterror";
+    my geterror:  Int -> c_interface::System_Constant = cfun "geterror";
 
     fun to_word   i =  host_unt::from_int i;
     fun from_word w =  host_unt::to_int w;

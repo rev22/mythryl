@@ -89,25 +89,56 @@ void RunLib7 (lib7_state_t *lib7_state)
     lib7_val_t	prevProfIndex = PROF_OTHER;
 
     for (;;) {
-
+						/* ProfCurrent	is #defined in   src/runtime/include/runtime-globals.h   in terms of   _ProfCurrent   from   src/runtime/main/globals.c	*/
+						/* PROF_RUNTIME	is #defined in   src/runtime/include/profile.h	*/
 	ASSIGN(ProfCurrent, prevProfIndex);
 	request = restoreregs(lib7_state);
 	prevProfIndex = DEREF(ProfCurrent);
 	ASSIGN(ProfCurrent, PROF_RUNTIME);
 
 	if (request == REQ_GC) {
-	    if (vsp->vp_handlerPending) { /* this is really a signal */
-	      /* check for GC */
+
+	    if (vsp->vp_handlerPending) {
+
+		/* This is really a UNIX signal */
+
 		if (need_to_collect_garbage (lib7_state, 4*ONE_K))
 		    collect_garbage (lib7_state, 0);
-	      /* invoke the Lib7 signal handler */
-		ChooseSignal (vsp);
-		lib7_state->lib7_argument		= MakeHandlerArg (lib7_state, sigh_resume);
-		lib7_state->lib7_fate	= PTR_CtoLib7(sigh_return_c);
-		lib7_state->lib7_exception_fate	= PTR_CtoLib7(handle_v+1);
-		lib7_state->lib7_closure	= DEREF(Lib7SignalHandler);
-		lib7_state->lib7_program_counter		=
-		lib7_state->lib7_link_register	= GET_CODE_ADDR(lib7_state->lib7_closure);
+
+	        /* Figure out which unix signal needs handling
+		 * and save its (number, count) in (vsp->vp_sigCode, vsp->vp_sigCount).
+		 *
+		 * Choose_Signal() and MakeHandlerArg() are both from
+		 *
+		 *     src/runtime/machine-dependent/signal-util.c
+		 *
+		 * Our actual kernel-invoked signal handler is   CSigHandler()   from
+		 *
+		 *     src/runtime/machine-dependent/unix-signal.c
+		 *
+		 * Lib7SignalHandler in practice points to   signal_handler()   from
+                 *
+                 *     src/lib/std/src/nj/internal-signals.pkg
+                 *
+ 		 * sigh_resume  is assembly code from
+		 * (depending upon platform) one of:
+		 *     src/runtime/machine-dependent/X86.prim.asm
+		 *     src/runtime/machine-dependent/X86.prim.masm
+                 *     src/runtime/machine-dependent/SPARC.prim.asm
+                 *     src/runtime/machine-dependent/PPC.prim.asm
+		 *
+                 * sigh_return_c appears to be set nowhere; it may be obsoleted garbage.
+                 */
+		ChooseSignal( vsp );
+		/**/
+		lib7_state->lib7_argument	 = MakeHandlerArg( lib7_state, sigh_resume );
+		lib7_state->lib7_fate	         = PTR_CtoLib7(sigh_return_c);
+		lib7_state->lib7_exception_fate	 = PTR_CtoLib7(handle_v+1);
+		lib7_state->lib7_closure	 = DEREF(Lib7SignalHandler);
+		/**/
+		lib7_state->lib7_program_counter =
+		lib7_state->lib7_link_register	 = GET_CODE_ADDR(lib7_state->lib7_closure);
+		/**/
 		vsp->vp_inSigHandler	= TRUE;
 		vsp->vp_handlerPending	= FALSE;
 	    }
@@ -125,12 +156,14 @@ SayDebug ("run-runtime: poll event\n");
 		if (need_to_collect_garbage (lib7_state, 4*ONE_K)) {
 		    collect_garbage (lib7_state, 0);
                 }
-		lib7_state->lib7_argument		= MakeResumeCont(lib7_state, pollh_resume);
-		lib7_state->lib7_fate	= PTR_CtoLib7(pollh_return_c);
+		lib7_state->lib7_argument	= MakeResumeCont(lib7_state, pollh_resume);	/* MakeResumeCont is from  src/runtime/machine-dependent/signal-util.c */
+		lib7_state->lib7_fate		= PTR_CtoLib7(pollh_return_c);
 		lib7_state->lib7_exception_fate	= PTR_CtoLib7(handle_v+1);
 		lib7_state->lib7_closure	= DEREF(Lib7PollHandler);
-		lib7_state->lib7_program_counter		=
+		/**/
+		lib7_state->lib7_program_counter=
 		lib7_state->lib7_link_register	= GET_CODE_ADDR(lib7_state->lib7_closure);
+		/**/
 		lib7_state->lib7_in_poll_handler= TRUE;
 		lib7_state->lib7_poll_event_is_pending	= FALSE;
 #endif /* MP_SUPPORT */

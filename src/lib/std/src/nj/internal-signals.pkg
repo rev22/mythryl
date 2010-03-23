@@ -25,7 +25,7 @@ herein
 
 	package ci
             =
-            c_interface;	# c_interface	is from   src/lib/std/src/unsafe/cinterface.pkg
+            c_interface;		# c_interface	is from   src/lib/std/src/unsafe/cinterface.pkg
 
 					# Lib7-Signals		lives in   src/runtime/c-libs/lib7-signals/
 
@@ -35,15 +35,16 @@ herein
 
 	Signal
             =
-            SIGNAL  ci::System_Const;
+            SIGNAL  ci::System_Constant;
 
 	Signal_Action
-	    = IGNORE
-	    | DEFAULT
-	    | HANDLER  (Signal, Int, primitive_types::Fate( Void ))
-                       ->
-                       primitive_types::Fate( Void )
-            ;
+	  #
+	  = IGNORE
+	  | DEFAULT
+	  | HANDLER  (Signal, Int, primitive_types::Fate( Void ))
+                     ->
+                     primitive_types::Fate( Void )
+          ;
 
 	fun signal_to_constant (SIGNAL sc)
             =
@@ -67,9 +68,9 @@ herein
 
 	stipulate
 
-	    my list_signals': Void -> List( ci::System_Const )
+	    my list_signals':   Void -> List(ci::System_Constant)
 		=
-		signal_fn "listSignals";
+		signal_fn "listSignals";			# listsignals	def in    src/runtime/c-libs/lib7-signals/listsignals.c
 
 
 	    fun find_max signals
@@ -77,8 +78,9 @@ herein
 		list::fold_left
 		    (fn (SIGNAL (signal_id, _), id)
                         =
-                        if   (id < signal_id   )   signal_id;
-                                           else       id;   fi
+                        if (id < signal_id)   signal_id;
+                        else                         id;
+                        fi
                     )
 		    -1
                     signals;
@@ -89,7 +91,7 @@ herein
 		=
 		REF [];
 
-	    signal_count = REF 0;
+	    signal_count = REF  0;
 	    max_signal   = REF -1;
 
 
@@ -98,27 +100,26 @@ herein
 		REF (rw_vector::from_list []);
 
 
-	    my debug:  String -> Void
-		    = c_interface::c_function "Lib7-Runtime" "debug";
+	    my debug:  String -> Void					# Print a string to the debug stream.
+		=
+		c_interface::c_function "Lib7-Runtime" "debug";		# debug		def in    src/runtime/c-libs/lib7-runtime/debug.c
 
-	    fun get_info signal_id
+
+	    fun get_info  signal_id
 		=
 		case (rw_vector::get (*signal_table, signal_id))
-		  
-		     THE info
-			 =>
-			 info;
+		    #
+		    THE info =>  info;
+		    #
+		    NULL
+			=>
+			{   debug (string::cat [ "\n*** Internal error: undefined sigTable entry for signal ",
+						 int::to_string signal_id, " ***\n"
+					       ]
+				  );
 
-		     NULL
-			 =>
-			 {   debug (string::cat [ "\n*** Internal error: undefined sigTable entry for signal ",
-						  int::to_string signal_id, " ***\n"
-						]
-				   );
-
-			     raise exception null_or::NULL_OR;
-			 };
-
+			    raise exception  null_or::NULL_OR;
+			};
 		esac;
 
 	    /****
@@ -139,10 +140,13 @@ herein
 		fun reset_list ()
 		    =
 		    {
-			signal_list := list::map constant_to_signal (list_signals' ());
-			signal_count := list::length(*signal_list);
-			max_signal := find_max(*signal_list);
-			signal_table := rw_vector::make_rw_vector(*max_signal + 1, NULL);
+			signal_list  :=  list::map constant_to_signal (list_signals' ());
+
+			signal_count :=  list::length(*signal_list);
+
+			max_signal   :=  find_max(*signal_list);
+
+			signal_table :=  rw_vector::make_rw_vector(*max_signal + 1, NULL);
 		    };
 	end;
 
@@ -154,7 +158,7 @@ herein
             *signal_list;
 
 
-        # Return the name of a signal 
+        # Return the name of a signal:
 	#
 	fun to_string (SIGNAL(_, name))
             =
@@ -166,22 +170,26 @@ herein
 	#
 	fun from_string name
             =
-	    case (ci::find_sys_const (name, list::map signal_to_constant (*signal_list)))
-	      
-                 NULL   =>  NULL;
-		 THE sc =>  THE (SIGNAL sc);
+	    case (ci::find_system_constant (name, list::map signal_to_constant (*signal_list)))
+		#
+                NULL   =>  NULL;
+		THE sc =>  THE (SIGNAL sc);
             esac;
 
-        # These run-time functions deal with the state of a signal in the system. 
-	my get_signal_state:  ci::System_Const -> Int		= signal_fn "getSigState";
-	my set_signal_state:  ((ci::System_Const, Int)) -> Void	= signal_fn "setSigState";
+        # These run-time functions deal with the
+	# state of a signal in the system:
+	#
+	my get_signal_state:   ci::System_Constant       -> Int		=   signal_fn "getSigState";	# getsigstate	def in    src/runtime/c-libs/lib7-signals/getsigstate.c
+	my set_signal_state:  (ci::System_Constant, Int) -> Void	=   signal_fn "setSigState";	# setsigstate	def in    src/runtime/c-libs/lib7-signals/setsigstate.c
 
         # The states are defined as: 
-	ignore_sig_state = 0;
-	default_sig_state = 1;
-	enabled_sig_state = 2;
+	#
+	ignore_sig_state  =  0;
+	default_sig_state =  1;
+	enabled_sig_state =  2;
 
-        #  Clear the signal table of handlers 
+        # Clear the signal table of handlers:
+	#
 	fun clear_signal_table _
             =
             rw_vector::modify
@@ -189,6 +197,7 @@ herein
                 *signal_table;
 
         # Initialize the signal table to the inherited process dictionary 
+	#
 	fun initialize_signal_table _
             =
             {   fun initialize_signal (s as (SIGNAL signal_id))
@@ -251,11 +260,12 @@ herein
 		list::apply  copy  old_list;
 	    };
 
-        #  signal masking. 
-
-	 Signal_Mask
+        # Signal masking:
+	#
+	Signal_Mask
 	  = MASKALL
-	  | MASK  List( Signal );
+	  | MASK  List( Signal )
+	  ;
 
 	stipulate
 	    # Run-time system API:
@@ -263,13 +273,13 @@ herein
 	    #   THE[] -- mask all signals
 	    #   THE l -- mask the signals in l
 
-	    my set_sig_mask:  Null_Or( List( ci::System_Const ) ) -> Void = signal_fn "setSigMask";
-	    my get_sig_mask:  Void -> Null_Or( List( ci::System_Const ) ) = signal_fn "getSigMask";
+	    my set_sig_mask:          Null_Or( List(ci::System_Constant) ) -> Void	=   signal_fn "setSigMask";	# setsigmask	def in    src/runtime/c-libs/lib7-signals/setsigmask.c
+	    my get_sig_mask:  Void -> Null_Or( List(ci::System_Constant) )		=   signal_fn "getSigMask";	# getsigmask	def in    src/runtime/c-libs/lib7-signals/getsigmask.c
 
 
 
 	    # Sort a list of signals, dropping duplicates:
-
+	    #
 	    fun sort_signals MASKALL
 		    =>
 		    *signal_list;
@@ -314,8 +324,13 @@ herein
 		fi;
 
 	    # Is the signal masked? 
-	    fun is_masked (SIGNAL (id, _)) = (.mask (get_info id) > 0);
+	    #
+	    fun is_masked (SIGNAL (id, _))
+		=
+		.mask (get_info id) > 0;
+
 	herein
+
 	    fun mask_signals mask
                 =
 		compute_new_mask (sigs, *signal_list, [], 0, 0)
@@ -384,32 +399,36 @@ herein
                 =
 		compute_new_mask (sigs, *signal_list, [], 0, 0)
                 where
+
 		    sigs = sort_signals mask;
 
 
 		    # Function for decrementing a signal mask. 
-
+		    #
 		    fun dec_mask (SIGNAL (signal_id, _))
                         =
                         {   my { act, mask, signal } = get_info signal_id;
 
-			    if   (mask > 0)
-			        
-                                 set_info (signal_id, { act, mask=>mask - 1, signal } );
+			    if (mask > 0)
+			        #
+                                set_info (signal_id, { act, mask=>mask - 1, signal } );
 			    fi;
 			};
 
 
 		    # Return TRUE if decrementing this
                     # signal's count will unmask it. 
-
+		    #
 		    fun is_unmasked (SIGNAL (id, _))
                         =
                         .mask (get_info id)  <=  1;
 
-		    # Scan over the sorted mask list and the list of all signals.  Record which signals
-		    # are masked and how many new signals are unmasked.
-
+		    # Scan over the sorted mask list
+		    # and the list of all signals.
+		    #
+		    # Record which signals are masked and
+		    # how many new signals are unmasked:
+		    #
 		    fun compute_new_mask ([], _, _, _, 0)
                             =>
 			    # No signals are unmasked, so we only update the local state 
@@ -457,20 +476,19 @@ herein
 	    fun masked ()
 		=
 		case (get_sig_mask ())
-		  
-		     NULL   => MASK [];
-		     THE [] => MASKALL;
-		     THE l  => MASK (list::map constant_to_signal l);
+		    #
+		    NULL   =>  MASK [];
+		    THE [] =>  MASKALL;
+		    THE l  =>  MASK (list::map constant_to_signal l);
                 esac;
-
-	end; #  local 
+	end;
 
 
         # Set the handler for a signal,
         # returning the previous action:
 	# 
 	fun set_signal_handler
-                (s as (SIGNAL signal_id), act)
+                (signal as (SIGNAL signal_id), act)
             =
             {   mask_signals MASKALL;
 
@@ -479,31 +497,31 @@ herein
                     get_info (#1 signal_id);
 
 		case (act, old_act)
-		  
-		     (IGNORE, IGNORE)   =>   ();
-		     (DEFAULT, DEFAULT) =>   ();
+		    #
+		    (IGNORE, IGNORE)   =>   ();
+		    (DEFAULT, DEFAULT) =>   ();
 
-		     (HANDLER _, HANDLER _)
-                         =>
-			 set_info(#1 signal_id, { act, mask, signal=>s } );
+		    (HANDLER _, HANDLER _)
+			=>
+			set_info (#1 signal_id, { act, mask, signal } );
 
-		     (IGNORE, _)
-			 =>
-			 {   set_info(#1 signal_id, { act, mask, signal=>s } );
-			     set_signal_state (signal_id, ignore_sig_state);
-			 };
+		    (IGNORE, _)
+			=>
+			{   set_info (#1 signal_id, { act, mask, signal } );
+			    set_signal_state (signal_id, ignore_sig_state);
+			};
 
-		     (DEFAULT, _)
-			 =>
-			 {   set_info(#1 signal_id, { act, mask, signal=>s } );
-			     set_signal_state (signal_id, default_sig_state);
-			 };
+		    (DEFAULT, _)
+			=>
+			{   set_info (#1 signal_id, { act, mask, signal } );
+			    set_signal_state (signal_id, default_sig_state);
+			};
 
-		     (HANDLER _, _)
-			 =>
-			 {   set_info(#1 signal_id, { act, mask, signal=>s } );
-			     set_signal_state (signal_id, enabled_sig_state);
-			 };
+		    (HANDLER _, _)
+			=>
+			{   set_info (#1 signal_id, { act, mask, signal } );
+			    set_signal_state (signal_id, enabled_sig_state);
+			};
                 esac;
 
 		unmask_signals MASKALL;
@@ -579,39 +597,56 @@ herein
 
 
         # Here is the Mythryl handler that gets
-	# invoked by the run-time system.
+	# invoked by the C run-time system. The
+	# sequence of events is:
 	#
-        # It is responsible for dispatching the
-	# appropriate Mythryl handler.
+        #  o Unix signal gets initially noted by   CSigHandler   in
 	#
-	fun signal_handler (code, count, resume_k)
+	#        src/runtime/machine-dependent/unix-signal.c
+	#
+	#    which merely increments the  nReceived  field for that signal.
+	#
+	#  o This flag eventually gets noticed in
+	#
+	#        src/runtime/main/run-runtime.c
+	#
+	#    which sets the saved Mythryl state to "return" to us.
+	#
+        # It is essential that signal_handler() here never return;
+	# it must instead pass control to the saved 'resume_k' fate ("continuation").
+	#
+	fun signal_handler
+            ( code:  Int,	# Number of Unix signal being handled -- SIGALRM or whatever.
+              count: Int,	# Number of times CSigHandler has seen this signal since we last handled it here.
+              resume_k		# Fate to resume once signal handling is complete.
+            )
             =
 	    case (rw_vector::get (*signal_table, code))
-	      
-	         THE { act=>HANDLER handler, mask=>0, signal }
-                     =>
-		     handler (signal, count, resume_k);
+		#
+		THE { act=>HANDLER handler, mask=>0, signal }
+		    =>
+		    handler (signal, count, resume_k);
 # DEBUG
-#		 _   => raise exception FAIL "inconsistent internal signal state";
+#		_   => raise exception FAIL "inconsistent internal signal state";
 # DEBUG
-		 info
-		     =>
-		     {
-			 act = case info
-			         
-				    NULL                      =>  "NULL";
-				    THE { act=>IGNORE,  ... } =>  "IGNORE";
-				    THE { act=>DEFAULT, ... } =>  "DEFAULT";
+		info
+		    =>
+		    {
+			act = case info
+				  #
+				  NULL                      =>  "NULL";
+				  THE { act=>IGNORE,  ... } =>  "IGNORE";
+				  THE { act=>DEFAULT, ... } =>  "DEFAULT";
 
-				    THE { act=>HANDLER _, mask, ... }
-                                        => 
-				        cat ["HANDLER (mask=", int::to_string mask, "!=0)"];
-				esac;
+				  THE { act=>HANDLER _, mask, ... }
+				      => 
+				      cat ["HANDLER (mask=", int::to_string mask, "!=0)"];
+			       esac;
 
-			 msg = cat ["inconsistent state ", act,
-					 " for signal ", int::to_string code];
-			 raise exception FAIL msg;
-		     };
+			msg = cat ["inconsistent state ", act,
+					" for signal ", int::to_string code];
+			raise exception FAIL msg;
+		    };
              esac;
 
 

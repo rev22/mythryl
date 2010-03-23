@@ -22,12 +22,12 @@ api Cinterface {
 
     # Utilities for working with system constants 
     #
-    System_Const = (Int, String);
+    System_Constant = (Int, String);
 
     exception SYSTEM_CONSTANT_NOT_FOUND  String;
 
-    find_sys_const:  (String, List(System_Const)) -> Null_Or(System_Const);	# Returns NULL                     if not found.
-    bind_sys_const:  (String, List(System_Const)) -> System_Const;		# Raises SYSTEM_CONSTANT_NOT_FOUND if not found.
+    find_system_constant:  (String, List(System_Constant)) -> Null_Or(System_Constant);	# Returns NULL                     if not found.
+    bind_system_constant:  (String, List(System_Constant)) -> System_Constant;		# Raises SYSTEM_CONSTANT_NOT_FOUND if not found.
 };
 
 

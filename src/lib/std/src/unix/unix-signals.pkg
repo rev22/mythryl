@@ -19,19 +19,21 @@ package unix_signals: (weak)  Unix_Signals {				# Unix_Signals		is from   src/li
 
 
     # Required Posix signals:
+    #
     my sig_pipe:  Signal = null_or::the (from_string "PIPE");
     my sig_quit:  Signal = null_or::the (from_string "QUIT");
     my sig_usr1:  Signal = null_or::the (from_string "USR1");
     my sig_usr2:  Signal = null_or::the (from_string "USR2");
 
     # Job-control signals:
+    #
     my sig_chld:  Signal = null_or::the (from_string "CHLD");
     my sig_cont:  Signal = null_or::the (from_string "CONT");
     my sig_tstp:  Signal = null_or::the (from_string "TSTP");
     my sig_ttin:  Signal = null_or::the (from_string "TTIN");
     my sig_ttou:  Signal = null_or::the (from_string "TTOU");
 
-    # other UNIX signals that may be available (depending on the OS):
+    # Other UNIX signals that may be available (depending on the OS):
     #
     # my sigWINCH:   signal
     # my sigURG:     signal

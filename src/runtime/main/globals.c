@@ -121,7 +121,7 @@ ASM_CONT(sigh_return);
 ASM_CONT(pollh_return);
 
 
-/* A ref cell initialized to unit. */
+/* A ref cell initialized to Void. */
 #define REFCELL(z)	lib7_val_t z[2] = {DESC_ref, LIB7_void}
 
 REFCELL(_ProfCurrent);
@@ -208,14 +208,14 @@ void   allocate_globals   (lib7_state_t* lib7_state)
     LIB7_AllocWrite(lib7_state,  2, DivId);
     LIB7_AllocWrite(lib7_state,  3, OverflowId);
     LIB7_AllocWrite(lib7_state,  4, SysErrId);
-    LIB7_AllocWrite(lib7_state,  5, ProfCurrent);
-    LIB7_AllocWrite(lib7_state,  6, PollEvent);
-    LIB7_AllocWrite(lib7_state,  7, PollFreq);
-    LIB7_AllocWrite(lib7_state,  8, Lib7PollHandler);
-    LIB7_AllocWrite(lib7_state,  9, ActiveProcs);
-    LIB7_AllocWrite(lib7_state, 10, PervasiveStruct);
-    LIB7_AllocWrite(lib7_state, 11, Lib7SignalHandler);
-    LIB7_AllocWrite(lib7_state, 12, LIB7_vector0);
+    LIB7_AllocWrite(lib7_state,  5, ProfCurrent);		/* prof_current in src/lib/core/init/runtime-system.api		*/
+    LIB7_AllocWrite(lib7_state,  6, PollEvent);			/* poll_event	in src/lib/core/init/runtime-system.api		*/
+    LIB7_AllocWrite(lib7_state,  7, PollFreq);			/* poll_freq	in src/lib/core/init/runtime-system.api		*/
+    LIB7_AllocWrite(lib7_state,  8, Lib7PollHandler);		/* poll_handler	in src/lib/core/init/runtime-system.api		*/
+    LIB7_AllocWrite(lib7_state,  9, ActiveProcs);		/* active_procs	in src/lib/core/init/runtime-system.api		*/
+    LIB7_AllocWrite(lib7_state, 10, PervasiveStruct);		/* pstruct	in src/lib/core/init/runtime-system.api		*/
+    LIB7_AllocWrite(lib7_state, 11, Lib7SignalHandler);		/* sighandler	in src/lib/core/init/runtime-system.api		*/
+    LIB7_AllocWrite(lib7_state, 12, LIB7_vector0);		/* vector0	in src/lib/core/init/runtime-system.api		*/
     CStruct = LIB7_Alloc(lib7_state, CSTRUCT_SZ);
 
     /* Allocate 1-elem SRECORD just containing the CStruct: */

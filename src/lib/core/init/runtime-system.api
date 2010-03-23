@@ -24,13 +24,15 @@
 ###                                    -- Jerrold D. Prothero
 
 
+# This api is implemented in:
+#
+#     src/lib/core/init/core.pkg
 
 api Assembly {
 
     Chunk;
 
-    Null_Or X = NULL
-              | THE X;
+    Null_Or(X) =  NULL  |  THE X;
 
     package a:  
       api {
@@ -39,9 +41,9 @@ api Assembly {
          eqtype Float64_Rw_Vector;
          Spin_Lock;
 
-         array:  (Int, X) -> Rw_Vector( X );
-         bind_cfun:  ((String, String)) -> Cfunction;
-         callc:  ((Cfunction, X)) -> Z;
+         array:  (Int, X) -> Rw_Vector(X);
+         bind_cfun:  (String, String) -> Cfunction;
+         callc:  (Cfunction, X) -> Z;
          create_b:  Int -> Unt8_Rw_Vector;
          create_r:  Int -> Float64_Rw_Vector;
          create_s:  Int -> String;
@@ -55,18 +57,22 @@ api Assembly {
 
     exception DIVIDE_BY_ZERO;
     exception OVERFLOW;
-    exception SYSTEM_ERROR  ((String, Null_Or( Int )) );
+    exception SYSTEM_ERROR  (String, Null_Or(Int));
 
-    prof_current:  Ref( Int );
-    poll_event:    Ref( Bool );
-    poll_freq:     Ref( Int );
-    poll_handler:  Ref( Fate( Void ) -> Fate( Void ));
-    active_procs:  Ref( Int );
-    pstruct:       Ref( Chunk );
-    sighandler:    Ref( ((Int, Int, Fate( Void ))) -> Fate( Void ));
-    vector0:       Vector(  X );
+    prof_current:  Ref( Int  );					# ProfCurrent		in src/runtime/main/globals.c
+    poll_event:    Ref( Bool );					# PollEvent		in src/runtime/main/globals.c
+    poll_freq:     Ref( Int  );					# PollFreq		in src/runtime/main/globals.c
+    poll_handler:  Ref( Fate(Void) -> Fate(Void) );		# Lib7PollHandler	in src/runtime/main/globals.c
+    active_procs:  Ref( Int  );					# ActiveProcs		in src/runtime/main/globals.c
+    pstruct:       Ref( Chunk );				# PervasiveStruct	in src/runtime/main/globals.c
+    sighandler:    Ref( (Int, Int, Fate(Void)) -> Fate(Void) );	# Lib7SignalHandler	in src/runtime/main/globals.c
+    vector0:       Vector(X);					# LIB7_vector0		in src/runtime/main/globals.c
 };
 
+
+# This api is implemented in:
+#
+#     src/lib/core/init/runtime-system-placeholder.pkg
 
 api Assembly_Boxed {
 
@@ -102,16 +108,16 @@ api Assembly_Boxed {
 
     exception DIVIDE_BY_ZERO;
     exception OVERFLOW;
-    exception SYSTEM_ERROR  ((String, Null_Or( Int )) );
+    exception SYSTEM_ERROR  (String, Null_Or(Int));
 
     prof_current:  Ref(  Int );
     poll_event:    Ref(  Bool );
     poll_freq:     Ref(  Int );
-    poll_handler:  Ref (Fate( Void ) -> Fate( Void ));
+    poll_handler:  Ref( Fate(Void) -> Fate(Void) );
     active_procs:  Ref(  Int );
     pstruct:       Ref(  Chunk );
     sighandler:    Ref( (Int, Int, Fate(Void)) -> Fate(Void) );
-    vector0:       Vector(  Chunk );
+    vector0:       Vector(Chunk);
 };
 
 

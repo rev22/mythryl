@@ -34,9 +34,9 @@ herein
 	    };
 
 
-	System_Const
+	System_Constant
             =
-            ((Int, String));
+            (Int, String);
 
 	exception  SYSTEM_CONSTANT_NOT_FOUND String;
 
@@ -44,7 +44,7 @@ herein
 	# checking for string equality
 	# on (#2 listelement):
 	#
-	fun find_sys_const (name, l)
+	fun find_system_constant (name, l)
 	    =
 	    get l
 	    where
@@ -52,20 +52,20 @@ herein
 			=>
 			NULL;
 
-		    get ((sys_const:  System_Const) ! r)
+		    get ((system_constant:  System_Constant) ! r)
 			=>
-			if (#2 sys_const  ==  name)
+			if (#2 system_constant  ==  name)
 			    #  
-			    THE sys_const;
+			    THE system_constant;
 			else
 			    get r;
 			fi;
 		end;
 	    end;
 
-	fun bind_sys_const (name, l)
+	fun bind_system_constant (name, l)
 	    =
-	    case (find_sys_const (name, l))
+	    case (find_system_constant (name, l))
 		#	      
 		THE sc =>   sc;
 		NULL   =>   raise exception  SYSTEM_CONSTANT_NOT_FOUND name;

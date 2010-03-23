@@ -1,5 +1,8 @@
 /* pause.c
  *
+ * This gets bound in:
+ *
+ *     src/lib/std/src/nj/internal-signals.pkg
  */
 
 #include "../../config.h"

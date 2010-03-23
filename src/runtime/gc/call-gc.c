@@ -1,7 +1,9 @@
 /* call-gc.c
  *
- * The main interface between the GC and the rest of the run-time system.
- * These are the routines used to invoke the GC.
+ * The main interface between the garbage collector
+ * and the rest of the run-time system.
+ *
+ * These are the routines used to invoke the garbage collector.
  */
 
 #ifdef PAUSE_STATS		/* GC pause statistics are UNIX dependent */
@@ -52,7 +54,7 @@ void   collect_garbage (lib7_state_t *lib7_state, int level)
     int		nProcs;
 #endif
 
-    ASSIGN(ProfCurrent, PROF_MINOR_GC);
+    ASSIGN(ProfCurrent, PROF_MINOR_GC);				/* ProfCurrent is #defined in   src/runtime/include/runtime-globals.h   in terms of   _ProfCurrent   from   src/runtime/main/globals.c	*/
 
 #ifdef MP_SUPPORT
 #ifdef MP_DEBUG
@@ -360,10 +362,11 @@ bool_t   need_to_collect_garbage   (lib7_state_t *lib7_state, Word_t nbytes)
  */
 void ResetPollLimit (lib7_state_t *lib7_state)
 {
-    int		pollFreq = INT_LIB7toC(DEREF(PollFreq));
-    heap_t	*heap = lib7_state->lib7_heap;
+    int		pollFreq =  INT_LIB7toC(DEREF(PollFreq));	/* PollFreq is #defined in src/runtime/include/runtime-globals.h in terms of _PollFreq0 from src/runtime/main/globals.c  */
+    heap_t*	heap     =  lib7_state->lib7_heap;
 
-    /* Assumes lib7_heap_cursor has been reset: */
+    /* Assumes lib7_heap_cursor has been reset:
+    */
     lib7_state->lib7_real_heap_limit	= HEAP_LIMIT(heap);
     if (pollFreq > 0) {
 	lib7_state->lib7_heap_limit  = heap->allocBase + pollFreq*POLL_GRAIN_CPSI;

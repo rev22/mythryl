@@ -1,5 +1,9 @@
 /* setsigstate.c
  *
+ * This gets bound in:
+ *
+ *     src/lib/std/src/nj/internal-signals.pkg
+ *
  */
 
 #include "../../config.h"
@@ -17,11 +21,10 @@ lib7_val_t _lib7_Sig_setsigstate (lib7_state_t *lib7_state, lib7_val_t arg)
 {
     lib7_val_t	sig = REC_SEL(arg, 0);
 
-    SetSignalState (lib7_state->lib7_vproc, REC_SELINT(sig, 0), REC_SELINT(arg, 1));
-
+    SetSignalState (lib7_state->lib7_vproc, REC_SELINT(sig, 0), REC_SELINT(arg, 1));	/* SetSignalState	def in    src/runtime/machine-dependent/unix-signal.c
+											*/
     return LIB7_void;
-
-} /* end of _lib7_Sig_setsigstate */
+}
 
 
 

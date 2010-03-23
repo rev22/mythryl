@@ -53,7 +53,7 @@ package assembly: Assembly_Boxed {		# Assembly_Boxed	is from   src/lib/core/init
 
     Chunk = Chunk;
 
-    Null_Or X = NULL | THE  X;
+    Null_Or(X) =  NULL  |  THE X;
 
 
     # Declarations whose right handside is a primOp do not 
@@ -64,37 +64,37 @@ package assembly: Assembly_Boxed {		# Assembly_Boxed	is from   src/lib/core/init
 
     package a {
 
-	 Cfunction = Cfunction;
-	 Unt8_Rw_Vector = Unt8_Rw_Vector;
-	 Float64_Rw_Vector = Float64_Rw_Vector;
-	 Spin_Lock = Spin_Lock;
+	Cfunction = Cfunction;
+	Unt8_Rw_Vector = Unt8_Rw_Vector;
+	Float64_Rw_Vector = Float64_Rw_Vector;
+	Spin_Lock = Spin_Lock;
 
-	fun rw_vector (x: Chunk): Chunk = cast x;
-	fun bind_cfun (x: Chunk): Chunk = cast x;
-	fun callc (x: Chunk): Chunk = cast x;
-	fun create_b (x: Chunk) : Unt8_Rw_Vector = cast x;
-	fun create_r (x: Chunk) : Float64_Rw_Vector = cast x;
-	fun create_s (x: Chunk): String = cast x;
-	fun create_v (x: Chunk): Chunk = cast x;
-	fun floor (x: Chunk): Chunk = cast x;
-	fun logb (x: Chunk): Chunk = cast x;
-	fun scalb (x: Chunk): Chunk = cast x;
-	fun try_lock (x: Spin_Lock): Chunk = cast x;
-	fun unlock   (x: Spin_Lock): Chunk = cast x;
-      };
+	fun rw_vector (x: Chunk): Chunk             =  cast x;
+	fun bind_cfun (x: Chunk): Chunk             =  cast x;
+	fun callc     (x: Chunk): Chunk             =  cast x;
+	fun create_b  (x: Chunk): Unt8_Rw_Vector    =  cast x;
+	fun create_r  (x: Chunk): Float64_Rw_Vector =  cast x;
+	fun create_s  (x: Chunk): String            =  cast x;
+	fun create_v  (x: Chunk): Chunk             =  cast x;
+	fun floor     (x: Chunk): Chunk             =  cast x;
+	fun logb      (x: Chunk): Chunk             =  cast x;
+	fun scalb     (x: Chunk): Chunk             =  cast x;
+	fun try_lock  (x: Spin_Lock): Chunk         =  cast x;
+	fun unlock    (x: Spin_Lock): Chunk         =  cast x;
+    };
 
     exception DIVIDE_BY_ZERO;
     exception OVERFLOW;
-    exception SYSTEM_ERROR  ((String, Null_Or( Int )) );
+    exception SYSTEM_ERROR  (String, Null_Or(Int));
 
-    my vector0:      Vector( X ) = cast();
-    my prof_current:  Ref( Int ) = cast();
-    my poll_event:    Ref( Bool ) = cast();
-    my poll_freq:     Ref( Int ) = cast();
-    my poll_handler:  Ref (Fate( Void ) -> Fate( Void )) = cast();
-    my active_procs:  Ref( Int ) = cast();
-    my pstruct:      Ref( Chunk ) = cast();
-    my sighandler:   Ref(((Int, Int, Fate( Void ))) -> Fate( Void )) = cast();
+    my vector0:       Vector(X)					  = cast();	# LIB7_vector0		in src/runtime/main/globals.c
+    my prof_current:  Ref( Int )                                  = cast();	# ProfCurrent		in src/runtime/main/globals.c
+    my poll_event:    Ref( Bool )                                 = cast();	# PollEvent		in src/runtime/main/globals.c
+    my poll_freq:     Ref( Int )                                  = cast();	# PollFreq		in src/runtime/main/globals.c
+    my poll_handler:  Ref( Fate(Void) -> Fate(Void) )		  = cast();	# Lib7PollHandler	in src/runtime/main/globals.c
+    my active_procs:  Ref( Int )                                  = cast();	# ActiveProcs		in src/runtime/main/globals.c
+    my pstruct:       Ref( Chunk )                                = cast();	# PervasiveStruct	in src/runtime/main/globals.c
+    my sighandler:    Ref( (Int, Int, Fate(Void)) -> Fate(Void))  = cast();	# Lib7SignalHandler	in src/runtime/main/globals.c
 
 };
 

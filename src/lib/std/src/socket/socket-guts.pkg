@@ -48,7 +48,7 @@ herein
 	    include af;				# af			is from   src/lib/std/src/socket/pre-socket.pkg
 						#			via above 'include pre_socket'.
 
-	    my  list_addr_families:  Void -> List( ci::System_Const )
+	    my  list_addr_families:  Void -> List( ci::System_Constant )
 		=
 		socket_fn "listAddrFamilies";
 
@@ -64,7 +64,8 @@ herein
 
 	    fun from_string name
 		=
-		case (ci::find_sys_const (name, list_addr_families ()))
+		case (ci::find_system_constant (name, list_addr_families ()))
+		    #
 		    THE af =>  THE (ADDRESS_FAMILY af);
 		    NULL   =>  NULL;
 		esac;
@@ -81,12 +82,14 @@ herein
 		=
 		ps::socket::Socket_Type;
 
-	    my list_socket_types:  Void -> List( ci::System_Const )
+	    my list_socket_types:  Void -> List( ci::System_Constant )
 		=
 		socket_fn "listSockTypes";
+
 										# socket	is from   src/lib/std/src/socket/pre-socket.pkg
-	    stream    =  socket::SOCKET_TYPE (ci::bind_sys_const ("STREAM", list_socket_types ()));
-	    datagram  =  socket::SOCKET_TYPE (ci::bind_sys_const ("DGRAM",  list_socket_types ()));
+
+	    stream    =  socket::SOCKET_TYPE (ci::bind_system_constant ("STREAM", list_socket_types ()));
+	    datagram  =  socket::SOCKET_TYPE (ci::bind_system_constant ("DGRAM",  list_socket_types ()));
 
 	    fun list ()
 		=
@@ -100,7 +103,7 @@ herein
 
 	    fun from_string name
 		=
-		case (ci::find_sys_const (name, list_socket_types ()))
+		case (ci::find_system_constant (name, list_socket_types ()))
 		    #
 		    THE ty =>  THE (socket::SOCKET_TYPE ty);
 		    NULL   =>  NULL;
@@ -190,7 +193,7 @@ herein
 
 		stipulate
 
-		    my get_type'  : Socket_Fd -> ci::System_Const
+		    my get_type'  : Socket_Fd -> ci::System_Constant
                         =
                         socket_fn "getTYPE";
 

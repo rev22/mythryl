@@ -11,13 +11,16 @@
 
 extern lib7_val_t	ProfCntArray;
 
-/* Indices into the ProfCntArray for the run-time and GC; these need to
- * track the definitions in sml-nj/boot/NJ/prof-control.pkg.
+/* Indices into the ProfCntArray for the
+ * run-time and garbage collector.
+ * These need to track the definitions in
+ *
+ *     src/lib/std/src/nj/profiling-control.pkg
  */
-#define PROF_RUNTIME	INT_CtoLib7(0)
-#define PROF_MINOR_GC	INT_CtoLib7(1)
-#define PROF_MAJOR_GC	INT_CtoLib7(2)
-#define PROF_OTHER	INT_CtoLib7(3)
+#define PROF_RUNTIME	INT_CtoLib7(0)		/* ! Must match    runtime_index		from   src/lib/std/src/nj/profiling-control.pkg	*/
+#define PROF_MINOR_GC	INT_CtoLib7(1)		/* ! Must match    minor_gc_index		from   src/lib/std/src/nj/profiling-control.pkg	*/
+#define PROF_MAJOR_GC	INT_CtoLib7(2)		/* ! Must match    major_gc_index		from   src/lib/std/src/nj/profiling-control.pkg	*/
+#define PROF_OTHER	INT_CtoLib7(3)		/* ! Must match    other_index			from   src/lib/std/src/nj/profiling-control.pkg	*/
 
 #endif /* _PROFILE_ */
 

@@ -211,7 +211,7 @@ ENTRY(request_fault)
 	MOVE(stdlink,temp,pc)
 	JMP(CSYM(set_request))
 
-/* bind_cfun : (String * String) -> Cfunction
+/* bind_cfun : (String, String) -> Cfunction
  */
 LIB7_CODE_HDR(bind_cfun_a)
 	CHECKLIMIT
@@ -364,7 +364,7 @@ pending:
 #undef  vsp
 
 /* ----------------------------------------------------------------------
- * array : (int * 'a) -> 'a Rw_Vector
+ * array : (Int, X) -> Rw_Vector(X)
  * Allocate and initialize a new array.	 This can cause GC.
  */
 LIB7_CODE_HDR(array_a)
@@ -412,7 +412,7 @@ LIB7_CODE_HDR(array_a)
 	JMP(CSYM(set_request))
 	
 
-/* create_r : int -> realarray */
+/* create_r : Int -> realarray */
 LIB7_CODE_HDR(create_r_a)
 	CHECKLIMIT
 #define temp1 misc0
@@ -453,7 +453,7 @@ LIB7_CODE_HDR(create_r_a)
 #undef temp1
 
 
-/* create_b : int -> bytearray */
+/* create_b : Int -> bytearray */
 LIB7_CODE_HDR(create_b_a)
 	CHECKLIMIT
 	MOV_L(stdarg,temp)		/* temp := length(tagged int) */
@@ -493,7 +493,7 @@ LIB7_CODE_HDR(create_b_a)
 	JMP(CSYM(set_request))
 
 
-/* create_s : int -> String */
+/* create_s : Int -> String */
 LIB7_CODE_HDR(create_s_a)
 	CHECKLIMIT
 	MOV_L(stdarg,temp)
@@ -534,7 +534,7 @@ LIB7_CODE_HDR(create_s_a)
 	MOVE	(stdlink, temp, pc)
 	JMP(CSYM(set_request))
 
-/* create_v_a : int * 'a list -> 'a Vector
+/* create_v_a : (Int, List(X)) -> Vector(X)
  *	creates a vector with elements taken from a list.
  *	n.b. The frontend ensures that list cannot be NIL.
  */

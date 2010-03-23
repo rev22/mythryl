@@ -33,13 +33,14 @@ api Signals {
 
     set_signal_handler				# Set the handler for a signal, returning the previous action. 
          :
-         ((Signal, Signal_Action)) -> Signal_Action;
+         (Signal, Signal_Action) -> Signal_Action;
 
-    override_signal_handler:  ((Signal, Signal_Action)) -> Signal_Action;
+    override_signal_handler:  (Signal, Signal_Action) -> Signal_Action;
 	#
-	# if a signal is not being ignored, then set the handler.  This
-	# returns the previous handler (if IGNORE, then the current handler
-	# is still IGNORE).
+	# If a signal is not being ignored, then set the handler.
+	#
+	# Returns the previous handler:  If IGNORE, then
+	# the current handler is still IGNORE.
 
     get_signal_handler				# Get the current action for the given signal 
          :
@@ -47,12 +48,18 @@ api Signals {
 
     Signal_Mask
       = MASKALL
-      | MASK  List( Signal );
+      | MASK  List(Signal)
+      ;
 
     mask_signals:  Signal_Mask -> Void;
-	# mask the specified set of signals: signals that are not IGNORED
-	# will be delivered when unmasked.  Calls to maskSignals nest on a
-	# per signal basis.
+	#
+	# Mask the specified set of signals.
+	#
+        # Signals that are not IGNORED
+	# will be delivered when unmasked.
+	#
+	# Calls to mask_signals nest on a
+	# per-signal basis.
 
     unmask_signals:  Signal_Mask -> Void;
 	#
@@ -71,13 +78,12 @@ api Signals {
 
     # These signals should be supported even on non-UNIX platforms. 
     #
-    interrupt_signal:   Signal;		# interactive interrupt 
-    alarm_signal:  Signal;		# interval timer signal 
-    terminal_signal:  Signal;		# termination 
-    garbage_collection_signal:    Signal;		# garbage collection 
+    interrupt_signal:            Signal;		# interactive interrupt 
+    alarm_signal:                Signal;		# interval timer signal 
+    terminal_signal:             Signal;		# termination 
+    garbage_collection_signal:   Signal;		# garbage collection 
 
-  }; #  Signals 
-
+};							# api Signals 
 
 
 
