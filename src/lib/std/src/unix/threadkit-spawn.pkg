@@ -43,7 +43,9 @@ package {
                         raise exception ex;
                     };
           
-            signals::unmask_signals signals::MASKALL; y;
+            signals::unmask_signals  signals::MASKALL;
+
+            y;
         };
 
     fun fd_reader (name:  String, fd:  pio::File_Descriptor)

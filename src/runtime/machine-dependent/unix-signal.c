@@ -16,6 +16,8 @@
 #include "system-signals.h"
 #include "runtime-globals.h"
 
+#include "../c-libs/lib7-socket/print-if.h"
+
 
 /* The generated sys_const_t table for UNIX signals */
 #include "unix-sigtable.c"
@@ -148,13 +150,13 @@ static SigReturn_t   CSigHandler   (int sig, siginfo_t *si, void *c)
     vsp->vp_sigCounts[sig].nReceived++;
     vsp->vp_totalSigCount.nReceived++;
 
+print_if("unix-signal.c/CSigHandler: signal d=%d nRecieved %d nHandled d=%d diff d=%d\n", sig, vsp->vp_sigCounts[sig].nReceived, vsp->vp_sigCounts[sig].nHandled, vsp->vp_sigCounts[sig].nReceived - vsp->vp_sigCounts[sig].nHandled   );
 #ifdef SIGNAL_DEBUG
-SayDebug ("CSigHandler: sig = %d, pending = %d, inHandler = %d\n",
-sig, vsp->vp_handlerPending, vsp->vp_inSigHandler);
+SayDebug ("CSigHandler: sig = %d, pending = %d, inHandler = %d\n", sig, vsp->vp_handlerPending, vsp->vp_inSigHandler);
 #endif
 
     /* The following line is needed only when
-     * currently executing "pure" C code, but.
+     * currently executing "pure" C code, but
      * doing it anyway in all other cases will
      * not hurt:
      */
