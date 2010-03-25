@@ -166,9 +166,9 @@ package timeout_mailop: (weak)  api {
     #
     fun timeout_in'  sleep_duration
         =
-	r::BASE_MAILOPS [ poll_fn ]
+	r::BASE_MAILOPS [ is_ready ]
         where
-            fun block_fn { transaction_id, clean_up, next }
+            fun wait_for { transaction_id, clean_up, next }					# Reppy calls this fn blockFn
                 =
                 {   now = s::get_approximate_time ();
 
@@ -189,16 +189,16 @@ package timeout_mailop: (weak)  api {
 		    s::reenable_thread_switching ();
 		};
 
-	    fun poll_fn ()
+	    fun is_ready ()									# Reppy calls this fn pollFn
 		=
 		if (sleep_duration == time::zero_time)
 
 		     r::MAILOP_ENABLED
                        { priority => -1,
-                         do_fn    => s::reenable_thread_switching
+                         do_it    => s::reenable_thread_switching				# Reppyc alls this field doFn
                        };
 		else
-                     r::MAILOP_BLOCKED block_fn;
+                     r::MAILOP_BLOCKED wait_for;
                 fi;
 
 	end;
@@ -211,9 +211,9 @@ package timeout_mailop: (weak)  api {
 
     fun timeout_at'  wakeup_time
         =
-	r::BASE_MAILOPS [ poll_fn ]
+	r::BASE_MAILOPS [ is_ready ]
         where
-	    fun block_fn { transaction_id, clean_up, next }
+	    fun wait_for { transaction_id, clean_up, next }					# Reppy calls this fn blockFn
                 =
                 {   fate::call_with_current_fate
 			(
@@ -228,16 +228,16 @@ package timeout_mailop: (weak)  api {
 		    s::reenable_thread_switching ();
                 };
 
-	    fun poll_fn ()
+	    fun is_ready ()									# Reppy calls this fn pollFn
                 =
                 if (time::(<=) (wakeup_time, s::get_approximate_time ()))
 
 		     r::MAILOP_ENABLED
                        { priority => -1,
-                         do_fn    => s::reenable_thread_switching
+                         do_it    => s::reenable_thread_switching				# Reppy calls this field doFn
                      };
 		else
-                     r::MAILOP_BLOCKED block_fn;
+                     r::MAILOP_BLOCKED wait_for;
                 fi;
 	end;
 

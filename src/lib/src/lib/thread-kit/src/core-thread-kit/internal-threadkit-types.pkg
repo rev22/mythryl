@@ -76,7 +76,7 @@ package internal_threadkit_types {
 
       = MAILOP_ENABLED
           { priority:   Int,
-            do_fn:      Void -> X
+            do_it:      Void -> X						# Reppy calls this field doFn
           }
 
       | MAILOP_BLOCKED

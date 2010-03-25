@@ -64,14 +64,14 @@ package threadkit_io_manager: (weak)  api {
     # NOTE:  As in the case of condition variables -- see 
     #     src/lib/thread-kit/src/core-thread-kit/mailop.pkg
     # -- we need to do the clean_up routine when we enable the
-    # io_mailop (instead of in the block_fn fate).
+    # io_mailop (instead of in the wait_for fate).
     #
     fun io_mailop  poll_request
         =
-	r::BASE_MAILOPS [poll_fn]
+	r::BASE_MAILOPS [is_ready]
         where
          
-	    fun block_fn { transaction_id, clean_up, next }
+	    fun wait_for { transaction_id, clean_up, next }					# Reppy calls this fn blockFn
                 =
 		pi
                 where
@@ -88,16 +88,16 @@ package threadkit_io_manager: (weak)  api {
                                 );
 		end;
 
-	    fun poll_fn ()
+	    fun is_ready ()									# Reppy calls this fn pollFn
                 =
                 case (poll [poll_request])
-
+		    #
 		    [pi] =>  r::MAILOP_ENABLED
                                { priority  =>  -1,
-                                 do_fn     =>  .{  s::reenable_thread_switching ();   pi;  }
+                                 do_it     =>  .{  s::reenable_thread_switching ();   pi;  }	# Reppy calls this field doFn
                                };
 
-		    _    =>  r::MAILOP_BLOCKED block_fn;
+		    _    =>  r::MAILOP_BLOCKED wait_for;
                 esac;
 	end;
 

@@ -9,9 +9,9 @@
 # To ensure that we always leave the atomic region exactly once, we
 # require that the blocking operation be responsible for leaving the
 # atomic region (in the mailop case, it must also execute the clean-up
-# action).  The do_fn always transfers control to the blocked thread
+# action).  The do_it fn always transfers control to the blocked thread
 # without leaving the atomic region.  Note that the give (and give')
-# block_fns run using the receiver's thread ID.
+# wait_fors run using the receiver's thread ID.
 
 
 
@@ -296,9 +296,9 @@ api {
 
     fun give' (MAILSLOT { priority, in_q, out_q }, msg)
         =
-	r::BASE_MAILOPS [poll_fn]
+	r::BASE_MAILOPS [is_ready]
         where
-            fun do_fn ()
+            fun do_it ()									# Reppy calls this fn doFn
                 =
                 {   my (transaction_id, rfate)
                         =
@@ -320,7 +320,7 @@ api {
                         );
 		};
 
-	    fun block_fn { transaction_id, clean_up, next }
+	    fun wait_for { transaction_id, clean_up, next }					# Reppy calls this fn blockFn
                 =
                 {   my (get_id, get_fate)
                         =
@@ -338,11 +338,12 @@ api {
 		    s::reenable_thread_switching_and_switch_to_thread (get_id, get_fate, msg);
 		};
 
-	    fun poll_fn ()
+	    fun is_ready ()
 		=
 		case (clean_and_check (priority, in_q))
-		    0 => r::MAILOP_BLOCKED block_fn;
-		    p => r::MAILOP_ENABLED { priority=>p, do_fn };
+		    #
+		    0 => r::MAILOP_BLOCKED wait_for;
+		    p => r::MAILOP_ENABLED { priority=>p, do_it };
 		esac;
 	end;
 
@@ -410,9 +411,9 @@ api {
 
     fun take' (MAILSLOT { priority, in_q, out_q } )
         =
-	r::BASE_MAILOPS [poll_fn]
+	r::BASE_MAILOPS [is_ready]
         where
-            fun do_fn ()
+            fun do_it ()									# Reppy calls this fn doFn
                 =
                 {   my (transaction_id, put_fate)
                         =
@@ -431,7 +432,7 @@ api {
                         );
 		};
 
-	    fun block_fn { transaction_id, clean_up, next }
+	    fun wait_for { transaction_id, clean_up, next }					# Reppy calls this fn blockFn
                 =
                 {   msg =   call_with_current_fate
 				(
@@ -451,12 +452,12 @@ api {
 		    msg;
 		};
 
-	    fun poll_fn ()
+	    fun is_ready ()
                 =
                 case (clean_and_check (priority, out_q))
 		    #
-		    0        => r::MAILOP_BLOCKED block_fn;
-		    priority => r::MAILOP_ENABLED { priority, do_fn };
+		    0        => r::MAILOP_BLOCKED wait_for;
+		    priority => r::MAILOP_ENABLED { priority, do_it };
                 esac;
 	end;
 

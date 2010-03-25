@@ -10,10 +10,10 @@
 # Some important requirements on the implementation
 # of base mailop values:
 #
-#  1)  A poll_fn, do_fn or block_fn
+#  1)  An is_ready, do_it or wait_for function
 #      is always called from inside an atomic region.
 #
-#  2)  A poll_fn returns an integer priority.
+#  2)  An is_ready returns an integer priority.
 #      This is   0 when not enabled,
 #	        -1 for fixed priority and
 #               >0 for dynamic priority.
@@ -21,10 +21,10 @@
 #      with the underlying synchronization value and
 #      to increase it by one for each synchronization attempt.
 #
-#  3)  A block_fn is responsible for exiting the atomic region.
-#      A do_fn should NOT leave the atomic region.
+#  3)  A wait_for is responsible for exiting the atomic region.
+#      A do_it should NOT leave the atomic region.
 #
-#  4)  Each block_fn is responsible for executing the
+#  4)  Each wait_for is responsible for executing the
 #      "clean_up" action prior to leaving the atomic region.
 
 
@@ -93,12 +93,12 @@ api {
     # Because these variables are set inside
     # atomic regions we have to use different
     # conventions for clean-up, etc.  Instead
-    # of requiring the block_fn fate
+    # of requiring the wait_for fate
     # to call the clean_up action and to leave
     # the atomic region, we call the clean_up
     # function when setting the condition variable
     # (in atomic_cvar_set), and have the invariant
-    # that the block_fn fate is dispatched
+    # that the wait_for fate is dispatched
     # outside the atomic region.
 
 
@@ -147,9 +147,9 @@ api {
     #
     fun cvar_get_mailop (r::CONDITION_VARIABLE  state)
         =
-	BASE_MAILOPS [poll_fn]
+	BASE_MAILOPS [is_ready]
         where 
-            fun block_fn { transaction_id, clean_up, next }
+            fun wait_for { transaction_id, clean_up, next }				# Reppy calls this fn blockFn
                 =
                 call_with_current_fate
                     (fn fate
@@ -164,13 +164,13 @@ api {
 		        }
                     );
 
-	    fun poll_fn ()
+	    fun is_ready ()								# Reppy calls this fn pollFn
                 =
                 case *state
 		    #
 		    r::CVAR_SET n
                         =>
-                        {   fun do_fn ()
+                        {   fun do_it ()						# Reppy calls this fn doFn
                                 =
                                 {   state := r::CVAR_SET 1;
                                     s::reenable_thread_switching ();
@@ -178,10 +178,10 @@ api {
 
 			    state := r::CVAR_SET (n+1);
 
-			    MAILOP_ENABLED { priority => n, do_fn };
+			    MAILOP_ENABLED { priority => n, do_it };
 			};
 
-		    _ => MAILOP_BLOCKED block_fn;
+		    _ => MAILOP_BLOCKED wait_for;
                 esac;
 	end;
 
@@ -192,7 +192,7 @@ api {
                     =
                     r::MAILOP_ENABLED
                       { priority  =>  -1,
-                        do_fn =>  fn () = {   s::reenable_thread_switching ();
+                        do_it =>  fn () = {   s::reenable_thread_switching ();		# Reppy calls this field doFn
                                               v;
                                           }
 	              }
@@ -229,12 +229,12 @@ api {
         =
 	wrap' mailop
 	where
-            fun wrap_base_mailop poll_fn ()
+            fun wrap_base_mailop is_ready ()
                 =
-                case (poll_fn ())
+                case (is_ready ())
 		    #
-		    MAILOP_ENABLED { priority, do_fn } =>  MAILOP_ENABLED { priority, do_fn => wfn o do_fn };
-		    MAILOP_BLOCKED block_fn            =>  MAILOP_BLOCKED (wfn o block_fn);
+		    MAILOP_ENABLED { priority, do_it } =>  MAILOP_ENABLED { priority, do_it => wfn o do_it };
+		    MAILOP_BLOCKED wait_for            =>  MAILOP_BLOCKED (wfn o wait_for);
                 esac;
 
 	    fun wrap' (BASE_MAILOPS base_mailops) => BASE_MAILOPS (map wrap_base_mailop base_mailops);
@@ -257,12 +257,12 @@ api {
                 except
                     exn = hfn exn;
 
-	    fun wrap_base_mailop poll_fn ()
+	    fun wrap_base_mailop  is_ready ()
                 =
-                case (poll_fn ())
+                case (is_ready ())
 		    #
-		    MAILOP_ENABLED { priority, do_fn } =>  MAILOP_ENABLED { priority, do_fn => wrap do_fn };
-		    MAILOP_BLOCKED block_fn            =>  MAILOP_BLOCKED (wrap block_fn);
+		    MAILOP_ENABLED { priority, do_it } =>  MAILOP_ENABLED { priority, do_it => wrap do_it };
+		    MAILOP_BLOCKED wait_for            =>  MAILOP_BLOCKED (wrap wait_for);
                 esac;
 
 	    fun wrap' (BASE_MAILOPS base_mailops) =>  BASE_MAILOPS (map wrap_base_mailop base_mailops);
@@ -377,9 +377,9 @@ fun sayGroup (msg, eg) = let
 	    };
     herein
 
-	fun select_do_fn ([(_, do_fn)], _)
+	fun select_do_fn ([(_, do_it)], _)
                 =>
-                do_fn;
+                do_it;
 
 	    select_do_fn (l, n)
 		=>
@@ -390,23 +390,23 @@ fun sayGroup (msg, eg) = let
 			priority  p =>  p;
 		    end;
 
-		    fun max ((p, do_fn) ! r, max_p, k, do_fns)
+		    fun max ((p, do_it) ! r, max_p, k, do_its)
 			    =>
 			    {   p = priority p;
 
-				if    (p >  max_p)   max (r, p, 1, [do_fn]);
-				elif  (p == max_p)   max (r, max_p, k+1, do_fn ! do_fns);
-				else                 max (r, max_p, k, do_fns);
+				if    (p >  max_p)   max (r, p, 1, [do_it]);
+				elif  (p == max_p)   max (r, max_p, k+1, do_it ! do_its);
+				else                 max (r, max_p, k, do_its);
 				fi;
 			    };
 
-			max ([], _, k, [do_fn])
+			max ([], _, k, [do_it])
 			    =>
-                            do_fn;
+                            do_it;
 
-			max ([], _, k, do_fns)
+			max ([], _, k, do_its)
 			    =>
-                            list::nth (do_fns, random k);
+                            list::nth (do_its, random k);
 		    end;
 		end;
          end;
@@ -420,23 +420,23 @@ fun sayGroup (msg, eg) = let
 	};
 
 
-    fun sync_on_one_mailop (poll_fn:  Base_Mailop( X ))
+    fun sync_on_one_mailop (is_ready:  Base_Mailop(X))
         =
         {   s::disable_thread_switching ();
 
-	    case (poll_fn ())
-	      
-		MAILOP_ENABLED { do_fn, ... }
+	    case (is_ready ())
+		#	      
+		MAILOP_ENABLED { do_it, ... }					# Reppy calls this field doFn
 		    =>
-		    do_fn ();
+		    do_it ();
 
-		MAILOP_BLOCKED block_fn
+		MAILOP_BLOCKED wait_for
 		    =>
 		    {   my (flag, set_flag)
                             =
                             make_flag ();
 
-			block_fn { transaction_id=>flag, clean_up=>set_flag, next=>s::reenable_thread_switching_and_dispatch_next_thread };
+			wait_for { transaction_id=>flag, clean_up=>set_flag, next=>s::reenable_thread_switching_and_dispatch_next_thread };
 		    };
             esac;
 	};
@@ -453,7 +453,7 @@ fun sayGroup (msg, eg) = let
 
 	sync_on_base_mailops  base_mailops
             =>
-            {   fun ext ([], block_fns)
+            {   fun ext ([], wait_fors)
                         =>
                         capture_fate
                             (fn fate
@@ -468,10 +468,10 @@ fun sayGroup (msg, eg) = let
 					    =>
 					    s::reenable_thread_switching_and_dispatch_next_thread ();
 
-					log (block_fn ! r)
+					log (wait_for ! r)
 					    =>
 					    escape_fate
-						(block_fn
+						(wait_for
 						  { transaction_id,
 						    clean_up =>  set_flag,
 						    next     =>  fn () = log r
@@ -479,18 +479,18 @@ fun sayGroup (msg, eg) = let
 						);
 				    end;
 
-				    log block_fns;
+				    log wait_fors;
 
 				    error "[log]";
 				}
                             );
 
-		    ext (poll_fn ! r, block_fns)
+		    ext (is_ready ! r, wait_fors)
                         =>
-                        case (poll_fn ())
+                        case (is_ready ())
 			    #
-		            MAILOP_ENABLED { priority, do_fn } =>  ext_rdy (r, [(priority, do_fn)], 1);
-			    MAILOP_BLOCKED block_fn            =>  ext     (r, block_fn ! block_fns);
+		            MAILOP_ENABLED { priority, do_it } =>  ext_rdy (r, [(priority, do_it)], 1);
+			    MAILOP_BLOCKED wait_for            =>  ext     (r, wait_for ! wait_fors);
                         esac;
 		end
 
@@ -500,16 +500,16 @@ fun sayGroup (msg, eg) = let
                 #       priority mailops (e::g., always, timeout?)
 
 		also
-		fun ext_rdy ([], do_fns, n)
+		fun ext_rdy ([], do_its, n)
                         =>
-                        select_do_fn (do_fns, n) ();
+                        select_do_fn (do_its, n) ();
 
-		    ext_rdy (poll_fn ! r, do_fns, n)
+		    ext_rdy (is_ready ! r, do_its, n)
                         =>
-                        case (poll_fn ())
+                        case (is_ready ())
 			    #
-		            MAILOP_ENABLED { priority, do_fn } => ext_rdy (r, (priority, do_fn) ! do_fns, n+1);
-			    _                           => ext_rdy (r, do_fns, n);
+		            MAILOP_ENABLED { priority, do_it } =>  ext_rdy (r, (priority, do_it) ! do_its, n+1);
+			    _                                  =>  ext_rdy (r, do_its, n);
                         esac;
 		end;
 
@@ -664,7 +664,7 @@ fun sayGroup (msg, eg) = let
 			end;
 		end;
 
-	    fun ext ([], block_fns)
+	    fun ext ([], wait_fors)
                     =>
                     capture_fate
                         (fn fate
@@ -686,27 +686,28 @@ fun sayGroup (msg, eg) = let
                                             =>
                                             s::reenable_thread_switching_and_dispatch_next_thread ();
 
-				        log ((block_fn, flag) ! r)
+				        log ((wait_for, flag) ! r)
                                             =>
 					    escape_fate
-                                                (block_fn { transaction_id,
+                                                (wait_for { transaction_id,
 					                    clean_up =>  set_flag flag,
 					                    next     =>  fn () = log r
 					                  }
                                                 );
                                     end;
 
-				    log  block_fns;
+				    log  wait_fors;
 
                                     error "[log]";
 		                 }
                         );
 
-	        ext ((poll_fn, flag) ! r, block_fns)
+	        ext ((is_ready, flag) ! r, wait_fors)
                     =>
-                    case (poll_fn())
-		        MAILOP_ENABLED { priority, do_fn } =>  ext_rdy (r, [(priority, (do_fn, flag))], 1);
-		        MAILOP_BLOCKED block_fn            =>  ext (r, (block_fn, flag) ! block_fns);
+                    case (is_ready ())
+			#
+		        MAILOP_ENABLED { priority, do_it } =>  ext_rdy (r, [(priority, (do_it, flag))], 1);
+		        MAILOP_BLOCKED wait_for            =>  ext (r, (wait_for, flag) ! wait_fors);
                     esac;
 	    end
 
@@ -716,27 +717,27 @@ fun sayGroup (msg, eg) = let
             # priority mailops (e::g., always, timeout?)
 	    #
 	    also
-	    fun ext_rdy ([], do_fns, n)
+	    fun ext_rdy ([], do_its, n)
                     =>
-                    {   my (do_fn, flag)
+                    {   my (do_it, flag)
                             =
-                            select_do_fn (do_fns, n);
+                            select_do_fn (do_its, n);
 
 			flag := TRUE;
 			check_cvars ();
-			do_fn();
+			do_it();
 		    };
 
-	        ext_rdy ((poll_fn, flag) ! r, do_fns, n)
+	        ext_rdy ((is_ready, flag) ! r, do_its, n)
                     =>
-                    case (poll_fn ())
-
-		        MAILOP_ENABLED { priority, do_fn }
+                    case (is_ready ())
+			#
+		        MAILOP_ENABLED { priority, do_it }
                             =>
-			    ext_rdy (r, (priority, (do_fn, flag)) ! do_fns, n+1);
+			    ext_rdy (r, (priority, (do_it, flag)) ! do_its, n+1);
 
 		        _   =>
-                            ext_rdy (r, do_fns, n);
+                            ext_rdy (r, do_its, n);
                     esac;
 	    end;
 

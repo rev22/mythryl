@@ -357,9 +357,9 @@ package oneshot_maildrop: Oneshot_Maildrop {	# Oneshot_Maildrop		is from   src/l
 
     fun get' (CELL { priority, read_q, value } )
         =
-	r::BASE_MAILOPS [poll_fn]
+	r::BASE_MAILOPS [is_ready]
         where
-            fun block_fn { transaction_id, clean_up, next }
+            fun wait_for { transaction_id, clean_up, next }				# Reppy calls this fn blockFn
                 =
                 {   msg =   call_with_current_fate
 				(fn fate
@@ -380,17 +380,17 @@ package oneshot_maildrop: Oneshot_Maildrop {	# Oneshot_Maildrop		is from   src/l
                     msg;
 		};
 
-	    fun poll_fn ()
+	    fun is_ready ()								# Reppy calls this fn pollFn
 		=
 		case *value
-
+		    #
 		    NULL  =>
-                        r::MAILOP_BLOCKED block_fn;
+                        r::MAILOP_BLOCKED wait_for;
 
 		    THE v =>
 			r::MAILOP_ENABLED
                           { priority =>  bump_priority priority,
-			    do_fn    =>  .{   priority := 1;
+			    do_it    =>  .{   priority := 1;				# Reppy calls this field doFn
                                               s::reenable_thread_switching ();
                                               v;
                                           }

@@ -254,7 +254,7 @@ api {
     fun pull' (MAILQUEUE state)
         =
         {
-	    fun block_fn { transaction_id, clean_up, next }
+	    fun wait_for { transaction_id, clean_up, next }
                 =
                 {   my (EMPTY q)
                         =
@@ -278,13 +278,13 @@ api {
 		    msg;
 		};
 
-	    fun poll_fn ()
+	    fun is_ready ()
                 =
                 case *state
-
+		    #
 		    EMPTY _
 			=>
-			r::MAILOP_BLOCKED block_fn;
+			r::MAILOP_BLOCKED wait_for;
 
 		    NONEMPTY (priority, q)
 			=>
@@ -293,13 +293,13 @@ api {
 			    r::MAILOP_ENABLED
                               {
                                 priority,
-                                do_fn =>   .{  get_msg (state, q);  }
+                                do_it =>   .{  get_msg (state, q);  }
                               };
 			};
                 esac;
 
 
-	    r::BASE_MAILOPS [poll_fn];
+	    r::BASE_MAILOPS [is_ready];
 	};
 
     fun nonblocking_pull (MAILQUEUE state)

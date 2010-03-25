@@ -338,7 +338,7 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 
     fun empty' (CELL { priority, read_q, value } )
         =
-        {   fun block_fn { transaction_id, clean_up, next }
+        {   fun wait_for { transaction_id, clean_up, next }				# Reppy calls this fn blockFn
 		=
 		{   v = call_with_current_fate
                             (fn fate
@@ -355,19 +355,19 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 		    v;
 		};
 
-	    fun poll_fn ()
+	    fun is_ready ()								# Reppy calls this fn pollFn
 		=
 		case *value
-
+		    #
 		    NULL =>
-                        r::MAILOP_BLOCKED block_fn;
+                        r::MAILOP_BLOCKED wait_for;
 
 		    THE v =>
                         r::MAILOP_ENABLED
                           {
                             priority  =>   bump_priority priority,
 
-			    do_fn     =>  .{   value := NULL;
+			    do_it     =>  .{   value := NULL;				# Reppy calls this field doFn
                                                s::reenable_thread_switching ();
                                                v;
                                            }
@@ -375,7 +375,7 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 		esac;
 
 
-	    r::BASE_MAILOPS [poll_fn];
+	    r::BASE_MAILOPS [is_ready];
 	};
 
 
@@ -460,7 +460,7 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
     fun peek' (CELL { priority, read_q, value } )
         =
         {
-	    fun block_fn { transaction_id, clean_up, next }
+	    fun wait_for { transaction_id, clean_up, next }				# Reppy calls this fn blockFn
                 =
                 {   v = call_with_current_fate
                             (fn fate
@@ -476,25 +476,25 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 		    v;
 		};
 
-	  fun poll_fn ()
-              =
-              case *value
-	        
-		  NULL =>
-                      r::MAILOP_BLOCKED block_fn;
+	    fun is_ready ()								# Reppy calls this fn pollFn
+		=
+		case *value
+		    #	        
+		    NULL =>
+			r::MAILOP_BLOCKED wait_for;
 
-		  THE v
-		      =>
-		      r::MAILOP_ENABLED
-                        {
-			  priority =>   bump_priority priority,
-			  do_fn    =>  .{   s::reenable_thread_switching ();
-                                            v;
-                                        }
-		        };
-              esac;
+		    THE v
+			=>
+			r::MAILOP_ENABLED
+			  {
+			    priority =>   bump_priority priority,
+			    do_it    =>  .{   s::reenable_thread_switching ();		# Reppy calls this field doFn
+					      v;
+					  }
+			  };
+		esac;
 
-	      r::BASE_MAILOPS [poll_fn];
+	    r::BASE_MAILOPS [is_ready];
 	};
 
 
@@ -559,7 +559,8 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 
     fun swap' (CELL { priority, read_q, value }, new_v)
         =
-        {   fun block_fn { transaction_id, clean_up, next }
+        {
+	    fun wait_for { transaction_id, clean_up, next }					# Reppy calls this fn blockFn
                 =
                 {   v = call_with_current_fate
                             (fn fate
@@ -576,22 +577,24 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 		    v;
 		};
 
-	    fun poll_fn ()
+	    fun is_ready ()
                 =
                 case *value
+		    #
+		    NULL  =>  r::MAILOP_BLOCKED wait_for;
 
-		    NULL  =>  r::MAILOP_BLOCKED block_fn;
+		    THE v =>  r::MAILOP_ENABLED
+                                {
+                                  priority =>   bump_priority priority,
 
-		    THE v =>  r::MAILOP_ENABLED { priority =>   bump_priority priority,
-
-					         do_fn    =>  .{   value := THE new_v;
-                                                                   s::reenable_thread_switching ();
-                                                                   v;
-                                                               }
-					       };
+				  do_it    =>  .{   value := THE new_v;				# Reppy calls this field doFn
+						    s::reenable_thread_switching ();
+						    v;
+						}
+				};
                 esac;
 	  
-	    r::BASE_MAILOPS [poll_fn];
+	    r::BASE_MAILOPS [is_ready];
 	};
 
 };						# package maildrop 
