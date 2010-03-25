@@ -21,6 +21,8 @@ herein
 
 	exception  CFUN_NOT_FOUND String;
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
+
 	fun c_function module_name fun_name
 	    =
 	    {   cfun =  bind_cfun (module_name, fun_name);

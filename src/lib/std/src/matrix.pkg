@@ -11,7 +11,8 @@
 
 
 
-package matrix: Matrix {				# Matrix	is from   src/lib/std/src/matrix.api
+package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
+							# inline_t		is from   src/lib/core/init/built-in.pkg	
 
     ltu = inline_t::default_int::ltu;
 

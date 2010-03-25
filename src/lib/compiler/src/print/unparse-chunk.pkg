@@ -534,30 +534,32 @@ package unparse_chunk: (weak)  Unparse_Chunk {			# Unparse_Chunk	is from   src/l
 				      =>
 				      if   (tu::type_constructors_are_equal (type_constructor, bt::int64tycon))
                                           
+														# inline_t		is from   src/lib/core/init/built-in.pkg	
 					   case (unsafe_chunk::to_tuple chunk)
-                                             
-						[hi, lo]
-                                                    =>
-						    {   i = inline_t::int64::intern (unsafe_chunk::to_word32 hi, unsafe_chunk::to_word32 lo);
-						        pp::string stream (int64::to_string i);
-						    };
-					        _ => pp::string stream "<int64?>";
+                                               #
+					       [hi, lo]
+						   =>
+						   {   i = inline_t::int64::intern (unsafe_chunk::to_word32 hi, unsafe_chunk::to_word32 lo);
+						       pp::string stream (int64::to_string i);
+						   };
+					       _ => pp::string stream "<int64?>";
                                            esac;
 
 				      elif (tu::type_constructors_are_equal (type_constructor, bt::word64tycon) )
 
-					   case (unsafe_chunk::to_tuple chunk)
-                                             
-						[hi, lo]
-						    =>
-						    {   w = inline_t::unt64::intern (unsafe_chunk::to_word32 hi, unsafe_chunk::to_word32 lo);
-						        pp::string stream ("0wx" + unt64::to_string w);
-						    };
-					       _ => pp::string stream "<word64?>";
-                                            esac;
+					  case (unsafe_chunk::to_tuple chunk)
+					      #
+					      [hi, lo]
+						  =>
+						  {   w = inline_t::unt64::intern (unsafe_chunk::to_word32 hi, unsafe_chunk::to_word32 lo);
+						      pp::string stream ("0wx" + unt64::to_string w);
+						  };
+
+					     _ => pp::string stream "<word64?>";
+					  esac;
 
 				      else
-                                           pp::string stream "-";
+                                          pp::string stream "-";
                                       fi;
 
 				  _ => pp::string stream "-";

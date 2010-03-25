@@ -12,7 +12,7 @@
 
 
 package string_guts: (weak)  String {		# String	is from   src/lib/std/src/string.api
-
+						# inline_t	is from   src/lib/core/init/built-in.pkg	
     my (+)  =  inline_t::default_int::(+);
     my (-)  =  inline_t::default_int::(-);
     my (<)  =  inline_t::default_int::(<);

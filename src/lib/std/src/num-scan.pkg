@@ -13,7 +13,7 @@ api {
 
     scan_word
         :
-        number_string::Radix				# number_string	is from   src/lib/std/src/number-string.pkg
+        number_string::Radix					# number_string		is from   src/lib/std/src/number-string.pkg
 	->
 	number_string::Reader( Char, X )
 	->
@@ -39,10 +39,10 @@ api {
 
 }
 {
-    package w= inline_t::unt32;				# inline_t	is from   src/lib/core/init/built-in.pkg
-    package i = inline_t::int31;
-    package i32 = inline_t::int32;
-    package r = inline_t::float64;
+    package w   =  inline_t::unt32;				# inline_t		is from   src/lib/core/init/built-in.pkg
+    package i   =  inline_t::int31;
+    package i32 =  inline_t::int32;
+    package r   =  inline_t::float64;
 
     Unt = unt32::Unt;
 

@@ -14,6 +14,7 @@ stipulate
 herein
 package posix_io {
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
     splitpos = inline_t::Int64::extern
     joinpos  = inline_t::Int64::intern
 

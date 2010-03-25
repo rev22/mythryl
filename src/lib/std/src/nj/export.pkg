@@ -52,6 +52,7 @@ package export: (weak)  Export {		# Export	is from   src/lib/std/src/nj/export.a
 	     };
     end;
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
     fun spawn_to_disk ("", f)
             =>
             null_filename ();

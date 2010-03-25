@@ -26,6 +26,7 @@ api Literal_To_Num {
 };
 
 package literal_to_num: (weak)      Literal_To_Num {		# Literal_To_Num	is from   src/lib/compiler/src/util/literal-to-num.pkg
+								# inline_t		is from   src/lib/core/init/built-in.pkg	
 
     my two_8:      integer::Int =               0x100;
     my two_31:     integer::Int =          0x80000000;

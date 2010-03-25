@@ -10,7 +10,8 @@
 
 
 
-package number_string: (weak) Number_String {		# Number_String	is from   src/lib/std/src/number-string.api
+package number_string: (weak) Number_String {		# Number_String		is from   src/lib/std/src/number-string.api
+							# inline_t		is from   src/lib/core/init/built-in.pkg	
 
     Radix = BINARY | OCTAL | DECIMAL | HEX;
 

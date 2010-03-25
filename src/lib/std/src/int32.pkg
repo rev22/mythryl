@@ -3,9 +3,9 @@
 # Compiled by:
 #     src/lib/std/src/stdlib-core.make6
 
-package int32_guts: (weak)  Int {		# Int	is from   src/lib/std/src/int.api
-
-    package i32= inline_t::int32;		# inline_t	is from   src/lib/core/init/built-in.pkg
+package int32_guts: (weak)  Int {		# Int		is from   src/lib/std/src/int.api
+						# inline_t	is from   src/lib/core/init/built-in.pkg
+    package i32= inline_t::int32;
 
     Int = int32::Int;
 

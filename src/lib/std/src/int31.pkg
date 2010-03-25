@@ -15,8 +15,8 @@
 
 
 package int31_guts: (weak)  Int {		# Int		is from   src/lib/std/src/int.api
-
-    package i31 =  inline_t::int31;		# inline_t	is from   src/lib/core/init/built-in.pkg
+						# inline_t	is from   src/lib/core/init/built-in.pkg
+    package i31 =  inline_t::int31;
     package i32 =  inline_t::int32;
 
     exception DIVIDE_BY_ZERO = assembly::DIVIDE_BY_ZERO;

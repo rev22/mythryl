@@ -26,10 +26,11 @@
 
 
 
-package bool: (weak) Bool {		# Bool	is from   src/lib/std/src/bool.api
+package bool: (weak) Bool {			# Bool			is from   src/lib/std/src/bool.api
 
     Bool == primitive_types::Bool;
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
     not = inline_t::inlnot;
 
     # NOTE: this should probably accept

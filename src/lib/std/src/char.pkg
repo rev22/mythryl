@@ -17,7 +17,8 @@ api {
     include Char;				# Char	is from   src/lib/std/src/char.api
 
     scan_c:   number_string::Reader( Char, X ) -> number_string::Reader( Char, X );
-	#  internal scanning function for C-style escape sequences 
+	#
+	# Internal scanning function for C-style escape sequences 
 }
 {
     package c = inline_t::char;			# inline_t	is from   src/lib/core/init/built-in.pkg

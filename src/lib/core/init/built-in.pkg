@@ -37,24 +37,28 @@ herein
     # should now be seen as:
     #   - organizing things a bit better
     #   - confirming the type information
-    # See compiler/semantic/symbol-table/primitives-symbol-table.pkg for the origin of the type info
-    # in inline.    (Blume, 1/2001)
-
+    #
+    # For the origin of the type info in inline_t see
+    #
+    #     src/lib/compiler/front/semantic/symbol-table/primitives-symbol-table.pkg
+    #
+    # (Blume, 1/2001)
+    #
     package inline_t {
 
-      Control_Fate( X )   = Control_Fate( X );
+      Control_Fate(X)   = Control_Fate(X);
 
-      my callcc:	 (Fate( X ) -> X) -> X = inline::callcc;
-      my throw:	 	 Fate( X ) -> X -> Y = inline::throw;
+      my callcc:	 (Fate(X) -> X) -> X = inline::callcc;
+      my throw:	 	 Fate(X) -> X -> Y = inline::throw;
 
-      my capture:	 (Control_Fate( X ) -> X) -> X = inline::capture;
-      my escape:	  Control_Fate( X ) -> X -> Y = inline::cthrow;   
+      my capture:	 (Control_Fate(X) -> X) -> X = inline::capture;
+      my escape:	  Control_Fate(X) -> X -> Y = inline::cthrow;   
       my isolate:        (X -> Void) -> Fate(X) = inline::isolate;
 
-      my (*_)	 	: Ref( X ) -> X = (inline::deref);
-      my deref	 	: Ref( X ) -> X = (inline::deref);
-      my (:=) 		: (Ref( X ), X) -> Void = (inline::(:=));
-      my makeref 	:  X -> Ref( X ) = inline::makeref;
+      my (*_)	 	: Ref(X) -> X = (inline::deref);
+      my deref	 	: Ref(X) -> X = (inline::deref);
+      my (:=) 		: (Ref(X), X) -> Void = (inline::(:=));
+      my makeref 	:  X -> Ref(X) = inline::makeref;
 
       my (==) 		: (_X, _X) -> Bool = (inline::(==));
       my (!=) 		: (_X, _X) -> Bool = (inline::(!=));
@@ -73,8 +77,8 @@ herein
       my getpseudo:	 Int -> X = inline::getpseudo; 
       my setpseudo:	 (X, Int) -> Void = inline::setpseudo; 
 
-      my gethandler:	 Void -> Fate( X ) = inline::gethandler;
-      my sethandler: 	 Fate( X ) -> Void = inline::sethandler;
+      my gethandler:	 Void -> Fate(X) = inline::gethandler;
+      my sethandler: 	 Fate(X) -> Void = inline::sethandler;
 
       # The reserved 'var' register is used by threadkit
       # to hold the currently running thread.  This is
@@ -412,22 +416,22 @@ herein
 
       package poly_rw_vector {
 
-	  my new_array0:  Void -> Rw_Vector( X ) = inline::new_array0;
-	  my array:      (Int, X) -> Rw_Vector( X ) = inline::mkarray; 
-	  my length:      Rw_Vector( X ) -> Int = inline::length;
-	  my get:        (Rw_Vector( X ), Int) -> X = inline::rw_vec_get;
-	  my check_sub:    (Rw_Vector( X ), Int) -> X = inline::safe_rw_vec_get;
-	  my set:        (Rw_Vector( X ), Int, X) -> Void = inline::rw_vec_set;
-	  my check_set:    (Rw_Vector( X ), Int, X) -> Void = inline::safe_rw_vec_set;
-	  my get_data:    Rw_Vector( X ) -> Y = inline::get_seq_data;
+	  my new_array0:  Void -> Rw_Vector(X) = inline::new_array0;
+	  my array:      (Int, X) -> Rw_Vector(X) = inline::mkarray; 
+	  my length:      Rw_Vector(X) -> Int = inline::length;
+	  my get:        (Rw_Vector(X), Int) -> X = inline::rw_vec_get;
+	  my check_sub:  (Rw_Vector(X), Int) -> X = inline::safe_rw_vec_get;
+	  my set:        (Rw_Vector(X), Int, X) -> Void = inline::rw_vec_set;
+	  my check_set:  (Rw_Vector(X), Int, X) -> Void = inline::safe_rw_vec_set;
+	  my get_data:    Rw_Vector(X) -> Y = inline::get_seq_data;
 	};
 
       package poly_vector {
 
-	  my length:      Vector( X ) -> Int = inline::length; 
-	  my get:        (Vector( X ), Int) -> X = inline::vec_get;
-	  my check_sub:    (Vector( X ), Int) -> X = inline::safe_vec_get;
-	  my get_data:    Vector( X ) -> Y = inline::get_seq_data;
+	  my length:      Vector(X) -> Int = inline::length; 
+	  my get:        (Vector(X), Int) -> X = inline::vec_get;
+	  my check_sub:  (Vector(X), Int) -> X = inline::safe_vec_get;
+	  my get_data:    Vector(X) -> Y = inline::get_seq_data;
 	};
 
       # The type of this ought to be float64array:

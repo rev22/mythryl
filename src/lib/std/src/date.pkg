@@ -259,6 +259,8 @@ herein
 		    (month, day, year);
 		};
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
+
 	    fun wday (month, day, year)
 		=
 		{   abs = to_absolute (month, day, year);

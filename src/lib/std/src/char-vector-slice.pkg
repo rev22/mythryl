@@ -10,6 +10,7 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 				 where  Slice == substring::Substring
 = package {
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
     # Fast add/subtract avoiding
     # the overflow test:
     #

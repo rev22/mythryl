@@ -29,7 +29,8 @@
 
 stipulate
 
-    package winix =  winix_guts;			# winix_guts	is from   src/lib/std/src/unix/winix-guts.pkg
+    package winix =  winix_guts;			# winix_guts		is from   src/lib/std/src/unix/winix-guts.pkg
+							# inline_t		is from   src/lib/core/init/built-in.pkg	
 
 herein
 

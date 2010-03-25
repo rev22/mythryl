@@ -19,14 +19,14 @@ stipulate
     package large_unt= large_unt_guts;				# large_unt_guts	is from   src/lib/std/src/bind-largeword-32.pkg
     package unt8= unt8_guts;					# unt8_guts		is from   src/lib/std/src/unt8.pkg
 
+    package w   = large_unt;					# large_unt		is from   src/lib/std/types-only/bind-largest32.pkg
+    package w8  = unt8;						# unt8			is from   src/lib/std/types-only/basis-structs.pkg
+    package w8v = inline_t::unt8_vector;			# inline_t		is from   src/lib/core/init/built-in.pkg
+    package w8a = inline_t::rw_unt8_vector;
 herein
 
     package pack_big_endian_unt16: (weak)  Pack_Unt	{	# Pack_Unt		is from   src/lib/std/src/pack-unt.api
 
-	package w   = large_unt;				# large_unt		is from   src/lib/std/types-only/bind-largest32.pkg
-	package w8  = unt8;					# unt8			is from   src/lib/std/types-only/basis-structs.pkg
-	package w8v = inline_t::unt8_vector;			# inline_t		is from   src/lib/core/init/built-in.pkg
-	package w8a = inline_t::rw_unt8_vector;
 
 	bytes_per_element = 2;
 	is_big_endian = TRUE;

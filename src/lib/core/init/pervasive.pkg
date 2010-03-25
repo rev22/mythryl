@@ -24,7 +24,7 @@ infix  val 20 ==> ;
 infix  val 10 before ;
 
 						# primitive_types	is from   src/lib/compiler/front/semantic/symbol-table/primitives-symbol-table.pkg
-
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
 
 Bool ==  primitive_types::Bool;			# Top-level type -- we need this one early.
 

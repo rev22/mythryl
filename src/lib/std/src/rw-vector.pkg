@@ -3,8 +3,9 @@
 # Compiled by:
 #     src/lib/std/src/stdlib-core.make6
 
-package rw_vector: (weak)  Rw_Vector {		# Rw_Vector	is from   src/lib/std/src/rw-vector.api
+package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/rw-vector.api
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
 
     Rw_Vector( X )   = primitive_types::Rw_Vector(  X );
        Vector( X )   = primitive_types::Vector(     X );

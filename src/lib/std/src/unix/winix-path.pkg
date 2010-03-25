@@ -44,6 +44,8 @@ winix_path_g (			# winix_path_g	def in    src/lib/std/src/winix/winix-path-g.pkg
         =
         substring::from_string "";
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
+
     #  Note: we are guaranteed that this is never called with "" 
     #
     fun split_vol_path s

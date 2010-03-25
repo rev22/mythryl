@@ -15,8 +15,8 @@
 
 
 
-package int64: (weak)  Int {			# Int	is from   src/lib/std/src/int.api
-
+package int64: (weak)  Int {			# Int		is from   src/lib/std/src/int.api
+						# inline_t	is from   src/lib/core/init/built-in.pkg	
     Int = int64::Int;
 
     extern = inline_t::int64::extern;

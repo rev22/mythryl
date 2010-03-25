@@ -18,13 +18,13 @@ api Pack_Unt {
 
      is_big_endian:  Bool;
 
-     get_vec:      ((unt8_vector::Vector, Int)) -> large_unt::Unt;
-     get_vec_x:    ((unt8_vector::Vector, Int)) -> large_unt::Unt;
+     get_vec:      (unt8_vector::Vector, Int) -> large_unt::Unt;
+     get_vec_x:    (unt8_vector::Vector, Int) -> large_unt::Unt;
 
-     get_rw_vec:   ((rw_unt8_vector::Rw_Vector, Int)) -> large_unt::Unt;
-     get_rw_vec_x: ((rw_unt8_vector::Rw_Vector, Int)) -> large_unt::Unt;
+     get_rw_vec:   (rw_unt8_vector::Rw_Vector, Int) -> large_unt::Unt;
+     get_rw_vec_x: (rw_unt8_vector::Rw_Vector, Int) -> large_unt::Unt;
 
-     set:          ((rw_unt8_vector::Rw_Vector, Int, large_unt::Unt)) -> Void;
+     set:          (rw_unt8_vector::Rw_Vector, Int, large_unt::Unt) -> Void;
 
 };
 

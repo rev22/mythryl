@@ -41,6 +41,7 @@ package posix_file {
     fun fdToWord (FD { fd, ... } ) = host_unt::from_int fd
     fun wordToFD fd = FD { fd = host_unt::toInt fd }
 
+						# inline_t		is from   src/lib/core/init/built-in.pkg	
     #   file_position::Int <-> hi & lo parts 
     splitpos = inline_t::Int64::extern
     joinpos  = inline_t::Int64::intern

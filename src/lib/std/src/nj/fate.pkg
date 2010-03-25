@@ -6,7 +6,8 @@
 
 # Fate operations
 
-package fate: (weak)  Fate {				# Fate	is from   src/lib/std/src/nj/fate.api
+package fate: (weak)  Fate {				# Fate		is from   src/lib/std/src/nj/fate.api
+							# inline_t	is from   src/lib/core/init/built-in.pkg	
 
     Fate(X)   = primitive_types::Fate(X);
 

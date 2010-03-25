@@ -40,7 +40,7 @@ api {
 
     package r = internal_threadkit_types;		# internal_threadkit_types	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/internal-threadkit-types.pkg
     package s = thread_scheduler;			# thread_scheduler		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
-
+							# fate				is from   src/lib/std/src/nj/fate.pkg
     capture_fate            = fate::capture_fate;
     escape_fate             = fate::escape_fate;
     call_with_current_fate  = fate::call_with_current_fate;
@@ -490,7 +490,7 @@ fun sayGroup (msg, eg) = let
                         case (is_ready ())
 			    #
 		            MAILOP_READY { priority, do_it } =>  ext_rdy (r, [(priority, do_it)], 1);
-			    MAILOP_UNREADY wait_for            =>  ext     (r, wait_for ! wait_fors);
+			    MAILOP_UNREADY wait_for          =>  ext     (r, wait_for ! wait_fors);
                         esac;
 		end
 
@@ -509,7 +509,7 @@ fun sayGroup (msg, eg) = let
                         case (is_ready ())
 			    #
 		            MAILOP_READY { priority, do_it } =>  ext_rdy (r, (priority, do_it) ! do_its, n+1);
-			    _                                  =>  ext_rdy (r, do_its, n);
+			    _                                =>  ext_rdy (r, do_its, n);
                         esac;
 		end;
 
@@ -671,35 +671,35 @@ fun sayGroup (msg, eg) = let
 			    =
 			    {   escape_fate =  escape_fate  fate;
 
-				    transaction_id
-					=
-					REF (r::TRANSACTION_ID (s::get_current_thread ()));
+				transaction_id
+				    =
+				    REF (r::TRANSACTION_ID (s::get_current_thread ()));
 
-				    fun set_flag flag ()
-                                        =
-                                        {   transaction_id := r::CANCELLED_TRANSACTION_ID;
-                                            flag := TRUE;
-                                            check_cvars ();
-                                        };
+				fun set_flag flag ()
+				    =
+				    {   transaction_id := r::CANCELLED_TRANSACTION_ID;
+					flag := TRUE;
+					check_cvars ();
+				    };
 
-				    fun log []
-                                            =>
-                                            s::reenable_thread_switching_and_dispatch_next_thread ();
+				fun log []
+					=>
+					s::reenable_thread_switching_and_dispatch_next_thread ();
 
-				        log ((wait_for, flag) ! r)
-                                            =>
-					    escape_fate
-                                                (wait_for { transaction_id,
-					                    clean_up =>  set_flag flag,
-					                    next     =>  fn () = log r
-					                  }
-                                                );
-                                    end;
+				    log ((wait_for, flag) ! r)
+					=>
+					escape_fate
+					    (wait_for { transaction_id,
+							clean_up =>  set_flag flag,
+							next     =>  fn () = log r
+						      }
+					    );
+				end;
 
-				    log  wait_fors;
+				log  wait_fors;
 
-                                    error "[log]";
-		                 }
+				error "[log]";
+			     }
                         );
 
 	        ext ((is_ready, flag) ! r, wait_fors)
@@ -707,7 +707,7 @@ fun sayGroup (msg, eg) = let
                     case (is_ready ())
 			#
 		        MAILOP_READY { priority, do_it } =>  ext_rdy (r, [(priority, (do_it, flag))], 1);
-		        MAILOP_UNREADY wait_for            =>  ext (r, (wait_for, flag) ! wait_fors);
+		        MAILOP_UNREADY wait_for          =>  ext (r, (wait_for, flag) ! wait_fors);
                     esac;
 	    end
 
@@ -744,7 +744,7 @@ fun sayGroup (msg, eg) = let
 	    s::disable_thread_switching ();
 
             ext (bl, []);
-	};
+	};							# fun sync_on_group
 
 
     fun do_mailop  mailop

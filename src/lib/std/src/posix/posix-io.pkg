@@ -590,9 +590,10 @@ herein
 		    unt8_vector_slice::make_slice (wv, s, THE l);
 		};
 
-	    # hack!!!  This only works because rw_char_vector::Rw_Vector and
-	    #          rw_unt8_vector::Rw_Vector are really the same internally.
-
+										# inline_t		is from   src/lib/core/init/built-in.pkg	
+	    # Hack!!!  This only works because rw_char_vector::Rw_Vector and
+	    #          rw_unt8_vector::Rw_Vector are really the same internally:
+	    #
 	    my c2w_a:  rw_char_vector::Rw_Vector -> rw_unt8_vector::Rw_Vector
 		=
 		inline_t::cast;

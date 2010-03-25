@@ -41,8 +41,8 @@
 
 
 
-package list: (weak)  List {		# List	is from   src/lib/std/src/list.api
-
+package list: (weak)  List {			# List		is from   src/lib/std/src/list.api
+						# inline_t	is from   src/lib/core/init/built-in.pkg	
     my (+)  = inline_t::default_int::(+);
     my (-)  = inline_t::default_int::(-);
     my (<)  = inline_t::default_int::(<);

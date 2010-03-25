@@ -33,7 +33,8 @@
 
 
 
-package math64: (weak)  Math {		# Math	is from   src/lib/std/src/math.api
+package math64: (weak)  Math {			# Math		is from   src/lib/std/src/math.api
+						# inline_t	is from   src/lib/core/init/built-in.pkg	
 
     Float = Float;
 
