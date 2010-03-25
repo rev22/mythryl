@@ -1,3 +1,4 @@
+2010-03-24-01.10.59: src/runtime/c-libs/lib7-socket/print-if.c: Print leading zeros on fractional part of time: <<1269410578.067731>> not <<1269410578. 67731>>. (Oops! :-)
 2010-03-23-04.53.31: Commenting and cross-referencing, mostly in the C and Mythryl code for handling Unix signals.
 2010-03-21-21.15.40: src/lib/x-kit/tut/triangle/triangle-app.pkg: make_draw_threads:  Changed to draw triangles in green -- apparently at some point I accidentally changed it to draw black triangles on a black background, which looks unimpressive to say the least. :-) triangle-app now appears to be basically functional! :-) :-) :-)
 2010-03-20-14.38.44: src/lib/x-kit/xclient/src/wire/xsocket.pkg: sequencer_imp_main_loop: FIXED: I had incorrectly transformed   fun loop x = loop( select ... ); -> fun loop x = for (;;) { select ... ; }; in a case where the  select  returned a non-Void value.

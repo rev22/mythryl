@@ -5,7 +5,7 @@
 
 
 
-# The representation of mail op values and the mail op combinators.
+# Implementation of mailop values and the mailop combinators.
 #
 # Some important requirements on the implementation
 # of base mailop values:
@@ -14,7 +14,7 @@
 #      is always called from inside an atomic region.
 #
 #  2)  A poll_fn returns an integer priority.
-#      This is  0 when not enabled,
+#      This is   0 when not enabled,
 #	        -1 for fixed priority and
 #               >0 for dynamic priority.
 #      The standard scheme is to associate a counter
@@ -109,7 +109,7 @@ api {
     fun atomic_cvar_set (r::CONDITION_VARIABLE state)
         =
 	case *state
-
+	    #
 	    r::CVAR_UNSET waiting
                 =>
                 {   s::foreground_ready_queue ->  r::THREADKIT_QUEUE { rear, ... };
@@ -167,7 +167,7 @@ api {
 	    fun poll_fn ()
                 =
                 case *state
-
+		    #
 		    r::CVAR_SET n
                         =>
                         {   fun do_fn ()
@@ -177,6 +177,7 @@ api {
                                 };
 
 			    state := r::CVAR_SET (n+1);
+
 			    MAILOP_ENABLED { priority => n, do_fn };
 			};
 
@@ -211,16 +212,16 @@ api {
 		gather_bevts (BASE_MAILOPS [] ! r, l) => gather_bevts (r, l);
 		gather_bevts (BASE_MAILOPS [bev] ! r, base_mailops') => gather_bevts (r, bev ! base_mailops');
 		gather_bevts (BASE_MAILOPS base_mailops ! r, base_mailops') => gather_bevts (r, base_mailops @ base_mailops');
-		gather_bevts (mail_ops, []) => gather (mail_ops, []);
-		gather_bevts (mail_ops, l) => gather (mail_ops, [BASE_MAILOPS l]);
+		gather_bevts (mailops, []) => gather (mailops, []);
+		gather_bevts (mailops, l) => gather (mailops, [BASE_MAILOPS l]);
             end 
 
 	    also
 	    fun gather ([], [mailop]) => mailop;
-		gather ([], mail_ops) => CHOOSE mail_ops;
-		gather (CHOOSE mail_ops ! r, mail_ops') => gather (r, mail_ops @ mail_ops');
+		gather ([], mailops) => CHOOSE mailops;
+		gather (CHOOSE mailops ! r, mailops') => gather (r, mailops @ mailops');
 		gather (BASE_MAILOPS base_mailops ! r, BASE_MAILOPS base_mailops' ! r') => gather (r, BASE_MAILOPS (base_mailops @ base_mailops') ! r');
-		gather (mailop ! r, mail_ops') => gather (r, mailop ! mail_ops');
+		gather (mailop ! r, mailops') => gather (r, mailop ! mailops');
             end;
 	end;
 
@@ -231,14 +232,16 @@ api {
             fun wrap_base_mailop poll_fn ()
                 =
                 case (poll_fn ())
+		    #
 		    MAILOP_ENABLED { priority, do_fn } =>  MAILOP_ENABLED { priority, do_fn => wfn o do_fn };
 		    MAILOP_BLOCKED block_fn            =>  MAILOP_BLOCKED (wfn o block_fn);
                 esac;
 
 	    fun wrap' (BASE_MAILOPS base_mailops) => BASE_MAILOPS (map wrap_base_mailop base_mailops);
-		wrap' (CHOOSE mail_ops)    => CHOOSE (map wrap' mail_ops);
-		wrap' (GUARD g)          => GUARD (fn () = wrap (g(), wfn));
-		wrap' (WITH_NACK f)      => WITH_NACK (fn mailop = wrap (f mailop, wfn));
+		#
+		wrap' (CHOOSE mailops)  =>  CHOOSE (map wrap' mailops);
+		wrap' (GUARD g)          =>  GUARD (fn () = wrap (g(), wfn));
+		wrap' (WITH_NACK f)      =>  WITH_NACK (fn mailop = wrap (f mailop, wfn));
             end;
 	end;
 
@@ -257,28 +260,29 @@ api {
 	    fun wrap_base_mailop poll_fn ()
                 =
                 case (poll_fn ())
+		    #
 		    MAILOP_ENABLED { priority, do_fn } =>  MAILOP_ENABLED { priority, do_fn => wrap do_fn };
 		    MAILOP_BLOCKED block_fn            =>  MAILOP_BLOCKED (wrap block_fn);
                 esac;
 
 	    fun wrap' (BASE_MAILOPS base_mailops) =>  BASE_MAILOPS (map wrap_base_mailop base_mailops);
-		wrap' (CHOOSE mail_ops)    =>  CHOOSE (map wrap' mail_ops);
+		wrap' (CHOOSE mailops)    =>  CHOOSE (map wrap' mailops);
 		wrap' (GUARD g)          =>  GUARD  (fn ()  = wrap_handler (g(), hfn));
 		wrap' (WITH_NACK f)      =>  WITH_NACK (fn mailop = wrap_handler (f mailop, hfn));
             end;
 	end;
 
     Mailop_Group X
-      = BASE_GRP  List( Base_Mailop(X) )
-      | GRP       List( Mailop_Group(X) )
-      | NACK_GRP  (r::Condition_Variable, Mailop_Group(X))
+      = BASE_GROUP  List( Base_Mailop(X) )
+      | GROUP       List( Mailop_Group(X) )
+      | NACK_GROUP  (r::Condition_Variable, Mailop_Group(X))
       ;
 
 /* +DEBUG
-fun sayGrp (msg, eg) = let
-      fun f (BASE_GRP l, sl) = "BASE_GRP(" ! int::to_string (list::length l) ::()) ! sl
-	| f (GRP l, sl) = "GRP(" ! g (l, ")" ! sl)
-	| f (NACK_GRP l, sl) = "NACK_GRP(" ! f(#2 l, ")" ! sl)
+fun sayGroup (msg, eg) = let
+      fun f (BASE_GROUP l, sl) = "BASE_GROUP(" ! int::to_string (list::length l) ::()) ! sl
+	| f (GROUP l, sl) = "GROUP(" ! g (l, ")" ! sl)
+	| f (NACK_GROUP l, sl) = "NACK_GROUP(" ! f(#2 l, ")" ! sl)
       also g ([], sl) = sl
 	| g ([x], sl) = f (x, sl)
 	| g (x ! r, sl) = f (x, ", " ! g (r, sl))
@@ -292,7 +296,7 @@ fun sayGrp (msg, eg) = let
     #
     fun force (BASE_MAILOPS l)
             =>
-            BASE_GRP l;
+            BASE_GROUP l;
 
         force mailop
 	    =>
@@ -306,49 +310,49 @@ fun sayGrp (msg, eg) = let
                         =>
                         {   cvar = r::CONDITION_VARIABLE (REF (r::CVAR_UNSET []));
 
-		            NACK_GRP (cvar, force' (f (cvar_get_mailop cvar)));
+		            NACK_GROUP (cvar, force' (f (cvar_get_mailop cvar)));
 		        };
 
-		    force' (BASE_MAILOPS grp)
+		    force' (BASE_MAILOPS group)
                         =>
-                        BASE_GRP grp;
+                        BASE_GROUP group;
 
-		    force' (CHOOSE mail_ops)
+		    force' (CHOOSE mailops)
 			=>
-			force_bl (mail_ops, [])
+			force_bl (mailops, [])
                         where
 			    fun force_bl ([], base_mailops)
                                     =>
-                                    BASE_GRP base_mailops;
+                                    BASE_GROUP base_mailops;
 
 			        force_bl (mailop ! r, base_mailops')
                                     =>
                                     case (force' mailop)
-					BASE_GRP base_mailops =>  force_bl (r, base_mailops @ base_mailops');
-					GRP      grp          =>  force_l  (r, grp @ [BASE_GRP base_mailops']);
-					grp                   =>  force_l  (r, [grp, BASE_GRP base_mailops']);
+					BASE_GROUP base_mailops =>  force_bl (r, base_mailops @ base_mailops');
+					GROUP      group        =>  force_l  (r, group @ [BASE_GROUP base_mailops']);
+					group                   =>  force_l  (r, [group, BASE_GROUP base_mailops']);
                                     esac;
 			    end
 
 			    also
-			    fun force_l ([], [grp]) =>  grp;
-				force_l ([], l)     =>  GRP l;
+			    fun force_l ([], [group]) =>  group;
+				force_l ([], l)       =>  GROUP l;
 
 				force_l (mailop ! r, l)
 				    =>
 				    case (force' mailop, l)
-				      
-					(BASE_GRP base_mailops, BASE_GRP base_mailops' ! r')
+					#				      
+					(BASE_GROUP base_mailops, BASE_GROUP base_mailops' ! r')
 					    =>
-					    force_l (r, BASE_GRP (base_mailops @ base_mailops') ! r');
+					    force_l (r, BASE_GROUP (base_mailops @ base_mailops') ! r');
 
-					(GRP grp, l)
+					(GROUP group, l)
 					    =>
-					    force_l (r, grp @ l);
+					    force_l (r, group @ l);
 
-					(grp, l)
+					(group, l)
 					    =>
-					    force_l (r, grp ! l);
+					    force_l (r, group ! l);
 				   esac;
 			    end;
 			end;
@@ -438,7 +442,7 @@ fun sayGrp (msg, eg) = let
 	};
 
     # This function handles the case of
-    # synchronizing on a list of base mail_ops
+    # synchronizing on a list of base mailops
     # (w/o any negative acknowledgements).
     #
     # It also handles the case of synchronizing
@@ -447,7 +451,7 @@ fun sayGrp (msg, eg) = let
     fun sync_on_base_mailops []    =>  s::dispatch_next_thread ();
 	sync_on_base_mailops [bev] =>  sync_on_one_mailop  bev;
 
-	sync_on_base_mailops base_mailops
+	sync_on_base_mailops  base_mailops
             =>
             {   fun ext ([], block_fns)
                         =>
@@ -484,6 +488,7 @@ fun sayGrp (msg, eg) = let
 		    ext (poll_fn ! r, block_fns)
                         =>
                         case (poll_fn ())
+			    #
 		            MAILOP_ENABLED { priority, do_fn } =>  ext_rdy (r, [(priority, do_fn)], 1);
 			    MAILOP_BLOCKED block_fn            =>  ext     (r, block_fn ! block_fns);
                         esac;
@@ -492,7 +497,7 @@ fun sayGrp (msg, eg) = let
                 # NOTE: Maybe we should just keep
                 #       track of the max priority?
                 #       What about fairness to fixed
-                #       priority mail_ops (e::g., always, timeout?)
+                #       priority mailops (e::g., always, timeout?)
 
 		also
 		fun ext_rdy ([], do_fns, n)
@@ -502,18 +507,20 @@ fun sayGrp (msg, eg) = let
 		    ext_rdy (poll_fn ! r, do_fns, n)
                         =>
                         case (poll_fn ())
+			    #
 		            MAILOP_ENABLED { priority, do_fn } => ext_rdy (r, (priority, do_fn) ! do_fns, n+1);
 			    _                           => ext_rdy (r, do_fns, n);
                         esac;
 		end;
 
 		s::disable_thread_switching ();
+
 		ext (base_mailops, []);
 	    };
     end;
 
     # Walk the mailop group tree,
-    # collecting the base mail_ops
+    # collecting the base mailops
     # (with associated ack flags),
     # also a list of flag sets.
     #
@@ -521,25 +528,25 @@ fun sayGrp (msg, eg) = let
     #     (cCar, List(Flag(Ack)))
     # pair, where the flags are
     # those associated with the
-    # mail_ops covered by the nack
+    # mailops covered by the nack
     # cvar.
     #
-    fun collect grp
+    fun collect group
         =
         {   un_wrapped_flag
                 =
                 REF FALSE;
 
-	    fun gather_wrapped (grp, bl, flg_sets)
+	    fun gather_wrapped (group, bl, flg_sets)
                     =
 		    {	my (bl, _, flg_sets)
                             =
-                            gather (grp, bl, [], flg_sets);
+                            gather (group, bl, [], flg_sets);
 
 			(bl, flg_sets);
 		    }
                     where
-                        fun gather (BASE_GRP base_mailops, bl, all_flgs, flg_sets)
+                        fun gather (BASE_GROUP base_mailops, bl, all_flgs, flg_sets)
                                 =>
                                 {   fun append ([], bl, all_flgs)
                                             =>
@@ -553,79 +560,81 @@ fun sayGrp (msg, eg) = let
 				            };
                                     end;
 
+
 				    my (bl', all_flgs')
 					=
 					append (base_mailops, bl, all_flgs);
 
+
 				    (bl', all_flgs', flg_sets);
 			        };
 
-			    gather (GRP grp, bl, all_flgs, flg_sets)
+			    gather (GROUP group, bl, all_flgs, flg_sets)
                                 =>
-                                {   fun f (grp', (bl', all_flgs', flg_sets'))
+                                {   fun f (group', (bl', all_flgs', flg_sets'))
                                         =
-				        gather (grp', bl', all_flgs', flg_sets');
+				        gather (group', bl', all_flgs', flg_sets');
 
-				    fold_left f (bl, all_flgs, flg_sets) grp;
+				    fold_left f (bl, all_flgs, flg_sets) group;
 			        };
 
-			    gather (NACK_GRP (cvar, grp), bl, all_flgs, flg_sets)
+			    gather (NACK_GROUP (cvar, group), bl, all_flgs, flg_sets)
                                 =>
                                 {   my (bl', all_flgs', flg_sets')
                                         =
-				        gather (grp, bl, [], flg_sets);
+				        gather (group, bl, [], flg_sets);
 
 				    (bl', all_flgs' @ all_flgs, (cvar, all_flgs') ! flg_sets');
 			        };
                         end;
 		    end;
 	  
-	    case grp
-
-	        GRP _ =>
-		    gather (grp, [], [])
+	    case group
+		#
+	        GROUP _ =>
+		    gather (group, [], [])
                     where 
-                        un_wrapped_flag = REF FALSE;
+                        un_wrapped_flag =  REF FALSE;
 
 		        fun append ([],      bl) =>  bl;
 		            append (bev ! r, bl) =>  append (r, (bev, un_wrapped_flag) ! bl);
                         end;
 
-		        fun gather (BASE_GRP base_mailops, bl, flg_sets)
+		        fun gather (BASE_GROUP base_mailops, bl, flg_sets)
 				=>
 				(append (base_mailops, bl), flg_sets);
 
-		            gather (GRP grp, bl, flg_sets)
+		            gather (GROUP group, bl, flg_sets)
                                 =>
-			        fold_left  f  (bl, flg_sets)  grp
+			        fold_left  f  (bl, flg_sets)  group
                                 where
-                                    fun f (grp', (bl', flg_sets'))
+                                    fun f (group', (bl', flg_sets'))
                                         =
-			                gather (grp', bl', flg_sets');
+			                gather (group', bl', flg_sets');
                                 end;
 			
 
-		            gather (grp as NACK_GRP _, bl, flg_sets)
+		            gather (group as NACK_GROUP _, bl, flg_sets)
                                 =>
-			        gather_wrapped (grp, bl, flg_sets);
+			        gather_wrapped (group, bl, flg_sets);
                         end;
 		    end;
 
-	        grp =>
-                    gather_wrapped (grp, [], []);
+	        group =>
+                    gather_wrapped (group, [], []);
             esac;
 	};
 
     # This function handles the more
     # complicated case of synchronization
-    # on groups of mail_ops where negative
+    # on groups of mailops where negative
     # acknowledgements are involved.
     #
-    fun sync_on_grp grp
+    fun sync_on_group group
         =
         {   my (bl, flg_sets)
                 =
-                collect grp;
+                collect group;
 
 	    fun check_cvars ()
                 =
@@ -704,7 +713,7 @@ fun sayGrp (msg, eg) = let
 	    # NOTE: maybe we should just
             # keep track of the max priority?
 	    # What about fairness to fixed
-            # priority mail_ops (e::g., always, timeout?)
+            # priority mailops (e::g., always, timeout?)
 	    #
 	    also
 	    fun ext_rdy ([], do_fns, n)
@@ -740,45 +749,48 @@ fun sayGrp (msg, eg) = let
     fun do_mailop  mailop
         =
         case (force mailop)
-	    BASE_GRP base_mailops =>  sync_on_base_mailops  base_mailops;
-	    grp                   =>  sync_on_grp  grp;
+	    #
+	    BASE_GROUP base_mailops =>  sync_on_base_mailops  base_mailops;
+	    group                   =>  sync_on_group         group;
         esac;
 
 
-    fun select mail_ops
+    fun select mailops
         =
         {   fun force_bl ([], base_mailops)
                     =>
-                    BASE_GRP base_mailops;
+                    BASE_GROUP base_mailops;
 
 	        force_bl (mailop ! r, base_mailops')
                     =>
                     case (force' mailop)
-		        BASE_GRP base_mailops =>  force_bl (r, base_mailops @ base_mailops');
-			GRP grp       =>  force_l  (r, grp @ [BASE_GRP base_mailops']);
-			grp           =>  force_l  (r, [grp, BASE_GRP base_mailops']);
+			#
+		        BASE_GROUP base_mailops =>  force_bl (r, base_mailops @ base_mailops');
+			#
+			GROUP group  =>  force_l  (r, group @ [BASE_GROUP base_mailops']);
+			group        =>  force_l  (r, [group, BASE_GROUP base_mailops']);
                     esac;
 	    end
 
 	    also
-	    fun force_l ([], [grp]) =>  grp;
-	        force_l ([], l)     =>  GRP l;
+	    fun force_l ([], [group]) =>  group;
+	        force_l ([], l)       =>  GROUP l;
 
 	        force_l (mailop ! r, l)
                     =>
                     case (force' mailop, l)
 
-		        (BASE_GRP base_mailops, BASE_GRP base_mailops' ! r')
+		        (BASE_GROUP base_mailops, BASE_GROUP base_mailops' ! r')
                             =>
-			    force_l (r, BASE_GRP (base_mailops @ base_mailops') ! r');
+			    force_l (r, BASE_GROUP (base_mailops @ base_mailops') ! r');
 
-			(GRP grp, l)
+			(GROUP group, l)
                             =>
-                            force_l (r, grp @ l);
+                            force_l (r, group @ l);
 
-		 	(grp, l)
+		 	(group, l)
                             =>
-                            force_l (r, grp ! l);
+                            force_l (r, group ! l);
                     esac;
 	    end
 
@@ -791,26 +803,26 @@ fun sayGrp (msg, eg) = let
                     =>
                     {   cvar = r::CONDITION_VARIABLE (REF (r::CVAR_UNSET []));
 
-		        NACK_GRP (cvar, force' (f (cvar_get_mailop cvar)));
+		        NACK_GROUP (cvar, force' (f (cvar_get_mailop cvar)));
 		    };
 
-		force' (BASE_MAILOPS grp)
+		force' (BASE_MAILOPS group)
                     =>
-                    BASE_GRP grp;
+                    BASE_GROUP group;
 
-		force' (CHOOSE mail_ops)
+		force' (CHOOSE mailops)
                     =>
-                    force_bl (mail_ops, []);
+                    force_bl (mailops, []);
 	    end;
 	  
-	    case (force_bl (mail_ops, []))
-
-	        BASE_GRP base_mailops
+	    case (force_bl (mailops, []))
+		#
+	        BASE_GROUP base_mailops
                     =>
                     sync_on_base_mailops  base_mailops;
 
-	        grp =>
-                    sync_on_grp grp;
+	        group =>
+                    sync_on_group  group;
             esac;
 	};				# fun select
 };					# package mailop
