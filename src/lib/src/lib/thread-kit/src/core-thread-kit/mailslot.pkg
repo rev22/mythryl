@@ -342,8 +342,8 @@ api {
 		=
 		case (clean_and_check (priority, in_q))
 		    #
-		    0 => r::MAILOP_BLOCKED wait_for;
-		    p => r::MAILOP_ENABLED { priority=>p, do_it };
+		    0 => r::MAILOP_UNREADY wait_for;
+		    p => r::MAILOP_READY { priority=>p, do_it };
 		esac;
 	end;
 
@@ -456,8 +456,8 @@ api {
                 =
                 case (clean_and_check (priority, out_q))
 		    #
-		    0        => r::MAILOP_BLOCKED wait_for;
-		    priority => r::MAILOP_ENABLED { priority, do_it };
+		    0        => r::MAILOP_UNREADY wait_for;
+		    priority => r::MAILOP_READY { priority, do_it };
                 esac;
 	end;
 

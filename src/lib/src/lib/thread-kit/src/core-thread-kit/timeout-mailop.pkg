@@ -193,12 +193,12 @@ package timeout_mailop: (weak)  api {
 		=
 		if (sleep_duration == time::zero_time)
 
-		     r::MAILOP_ENABLED
+		     r::MAILOP_READY
                        { priority => -1,
                          do_it    => s::reenable_thread_switching				# Reppyc alls this field doFn
                        };
 		else
-                     r::MAILOP_BLOCKED wait_for;
+                     r::MAILOP_UNREADY wait_for;
                 fi;
 
 	end;
@@ -232,12 +232,12 @@ package timeout_mailop: (weak)  api {
                 =
                 if (time::(<=) (wakeup_time, s::get_approximate_time ()))
 
-		     r::MAILOP_ENABLED
+		     r::MAILOP_READY
                        { priority => -1,
                          do_it    => s::reenable_thread_switching				# Reppy calls this field doFn
                      };
 		else
-                     r::MAILOP_BLOCKED wait_for;
+                     r::MAILOP_UNREADY wait_for;
                 fi;
 	end;
 

@@ -73,13 +73,13 @@ package internal_threadkit_types {
     #     src/lib/thread-kit/src/core-thread-kit/mailop.pkg
     #
     Mailop_Status(X)
-
-      = MAILOP_ENABLED
+      #
+      = MAILOP_READY
           { priority:   Int,
             do_it:      Void -> X						# Reppy calls this field doFn
           }
 
-      | MAILOP_BLOCKED
+      | MAILOP_UNREADY
           { transaction_id:  Ref( Transaction_Id ),
             clean_up:        Void -> Void,
             next:            Void -> Void

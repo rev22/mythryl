@@ -284,13 +284,13 @@ api {
 		    #
 		    EMPTY _
 			=>
-			r::MAILOP_BLOCKED wait_for;
+			r::MAILOP_UNREADY wait_for;
 
 		    NONEMPTY (priority, q)
 			=>
 			{   state := NONEMPTY (priority+1, q);
 
-			    r::MAILOP_ENABLED
+			    r::MAILOP_READY
                               {
                                 priority,
                                 do_it =>   .{  get_msg (state, q);  }

@@ -1,3 +1,4 @@
+2010-03-25-00.17.05: src/lib/src/lib/thread-kit/src/core-thread-kit/mailop.pkg et al: Renamed poll_fn, block_fn, do_fn -> is_ready, wait_for, do_it for clarity and because _fn suffixes on function names are just clutter.
 2010-03-24-23.40.43: src/lib/src/lib/thread-kit/src/core-thread-kit/mailop.pkg: Pervasively change grp,GRP -> group,GROUP for clarity.
 2010-03-24-01.10.59: src/runtime/c-libs/lib7-socket/print-if.c: Print leading zeros on fractional part of time: <<1269410578.067731>> not <<1269410578. 67731>>. (Oops! :-)
 2010-03-23-04.53.31: Commenting and cross-referencing, mostly in the C and Mythryl code for handling Unix signals.

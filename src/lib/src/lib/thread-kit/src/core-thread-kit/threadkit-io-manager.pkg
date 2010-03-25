@@ -92,12 +92,12 @@ package threadkit_io_manager: (weak)  api {
                 =
                 case (poll [poll_request])
 		    #
-		    [pi] =>  r::MAILOP_ENABLED
+		    [pi] =>  r::MAILOP_READY
                                { priority  =>  -1,
                                  do_it     =>  .{  s::reenable_thread_switching ();   pi;  }	# Reppy calls this field doFn
                                };
 
-		    _    =>  r::MAILOP_BLOCKED wait_for;
+		    _    =>  r::MAILOP_UNREADY wait_for;
                 esac;
 	end;
 

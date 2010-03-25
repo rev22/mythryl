@@ -83,9 +83,9 @@ api {
         =
         raise exception FAIL msg;
 
-    Mailop_Status == internal_threadkit_types::Mailop_Status;
-    Mailop        == internal_threadkit_types::Mailop;
-    Base_Mailop(X) = internal_threadkit_types::Base_Mailop( X );
+    Mailop_Status == r::Mailop_Status;
+    Mailop        == r::Mailop;
+    Base_Mailop(X) = r::Base_Mailop( X );
 
 
     # Condition variables.
@@ -178,10 +178,10 @@ api {
 
 			    state := r::CVAR_SET (n+1);
 
-			    MAILOP_ENABLED { priority => n, do_it };
+			    MAILOP_READY { priority => n, do_it };
 			};
 
-		    _ => MAILOP_BLOCKED wait_for;
+		    _ => MAILOP_UNREADY wait_for;
                 esac;
 	end;
 
@@ -190,7 +190,7 @@ api {
         =
         BASE_MAILOPS [   fn ()
                     =
-                    r::MAILOP_ENABLED
+                    r::MAILOP_READY
                       { priority  =>  -1,
                         do_it =>  fn () = {   s::reenable_thread_switching ();		# Reppy calls this field doFn
                                               v;
@@ -233,8 +233,8 @@ api {
                 =
                 case (is_ready ())
 		    #
-		    MAILOP_ENABLED { priority, do_it } =>  MAILOP_ENABLED { priority, do_it => wfn o do_it };
-		    MAILOP_BLOCKED wait_for            =>  MAILOP_BLOCKED (wfn o wait_for);
+		    MAILOP_READY { priority, do_it } =>  MAILOP_READY { priority, do_it => wfn o do_it };
+		    MAILOP_UNREADY wait_for          =>  MAILOP_UNREADY (wfn o wait_for);
                 esac;
 
 	    fun wrap' (BASE_MAILOPS base_mailops) => BASE_MAILOPS (map wrap_base_mailop base_mailops);
@@ -261,8 +261,8 @@ api {
                 =
                 case (is_ready ())
 		    #
-		    MAILOP_ENABLED { priority, do_it } =>  MAILOP_ENABLED { priority, do_it => wrap do_it };
-		    MAILOP_BLOCKED wait_for            =>  MAILOP_BLOCKED (wrap wait_for);
+		    MAILOP_READY { priority, do_it } =>  MAILOP_READY { priority, do_it => wrap do_it };
+		    MAILOP_UNREADY wait_for          =>  MAILOP_UNREADY (wrap wait_for);
                 esac;
 
 	    fun wrap' (BASE_MAILOPS base_mailops) =>  BASE_MAILOPS (map wrap_base_mailop base_mailops);
@@ -426,11 +426,11 @@ fun sayGroup (msg, eg) = let
 
 	    case (is_ready ())
 		#	      
-		MAILOP_ENABLED { do_it, ... }					# Reppy calls this field doFn
+		MAILOP_READY { do_it, ... }					# Reppy calls this field doFn
 		    =>
 		    do_it ();
 
-		MAILOP_BLOCKED wait_for
+		MAILOP_UNREADY wait_for
 		    =>
 		    {   my (flag, set_flag)
                             =
@@ -489,8 +489,8 @@ fun sayGroup (msg, eg) = let
                         =>
                         case (is_ready ())
 			    #
-		            MAILOP_ENABLED { priority, do_it } =>  ext_rdy (r, [(priority, do_it)], 1);
-			    MAILOP_BLOCKED wait_for            =>  ext     (r, wait_for ! wait_fors);
+		            MAILOP_READY { priority, do_it } =>  ext_rdy (r, [(priority, do_it)], 1);
+			    MAILOP_UNREADY wait_for            =>  ext     (r, wait_for ! wait_fors);
                         esac;
 		end
 
@@ -508,7 +508,7 @@ fun sayGroup (msg, eg) = let
                         =>
                         case (is_ready ())
 			    #
-		            MAILOP_ENABLED { priority, do_it } =>  ext_rdy (r, (priority, do_it) ! do_its, n+1);
+		            MAILOP_READY { priority, do_it } =>  ext_rdy (r, (priority, do_it) ! do_its, n+1);
 			    _                                  =>  ext_rdy (r, do_its, n);
                         esac;
 		end;
@@ -706,8 +706,8 @@ fun sayGroup (msg, eg) = let
                     =>
                     case (is_ready ())
 			#
-		        MAILOP_ENABLED { priority, do_it } =>  ext_rdy (r, [(priority, (do_it, flag))], 1);
-		        MAILOP_BLOCKED wait_for            =>  ext (r, (wait_for, flag) ! wait_fors);
+		        MAILOP_READY { priority, do_it } =>  ext_rdy (r, [(priority, (do_it, flag))], 1);
+		        MAILOP_UNREADY wait_for            =>  ext (r, (wait_for, flag) ! wait_fors);
                     esac;
 	    end
 
@@ -732,7 +732,7 @@ fun sayGroup (msg, eg) = let
                     =>
                     case (is_ready ())
 			#
-		        MAILOP_ENABLED { priority, do_it }
+		        MAILOP_READY { priority, do_it }
                             =>
 			    ext_rdy (r, (priority, (do_it, flag)) ! do_its, n+1);
 

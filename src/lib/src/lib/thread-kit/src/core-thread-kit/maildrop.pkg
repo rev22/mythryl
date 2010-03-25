@@ -360,10 +360,10 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 		case *value
 		    #
 		    NULL =>
-                        r::MAILOP_BLOCKED wait_for;
+                        r::MAILOP_UNREADY wait_for;
 
 		    THE v =>
-                        r::MAILOP_ENABLED
+                        r::MAILOP_READY
                           {
                             priority  =>   bump_priority priority,
 
@@ -481,11 +481,11 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
 		case *value
 		    #	        
 		    NULL =>
-			r::MAILOP_BLOCKED wait_for;
+			r::MAILOP_UNREADY wait_for;
 
 		    THE v
 			=>
-			r::MAILOP_ENABLED
+			r::MAILOP_READY
 			  {
 			    priority =>   bump_priority priority,
 			    do_it    =>  .{   s::reenable_thread_switching ();		# Reppy calls this field doFn
@@ -581,9 +581,9 @@ package maildrop: Maildrop {			# Maildrop			is from   src/lib/thread-kit/src/cor
                 =
                 case *value
 		    #
-		    NULL  =>  r::MAILOP_BLOCKED wait_for;
+		    NULL  =>  r::MAILOP_UNREADY wait_for;
 
-		    THE v =>  r::MAILOP_ENABLED
+		    THE v =>  r::MAILOP_READY
                                 {
                                   priority =>   bump_priority priority,
 
