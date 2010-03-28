@@ -205,6 +205,17 @@ herein
 	    }
 	    ;
 
+	query_colors
+	    :
+	    Xsession
+	    ->
+	    { cmap:	xt::Xid,
+	      pixels:   List(rgb8::Rgb8)
+	    }
+	    ->
+	    List(rgb::Rgb)
+	    ;
+
 	query_best_size
 	    :	
 	    Xsession

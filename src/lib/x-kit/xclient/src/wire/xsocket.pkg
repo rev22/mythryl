@@ -1560,6 +1560,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	# (Maybe we should predefine them all here?)
 	#
 	query_best_size    =  query  (v2w::encode_query_best_size,    w2v::decode_query_best_size_reply   );
+	query_colors       =  query  (v2w::encode_query_colors,       w2v::decode_query_colors_reply      );
 	query_font         =  query  (v2w::encode_query_font,         w2v::decode_query_font_reply        );
 	query_pointer      =  query  (v2w::encode_query_pointer,      w2v::decode_query_pointer_reply     );
 	query_tree         =  query  (v2w::encode_query_tree,         w2v::decode_query_tree_reply        );

@@ -146,6 +146,16 @@ herein
 	    }
 	    ;
 
+	query_colors
+	    :
+	    Xsocket
+	    ->
+	    { cmap:	xt::Xid,
+	      pixels:   List(rgb8::Rgb8)
+	    }
+	    ->
+	    List(rgb::Rgb)
+	    ;
 
 	query_best_size
 	    :	

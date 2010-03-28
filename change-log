@@ -1,3 +1,4 @@
+2010-03-28-15.19.40: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_best_size().
 2010-03-28-14.56.09: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_text_extents().
 2010-03-28-14.56.09: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_text_extents().
 2010-03-28-14.40.08: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_tree().
