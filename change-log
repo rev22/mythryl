@@ -1,3 +1,5 @@
+2010-03-28-14.56.09: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_text_extents().
+2010-03-28-14.56.09: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_text_extents().
 2010-03-28-14.40.08: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_tree().
 2010-03-28-14.23.28: src/lib/x-kit/xclient/src/window/xsession.api: Add query_font, query_pointer, forwarded from xsocket.pkg.
 2010-03-28-13.54.15: src/lib/x-kit/xclient/src/wire/xsocket.api: Add query_pointer(). Untested.

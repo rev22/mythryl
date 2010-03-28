@@ -391,6 +391,7 @@ herein
 
 	    flush_out          =  apply_to_xsocket  xok::flush;
 
+	    query_best_size    =  apply_to_xsocket  xok::query_best_size;
 	    query_font         =  apply_to_xsocket  xok::query_font;
 	    query_pointer      =  apply_to_xsocket  xok::query_pointer;
 	    query_text_extents =  apply_to_xsocket  xok::query_text_extents;

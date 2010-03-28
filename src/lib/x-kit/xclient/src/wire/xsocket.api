@@ -147,6 +147,19 @@ herein
 	    ;
 
 
+	query_best_size
+	    :	
+	    Xsocket
+	    ->
+            { drawable: xt::Xid,
+              ilk:      xt::Best_Size_Ilk, 
+	      size:     g::Size
+            }
+	    ->
+	    { high:	Int,
+              wide:	Int
+            }
+	    ;
 	
 	query_text_extents
 	    :
