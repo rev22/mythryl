@@ -1,3 +1,4 @@
+2010-03-28-13.01.03: Moved query() and query_font() from src/lib/x-kit/xclient/src/window/font-imp.pkg -> src/lib/x-kit/xclient/src/wire/xsocket.pkg to make them more generally available and forestall replication.
 2010-03-28-00.32.12: src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg: Light cleaning, create explicit api definition and establish sendevent-to-wire.api to hold it.
 2010-03-25-01.35.54: src/lib/std/src/rw-char-vector-slice.pkg and elsewhere: Basic cleaning and commenting.
 2010-03-25-00.36.49: src/lib/src/lib/thread-kit/src/core-thread-kit/internal-threadkit-types.pkg et al:  Renamed MAILOP_ENABLED, MAILOP_BLOCKED ->  MAILOP_READY, MAILOP_UNREADY for clarity and symmetry, and because blocking is for threads, not mailops.

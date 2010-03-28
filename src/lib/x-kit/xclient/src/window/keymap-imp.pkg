@@ -177,8 +177,8 @@ herein
 	      {
 		lookup:	            xt::Keycode -> List(xt::Keysym),
 		#
-		is_mode_switched:   xt::Modifier_Key_State -> Bool,
-		shift_mode:	    xt::Modifier_Key_State -> Shift_Mode
+		is_mode_switched:   xt::Modifier_Keys_State -> Bool,
+		shift_mode:	    xt::Modifier_Keys_State -> Shift_Mode
 	      };
 
 	# Return the upper-case and lower-case
@@ -355,7 +355,7 @@ herein
 	Plea_Mail
 	  #	
 	  =	REFRESH
-	  | LOOKUP  (xt::Keycode, xt::Modifier_Key_State)
+	  | LOOKUP  (xt::Keycode, xt::Modifier_Keys_State)
 	  ;
 
 
@@ -414,15 +414,15 @@ herein
 
 
 	fun look_up_keysym (KEYMAP_IMP { plea_slot, reply_slot } ) ( {
-	      keycode, mod_state, ...
+	      keycode, modifier_keys_state, ...
 	    }
 	    :
 	    et::Key_Xevtinfo)
 	    =
-	    {   give  (plea_slot, LOOKUP (keycode, mod_state));
+	    {   give  (plea_slot, LOOKUP (keycode, modifier_keys_state));
 
 		( take  reply_slot,
-		  mod_state
+		  modifier_keys_state
 		);
 	    };
     };			# package keymap_imp

@@ -166,7 +166,7 @@ herein
 
 	# A modifier key (shift, ctrl...) state vector:
 	#
-	Modifier_Key_State
+	Modifier_Keys_State
           #
 	  = ANY_MOD_KEY
           | MKSTATE  Unt
@@ -174,7 +174,7 @@ herein
 
 	# A Mouse button state vector:
 	#
-	Mousebutton_State
+	Mousebuttons_State
 	  =
           MOUSEBUTTON_STATE  Unt;
 

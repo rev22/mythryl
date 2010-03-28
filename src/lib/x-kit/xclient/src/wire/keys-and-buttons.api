@@ -21,36 +21,36 @@ herein
 
     api Keys_And_Buttons {
 
-	make_modifier_key_state:  List(xt::Modifier_Key) -> xt::Modifier_Key_State;
+	make_modifier_key_state:  List(xt::Modifier_Key) -> xt::Modifier_Keys_State;
 
-	union_of_modifier_key_states:         (xt::Modifier_Key_State, xt::Modifier_Key_State) -> xt::Modifier_Key_State;
-	intersection_of_modifier_key_states:  (xt::Modifier_Key_State, xt::Modifier_Key_State) -> xt::Modifier_Key_State;
+	union_of_modifier_key_states:         (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> xt::Modifier_Keys_State;
+	intersection_of_modifier_key_states:  (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> xt::Modifier_Keys_State;
 
-	modifier_key_states_match:            (xt::Modifier_Key_State, xt::Modifier_Key_State) -> Bool;			# Returns TRUE, if a==b or if b==ANY_MODIFIER.
-	modifier_keys_state_is_empty:          xt::Modifier_Key_State -> Bool;
+	modifier_key_states_match:            (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> Bool;			# Returns TRUE, if a==b or if b==ANY_MODIFIER.
+	modifier_keys_state_is_empty:          xt::Modifier_Keys_State -> Bool;
 
-	shift_key_is_set:       xt::Modifier_Key_State -> Bool;
-	shiftlock_key_is_set:   xt::Modifier_Key_State -> Bool;
-	control_key_is_set:     xt::Modifier_Key_State -> Bool;
-	modifier_key_is_set:   (xt::Modifier_Key_State, Int) -> Bool;
+	shift_key_is_set:       xt::Modifier_Keys_State -> Bool;
+	shiftlock_key_is_set:   xt::Modifier_Keys_State -> Bool;
+	control_key_is_set:     xt::Modifier_Keys_State -> Bool;
+	modifier_key_is_set:   (xt::Modifier_Keys_State, Int) -> Bool;
 
-	make_mousebutton_state:  List(xt::Mousebutton) -> xt::Mousebutton_State;
+	make_mousebutton_state:  List(xt::Mousebutton) -> xt::Mousebuttons_State;
 
-	union_of_mousebutton_states:         (xt::Mousebutton_State, xt::Mousebutton_State) -> xt::Mousebutton_State;
-	intersection_of_mousebutton_states:  (xt::Mousebutton_State, xt::Mousebutton_State) -> xt::Mousebutton_State;
+	union_of_mousebutton_states:         (xt::Mousebuttons_State, xt::Mousebuttons_State) -> xt::Mousebuttons_State;
+	intersection_of_mousebutton_states:  (xt::Mousebuttons_State, xt::Mousebuttons_State) -> xt::Mousebuttons_State;
 
-	invert_button_in_mousebutton_state:  (xt::Mousebutton_State, xt::Mousebutton) -> xt::Mousebutton_State;
+	invert_button_in_mousebutton_state:  (xt::Mousebuttons_State, xt::Mousebutton) -> xt::Mousebuttons_State;
 
-	no_mousebuttons_set:     xt::Mousebutton_State -> Bool;
-	some_mousebutton_is_set: xt::Mousebutton_State -> Bool;
+	no_mousebuttons_set:     xt::Mousebuttons_State -> Bool;
+	some_mousebutton_is_set: xt::Mousebuttons_State -> Bool;
 	#
-	mousebutton_1_is_set:    xt::Mousebutton_State -> Bool;
-	mousebutton_2_is_set:    xt::Mousebutton_State -> Bool;
-	mousebutton_3_is_set:    xt::Mousebutton_State -> Bool;
-	mousebutton_4_is_set:    xt::Mousebutton_State -> Bool;
-	mousebutton_5_is_set:    xt::Mousebutton_State -> Bool;
+	mousebutton_1_is_set:    xt::Mousebuttons_State -> Bool;
+	mousebutton_2_is_set:    xt::Mousebuttons_State -> Bool;
+	mousebutton_3_is_set:    xt::Mousebuttons_State -> Bool;
+	mousebutton_4_is_set:    xt::Mousebuttons_State -> Bool;
+	mousebutton_5_is_set:    xt::Mousebuttons_State -> Bool;
 	#
-	mousebutton_is_set:  (xt::Mousebutton_State, xt::Mousebutton) -> Bool;
+	mousebutton_is_set:  (xt::Mousebuttons_State, xt::Mousebutton) -> Bool;
 
     };								# api Keys_And_Buttons
 

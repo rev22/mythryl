@@ -186,13 +186,13 @@ herein
 				    ->
 				    { child:       Null_Or(xt::Xid),
 				      #
-				      mbut_state:  xt::Mousebutton_State, 
-				      mod_state:   xt::Modifier_Key_State, 
+				      mousebuttons_state:  xt::Mousebuttons_State, 
+				      modifier_keys_state:   xt::Modifier_Keys_State, 
 				      #
 				      root:        xt::Xid,
 				      #
-				      root_pt:     g::Point,
-				      window_pt:   g::Point,
+				      root_point:     g::Point,
+				      window_point:   g::Point,
 				      #
 				      same_screen: Bool
 				    };

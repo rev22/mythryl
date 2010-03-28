@@ -30,7 +30,7 @@ herein
 	    ->
 	    et::Key_Xevtinfo
 	    ->
-	    (ks::Keysym, xt::Modifier_Key_State);
+	    (ks::Keysym, xt::Modifier_Keys_State);
     };
 
 end;

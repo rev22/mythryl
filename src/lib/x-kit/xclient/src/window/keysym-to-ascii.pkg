@@ -73,7 +73,7 @@ herein
 	      | ND {
 		    key:     Int,
 		    color:   Color,
-		    namings: List( (xt::Modifier_Key_State, String) ),
+		    namings: List( (xt::Modifier_Keys_State, String) ),
 		    left:    Tree,
 		    right:   Tree
 		  };

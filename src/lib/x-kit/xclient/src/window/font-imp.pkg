@@ -78,32 +78,6 @@ herein
 		reply_slot:    Mailslot( Reply_Mail )
 	      };
 
-	# Given message encode and reply decode
-	# functions, send and receive a query: 
-	#
-# Moved to xsocket to avoid replication
-#	fun query (encode, decode) connection
-#	    =
-#	    ask
-#	    where
-#		request_reply =  xok::request_reply  connection;
-#
-#		fun ask msg
-#		    =
-#		    decode (do_mailop (request_reply (encode msg)))
-#		    except
-#			xok::LOST_REPLY      => raise exception (xgripe::XERROR "[reply lost]");
-#			xok::ERROR_REPLY err => raise exception (xgripe::XERROR (e2s::xerror_to_string err));
-#		    end;
-#	    end;
-
-#	query_font
-#	    =
-#	    query
-#	      ( v2w::encode_query_font,
-#		w2v::decode_query_font_reply
-#	      );
-
 	fun make_font_imp (xdpy as dy::XDISPLAY { xsocket, next_xid, ... } )
 	    =
 	    {   request_and_check = xok::request_and_check  xsocket;

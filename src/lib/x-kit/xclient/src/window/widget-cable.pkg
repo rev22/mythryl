@@ -57,7 +57,7 @@ herein
 		  button:  	 xt::Mousebutton,	# Button that is in transition.
 		  window_point:  g::Point,		# Mouse position in window coords.
 		  screen_point:  g::Point,		# Mouse position in screen coords. 
-		  state:   	 xt::Mousebutton_State,	# List of buttons that are pressed. 
+		  state:   	 xt::Mousebuttons_State,	# List of buttons that are pressed. 
 							# NOTE: We may also want the modifier-key state.
 		  timestamp:	 ts::Xserver_Timestamp
 		};
@@ -125,8 +125,8 @@ herein
 	#     the mouse stream.
 	#
 	Keyboard_Mail
-	  = KEY_PRESS    (ks::Keysym, xt::Modifier_Key_State)
-	  | KEY_RELEASE  (ks::Keysym, xt::Modifier_Key_State)
+	  = KEY_PRESS    (ks::Keysym, xt::Modifier_Keys_State)
+	  | KEY_RELEASE  (ks::Keysym, xt::Modifier_Keys_State)
 	  | KEY_CONFIG_SYNC
 	  ;
 

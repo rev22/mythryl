@@ -94,25 +94,25 @@ herein
 
 		fun do_button_press (path, info:  et::Button_Xevtinfo)
 		    =
-		    {   info ->  { button, event_pt, root_pt, timestamp, mbut_state, ... };
+		    {   info ->  { button, event_point, root_point, timestamp, mousebuttons_state, ... };
 
-			mail =  if (kb::no_mousebuttons_set  mbut_state)
+			mail =  if (kb::no_mousebuttons_set  mousebuttons_state)
 				    #
 				    wc::MOUSE_FIRST_DOWN
 				      {
 					button,
-					window_point => event_pt,
-					screen_point => root_pt,
+					window_point => event_point,
+					screen_point => root_point,
 					timestamp
 				      };
 				else
 				    wc::MOUSE_DOWN
 				      {
 					button,
-					window_point => event_pt,
-					screen_point => root_pt,
+					window_point => event_point,
+					screen_point => root_point,
 					  #  invert button so that the state is post-transition 
-					state => kb::invert_button_in_mousebutton_state (mbut_state, button),
+					state => kb::invert_button_in_mousebutton_state (mousebuttons_state, button),
 					timestamp
 				      };
 				fi;
@@ -124,25 +124,25 @@ herein
 		    =
 		    route_m (wrap_mail (path, msg))
 		    where 
-			info ->   { button, event_pt, root_pt, timestamp, mbut_state, ... };
+			info ->   { button, event_point, root_point, timestamp, mousebuttons_state, ... };
 
-			state =  kb::invert_button_in_mousebutton_state (mbut_state, button);
+			state =  kb::invert_button_in_mousebutton_state (mousebuttons_state, button);
 
 			msg = if (kb::no_mousebuttons_set  state)
 				  #
 				  wc::MOUSE_LAST_UP
 				      {
 					button,
-					window_point => event_pt,
-					screen_point => root_pt,
+					window_point => event_point,
+					screen_point => root_point,
 					timestamp
 				      };
 			      else
 				  wc::MOUSE_UP
 				      {
 					button,
-					window_point => event_pt,
-					screen_point => root_pt,
+					window_point => event_point,
+					screen_point => root_point,
 					state,
 					timestamp
 				      };
@@ -175,17 +175,17 @@ herein
 		    route_xevent (path, et::BUTTON_PRESS_XEVENT   arg) =>   do_button_press    (path, arg);
 		    route_xevent (path, et::BUTTON_RELEASE_XEVENT arg) =>   do_button_release  (path, arg);
 
-		    route_xevent (path, et::MOTION_NOTIFY_XEVENT { event_pt, root_pt, timestamp, ... } )
+		    route_xevent (path, et::MOTION_NOTIFY_XEVENT { event_point, root_point, timestamp, ... } )
 			=>
-			route_m (wrap_mail (path, wc::MOUSE_MOTION { window_point=>event_pt, screen_point=>root_pt, timestamp } ));
+			route_m (wrap_mail (path, wc::MOUSE_MOTION { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
-		    route_xevent (path, et::ENTER_NOTIFY_XEVENT { event_pt, root_pt, timestamp, ... } )
+		    route_xevent (path, et::ENTER_NOTIFY_XEVENT { event_point, root_point, timestamp, ... } )
 			=>
-			route_m (wrap_mail (path, wc::MOUSE_ENTER { window_point=>event_pt, screen_point=>root_pt, timestamp } ));
+			route_m (wrap_mail (path, wc::MOUSE_ENTER { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
-		    route_xevent (path, et::LEAVE_NOTIFY_XEVENT { event_pt, root_pt, timestamp, ... } )
+		    route_xevent (path, et::LEAVE_NOTIFY_XEVENT { event_point, root_point, timestamp, ... } )
 			=>
-			route_m (wrap_mail (path, wc::MOUSE_LEAVE { window_point=>event_pt, screen_point=>root_pt, timestamp } ));
+			route_m (wrap_mail (path, wc::MOUSE_LEAVE { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
 	  /*******
 		  | routeXEvt (_, et::FOCUS_IN_XEVENT {... } ) = ()

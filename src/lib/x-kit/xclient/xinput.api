@@ -19,378 +19,382 @@
 # This api is implemented in:
 #     src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 
-api Xinput {
+stipulate
+    include threadkit;
+herein
 
-    package xg:  Xgeometry;		# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
-    package xc:  Xcore;			# Xcore		is from   src/lib/x-kit/xclient/xcore.api
+    api Xinput {
 
-    #    "X attempts to provide a portable model of input devices;
-    #     part of this support includes support for ``modifier keys'';
-    #     i.e., keys that do not have an individual meaning, but which
-    #     modify the meaning of other keys.  The following datatype
-    #     represents the modifier keys."
-    #
-    #	      -- p26 http:://mythryl.org/pub/exene/1993-lib.ps
-    #            (Reppy + Gansner's 1993 eXene library manual.)
-    #
-    #
-    Modifier_Key
-      = SHIFT_KEY | LOCK_KEY | CONTROL_KEY
-      | MOD1KEY | MOD2KEY | MOD3KEY | MOD4KEY | MOD5KEY
-      | ANY_MODIFIER
-      ;
+	package xg:  Xgeometry;		# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
+	package xc:  Xcore;			# Xcore		is from   src/lib/x-kit/xclient/xcore.api
 
-    #     "The state of the modifier buttons (i.e., which are depressed)
-    #      is represented by:"
-    #
-    #	      -- p26 http:://mythryl.org/pub/exene/1993-lib.ps
-    #            (Reppy + Gansner's 1993 eXene library manual.)
-    #
-    eqtype Modifier_Key_State;
-
-    make_modifier_key_state:  List(Modifier_Key) -> Modifier_Key_State;
-
-    union_of_modifier_key_states:         (Modifier_Key_State, Modifier_Key_State) -> Modifier_Key_State;
-    intersection_of_modifier_key_states:  (Modifier_Key_State, Modifier_Key_State) -> Modifier_Key_State;
-
-    modifier_keys_state_is_empty:  Modifier_Key_State -> Bool;
-    shift_key_is_set:              Modifier_Key_State -> Bool;
-    shiftlock_key_is_set:          Modifier_Key_State -> Bool;
-    control_key_is_set:            Modifier_Key_State -> Bool;
-
-    modifier_key_is_set:  (Modifier_Key_State, Int) -> Bool;
-
-    # Keysyms are portable keycap representations:
-    #
-    Keysym = KEYSYM  Int | NO_SYMBOL;
-
-    # Keysym to ASCII translations:
-    #
-    Keysym_To_Ascii_Mapping;
-
-    default_keysym_to_ascii_mapping:  Keysym_To_Ascii_Mapping;
-
-    rebind_keysym:  Keysym_To_Ascii_Mapping -> (Keysym, List(Modifier_Key), String) -> Keysym_To_Ascii_Mapping;
-
-    exception KEYSYM_NOT_FOUND;
-
-    map_keysym_to_ascii:  Keysym_To_Ascii_Mapping -> (Keysym, Modifier_Key_State) -> String;
-
-
-
-    # Mouse buttons 
-    #
-    Mousebutton = MOUSEBUTTON  Int;
-
-    # Mouse-d button states 
-    #
-    eqtype Mousebutton_State;
-
-    make_mousebutton_state:  List(Mousebutton) -> Mousebutton_State;
-
-    union_of_mousebutton_states:      (Mousebutton_State, Mousebutton_State) -> Mousebutton_State;
-    intersection_of_mousebutton_states:  (Mousebutton_State, Mousebutton_State) -> Mousebutton_State;
-
-    invert_button_in_mousebutton_state:  ((Mousebutton_State, Mousebutton)) -> Mousebutton_State;
-
-    no_mousebuttons_set:     Mousebutton_State -> Bool;
-    some_mousebutton_is_set: Mousebutton_State -> Bool;
-    #
-    mousebutton_1_is_set:    Mousebutton_State -> Bool;
-    mousebutton_2_is_set:    Mousebutton_State -> Bool;
-    mousebutton_3_is_set:    Mousebutton_State -> Bool;
-    mousebutton_4_is_set:    Mousebutton_State -> Bool;
-    mousebutton_5_is_set:    Mousebutton_State -> Bool;
-    #
-    mousebutton_is_set:   (Mousebutton_State, Mousebutton) -> Bool;
-
-
-    # Keyboard messages:
-    #
-    Keyboard_Mail
-      = KEY_PRESS    (Keysym, Modifier_Key_State)
-      | KEY_RELEASE  (Keysym, Modifier_Key_State)
-      | KEY_CONFIG_SYNC
-      ;
-
-    # Mouse messages:
-    #
-    Mouse_Mail
-      #
-      = MOUSE_MOTION  {
-	    window_point:  xg::Point,			# Mouse position in window coords.
-	    screen_point:  xg::Point,			# Mouse position in screen coords.
-	    timestamp:     xc::xserver_timestamp::Xserver_Timestamp
-	  }
-
-      | MOUSE_FIRST_DOWN  {
-	    button:        Mousebutton,			# Button that is in transition 
-	    window_point:  xg::Point,			# Mouse position in window coords 
-	    screen_point:  xg::Point,			# Mouse position in screen coords 
-	    timestamp:     xc::xserver_timestamp::Xserver_Timestamp
-	  }
-
-      | MOUSE_LAST_UP  {
-	    button:	   Mousebutton,			# Button that is in transition.
-	    window_point:  xg::Point,			# Mouse position in window coords.
-	    screen_point:  xg::Point,			# Mouse position in screen coords.
-	    timestamp:     xc::xserver_timestamp::Xserver_Timestamp
-	  }
-
-      | MOUSE_DOWN  {
-	    button:  	   Mousebutton,			# Button that is in transition.
-	    window_point:  xg::Point,			# Mouse position in window coords.
-	    screen_point:  xg::Point,			# Mouse position in screen coords.
-	    state:         Mousebutton_State,		# State of the mouse buttons.
-	    timestamp:     xc::xserver_timestamp::Xserver_Timestamp
-	  }
-
-      | MOUSE_UP  {
-	    button:  	   Mousebutton,			# Button that is in transition.
-	    window_point:  xg::Point,			# Mouse position in window coords.
-	    screen_point:  xg::Point,			# Mouse position in screen coords.
-	    state:   	   Mousebutton_State,		# State of the mouse buttons.
-	    timestamp:     xc::xserver_timestamp::Xserver_Timestamp
-	  }
-
-      | MOUSE_ENTER  {
-	    window_point:  xg::Point,			# Mouse position in window coords.
-	    screen_point:  xg::Point,			# Mouse position in screen coords.
-	    timestamp:     xc::xserver_timestamp::Xserver_Timestamp
-	  }
-
-      | MOUSE_LEAVE  {
-	    window_point:  xg::Point,			# Mouse position in window coords.
-	    screen_point:  xg::Point,			# Mouse position in screen coords.
-	    timestamp:     xc::xserver_timestamp::Xserver_Timestamp
-	  }
-
-      | MOUSE_CONFIG_SYNC
-      ;
-
-
-    # Command/control messages from parent 
-    #
-    Other_Mail
-      = ETC_REDRAW  List( xg::Box )
-      | ETC_RESIZE        xg::Box
-      #	
-      | ETC_CHILD_BIRTH   xc::Window
-      | ETC_CHILD_DEATH   xc::Window
-      | ETC_OWN_DEATH
-      ;
-
-    # Command/control messages to parent (really requests) 
-    #
-    Mail_To_Mom
-      = REQ_RESIZE			# Ask mom to resize our window.
-      | REQ_DESTRUCTION
-      ;
-
-
-    # Envelopes are delivered hop-by-hop down
-    # the topwindow's widget hierarchy according
-    # to the route recorded on the envelope.
-
-    # Mail envelopes for hop-by-hop routing.
-    #
-    # These also carry sequence numbers so
-    # the original order of keyboard vs mouse
-    # events can be recovered when necessary:
-    #
-    Envelope X;
-
-    # Hop-by-hop envelope routing -- return
-    # value for route_envelope():
-    #
-    Pass_To X
-      = TO_SELF   X			# Envelope has reached its target window/widget.
-      | TO_CHILD  Envelope(X)		# Envelope needs to be passed on down the widget hierarchy.
-      ;
-
-    route_envelope:   Envelope(X) ->  Pass_To(X);
+	#    "X attempts to provide a portable model of input devices;
+	#     part of this support includes support for ``modifier keys'';
+	#     i.e., keys that do not have an individual meaning, but which
+	#     modify the meaning of other keys.  The following datatype
+	#     represents the modifier keys."
 	#
-	# Figure out next step in delivering
-	# an envelope -- either it is for us,
-	# or else it needs to be passed to
-	# one of our kids.
+	#	      -- p26 http:://mythryl.org/pub/exene/1993-lib.ps
+	#            (Reppy + Gansner's 1993 eXene library manual.)
+	#
+	#
+	Modifier_Key
+	  = SHIFT_KEY | LOCK_KEY | CONTROL_KEY
+	  | MOD1KEY | MOD2KEY | MOD3KEY | MOD4KEY | MOD5KEY
+	  | ANY_MODIFIER
+	  ;
 
-    to_window:    (Envelope(X), xc::Window) -> Bool;
+	#     "The state of the modifier buttons (i.e., which are depressed)
+	#      is represented by:"
 	#
-	# Compare envelope to window and return
-	# TRUE iff envelope should be routed to
-	# that window for delivery.
+	#	      -- p26 http:://mythryl.org/pub/exene/1993-lib.ps
+	#            (Reppy + Gansner's 1993 eXene library manual.)
+	#
+	eqtype Modifier_Keys_State;
 
-    exception NO_MATCH_WINDOW;
+	make_modifier_key_state:  List(Modifier_Key) -> Modifier_Keys_State;
 
-    next_stop_for_envelope:  List( (xc::Window, X) ) ->  Envelope(Y) -> X;
-	#
-	# Search a list of child windows
-	# and return the one matching the
-	# given envelope's delivery route.
-	#
-	# Raise NO_MATCH_WINDOW if there
-	# is no match. (Shouldn't happen.)
-	#
-	# This function does a linear sequential
-	# search which is usually fast enough;
-	# if a window has too many children for
-	# this to be sensible, use instead
-	#
-	#    next_stop_for_envelope_via_hashtable
+	union_of_modifier_key_states:         (Modifier_Keys_State, Modifier_Keys_State) -> Modifier_Keys_State;
+	intersection_of_modifier_key_states:  (Modifier_Keys_State, Modifier_Keys_State) -> Modifier_Keys_State;
 
-    next_stop_for_envelope_via_hashtable:   xc::Window_Map(X) ->  Envelope(Y) -> X;
-	#
-	# Faster version of above, used in
-	#
-	#     src/lib/x-kit/widget/basic/xevent-mail-router.pkg
+	modifier_keys_state_is_empty:  Modifier_Keys_State -> Bool;
+	shift_key_is_set:              Modifier_Keys_State -> Bool;
+	shiftlock_key_is_set:          Modifier_Keys_State -> Bool;
+	control_key_is_set:            Modifier_Keys_State -> Bool;
 
-    envelope_before:   (Envelope(X),  Envelope(X)) -> Bool;
-	#
-	# Compare envelopes by sequence number.
-	#
-	# Since keyboard- and mouse-event envelopes
-	# get routed down separate streams, it is
-	# possible for them to be delivered out of
-	# order.  Most widgets do not care, but those
-	# which do can use this function to recover
-	# the original ordering.
-	#
-	# (No code currently uses this.  I'm dubious
-	# about it -- a widget cannot know how long
-	# to wait for possible out-of-order envelopes
-	# to arrive before responding, and any waiting
-	# will increase system response latency, which
-        # is not where we want to be going.
-        #     I suspect mouse and keyboard streams
-	# should be combined into one to guarantee
-	# in-order delivery, with suitable interface
-	# sugar to make this equally easy for client
-	# code to use. 2010-01-14 CrT. XXX BUGGO FIXME)
+	modifier_key_is_set:  (Modifier_Keys_State, Int) -> Bool;
 
-    envelope_contents:   Envelope(X) -> X;
+	# Keysyms are portable keycap representations:
+	#
+	Keysym = KEYSYM  Int | NO_SYMBOL;
+
+	# Keysym to ASCII translations:
+	#
+	Keysym_To_Ascii_Mapping;
+
+	default_keysym_to_ascii_mapping:  Keysym_To_Ascii_Mapping;
+
+	rebind_keysym:  Keysym_To_Ascii_Mapping -> (Keysym, List(Modifier_Key), String) -> Keysym_To_Ascii_Mapping;
+
+	exception KEYSYM_NOT_FOUND;
+
+	map_keysym_to_ascii:  Keysym_To_Ascii_Mapping -> (Keysym, Modifier_Keys_State) -> String;
 
 
-    # Widget cables:
-    #
-    Kidplug
-	=
-	KIDPLUG
-	  {
-	    from_keyboard': threadkit::Mailop(  Envelope(  Keyboard_Mail) ),
-	    from_mouse':    threadkit::Mailop(  Envelope(  Mouse_Mail   ) ),
-	    from_other':    threadkit::Mailop(  Envelope(  Other_Mail   ) ),
+
+	# Mouse buttons 
+	#
+	Mousebutton = MOUSEBUTTON  Int;
+
+	# Mouse-d button states 
+	#
+	eqtype Mousebuttons_State;
+
+	make_mousebutton_state:  List(Mousebutton) -> Mousebuttons_State;
+
+	union_of_mousebutton_states:         (Mousebuttons_State, Mousebuttons_State) -> Mousebuttons_State;
+	intersection_of_mousebutton_states:  (Mousebuttons_State, Mousebuttons_State) -> Mousebuttons_State;
+
+	invert_button_in_mousebutton_state:  (Mousebuttons_State, Mousebutton) -> Mousebuttons_State;
+
+	no_mousebuttons_set:     Mousebuttons_State -> Bool;
+	some_mousebutton_is_set: Mousebuttons_State -> Bool;
+	#
+	mousebutton_1_is_set:    Mousebuttons_State -> Bool;
+	mousebutton_2_is_set:    Mousebuttons_State -> Bool;
+	mousebutton_3_is_set:    Mousebuttons_State -> Bool;
+	mousebutton_4_is_set:    Mousebuttons_State -> Bool;
+	mousebutton_5_is_set:    Mousebuttons_State -> Bool;
+	#
+	mousebutton_is_set:     (Mousebuttons_State, Mousebutton) -> Bool;
+
+
+	# Keyboard messages:
+	#
+	Keyboard_Mail
+	  = KEY_PRESS    (Keysym, Modifier_Keys_State)
+	  | KEY_RELEASE  (Keysym, Modifier_Keys_State)
+	  | KEY_CONFIG_SYNC
+	  ;
+
+	# Mouse messages:
+	#
+	Mouse_Mail
+	  #
+	  = MOUSE_MOTION  {
+		window_point:  xg::Point,			# Mouse position in window coords.
+		screen_point:  xg::Point,			# Mouse position in screen coords.
+		timestamp:     xc::xserver_timestamp::Xserver_Timestamp
+	      }
+
+	  | MOUSE_FIRST_DOWN  {
+		button:        Mousebutton,			# Button that is in transition 
+		window_point:  xg::Point,			# Mouse position in window coords 
+		screen_point:  xg::Point,			# Mouse position in screen coords 
+		timestamp:     xc::xserver_timestamp::Xserver_Timestamp
+	      }
+
+	  | MOUSE_LAST_UP  {
+		button:	   Mousebutton,			# Button that is in transition.
+		window_point:  xg::Point,			# Mouse position in window coords.
+		screen_point:  xg::Point,			# Mouse position in screen coords.
+		timestamp:     xc::xserver_timestamp::Xserver_Timestamp
+	      }
+
+	  | MOUSE_DOWN  {
+		button:  	   Mousebutton,			# Button that is in transition.
+		window_point:  xg::Point,			# Mouse position in window coords.
+		screen_point:  xg::Point,			# Mouse position in screen coords.
+		state:         Mousebuttons_State,		# State of the mouse buttons.
+		timestamp:     xc::xserver_timestamp::Xserver_Timestamp
+	      }
+
+	  | MOUSE_UP  {
+		button:  	   Mousebutton,			# Button that is in transition.
+		window_point:  xg::Point,			# Mouse position in window coords.
+		screen_point:  xg::Point,			# Mouse position in screen coords.
+		state:   	   Mousebuttons_State,		# State of the mouse buttons.
+		timestamp:     xc::xserver_timestamp::Xserver_Timestamp
+	      }
+
+	  | MOUSE_ENTER  {
+		window_point:  xg::Point,			# Mouse position in window coords.
+		screen_point:  xg::Point,			# Mouse position in screen coords.
+		timestamp:     xc::xserver_timestamp::Xserver_Timestamp
+	      }
+
+	  | MOUSE_LEAVE  {
+		window_point:  xg::Point,			# Mouse position in window coords.
+		screen_point:  xg::Point,			# Mouse position in screen coords.
+		timestamp:     xc::xserver_timestamp::Xserver_Timestamp
+	      }
+
+	  | MOUSE_CONFIG_SYNC
+	  ;
+
+
+	# Command/control messages from parent 
+	#
+	Other_Mail
+	  = ETC_REDRAW  List( xg::Box )
+	  | ETC_RESIZE        xg::Box
+	  #	
+	  | ETC_CHILD_BIRTH   xc::Window
+	  | ETC_CHILD_DEATH   xc::Window
+	  | ETC_OWN_DEATH
+	  ;
+
+	# Command/control messages to parent (really requests) 
+	#
+	Mail_To_Mom
+	  = REQ_RESIZE			# Ask mom to resize our window.
+	  | REQ_DESTRUCTION
+	  ;
+
+
+	# Envelopes are delivered hop-by-hop down
+	# the topwindow's widget hierarchy according
+	# to the route recorded on the envelope.
+
+	# Mail envelopes for hop-by-hop routing.
+	#
+	# These also carry sequence numbers so
+	# the original order of keyboard vs mouse
+	# events can be recovered when necessary:
+	#
+	Envelope X;
+
+	# Hop-by-hop envelope routing -- return
+	# value for route_envelope():
+	#
+	Pass_To X
+	  = TO_SELF   X			# Envelope has reached its target window/widget.
+	  | TO_CHILD  Envelope(X)		# Envelope needs to be passed on down the widget hierarchy.
+	  ;
+
+	route_envelope:   Envelope(X) ->  Pass_To(X);
 	    #
-	    to_mom:         Mail_To_Mom -> threadkit::Mailop( Void )
-	  };
+	    # Figure out next step in delivering
+	    # an envelope -- either it is for us,
+	    # or else it needs to be passed to
+	    # one of our kids.
 
-    Momplug
-	=
-	MOMPLUG
-	  {
-	    keyboard_sink: Envelope( Keyboard_Mail ) ->  threadkit::Mailop( Void ),
-	    mouse_sink:    Envelope(    Mouse_Mail ) ->  threadkit::Mailop( Void ),
-	    other_sink:    Envelope(    Other_Mail ) ->  threadkit::Mailop( Void ),
+	to_window:    (Envelope(X), xc::Window) -> Bool;
 	    #
-	    from_kid':     threadkit::Mailop( Mail_To_Mom )
-	  };
+	    # Compare envelope to window and return
+	    # TRUE iff envelope should be routed to
+	    # that window for delivery.
 
-     make_widget_cable
-	:
-	Void -> { kidplug:  Kidplug,
-                  momplug:  Momplug
-                };
+	exception NO_MATCH_WINDOW;
 
-     # Often a window will want to ignore a given
-     # input stream, but since communication is
-     # synchronous it must still read messages to
-     # avoid locking its parent.
-     #
-     # The following operations attach null threads
-     # to the given input streams, discarding all
-     # messages on them, and substitute a dummy stream
-     # that will have no traffic: 
-     #     
-     ignore_mouse:                Kidplug -> Kidplug;
-     ignore_keyboard:             Kidplug -> Kidplug;
-     ignore_mouse_and_keyboard:   Kidplug -> Kidplug;
-     ignore_all:                  Kidplug -> Kidplug;
+	next_stop_for_envelope:  List( (xc::Window, X) ) ->  Envelope(Y) -> X;
+	    #
+	    # Search a list of child windows
+	    # and return the one matching the
+	    # given envelope's delivery route.
+	    #
+	    # Raise NO_MATCH_WINDOW if there
+	    # is no match. (Shouldn't happen.)
+	    #
+	    # This function does a linear sequential
+	    # search which is usually fast enough;
+	    # if a window has too many children for
+	    # this to be sensible, use instead
+	    #
+	    #    next_stop_for_envelope_via_hashtable
 
-     # Make a clone of the given kidplug
-     # in which the given stream has been
-     # replaced by another:
-     #
-     replace_mouse:      (Kidplug, threadkit::Mailop( Envelope( Mouse_Mail   ))) -> Kidplug;
-     replace_keyboard:   (Kidplug, threadkit::Mailop( Envelope( Keyboard_Mail))) -> Kidplug;
-     replace_other:      (Kidplug, threadkit::Mailop( Envelope( Other_Mail   ))) -> Kidplug;
+	next_stop_for_envelope_via_hashtable:   xc::Window_Map(X) ->  Envelope(Y) -> X;
+	    #
+	    # Faster version of above, used in
+	    #
+	    #     src/lib/x-kit/widget/basic/xevent-mail-router.pkg
 
-     # Sometimes a thread will eat messages
-     # on one stream while forwarding those
-     # on the others.  A new [plug] with
-     # a dummy in the intercepted slot can
-     # be made via the appropriate 'replace'
-     # function from above with 'null_stream'.
-     # This stream will never yield a message;
-     # do_mailop() on it will block forever:
-     #
-     null_stream:    threadkit::Mailop(  Envelope(X) );
+	envelope_before:   (Envelope(X),  Envelope(X)) -> Bool;
+	    #
+	    # Compare envelopes by sequence number.
+	    #
+	    # Since keyboard- and mouse-event envelopes
+	    # get routed down separate streams, it is
+	    # possible for them to be delivered out of
+	    # order.  Most widgets do not care, but those
+	    # which do can use this function to recover
+	    # the original ordering.
+	    #
+	    # (No code currently uses this.  I'm dubious
+	    # about it -- a widget cannot know how long
+	    # to wait for possible out-of-order envelopes
+	    # to arrive before responding, and any waiting
+	    # will increase system response latency, which
+	    # is not where we want to be going.
+	    #     I suspect mouse and keyboard streams
+	    # should be combined into one to guarantee
+	    # in-order delivery, with suitable interface
+	    # sugar to make this equally easy for client
+	    # code to use. 2010-01-14 CrT. XXX BUGGO FIXME)
 
-     # Menus and must wait until the mouse has reached
-     # a stable state.  'while_mouse_state' eats mouse
-     # mail until a given predicate such as
-     #
-     #     some_mousebutton_is_set
-     #
-     # is satisfied.  For example this fun will read
-     # from_mouse' until mouse_button is released and
-     # then call action(), after which it will wait
-     # until all mouse buttons are up before returning:
-     #
-     #     fun do_mouseclick_action (from_mouse', mouse_button, action)
-     #         =
-     #         loop ()
-     #         where
-     #             while_some_set =  while_mouse_state  some_mousebutton_is_set;
-     #
-     #             fun loop ()
-     #                 =
-     #                 case (envelope_contents (do_mailop from_mouse'))
-     #                     #
-     #                     MOUSE_UP { button, state, ... }
-     #                         =>
-     #                         if (mouse_button == button)
-     #                             #
-     #                             action ();
-     #                             while_some_set (state, from_mouse');
-     #                         else
-     #                             loop ();
-     #                         fi;
-     #
-     #                     MOUSE_LAST_UP _
-     #                         =>
-     #                         action ();
-     #
-     #                     _   => loop ();
-     #             end;
-     #         end;
-     #
-     # This idiom is useful for guaranteeing that the
-     # mouse buttons are in a stable state before handling
-     # more mouse button transitions.
-     #
-     # Credit: Comments and example adapted from p29 of
-     #         http:://mythryl.org/pub/exene/1993-lib.ps
-     #
-     while_mouse_state
-	:
-	(Mousebutton_State -> Bool)
-	->
-	(Mousebutton_State, threadkit::Mailop( Mouse_Mail ))
-	->
-	Void;
+	envelope_contents:   Envelope(X) -> X;
 
-};			#  Interact 
 
+	# Widget cables:
+	#
+	Kidplug
+	    =
+	    KIDPLUG
+	      {
+		from_keyboard': Mailop(  Envelope(  Keyboard_Mail) ),
+		from_mouse':    Mailop(  Envelope(  Mouse_Mail   ) ),
+		from_other':    Mailop(  Envelope(  Other_Mail   ) ),
+		#
+		to_mom:         Mail_To_Mom -> Mailop( Void )
+	      };
+
+	Momplug
+	    =
+	    MOMPLUG
+	      {
+		keyboard_sink: Envelope( Keyboard_Mail ) ->  Mailop( Void ),
+		mouse_sink:    Envelope(    Mouse_Mail ) ->  Mailop( Void ),
+		other_sink:    Envelope(    Other_Mail ) ->  Mailop( Void ),
+		#
+		from_kid':     Mailop( Mail_To_Mom )
+	      };
+
+	 make_widget_cable
+	    :
+	    Void -> { kidplug:  Kidplug,
+		      momplug:  Momplug
+		    };
+
+	 # Often a window will want to ignore a given
+	 # input stream, but since communication is
+	 # synchronous it must still read messages to
+	 # avoid locking its parent.
+	 #
+	 # The following operations attach null threads
+	 # to the given input streams, discarding all
+	 # messages on them, and substitute a dummy stream
+	 # that will have no traffic: 
+	 #     
+	 ignore_mouse:                Kidplug -> Kidplug;
+	 ignore_keyboard:             Kidplug -> Kidplug;
+	 ignore_mouse_and_keyboard:   Kidplug -> Kidplug;
+	 ignore_all:                  Kidplug -> Kidplug;
+
+	 # Make a clone of the given kidplug
+	 # in which the given stream has been
+	 # replaced by another:
+	 #
+	 replace_mouse:      (Kidplug, Mailop( Envelope( Mouse_Mail   ))) -> Kidplug;
+	 replace_keyboard:   (Kidplug, Mailop( Envelope( Keyboard_Mail))) -> Kidplug;
+	 replace_other:      (Kidplug, Mailop( Envelope( Other_Mail   ))) -> Kidplug;
+
+	 # Sometimes a thread will eat messages
+	 # on one stream while forwarding those
+	 # on the others.  A new [plug] with
+	 # a dummy in the intercepted slot can
+	 # be made via the appropriate 'replace'
+	 # function from above with 'null_stream'.
+	 # This stream will never yield a message;
+	 # do_mailop() on it will block forever:
+	 #
+	 null_stream:    Mailop(  Envelope(X) );
+
+	 # Menus and must wait until the mouse has reached
+	 # a stable state.  'while_mouse_state' eats mouse
+	 # mail until a given predicate such as
+	 #
+	 #     some_mousebutton_is_set
+	 #
+	 # is satisfied.  For example this fun will read
+	 # from_mouse' until mouse_button is released and
+	 # then call action(), after which it will wait
+	 # until all mouse buttons are up before returning:
+	 #
+	 #     fun do_mouseclick_action (from_mouse', mouse_button, action)
+	 #         =
+	 #         loop ()
+	 #         where
+	 #             while_some_set =  while_mouse_state  some_mousebutton_is_set;
+	 #
+	 #             fun loop ()
+	 #                 =
+	 #                 case (envelope_contents (do_mailop from_mouse'))
+	 #                     #
+	 #                     MOUSE_UP { button, state, ... }
+	 #                         =>
+	 #                         if (mouse_button == button)
+	 #                             #
+	 #                             action ();
+	 #                             while_some_set (state, from_mouse');
+	 #                         else
+	 #                             loop ();
+	 #                         fi;
+	 #
+	 #                     MOUSE_LAST_UP _
+	 #                         =>
+	 #                         action ();
+	 #
+	 #                     _   => loop ();
+	 #             end;
+	 #         end;
+	 #
+	 # This idiom is useful for guaranteeing that the
+	 # mouse buttons are in a stable state before handling
+	 # more mouse button transitions.
+	 #
+	 # Credit: Comments and example adapted from p29 of
+	 #         http:://mythryl.org/pub/exene/1993-lib.ps
+	 #
+	 while_mouse_state
+	    :
+	    (Mousebuttons_State -> Bool)
+	    ->
+	    (Mousebuttons_State, Mailop(Mouse_Mail))
+	    ->
+	    Void;
+
+    };								# api Xinput
+end;
 
 ## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,

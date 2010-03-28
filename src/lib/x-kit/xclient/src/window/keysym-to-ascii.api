@@ -39,7 +39,7 @@ herein
 	    :
 	    Keysym_To_Ascii_Mapping
 	    ->
-	    (ks::Keysym, xt::Modifier_Key_State)
+	    (ks::Keysym, xt::Modifier_Keys_State)
 	    ->
 	    String;
     };

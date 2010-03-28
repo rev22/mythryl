@@ -68,6 +68,10 @@ herein
 	read_xerror:  Xsocket -> (Unt, unt8_vector::Vector);
 
 
+
+	################################################################################
+	# X-server queries
+
 	# A convenience function for querying the X server.
 	# It is designed to be used via curried application
 	# to define specific queries, e.g
@@ -90,7 +94,7 @@ herein
 	# It is possible these should be a separate
 	# package, but for now it seems simplest to
 	# just fold them into xsocket:
-	#
+
 	query_font
 	    :
 	    Xsocket
@@ -120,6 +124,27 @@ herein
 	    }
 	    ;
 
+	# See   p34 http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	#
+	query_pointer
+	    :	
+	    Xsocket
+	    ->
+	    { window_id:    xt::Xid }
+	    ->
+	    { child:			Null_Or(xt::Xid),		# Child window containing the mouse pointer.
+	      #
+	      mousebuttons_state:	xt::Mousebuttons_State, 
+	      modifier_keys_state:	xt::Modifier_Keys_State, 
+	      #
+	      root:			xt::Xid,			# Root window containing the mouse pointer.
+	      #
+	      root_point:		g::Point,			# Mouse position in root  window coordinates.
+	      window_point:		g::Point,			# Mouse position in local window coordinates.
+	      #
+	      same_screen: 		Bool				# Normally TRUE; FALSE if mouse pointer is not on this screen.
+	    }
+	    ;
 
 	string_to_hex:                 String -> String;
 	string_to_ascii:               String -> String;

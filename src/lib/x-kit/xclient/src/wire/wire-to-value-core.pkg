@@ -587,11 +587,11 @@ result;
 			  root        => get_xid           (buf,  8),
 			  event       => get_xid           (buf, 12),
 			  child       => get_xid_option    (buf, 16),
-			  root_pt     => get_pt            (buf, 20),
+			  root_point     => get_pt            (buf, 20),
 
-			  event_pt    => get_pt            (buf, 24),
-			  mod_state   => mks,
-			  mbut_state  => mbs,
+			  event_point    => get_pt            (buf, 24),
+			  modifier_keys_state   => mks,
+			  mousebuttons_state  => mbs,
 			  same_screen => get_bool          (buf, 30)
 			};
 		    };
@@ -607,10 +607,10 @@ result;
 			  root        => get_xid                   (buf,  8),
 			  event       => get_xid                   (buf, 12),
 			  child       => get_xid_option            (buf, 16),
-			  root_pt     => get_pt                    (buf, 20),
-			  event_pt    => get_pt                    (buf, 24),
-			  mod_state   => mks,
-			  mbut_state  => mbs,
+			  root_point     => get_pt                    (buf, 20),
+			  event_point    => get_pt                    (buf, 24),
+			  modifier_keys_state   => mks,
+			  mousebuttons_state  => mbs,
 			  same_screen => get_bool                  (buf, 30)
 		       };
 		    };
@@ -630,11 +630,11 @@ result;
 			    event      => get_xid           (buf, 12),
 			    child      => get_xid_option    (buf, 16),
 
-			    root_pt    => get_pt            (buf, 20),
-			    event_pt   => get_pt            (buf, 24),
+			    root_point    => get_pt            (buf, 20),
+			    event_point   => get_pt            (buf, 24),
 
-			    mod_state  => mks,
-			    mbut_state => mbs,
+			    modifier_keys_state  => mks,
+			    mousebuttons_state => mbs,
 
 			    same_screen => get_bool         (buf, 30)
 			  };
@@ -654,11 +654,11 @@ result;
 			  event      => get_xid          (buf, 12),
 			  child      => get_xid_option   (buf, 16),
 
-			  root_pt    => get_pt           (buf, 20),
-			  event_pt   => get_pt           (buf, 24),
+			  root_point    => get_pt           (buf, 20),
+			  event_point   => get_pt           (buf, 24),
 
-			  mod_state  => mks,
-			  mbut_state => mbs,
+			  modifier_keys_state  => mks,
+			  mousebuttons_state => mbs,
 
 			  mode  => get_focus_mode        (buf, 30),
 			  focus => is_set (flags, 0u0),
@@ -1534,10 +1534,10 @@ result;
 		    { same_screen => get_bool       (msg,  1),
 		      root        => get_xid        (msg,  8),
 		      child       => get_xid_option (msg, 12),
-		      root_pt     => get_pt         (msg, 16),
-		      window_pt   => get_pt         (msg, 20),
-		      mod_state   => mks,
-		      mbut_state  => mbs
+		      root_point     => get_pt         (msg, 16),
+		      window_point   => get_pt         (msg, 20),
+		      modifier_keys_state   => mks,
+		      mousebuttons_state  => mbs
 		    };
 		};
 

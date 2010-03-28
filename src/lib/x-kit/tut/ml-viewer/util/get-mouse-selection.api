@@ -28,7 +28,7 @@ herein
 	    :
 	    (xc::Window, Mailop( xi::Envelope( xi::Mouse_Mail )))
 	    ->
-	    (xi::Mousebutton, xi::Mousebutton_State)
+	    (xi::Mousebutton, xi::Mousebuttons_State)
 	    ->
 	    Mailop( Null_Or( xg::Point ) );
 
@@ -36,7 +36,7 @@ herein
 	    :
 	    (xc::Window, Mailop (xi::Envelope( xi::Mouse_Mail )))
 	    ->
-	    (xi::Mousebutton, xi::Mousebutton_State)
+	    (xi::Mousebutton, xi::Mousebuttons_State)
 	    ->
 	    Mailop(  Null_Or( xg::Point ) );
 

@@ -1530,6 +1530,13 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    take  xerror_slot;
 
 
+	################################################################################
+	# X-server queries
+	#
+	# This stuff does not depend on access to xsocket
+	# internals, so it could just as easily be a separate
+	# package, but it seems simplest to keep it here for now:
+
 	# This is a little convenience function to encode
 	# a query and then decode the reply.  It was originally
 	# in font_imp, it moved here to avoid replication:
@@ -1552,7 +1559,8 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	# Some predefined queries based on the above.
 	# (Maybe we should predefine them all here?)
 	#
-	query_font = query (v2w::encode_query_font, w2v::decode_query_font_reply);
+	query_font    =  query  (v2w::encode_query_font,    w2v::decode_query_font_reply   );
+	query_pointer =  query  (v2w::encode_query_pointer, w2v::decode_query_pointer_reply);
 
     };						# package xsocket
 end;
