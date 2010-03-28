@@ -1543,12 +1543,12 @@ result;
 
 	    fun decode_query_text_extents_reply  msg
 		=
-		{ draw_dir        => get_font_dir (msg,  1),
+		{ draw_direction  => get_font_dir (msg,  1),
 		  font_ascent     => get16        (msg,  8),
 		  font_descent    => get16        (msg, 10),
 		  overall_ascent  => get16        (msg, 12),
 		  overall_descent => get16        (msg, 14),
-		  overall_wid     => get16        (msg, 16),
+		  overall_width   => get16        (msg, 16),
 		  overall_left    => get16        (msg, 18),
 		  overall_right   => get16        (msg, 20)
 		};

@@ -406,8 +406,8 @@ herein
 	encode_query_font:      { font:         xt::Xid } -> v8::Vector;
 	encode_query_pointer:   { window_id:    xt::Xid } -> v8::Vector;
 
-	encode_query_text_extents: { font:      xt::Xid,  str: String } -> v8::Vector;
-	encode_query_tree:         { window_id: xt::Xid }               -> v8::Vector;
+	encode_query_text_extents: { font:      xt::Xid,  string: String } -> v8::Vector;
+	encode_query_tree:         { window_id: xt::Xid }                  -> v8::Vector;
 
 	encode_recolor_cursor:  { background_color: rgb::Rgb,
 				  foreground_color: rgb::Rgb,

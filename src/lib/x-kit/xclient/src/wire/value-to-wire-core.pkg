@@ -1160,16 +1160,16 @@ herein
 	    fun encode_close_font { font } = make_resource_request (req_close_font, font);
 	    fun encode_query_font { font } = make_resource_request (req_query_font, font);
 
-	    fun encode_query_text_extents { font, str }
+	    fun encode_query_text_extents { font, string }
 		=
-		{   len = string::length str;
-		    p = pad len;
+		{   len =  string::length  string;
+		    p   =  pad len;
 
 		    msg = make_extra_request (req_query_text_extents, p / 4);
 
 		    put_bool   (msg,  1, ((len - p) == 2));
 		    put_xid    (msg,  4, font);
-		    put_string (msg,  8, str);
+		    put_string (msg,  8, string);
 
 		    msg;
 		};

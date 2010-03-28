@@ -199,7 +199,7 @@ herein
 
 	decode_query_text_extents_reply: v8::Vector
 					 ->
-					 { draw_dir:        xt::Font_Drawing_Direction,
+					 { draw_direction:  xt::Font_Drawing_Direction,
 					   #
 					   font_ascent:     unt32::Unt,
 					   font_descent:    unt32::Unt, 
@@ -210,7 +210,7 @@ herein
 					   overall_left:    unt32::Unt, 
 					   overall_right:   unt32::Unt,
 					   #
-					   overall_wid:     unt32::Unt
+					   overall_width:   unt32::Unt
 					 };
 
 	decode_query_tree_reply: v8::Vector
