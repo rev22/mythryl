@@ -1,3 +1,4 @@
+2010-03-28-14.23.28: src/lib/x-kit/xclient/src/window/xsession.api: Add query_font, query_pointer, forwarded from xsocket.pkg.
 2010-03-28-13.54.15: src/lib/x-kit/xclient/src/wire/xsocket.api: Add query_pointer(). Untested.
 2010-03-28-13.01.03: Moved query() and query_font() from src/lib/x-kit/xclient/src/window/font-imp.pkg -> src/lib/x-kit/xclient/src/wire/xsocket.pkg to make them more generally available and forestall replication.
 2010-03-28-00.32.12: src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg: Light cleaning, create explicit api definition and establish sendevent-to-wire.api to hold it.

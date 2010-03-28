@@ -1399,7 +1399,7 @@ result;
 
 	    fun decode_query_extension_reply msg
 		=
-		{ err => xgripe::impossible "unimplemented"		# ** FIX **
+		{ err => xgripe::impossible "unimplemented"		# XXX BUGGO FIXME
 		};
 
 	    stipulate
@@ -1531,17 +1531,17 @@ result;
 			=
 			get_key_but_set (msg, 24);
 
-		    { same_screen => get_bool       (msg,  1),
-		      root        => get_xid        (msg,  8),
-		      child       => get_xid_option (msg, 12),
+		    { same_screen    => get_bool       (msg,  1),
+		      root           => get_xid        (msg,  8),
+		      child          => get_xid_option (msg, 12),
 		      root_point     => get_pt         (msg, 16),
 		      window_point   => get_pt         (msg, 20),
-		      modifier_keys_state   => mks,
+		      modifier_keys_state => mks,
 		      mousebuttons_state  => mbs
 		    };
 		};
 
-	    fun decode_query_text_extents_reply msg
+	    fun decode_query_text_extents_reply  msg
 		=
 		{ draw_dir        => get_font_dir (msg,  1),
 		  font_ascent     => get16        (msg,  8),
@@ -1553,7 +1553,7 @@ result;
 		  overall_right   => get16        (msg, 20)
 		};
 
-	    fun decode_query_tree_reply msg
+	    fun decode_query_tree_reply  msg
 		=
 		{ root     => get_xid        (msg,  8),
 		  parent   => get_xid_option (msg, 12),

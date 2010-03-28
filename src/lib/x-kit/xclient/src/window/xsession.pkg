@@ -393,6 +393,7 @@ herein
 
 	    query_font         =  apply_to_xsocket  xok::query_font;
 	    query_pointer      =  apply_to_xsocket  xok::query_pointer;
+	    query_tree         =  apply_to_xsocket  xok::query_tree;
 	end;
 
         # Close the xsession.

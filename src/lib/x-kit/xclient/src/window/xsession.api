@@ -205,6 +205,19 @@ herein
 	    }
 	    ;
 
+	# See   p23 http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	#
+	query_tree
+	    :
+	    Xsession
+	    ->
+	    { window_id:	xt::Xid }
+	    ->
+	    { children:		List(xt::Xid), 
+	      parent:		Null_Or(xt::Xid),
+	      root:		xt::Xid
+	    }
+	    ;
 
 
 	# Return the maximum request size

@@ -1561,6 +1561,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	#
 	query_font    =  query  (v2w::encode_query_font,    w2v::decode_query_font_reply   );
 	query_pointer =  query  (v2w::encode_query_pointer, w2v::decode_query_pointer_reply);
+	query_tree    =  query  (v2w::encode_query_tree,    w2v::decode_query_tree_reply   );
 
     };						# package xsocket
 end;
