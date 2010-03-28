@@ -12,43 +12,47 @@
 #
 #     src/lib/x-kit/xclient/src/window/selection-imp.pkg
 #     src/lib/x-kit/xclient/src/window/window.pkg
+#
+# See also:
+#     src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
 
 stipulate
-    package g  = geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package xt = xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    package ts = xserver_timestamp;		# xserver_timestamp	is from   src/lib/x-kit/xclient/src/wire/xserver-timestamp.pkg
-
-    package w8a =  rw_unt8_vector;		# rw_unt8_vector	is from   src/lib/std/src/rw-unt8-vector.pkg
-    package w8v =     unt8_vector;		# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
+    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xt  = xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ts  = xserver_timestamp;			# xserver_timestamp	is from   src/lib/x-kit/xclient/src/wire/xserver-timestamp.pkg
+    #
+    package w8a =  rw_unt8_vector;			# rw_unt8_vector	is from   src/lib/std/src/rw-unt8-vector.pkg
+    package w8v =     unt8_vector;			# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
+    package v2w = value_to_wire;			# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
 herein
 
-    package sendevent_to_wire {
+    package sendevent_to_wire: Sendevent_To_Wire {	# Sendevent_To_Wire	is from   src/lib/x-kit/xclient/src/wire/sendevent-to-wire.api
 
 	stipulate
 	    # We need to treat requests as modifiable
 	    # for initialization purposes, but we don't
 	    # want them to be modifiable afterwords:
 	    #
-	    my v2a:  unt8_vector::Vector -> rw_unt8_vector::Rw_Vector
+	    my ro2rw:  unt8_vector::Vector -> rw_unt8_vector::Rw_Vector
 		=
 		unsafe::cast;
 
 	    encode_push_event
 		=
-		value_to_wire::encode_push_event;
+		v2w::encode_push_event;
 
 	    event_offset = 12;
 
-	    fun put8        (buf, i, w) =  w8a::set (v2a buf, i+event_offset, w);
+	    fun put8        (buf, i, w) =  w8a::set (ro2rw buf, i+event_offset, w);
 	    fun put_signed8 (buf, i, x) =  put8 (buf, i, unt8::from_int x);
 
 	    fun put16 (buf, i, x)
 		=
-		pack_big_endian_unt16::set (v2a buf, i / 2 + event_offset / 2, x);
+		pack_big_endian_unt16::set (ro2rw buf, i / 2 + event_offset / 2, x);
 
 	    fun put_signed16 (buf, i, x)
 		=
@@ -56,7 +60,7 @@ herein
 
 	    fun put32 (buf, i, x)
 		=
-		pack_big_endian_unt32::set (v2a buf, i / 4 + event_offset / 4, x);
+		pack_big_endian_unt32::set (ro2rw buf, i / 4 + event_offset / 4, x);
 
 	    fun put_word32   (buf, i, x) = put32 (buf, i, unt::to_large_unt x);
 	    fun put_signed32 (buf, i, x) = put32 (buf, i, large_unt::from_int x);
@@ -69,16 +73,16 @@ herein
 		=
 		put_word32 (buf, i, n);
 
-	    fun put_xid_option (buf, i, NULL)            =>  put_word32 (buf, i, 0u0);
-		put_xid_option (buf, i, THE (xt::XID n)) =>  put_word32 (buf, i, n);
-	    end;
+#	    fun put_null_or_xid (buf, i, NULL)            =>  put_word32 (buf, i, 0u0);
+#		put_null_or_xid (buf, i, THE (xt::XID n)) =>  put_word32 (buf, i, n);
+#	    end;
 
 	    fun put_atom (buf, i, xt::XATOM n)
 		=
 		put_word32 (buf, i, n);
 
-	    fun put_atom_option (buf, i, NULL)              =>  put_word32 (buf, i, 0u0);
-		put_atom_option (buf, i, THE (xt::XATOM n)) =>  put_word32 (buf, i, n);
+	    fun put_null_or_atom (buf, i, NULL)              =>  put_word32 (buf, i, 0u0);
+		put_null_or_atom (buf, i, THE (xt::XATOM n)) =>  put_word32 (buf, i, n);
 	    end;
 
 	    fun put_timestamp (buf, i, xt::CURRENT_TIME)                         =>  put32 (buf, i, 0u0);
@@ -87,39 +91,41 @@ herein
 
 	    # Event codes:
 	    #
-	    event_key_press_xevent	= 0u2:  unt8::Unt;
-	    event_key_release_xevent	= 0u3:  unt8::Unt;
-	    event_button_press_xevent	= 0u4:  unt8::Unt;
-	    event_button_release_xevent	= 0u5:  unt8::Unt;
-	    event_motion_notify	        = 0u6:  unt8::Unt;
-	    event_enter_notify_xevent	= 0u7:  unt8::Unt;
-	    event_leave_notify_xevent	= 0u8:  unt8::Unt;
-	    event_focus_in_xevent	= 0u9:  unt8::Unt;
-	    event_focus_out_xevent	= 0u10:  unt8::Unt;
-	    event_keymap_notify	        = 0u11:  unt8::Unt;
-	    event_expose		= 0u12:  unt8::Unt;
-	    event_graphics_expose	= 0u13:  unt8::Unt;
-	    event_no_expose		= 0u14:  unt8::Unt;
-	    event_visibility_notify	= 0u15:  unt8::Unt;
-	    event_create_notify	        = 0u16:  unt8::Unt;
-	    event_destroy_notify	= 0u17:  unt8::Unt;
-	    event_unmap_notify	        = 0u18:  unt8::Unt;
-	    event_map_notify		= 0u19:  unt8::Unt;
-	    event_map_request		= 0u20:  unt8::Unt;
-	    event_reparent_notify	= 0u21:  unt8::Unt;
-	    event_configure_notify	= 0u22:  unt8::Unt;
-	    event_configure_request	= 0u23:  unt8::Unt;
-	    event_gravity_notify	= 0u24:  unt8::Unt;
-	    event_resize_request	= 0u25:  unt8::Unt;
-	    event_circulate_notify	= 0u26:  unt8::Unt;
-	    event_circulate_request	= 0u27:  unt8::Unt;
-	    event_property_notify	= 0u28:  unt8::Unt;
-	    event_selection_clear	= 0u29:  unt8::Unt;
-	    event_selection_request	= 0u30:  unt8::Unt;
-	    event_selection_notify	= 0u31:  unt8::Unt;
-	    event_colormap_notify	= 0u32:  unt8::Unt;
-	    event_client_message	= 0u33:  unt8::Unt;
-	    event_mapping_notify	= 0u34:  unt8::Unt;
+	    package event {
+		key_press_xevent	= 0u2:  unt8::Unt;
+		key_release_xevent	= 0u3:  unt8::Unt;
+		button_press_xevent	= 0u4:  unt8::Unt;
+		button_release_xevent	= 0u5:  unt8::Unt;
+		motion_notify	        = 0u6:  unt8::Unt;
+		enter_notify_xevent	= 0u7:  unt8::Unt;
+		leave_notify_xevent	= 0u8:  unt8::Unt;
+		focus_in_xevent		= 0u9:  unt8::Unt;
+		focus_out_xevent	= 0u10:  unt8::Unt;
+		keymap_notify	        = 0u11:  unt8::Unt;
+		expose			= 0u12:  unt8::Unt;
+		graphics_expose		= 0u13:  unt8::Unt;
+		no_expose		= 0u14:  unt8::Unt;
+		visibility_notify	= 0u15:  unt8::Unt;
+		create_notify	        = 0u16:  unt8::Unt;
+		destroy_notify		= 0u17:  unt8::Unt;
+		unmap_notify	        = 0u18:  unt8::Unt;
+		map_notify		= 0u19:  unt8::Unt;
+		map_request		= 0u20:  unt8::Unt;
+		reparent_notify		= 0u21:  unt8::Unt;
+		configure_notify	= 0u22:  unt8::Unt;
+		configure_request	= 0u23:  unt8::Unt;
+		gravity_notify		= 0u24:  unt8::Unt;
+		resize_request		= 0u25:  unt8::Unt;
+		circulate_notify	= 0u26:  unt8::Unt;
+		circulate_request	= 0u27:  unt8::Unt;
+		property_notify		= 0u28:  unt8::Unt;
+		selection_clear		= 0u29:  unt8::Unt;
+		selection_request	= 0u30:  unt8::Unt;
+		selection_notify	= 0u31:  unt8::Unt;
+		colormap_notify		= 0u32:  unt8::Unt;
+		client_message		= 0u33:  unt8::Unt;
+		mapping_notify		= 0u34:  unt8::Unt;
+	    };
 
 	    fun put_event_code (msg, code)
 		=
@@ -128,29 +134,29 @@ herein
 	herein
 
 	    fun encode_send_selection_notify
-		{ to, propagate, event_mask, requestor, selection, target, property, timestamp }
+		{ send_event_to, propagate, event_mask, requestor, selection, target, property, timestamp }
 		=
-		{   msg =  encode_push_event { to, propagate, event_mask };
+		{   msg =  encode_push_event { send_event_to, propagate, event_mask };
 
-		    put_event_code  (msg, event_selection_notify);
-		    put_timestamp   (msg,  4, timestamp);
-		    put_xid         (msg,  8, requestor);
-		    put_atom        (msg, 12, selection);
-		    put_atom        (msg, 16, target   );
-		    put_atom_option (msg, 20, property );
+		    put_event_code   (msg, event::selection_notify);
+		    put_timestamp    (msg,  4, timestamp);
+		    put_xid          (msg,  8, requestor);
+		    put_atom         (msg, 12, selection);
+		    put_atom         (msg, 16, target   );
+		    put_null_or_atom (msg, 20, property );
 
 		    msg;
 		};
 
 	    fun encode_send_unmap_notify
-		{ to, propagate, event_mask, event, window, from_configure }
+		{ send_event_to, propagate, event_mask, event, window, from_configure }
 		=
-		{   msg = encode_push_event { to, propagate, event_mask };
+		{   msg = encode_push_event { send_event_to, propagate, event_mask };
 
-		    put_event_code (msg, event_unmap_notify);
-		    put_xid        (msg,  4, event         );
-		    put_xid        (msg,  8, window        );
-		    put_bool       (msg, 12, from_configure);
+		    put_event_code (msg, event::unmap_notify);
+		    put_xid        (msg,  4, event          );
+		    put_xid        (msg,  8, window         );
+		    put_bool       (msg, 12, from_configure );
 
 		    msg;
 		};

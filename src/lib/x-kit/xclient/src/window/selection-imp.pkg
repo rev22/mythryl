@@ -128,11 +128,11 @@ herein
 		    target,
 		    timestamp,
 
-		    to         => xt::SEND_EVENT_TO_WINDOW requestor,
-		    propagate  => FALSE,
+		    send_event_to =>  xt::SEND_EVENT_TO_WINDOW requestor,
+		    propagate     =>  FALSE,
 
-		    event_mask => xt::EVENT_MASK 0u0,
-		    property   => prop
+		    event_mask    =>  xt::EVENT_MASK 0u0,
+		    property      =>  prop
 		  }
 		);
 

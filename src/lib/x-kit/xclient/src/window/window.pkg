@@ -618,12 +618,15 @@ herein
 		    sn::request  xsession
 			#
 			(s2w::encode_send_unmap_notify
-			  { to => xt::SEND_EVENT_TO_WINDOW root_window_id,
-			    propagate => FALSE,
-			    event_mask => mask, 
-			    event      => root_window_id,
-			    window     => window_id,
-			    from_configure => FALSE
+			  {
+                            send_event_to  => xt::SEND_EVENT_TO_WINDOW root_window_id,
+			    #
+			    from_configure => FALSE,
+			    propagate      => FALSE,
+			    event_mask     => mask, 
+			    #
+			    event          => root_window_id,
+			    window         => window_id
 			  }
 			);
 

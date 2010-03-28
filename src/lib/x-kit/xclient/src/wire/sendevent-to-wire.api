@@ -1,0 +1,73 @@
+## sendevent-to-wire.api
+#
+# Encode X SendEvent values in wire
+# (network bytestring) format.
+
+# Compiled by:
+#     src/lib/x-kit/xclient/xclient-internals.make6
+
+
+# This api is implemented in:
+#
+#     src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
+
+stipulate
+    package xt  = xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package w8v =     unt8_vector;		# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
+herein
+
+    api Sendevent_To_Wire {
+
+	encode_send_selection_notify
+	    :
+	    { event_mask:	xt::Event_Mask,
+	      propagate:	Bool,
+	      property:		Null_Or( xt::Atom ),
+	      requestor:	xt::Xid,
+	      selection:	xt::Atom,
+	      target:		xt::Atom,
+	      timestamp:	xt::Timestamp,
+	      send_event_to:	xt::Send_Event_To
+	    }
+	    ->
+	    w8v::Vector
+	    ;
+
+
+	encode_send_unmap_notify
+	    :
+	    { send_event_to:	xt::Send_Event_To,
+	      propagate:	Bool,
+	      event_mask:	xt::Event_Mask,
+	      event:		xt::Xid,
+	      window:		xt::Xid,
+	      from_configure:	Bool
+	    }
+	    ->
+	    w8v::Vector
+	    ;
+    };		# package sendevent_to_wire
+end;		# stipulate 
+
+
+##########################################################################
+#   The following is support for outline-minor-mode in emacs.		 #
+#  ^C @ ^T hides all Text. (Leaves all headings.)			 #
+#  ^C @ ^A shows All of file.						 #
+#  ^C @ ^Q Quickfolds entire file. (Leaves only top-level headings.)	 #
+#  ^C @ ^I shows Immediate children of node.				 #
+#  ^C @ ^S Shows all of a node.						 #
+#  ^C @ ^D hiDes all of a node.						 #
+#  ^HFoutline-mode gives more details.					 #
+#  (Or do ^HI and read emacs:outline mode.)				 #
+#									 #
+# Local variables:							 #
+# mode: outline-minor							 #
+# outline-regexp: "[{ \t]*\\(fun \\)"			 		 #
+# End:									 #
+##########################################################################
+
+
+## COPYRIGHT (c) 1992 by AT&T.  See COPYRIGHT file for details.
+## Subsequent changes by Jeff Prothero Copyright (c) 2010,
+## released under Gnu Public Licence version 3.

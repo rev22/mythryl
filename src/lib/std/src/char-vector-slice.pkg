@@ -166,18 +166,18 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 
 	    fun fnd i
                 =
-		if   (i >= stop)
-                    
-                     NULL;
+		if (i >= stop)
+		    #                    
+                    NULL;
 		else 
-                     x = unsafe_get (base, i);
+		    x = unsafe_get (base, i);
 
-		     if   (p x)
-                         
-                          THE x;
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    if   (p x)
+
+			 THE x;
+		    else
+			 fnd (i +++ 1);
+		    fi;
 		fi;
 
 	end;

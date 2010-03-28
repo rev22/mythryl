@@ -13,6 +13,9 @@
 # The work of actually sending and recieving
 # these bytestrings via socket is handled by
 #     src/lib/x-kit/xclient/src/wire/xsocket.pkg
+#
+# See also:
+#     src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -892,14 +895,14 @@ herein
 	    # encoding of the event message is
 	    # handled by the routines in XSendEvent.
 	    #
-	    fun encode_push_event { to, propagate, event_mask }
+	    fun encode_push_event { send_event_to, propagate, event_mask }
 		=
 		{
 		    msg = make_request (req_push_event);
 
 		    put_bool (msg, 1, propagate);
 
-		    case to
+		    case send_event_to
 			#
 			xt::SEND_EVENT_TO_POINTER_WINDOW => put32   (msg, 4, 0u0);
 			xt::SEND_EVENT_TO_INPUT_FOCUS    => put32   (msg, 4, 0u1);

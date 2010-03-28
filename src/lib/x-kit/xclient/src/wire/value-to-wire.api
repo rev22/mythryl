@@ -377,9 +377,9 @@ herein
                            }
 			   -> v8::Vector;
 
-	encode_push_event: { event_mask: xt::Event_Mask,
-                             propagate:  Bool, 
-			     to:         xt::Send_Event_To
+	encode_push_event: { event_mask:      xt::Event_Mask,
+                             propagate:       Bool, 
+			     send_event_to:   xt::Send_Event_To
                            }
 			   -> v8::Vector;
 

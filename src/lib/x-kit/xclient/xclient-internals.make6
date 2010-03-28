@@ -19,6 +19,7 @@ LIBRARY_GROUP_COMPONENTS
 	src/wire/event-types.pkg
 	src/wire/keys-and-buttons.api
 	src/wire/keys-and-buttons.pkg
+	src/wire/sendevent-to-wire.api
 	src/wire/sendevent-to-wire.pkg
 	src/wire/socket-closer-imp.api
 	src/wire/socket-closer-imp.pkg
