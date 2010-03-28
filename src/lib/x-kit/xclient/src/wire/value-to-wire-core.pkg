@@ -1099,6 +1099,9 @@ herein
 		    msg;
 		};
 
+	    # See    p 35:  http://mythryl.org/pub/exene/X-protocol-R7.pdf
+	    #        p130:  http://mythryl.org/pub/exene/X-protocol-R7.pdf
+	    #
 	    fun encode_warp_pointer { from, to, from_box, to_point }
 		=
 		{   msg =  make_request  req_warp_pointer;

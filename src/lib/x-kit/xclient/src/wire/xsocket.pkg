@@ -123,8 +123,11 @@ stipulate
     #
     package u   =  unt;					# unt				is from   src/lib/std/unt.pkg
 #   package wv8 =  rw_unt8_vector;			# rw_unt8_vector		is from   src/lib/std/src/rw-unt8-vector.pkg
+    package e2s =  xerror_to_string;			# xerror_to_string		is from   src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
     package v8  =  unt8_vector;				# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
     package rse =  retry_syscall_on_eintr;		# retry_syscall_on_eintr	is from   src/lib/std/src/threadkit/unix/retry-syscall-on-eintr.pkg
+    package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     #
     package g   = geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
@@ -1421,9 +1424,16 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    =
 	    give (plea_slot, PLEA s);
 
-	fun reply_wrapper  REPLY_LOST     =>  raise exception LOST_REPLY;
-	    reply_wrapper (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
-	    reply_wrapper (REPLY s)       =>  s;
+	# Reply handling in the Client-thread context.
+	#
+	# Most processing happens in the xsocket's
+	# own threads, but any client-relevant exception
+	# needs to be raised in the context of the
+	# calling client thread.  That is our job here:
+	#
+	fun unwrap_reply  REPLY_LOST     =>  raise exception LOST_REPLY;
+	    unwrap_reply (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
+	    unwrap_reply (REPLY s)       =>  s;
 	end;
 
 
@@ -1440,7 +1450,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 
 		take'  reply_slot
 		    ==>
-		    reply_wrapper;
+		    unwrap_reply;
 	    };
 
 	# Generate a request to the server and
@@ -1485,7 +1495,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 
 		take'  reply_slot
 		    ==>
-		    reply_wrapper;
+		    unwrap_reply;
 	    };
 
 	# This is directly used exactly once,
@@ -1519,7 +1529,32 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    =
 	    take  xerror_slot;
 
-    };		#  Xok 
+
+	# This is a little convenience function to encode
+	# a query and then decode the reply.  It was originally
+	# in font_imp, it moved here to avoid replication:
+	#
+	fun query (encode, decode) connection
+	    =
+	    ask
+	    where
+		request_reply' =  request_reply  connection;
+
+		fun ask msg
+		    =
+		    decode (do_mailop (request_reply' (encode msg)))
+		    except
+			LOST_REPLY      => raise exception (xgripe::XERROR "[reply lost]");
+			ERROR_REPLY err => raise exception (xgripe::XERROR (e2s::xerror_to_string err));
+		    end;
+	    end;
+
+	# Some predefined queries based on the above.
+	# (Maybe we should predefine them all here?)
+	#
+	query_font = query (v2w::encode_query_font, w2v::decode_query_font_reply);
+
+    };						# package xsocket
 end;
 
 

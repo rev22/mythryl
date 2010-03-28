@@ -133,8 +133,20 @@ herein
 
 	herein
 
+	    # For SendEvent proper, see:
+            #     p27   http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	    #     p126  http://mythryl.org/pub/exene/X-protocol-R7.pdf
+
+
+	    # Event wire encodings are documented in
+	    #       p 150-157  http://mythryl.org/pub/exene/X-protocol-R7.pdf
+
+	    # See   p88 http://mythryl.org/pub/exene/X-protocol-R7.pdf	
+	    #
 	    fun encode_send_selection_notify
-		{ send_event_to, propagate, event_mask, requestor, selection, target, property, timestamp }
+		{ send_event_to, propagate, event_mask,
+                  requestor, selection, target, property, timestamp
+                }
 		=
 		{   msg =  encode_push_event { send_event_to, propagate, event_mask };
 
@@ -148,8 +160,12 @@ herein
 		    msg;
 		};
 
+	    # See   p84 http://mythryl.org/pub/exene/X-protocol-R7.pdf	
+	    #
 	    fun encode_send_unmap_notify
-		{ send_event_to, propagate, event_mask, event, window, from_configure }
+		{ send_event_to, propagate, event_mask,
+                  event, window, from_configure
+                }
 		=
 		{   msg = encode_push_event { send_event_to, propagate, event_mask };
 

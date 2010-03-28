@@ -2,6 +2,10 @@
 #
 # Encode X SendEvent values in wire
 # (network bytestring) format.
+#
+# NB: We do not send anything to the network here;
+# we simply create a bytestring and return it to
+# our caller.
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -16,18 +20,27 @@ stipulate
     package w8v =     unt8_vector;		# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
 herein
 
+    # Ask the X server to send event(s) to some window
+    # via the SendEvent request. 
+    #
+    # In the following functions, the first three fields
+    # specify the SendEvent record proper, the rest
+    # specify the event being sent:
+
     api Sendevent_To_Wire {
 
 	encode_send_selection_notify
 	    :
-	    { event_mask:	xt::Event_Mask,
+	    { send_event_to:	xt::Send_Event_To,
 	      propagate:	Bool,
+	      event_mask:	xt::Event_Mask,
+	      #
 	      property:		Null_Or( xt::Atom ),
 	      requestor:	xt::Xid,
 	      selection:	xt::Atom,
 	      target:		xt::Atom,
-	      timestamp:	xt::Timestamp,
-	      send_event_to:	xt::Send_Event_To
+	      timestamp:	xt::Timestamp
+	      
 	    }
 	    ->
 	    w8v::Vector
@@ -39,6 +52,7 @@ herein
 	    { send_event_to:	xt::Send_Event_To,
 	      propagate:	Bool,
 	      event_mask:	xt::Event_Mask,
+	      #
 	      event:		xt::Xid,
 	      window:		xt::Xid,
 	      from_configure:	Bool

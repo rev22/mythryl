@@ -25,7 +25,8 @@
 stipulate
     include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package g = geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package g   =  geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     api Xsocket {
@@ -66,13 +67,67 @@ herein
 
 	read_xerror:  Xsocket -> (Unt, unt8_vector::Vector);
 
+
+	# A convenience function for querying the X server.
+	# It is designed to be used via curried application
+	# to define specific queries, e.g
+	#
+	#     query_font = query (v2w::encode_query_font, w2v::decode_query_font_reply);
+	#
+	query
+	    :
+	    ( X -> unt8_vector::Vector,		# The encode-query fn, from   src/lib/x-kit/xclient/src/wire/value-to-wire.api
+	      unt8_vector::Vector -> Y		# The decode-reply fn, from   src/lib/x-kit/xclient/src/wire/wire-to-value.api
+	    )
+	    -> Xsocket				# Connection to the X server.
+	    -> X				# The actual query info.
+	    -> Y				# The reply.
+	    ;	
+
+	# Some predefined queries based on the above.
+	# (Maybe we should predefine them all here?)
+	#
+	# It is possible these should be a separate
+	# package, but for now it seems simplest to
+	# just fold them into xsocket:
+	#
+	query_font
+	    :
+	    Xsocket
+	    ->
+            { font: 	       xt::Xid }
+	    ->
+            {
+	      all_chars_exist: Bool, 
+	      default_char:    Int, 
+	      #
+	      char_infos:      List(xt::Char_Info), 
+	      draw_dir:        xt::Font_Drawing_Direction, 
+	      #
+	      font_ascent:     Int,
+	      font_descent:    Int, 
+	      #
+	      min_bounds:      xt::Char_Info, 
+	      max_bounds:      xt::Char_Info,
+	      #
+	      max_byte1:       Int, 
+	      min_byte1:       Int,
+	      #
+	      min_char:        Int, 
+	      max_char:        Int,
+	      #
+	      properties:      List(xt::Font_Prop)
+	    }
+	    ;
+
+
 	string_to_hex:                 String -> String;
 	string_to_ascii:               String -> String;
 
 	bytes_to_hex:     unt8_vector::Vector -> String;
 	bytes_to_ascii:   unt8_vector::Vector -> String;
 
-	# XXX BUGGO FIXME the above four belong in string:: and unt8_vector::
+	# XXX BUGGO FIXME the above four belong somewhere like string:: and unt8_vector::
     };
 
 end;
