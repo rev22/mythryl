@@ -145,10 +145,65 @@ herein
 	request_replies:   Xsession -> (unt8_vector::Vector, (unt8_vector::Vector -> Int)) -> Mailop( unt8_vector::Vector );
 	#
 	flush_out:         Xsession -> Void;
-
-
-
 	close_xsession:    Xsession -> Void;
+
+
+	# The standard X queries:
+	#
+	# It is possible these should be a separate
+	# package, but for now it seems simplest to
+	# just fold them into xsession:
+
+	query_font
+	    :
+	    Xsession
+	    ->
+            { font: 	       xt::Xid }
+	    ->
+            {
+	      all_chars_exist: Bool, 
+	      default_char:    Int, 
+	      #
+	      char_infos:      List(xt::Char_Info), 
+	      draw_dir:        xt::Font_Drawing_Direction, 
+	      #
+	      font_ascent:     Int,
+	      font_descent:    Int, 
+	      #
+	      min_bounds:      xt::Char_Info, 
+	      max_bounds:      xt::Char_Info,
+	      #
+	      max_byte1:       Int, 
+	      min_byte1:       Int,
+	      #
+	      min_char:        Int, 
+	      max_char:        Int,
+	      #
+	      properties:      List(xt::Font_Prop)
+	    }
+	    ;
+
+	# See   p34 http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	#
+	query_pointer
+	    :	
+	    Xsession
+	    ->
+	    { window_id:    xt::Xid }
+	    ->
+	    { child:			Null_Or(xt::Xid),		# Child window containing the mouse pointer.
+	      #
+	      mousebuttons_state:	xt::Mousebuttons_State, 
+	      modifier_keys_state:	xt::Modifier_Keys_State, 
+	      #
+	      root:			xt::Xid,			# Root window containing the mouse pointer.
+	      #
+	      root_point:		g::Point,			# Mouse position in root  window coordinates.
+	      window_point:		g::Point,			# Mouse position in local window coordinates.
+	      #
+	      same_screen: 		Bool				# Normally TRUE; FALSE if mouse pointer is not on this screen.
+	    }
+	    ;
 
 
 

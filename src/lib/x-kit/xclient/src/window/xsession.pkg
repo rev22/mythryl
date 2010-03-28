@@ -391,6 +391,8 @@ herein
 
 	    flush_out          =  apply_to_xsocket  xok::flush;
 
+	    query_font         =  apply_to_xsocket  xok::query_font;
+	    query_pointer      =  apply_to_xsocket  xok::query_pointer;
 	end;
 
         # Close the xsession.
@@ -507,6 +509,9 @@ herein
 			if (depth == d)  sd; else (f r);fi;
 		end;
 	    end;
+
+
+
 
 
     };									# package xsession

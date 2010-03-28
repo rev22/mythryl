@@ -82,15 +82,15 @@ herein
 	    =
 	    {   request_and_check = xok::request_and_check  xsocket;
 
-		query_font = xok::query_font  xsocket;
+		query_font =  xok::query_font  xsocket;
 
-		plea_slot =  make_mailslot ();
-		reply_slot   =  make_mailslot ();
+		plea_slot  =  make_mailslot ();
+		reply_slot =  make_mailslot ();
 
-		font_map =  font_table::make_table (32, FAIL "FontMap");
+		font_map   =  font_table::make_table (32, FAIL "FontMap");
 
-		insert   =  font_table::set   font_map;
-		find     =  font_table::find  font_map;
+		insert     =  font_table::set   font_map;
+		find       =  font_table::find  font_map;
 
 		fun make_font id
 		    =
@@ -109,7 +109,7 @@ herein
 			char_info
 			    =
 			    case char_infos
-
+				#
 				[] => if (in_range default_char)
 					  #
 					  fn _ =  min_bounds;
@@ -117,7 +117,8 @@ herein
 					  fn c =  in_range c  ??  min_bounds
 							      ::  (raise exception fb::NO_CHAR_INFO);
 				      fi;
-			       l => {
+				#
+				l => {
 					table = v::from_list l;
 
 					fun info_exists (xt::CHAR_INFO { char_width=>0, left_bearing=>0, right_bearing=>0, ... } )
