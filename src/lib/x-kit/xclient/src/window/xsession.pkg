@@ -416,11 +416,33 @@ herein
 	    query_text_extents =  apply_to_xsocket  xok::query_text_extents;
 	    query_tree         =  apply_to_xsocket  xok::query_tree;
 
-	    fun query_pointer 
-		    (XSESSION { xdisplay=>dy::XDISPLAY { xsocket, ... }, ... } )
-		    (WINDOW { window_id, ... })
+	    # Get location of mouse pointer
+	    # plus related information:
+	    #
+	    fun get_mouse_location
+		(XSESSION
+                  { xdisplay       =>  dy::XDISPLAY { xsocket, ... },
+                    default_screen =>  SCREEN_INFO  { xscreen => dy::XSCREEN  { root_window_id, ... }, ... },
+                    ...
+                  }
+                )
 		=
-		xok::query_pointer  xsocket  { window_id };
+		{   # The X server query_pointer call takes a window_id
+		    # argument. This seems overcomplex for the typical
+		    # Mythryl caller, so here we just default it to the
+		    # the default-screen root-window:
+		    #
+		    (xok::query_pointer  xsocket  { window_id => root_window_id })
+			->
+			{ root_point, ... };
+
+		    # The X server query_pointer call returns
+		    # a load of stuff.  For now at least, a
+		    # return value of simply the mouse location
+		    # seems more convenient for the Mythryl app hacker:
+		    #
+		    root_point;
+		};
 	end;
 
         # Close the xsession.

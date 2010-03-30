@@ -198,27 +198,10 @@ herein
 	    }
 	    ;
 
-	# See   p34 http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	# Get location of mouse pointer
+	# relative to root window:
 	#
-	query_pointer
-	    :	
-	    Xsession
-	    ->
-	    Window
-	    ->
-	    { child:			Null_Or(xt::Xid),		# Child window containing the mouse pointer.
-	      #
-	      mousebuttons_state:	xt::Mousebuttons_State, 
-	      modifier_keys_state:	xt::Modifier_Keys_State, 
-	      #
-	      root:			xt::Xid,			# Root window containing the mouse pointer.
-	      #
-	      root_point:		g::Point,			# Mouse position in root  window coordinates.
-	      window_point:		g::Point,			# Mouse position in local window coordinates.
-	      #
-	      same_screen: 		Bool				# Normally TRUE; FALSE if mouse pointer is not on this screen.
-	    }
-	    ;
+	get_mouse_location:  Xsession -> g::Point;	
 
 	query_colors
 	    :

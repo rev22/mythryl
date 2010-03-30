@@ -78,30 +78,29 @@ api  Posix_File {
     mode_0644:   s::Mode;
     mode_0600:   s::Mode;
 
-    package o:
-    api {
-        include Bit_Flags;		# Bit_Flags	is from   src/lib/std/src/bit-flags.api
+    package o:  api {
+		    include Bit_Flags;		# Bit_Flags	is from   src/lib/std/src/bit-flags.api
 
-        append:    Flags;
-        dsync:     Flags;
-        excl:      Flags;
-        noctty:    Flags;
-        nonblock:  Flags;
-        rsync:     Flags;
-        sync:      Flags;
-        trunc:     Flags;
+		    append:    Flags;
+		    dsync:     Flags;
+		    excl:      Flags;
+		    noctty:    Flags;
+		    nonblock:  Flags;
+		    rsync:     Flags;
+		    sync:      Flags;
+		    trunc:     Flags;
 
-    };
+		};
 
     include Posix_Common;
 
-    openf:      ((String, Open_Mode, o::Flags)) -> File_Descriptor;
-    createf:    ((String, Open_Mode, o::Flags, s::Mode)) -> File_Descriptor;
-    creat:      ((String, s::Mode)) -> File_Descriptor;
+    openf:      (String, Open_Mode, o::Flags) -> File_Descriptor;
+    createf:    (String, Open_Mode, o::Flags, s::Mode) -> File_Descriptor;
+    creat:      (String, s::Mode) -> File_Descriptor;
     umask:      s::Mode -> s::Mode;
     link:       { old:  String, new:  String } -> Void;
     mkdir:      (String, s::Mode) -> Void;
-    make_pipe: (String, s::Mode) -> Void;
+    make_pipe:  (String, s::Mode) -> Void;
     unlink:     String -> Void;
     rmdir:      String -> Void;
     rename:     { from:  String, to:  String } -> Void;

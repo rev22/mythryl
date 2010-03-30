@@ -181,27 +181,11 @@ api  Xcore {
     ring_bell:          Xsession -> Int -> Void;			# ring_bell			def in    src/lib/x-kit/xclient/src/window/xsession.pkg
     max_request_length: Xsession -> Int;				# max_request_length		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
 
-    # See   p34 http://mythryl.org/pub/exene/X-protocol-R6.pdf
+
+    # Get location of mouse pointer
+    # relative to root window:
     #
-    query_pointer
-	:	
-	Xsession
-	->
-	Window
-	->
-	{ child:			Null_Or(xtypes::Xid),		# Child window containing the mouse pointer.
-	  #
-	  mousebuttons_state:	xtypes::Mousebuttons_State, 
-	  modifier_keys_state:	xtypes::Modifier_Keys_State, 
-	  #
-	  root:			xtypes::Xid,				# Root window containing the mouse pointer.
-	  #
-	  root_point:		xg::Point,				# Mouse position in root  window coordinates.
-	  window_point:		xg::Point,				# Mouse position in local window coordinates.
-	  #
-	  same_screen: 		Bool					# Normally TRUE; FALSE if mouse pointer is not on this screen.
-	}
-	;
+    get_mouse_location: Xsession -> xg::Point;
 
 
     # Screen operations:

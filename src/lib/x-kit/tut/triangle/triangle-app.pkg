@@ -84,9 +84,14 @@ fun make_mouse_watcher  xsession  window
     =
     {   fun mouse_watcher ()
 	    =
-	    {   sleep_for (time::from_milliseconds 333);
+	    {
+#                sleep_for (time::from_milliseconds 333);
 
-		xc::query_pointer  xsession  window;
+		(xc::get_mouse_location  xsession)
+		    ->
+		    xg::POINT { row, col };
+
+printf "triangle_app: mouse_watcher: row,col d=(%d, %d)\n" row col;		
 
 		mouse_watcher ();
 	    };
@@ -562,14 +567,18 @@ trace .{ "run_triangle_app -- DONE"; };
 	    =
 	    {   xtr::init flgs;
 
-printf "triangle-app: do_it': Checking for existing %s file...\n" tracefile;
-		# Remove any old version of the tracefile:
-		#
-		if (isfile tracefile)
-		    #
-printf "triangle-app: do_it': Removing pre-existing %s file...\n" tracefile;
-		    unlink tracefile;
-		fi;
+# Commented the following out because the
+#     src/lib/std/src/unix/posix-text-primitive-io.pkg
+# logic will already truncate a file when opening it for
+# write:
+# printf "triangle-app: do_it': Checking for existing %s file...\n" tracefile;
+# 		# Remove any old version of the tracefile:
+# 		#
+# 		if (isfile tracefile)
+# 		    #
+# printf "triangle-app: do_it': Removing pre-existing %s file...\n" tracefile;
+# 		    unlink tracefile;
+# 		fi;
 
 		# Open tracelog file and
                 # select tracing level:

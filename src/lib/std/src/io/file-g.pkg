@@ -1381,17 +1381,17 @@ herein
 	fun log stringlist
 	    =
 	    case (*server_name, *log_fd)
+		#
+		(THE name, THE fd)
+		    =>
+		    {   string =  (name + ":  " + (cat  stringlist));
+			bytes  =  byte::string_to_bytes string;
+			slice  =  unt8_vector_slice::make_slice (bytes, 0, NULL);
+			posix::write_vector( fd, slice );
+			();
+		    };
 
-		 (THE name, THE fd)
-		     =>
-		     {   string =  (name + ":  " + (cat  stringlist));
-			 bytes  =  byte::string_to_bytes string;
-			 slice  =  unt8_vector_slice::make_slice (bytes, 0, NULL);
-			 posix::write_vector( fd, slice );
-			 ();
-		     };
-
-		 _ => ();
+		_ => ();
 	    esac;
 
     ######### END   INTERPOLATED 'say.pkg' STUFF #######################3
