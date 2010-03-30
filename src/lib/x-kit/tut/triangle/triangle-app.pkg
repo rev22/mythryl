@@ -77,6 +77,23 @@ herein
 				          }
 	      };
 
+# Temporary hack to test out call to
+# read mouse position:
+#
+fun make_mouse_watcher  xsession  window
+    =
+    {   fun mouse_watcher ()
+	    =
+	    {   sleep_for (time::from_milliseconds 333);
+
+		xc::query_pointer  xsession  window;
+
+		mouse_watcher ();
+	    };
+
+        xtr::make_thread "mouse watcher" mouse_watcher;
+    };
+
 	fun make_topwindow  xdisplay  xauthentication
 	    =
 	    (screen, window, kidplug)
@@ -122,6 +139,8 @@ herein
 		    #
 		    commandline_arguments =>  commandline::get_arguments ()
 		  };
+
+make_mouse_watcher  xsession  window;
 
 		xw::show_window  window;
 	    end;

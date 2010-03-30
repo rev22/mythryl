@@ -975,7 +975,7 @@ herein
 
 		fun put_modifiers (buf, i, mset)
 		    =
-		    {   m = case (kb::make_modifier_key_state mset)
+		    {   m = case (kb::make_modifier_keys_state mset)
 				#
 				xt::ANY_MOD_KEY => 0ux8000;
 				xt::MKSTATE m   => m;

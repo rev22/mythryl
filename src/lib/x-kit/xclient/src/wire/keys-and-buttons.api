@@ -21,12 +21,12 @@ herein
 
     api Keys_And_Buttons {
 
-	make_modifier_key_state:  List(xt::Modifier_Key) -> xt::Modifier_Keys_State;
+	make_modifier_keys_state:  List(xt::Modifier_Key) -> xt::Modifier_Keys_State;
 
-	union_of_modifier_key_states:         (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> xt::Modifier_Keys_State;
-	intersection_of_modifier_key_states:  (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> xt::Modifier_Keys_State;
+	union_of_modifier_keys_states:         (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> xt::Modifier_Keys_State;
+	intersection_of_modifier_keys_states:  (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> xt::Modifier_Keys_State;
 
-	modifier_key_states_match:            (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> Bool;			# Returns TRUE, if a==b or if b==ANY_MODIFIER.
+	modifier_keys_states_match:            (xt::Modifier_Keys_State, xt::Modifier_Keys_State) -> Bool;			# Returns TRUE, if a==b or if b==ANY_MODIFIER.
 	modifier_keys_state_is_empty:          xt::Modifier_Keys_State -> Bool;
 
 	shift_key_is_set:       xt::Modifier_Keys_State -> Bool;

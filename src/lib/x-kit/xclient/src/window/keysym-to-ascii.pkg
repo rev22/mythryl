@@ -95,7 +95,7 @@ herein
 
 			      f ((b as (s, _)) ! r)
 				  =>
-				  case (kb::modifier_key_states_match (s, state), f r)
+				  case (kb::modifier_keys_states_match (s, state), f r)
 				      #
 				      (FALSE, NULL  ) =>  NULL;
 				      (TRUE,  NULL  ) =>  THE r;
@@ -204,7 +204,7 @@ herein
 
 				    get_naming ((s, v) ! r)
 					=>
-					kb::modifier_key_states_match (state, s)
+					kb::modifier_keys_states_match (state, s)
 					    ##
 					    ??   v
 					    ::   get_naming  r;
@@ -280,7 +280,7 @@ herein
 		    (KEYSYM_TO_ASCII_MAPPING t)
 		    (ks::KEYSYM ks, modkeys, v)
 		=
-		{   state = kb::make_modifier_key_state modkeys;
+		{   state = kb::make_modifier_keys_state modkeys;
 
 		    KEYSYM_TO_ASCII_MAPPING (insert_naming (t, ks, state, v));
 		};

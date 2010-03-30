@@ -25,7 +25,7 @@ herein
 
     api Xinput {
 
-	package xg:  Xgeometry;		# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
+	package xg:  Xgeometry;			# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
 	package xc:  Xcore;			# Xcore		is from   src/lib/x-kit/xclient/xcore.api
 
 	#    "X attempts to provide a portable model of input devices;
@@ -52,10 +52,10 @@ herein
 	#
 	eqtype Modifier_Keys_State;
 
-	make_modifier_key_state:  List(Modifier_Key) -> Modifier_Keys_State;
+	make_modifier_keys_state:  List(Modifier_Key) -> Modifier_Keys_State;
 
-	union_of_modifier_key_states:         (Modifier_Keys_State, Modifier_Keys_State) -> Modifier_Keys_State;
-	intersection_of_modifier_key_states:  (Modifier_Keys_State, Modifier_Keys_State) -> Modifier_Keys_State;
+	union_of_modifier_keys_states:         (Modifier_Keys_State, Modifier_Keys_State) -> Modifier_Keys_State;
+	intersection_of_modifier_keys_states:  (Modifier_Keys_State, Modifier_Keys_State) -> Modifier_Keys_State;
 
 	modifier_keys_state_is_empty:  Modifier_Keys_State -> Bool;
 	shift_key_is_set:              Modifier_Keys_State -> Bool;

@@ -338,12 +338,12 @@ herein
 			keys = check_kc  mod_map.mod4_keycodes  ??  (xt::MOD4KEY ! keys)  ::  keys;
 			keys = check_kc  mod_map.mod5_keycodes  ??  (xt::MOD5KEY ! keys)  ::  keys;
 
-			kb::make_modifier_key_state  keys;
+			kb::make_modifier_keys_state  keys;
 		    };
 
 		fun switch_fn state
 		    =
-		    not (kb::modifier_keys_state_is_empty (kb::intersection_of_modifier_key_states (state, switch_mode)));
+		    not (kb::modifier_keys_state_is_empty (kb::intersection_of_modifier_keys_states (state, switch_mode)));
 
 		  MAPPING { lookup,
 			shift_mode => shift_mode lock_meaning,

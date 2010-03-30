@@ -18,7 +18,7 @@ generic package  thread_scheduler_control_g (
 : (weak) Thread_Scheduler_Control				# Thread_Scheduler_Control		is from   src/lib/src/lib/thread-kit/src/glue/thread-scheduler-control.api
 
 {
-    package sched = thread_scheduler;				# thread_scheduler			is from   src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
+    package sched = thread_scheduler;				# thread_scheduler			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
     package sig   = signals;					# signals				is from   src/lib/std/src/nj/signals.pkg
     package cu    = threadkit_startup_and_shutdown_hooks;	# threadkit_startup_and_shutdown	is from   src/lib/thread-kit/src/core-thread-kit/threadkit-cleanup.pkg
 

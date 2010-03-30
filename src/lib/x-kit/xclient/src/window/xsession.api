@@ -86,10 +86,25 @@ herein
 		screen:     Screen_Info
 	    }; 
 
+	#  An on-screen bitmap 
+	#
+	Window
+	    =
+	    WINDOW
+	      {
+		window_id:     xt::Window_Id,
+		#
+		screen:        Screen,
+		screen_depth:  Screen_Depth_Imps,
+		#
+		draw_fn:       di::Draw_Mail -> Void
+	      };
+
 	# Identity tests:
 	#
 	same_xsession: (Xsession, Xsession) -> Bool;
 	same_screen:   (Screen,   Screen  ) -> Bool;
+	same_window:   (Window,   Window  ) -> Bool;
 
 	open_xsession: (/* DISPLAY:*/ String, Null_Or( xt::Xauthentication )) -> Xsession;
 	    #
@@ -189,7 +204,7 @@ herein
 	    :	
 	    Xsession
 	    ->
-	    { window_id:    xt::Xid }
+	    Window
 	    ->
 	    { child:			Null_Or(xt::Xid),		# Child window containing the mouse pointer.
 	      #

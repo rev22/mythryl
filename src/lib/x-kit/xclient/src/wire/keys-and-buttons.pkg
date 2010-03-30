@@ -29,18 +29,18 @@ herein
 	mod4mask	= 0ux0040;
 	mod5mask	= 0ux0080;
 
-	fun union_of_modifier_key_states (xt::MKSTATE m1, xt::MKSTATE m2) => xt::MKSTATE (m1 | m2);
-	    union_of_modifier_key_states _ => xt::ANY_MOD_KEY;
+	fun union_of_modifier_keys_states (xt::MKSTATE m1, xt::MKSTATE m2) => xt::MKSTATE (m1 | m2);
+	    union_of_modifier_keys_states _ => xt::ANY_MOD_KEY;
 	end;
 
-	fun intersection_of_modifier_key_states (xt::MKSTATE m1, xt::MKSTATE m2) => xt::MKSTATE (m1 & m2);
-	    intersection_of_modifier_key_states (xt::ANY_MOD_KEY, m) => m;
-	    intersection_of_modifier_key_states (m, xt::ANY_MOD_KEY) => m;
+	fun intersection_of_modifier_keys_states (xt::MKSTATE m1, xt::MKSTATE m2) => xt::MKSTATE (m1 & m2);
+	    intersection_of_modifier_keys_states (xt::ANY_MOD_KEY, m) => m;
+	    intersection_of_modifier_keys_states (m, xt::ANY_MOD_KEY) => m;
 	end;
 
-	fun modifier_key_states_match (xt::MKSTATE m1, xt::MKSTATE m2)   =>   (m1 == m2);
-	    modifier_key_states_match (_, xt::ANY_MOD_KEY) => TRUE;
-	    modifier_key_states_match _ => FALSE;
+	fun modifier_keys_states_match (xt::MKSTATE m1, xt::MKSTATE m2)   =>   (m1 == m2);
+	    modifier_keys_states_match (_, xt::ANY_MOD_KEY) => TRUE;
+	    modifier_keys_states_match _ => FALSE;
 	end;
 
 	fun modifier_keys_state_is_empty xt::ANY_MOD_KEY => TRUE;
@@ -48,7 +48,7 @@ herein
 	    modifier_keys_state_is_empty _ => FALSE;
 	end;
 
-	fun make_modifier_key_state l
+	fun make_modifier_keys_state l
 	    =
 	    {
 		exception ANY;

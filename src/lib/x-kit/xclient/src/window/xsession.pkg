@@ -215,6 +215,20 @@ herein
 		screen:     Screen_Info
 	    }; 
 
+	#  An on-screen bitmap 
+	#
+	Window
+	    =
+	    WINDOW
+	      {
+		window_id:     xt::Window_Id,
+		#
+		screen:        Screen,
+		screen_depth:  Screen_Depth_Imps,
+		#
+		draw_fn:       di::Draw_Mail -> Void
+	      };
+
 	# Identity tests:
 	#
 	fun same_xsession
@@ -232,6 +246,10 @@ herein
 	    and
 	    same_xsession (xsession1, xsession2);
 
+	fun same_window (   WINDOW { window_id=>id1, screen=>s1, ... },
+			    WINDOW { window_id=>id2, screen=>s2, ... }   )
+	    =
+	   (id1 == id2) and same_screen (s1, s2);
 
 	# See overview comments in
 	#
@@ -397,6 +415,12 @@ herein
 	    query_pointer      =  apply_to_xsocket  xok::query_pointer;
 	    query_text_extents =  apply_to_xsocket  xok::query_text_extents;
 	    query_tree         =  apply_to_xsocket  xok::query_tree;
+
+	    fun query_pointer 
+		    (XSESSION { xdisplay=>dy::XDISPLAY { xsocket, ... }, ... } )
+		    (WINDOW { window_id, ... })
+		=
+		xok::query_pointer  xsocket  { window_id };
 	end;
 
         # Close the xsession.
