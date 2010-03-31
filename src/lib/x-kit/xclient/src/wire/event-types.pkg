@@ -41,33 +41,37 @@ herein
 
 	    # X event names 
 	    #
-	    Xevent_Name
-	     = XEVENT_KEY_PRESS
-	     | XEVENT_KEY_RELEASE
-	     | XEVENT_BUTTON_PRESS
-	     | XEVENT_BUTTON_RELEASE
-	     | XEVENT_ENTER_WINDOW
-	     | XEVENT_LEAVE_WINDOW
-	     | XEVENT_POINTER_MOTION
-	     | XEVENT_POINTER_MOTION_HINT
-	     | XEVENT_BUTTON1MOTION
-	     | XEVENT_BUTTON2MOTION
-	     | XEVENT_BUTTON3MOTION
-	     | XEVENT_BUTTON4MOTION
-	     | XEVENT_BUTTON5MOTION
-	     | XEVENT_BUTTON_MOTION
-	     | XEVENT_KEYMAP_STATE
-	     | XEVENT_EXPOSURE
-	     | XEVENT_VISIBILITY_CHANGE
-	     | XEVENT_STRUCTURE_NOTIFY
-	     | XEVENT_RESIZE_REDIRECT
-	     | XEVENT_SUBSTRUCTURE_NOTIFY
-	     | XEVENT_SUBSTRUCTURE_REDIRECT
-	     | XEVENT_FOCUS_CHANGE
-	     | XEVENT_PROPERTY_CHANGE
-	     | XEVENT_COLORMAP_CHANGE
-	     | XEVENT_OWNER_GRAB_BUTTON
-	     ;
+	    package xevent {
+
+		Name
+		  #
+		  = KEY_PRESS
+		  | KEY_RELEASE
+		  | BUTTON_PRESS
+		  | BUTTON_RELEASE
+		  | ENTER_WINDOW
+		  | LEAVE_WINDOW
+		  | POINTER_MOTION
+		  | POINTER_MOTION_HINT
+		  | BUTTON1MOTION
+		  | BUTTON2MOTION
+		  | BUTTON3MOTION
+		  | BUTTON4MOTION
+		  | BUTTON5MOTION
+		  | BUTTON_MOTION
+		  | KEYMAP_STATE
+		  | EXPOSURE
+		  | VISIBILITY_CHANGE
+		  | STRUCTURE_NOTIFY
+		  | RESIZE_REDIRECT
+		  | SUBSTRUCTURE_NOTIFY
+		  | SUBSTRUCTURE_REDIRECT
+		  | FOCUS_CHANGE
+		  | PROPERTY_CHANGE
+		  | COLORMAP_CHANGE
+		  | OWNER_GRAB_BUTTON
+		  ;
+	    };
 
 	    # The types of the information
 	    # carried by some XEvents: 
@@ -153,8 +157,8 @@ herein
 
 	     | ENTER_NOTIFY_XEVENT  Inout_Xevtinfo
 	     | LEAVE_NOTIFY_XEVENT  Inout_Xevtinfo
-	     | FOCUS_IN_XEVENT  Focus_Xevtinfo
-	     | FOCUS_OUT_XEVENT  Focus_Xevtinfo
+	     | FOCUS_IN_XEVENT      Focus_Xevtinfo
+	     | FOCUS_OUT_XEVENT     Focus_Xevtinfo
 	     | KEYMAP_NOTIFY_XEVENT  { }
 
 	     | EXPOSE_XEVENT
@@ -320,31 +324,31 @@ herein
 	     | POINTER_MAPPING_NOTIFY_XEVENT		# Really a MappingNotify event.
 	     ;
 
-	    fun mask_of_xevent XEVENT_KEY_PRESS             => xt::EVENT_MASK (0u1 << 0u0);
-		mask_of_xevent XEVENT_KEY_RELEASE           => xt::EVENT_MASK (0u1 << 0u1);
-		mask_of_xevent XEVENT_BUTTON_PRESS          => xt::EVENT_MASK (0u1 << 0u2);
-		mask_of_xevent XEVENT_BUTTON_RELEASE        => xt::EVENT_MASK (0u1 << 0u3);
-		mask_of_xevent XEVENT_ENTER_WINDOW          => xt::EVENT_MASK (0u1 << 0u4);
-		mask_of_xevent XEVENT_LEAVE_WINDOW          => xt::EVENT_MASK (0u1 << 0u5);
-		mask_of_xevent XEVENT_POINTER_MOTION        => xt::EVENT_MASK (0u1 << 0u6);
-		mask_of_xevent XEVENT_POINTER_MOTION_HINT   => xt::EVENT_MASK (0u1 << 0u7);
-		mask_of_xevent XEVENT_BUTTON1MOTION         => xt::EVENT_MASK (0u1 << 0u8);
-		mask_of_xevent XEVENT_BUTTON2MOTION         => xt::EVENT_MASK (0u1 << 0u9);
-		mask_of_xevent XEVENT_BUTTON3MOTION         => xt::EVENT_MASK (0u1 << 0u10);
-		mask_of_xevent XEVENT_BUTTON4MOTION         => xt::EVENT_MASK (0u1 << 0u11);
-		mask_of_xevent XEVENT_BUTTON5MOTION         => xt::EVENT_MASK (0u1 << 0u12);
-		mask_of_xevent XEVENT_BUTTON_MOTION         => xt::EVENT_MASK (0u1 << 0u13);
-		mask_of_xevent XEVENT_KEYMAP_STATE          => xt::EVENT_MASK (0u1 << 0u14);
-		mask_of_xevent XEVENT_EXPOSURE              => xt::EVENT_MASK (0u1 << 0u15);
-		mask_of_xevent XEVENT_VISIBILITY_CHANGE     => xt::EVENT_MASK (0u1 << 0u16);
-		mask_of_xevent XEVENT_STRUCTURE_NOTIFY      => xt::EVENT_MASK (0u1 << 0u17);
-		mask_of_xevent XEVENT_RESIZE_REDIRECT       => xt::EVENT_MASK (0u1 << 0u18);
-		mask_of_xevent XEVENT_SUBSTRUCTURE_NOTIFY   => xt::EVENT_MASK (0u1 << 0u19);
-		mask_of_xevent XEVENT_SUBSTRUCTURE_REDIRECT => xt::EVENT_MASK (0u1 << 0u20);
-		mask_of_xevent XEVENT_FOCUS_CHANGE          => xt::EVENT_MASK (0u1 << 0u21);
-		mask_of_xevent XEVENT_PROPERTY_CHANGE       => xt::EVENT_MASK (0u1 << 0u22);
-		mask_of_xevent XEVENT_COLORMAP_CHANGE       => xt::EVENT_MASK (0u1 << 0u23);
-		mask_of_xevent XEVENT_OWNER_GRAB_BUTTON     => xt::EVENT_MASK (0u1 << 0u24);
+	    fun mask_of_xevent xevent::KEY_PRESS             => xt::EVENT_MASK (0u1 << 0u0);
+		mask_of_xevent xevent::KEY_RELEASE           => xt::EVENT_MASK (0u1 << 0u1);
+		mask_of_xevent xevent::BUTTON_PRESS          => xt::EVENT_MASK (0u1 << 0u2);
+		mask_of_xevent xevent::BUTTON_RELEASE        => xt::EVENT_MASK (0u1 << 0u3);
+		mask_of_xevent xevent::ENTER_WINDOW          => xt::EVENT_MASK (0u1 << 0u4);
+		mask_of_xevent xevent::LEAVE_WINDOW          => xt::EVENT_MASK (0u1 << 0u5);
+		mask_of_xevent xevent::POINTER_MOTION        => xt::EVENT_MASK (0u1 << 0u6);
+		mask_of_xevent xevent::POINTER_MOTION_HINT   => xt::EVENT_MASK (0u1 << 0u7);
+		mask_of_xevent xevent::BUTTON1MOTION         => xt::EVENT_MASK (0u1 << 0u8);
+		mask_of_xevent xevent::BUTTON2MOTION         => xt::EVENT_MASK (0u1 << 0u9);
+		mask_of_xevent xevent::BUTTON3MOTION         => xt::EVENT_MASK (0u1 << 0u10);
+		mask_of_xevent xevent::BUTTON4MOTION         => xt::EVENT_MASK (0u1 << 0u11);
+		mask_of_xevent xevent::BUTTON5MOTION         => xt::EVENT_MASK (0u1 << 0u12);
+		mask_of_xevent xevent::BUTTON_MOTION         => xt::EVENT_MASK (0u1 << 0u13);
+		mask_of_xevent xevent::KEYMAP_STATE          => xt::EVENT_MASK (0u1 << 0u14);
+		mask_of_xevent xevent::EXPOSURE              => xt::EVENT_MASK (0u1 << 0u15);
+		mask_of_xevent xevent::VISIBILITY_CHANGE     => xt::EVENT_MASK (0u1 << 0u16);
+		mask_of_xevent xevent::STRUCTURE_NOTIFY      => xt::EVENT_MASK (0u1 << 0u17);
+		mask_of_xevent xevent::RESIZE_REDIRECT       => xt::EVENT_MASK (0u1 << 0u18);
+		mask_of_xevent xevent::SUBSTRUCTURE_NOTIFY   => xt::EVENT_MASK (0u1 << 0u19);
+		mask_of_xevent xevent::SUBSTRUCTURE_REDIRECT => xt::EVENT_MASK (0u1 << 0u20);
+		mask_of_xevent xevent::FOCUS_CHANGE          => xt::EVENT_MASK (0u1 << 0u21);
+		mask_of_xevent xevent::PROPERTY_CHANGE       => xt::EVENT_MASK (0u1 << 0u22);
+		mask_of_xevent xevent::COLORMAP_CHANGE       => xt::EVENT_MASK (0u1 << 0u23);
+		mask_of_xevent xevent::OWNER_GRAB_BUTTON     => xt::EVENT_MASK (0u1 << 0u24);
 	    end;
 
 	    fun mask_of_xevent_list l

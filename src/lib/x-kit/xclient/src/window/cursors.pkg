@@ -198,9 +198,9 @@ herein
 		    #
 		    event_mask => et::mask_of_xevent_list
 				    [
-				      et::XEVENT_POINTER_MOTION,
-				      et::XEVENT_BUTTON_PRESS,
-				      et::XEVENT_BUTTON_RELEASE
+				      et::xevent::POINTER_MOTION,
+				      et::xevent::BUTTON_PRESS,
+				      et::xevent::BUTTON_RELEASE
 				    ]
 		  }
 	      );
