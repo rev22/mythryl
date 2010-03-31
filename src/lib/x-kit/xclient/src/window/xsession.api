@@ -198,10 +198,11 @@ herein
 	    }
 	    ;
 
-	# Get location of mouse pointer
+	# Get/set location of mouse pointer
 	# relative to root window:
 	#
 	get_mouse_location:  Xsession -> g::Point;	
+	set_mouse_location:  Xsession -> g::Point -> Void;
 
 	query_colors
 	    :

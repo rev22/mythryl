@@ -508,14 +508,16 @@ herein
 	encode_unmap_subwindows:   { window_id:  xt::Xid }       -> v8::Vector;
 	encode_unmap_window:       { window_id:  xt::Xid }       -> v8::Vector;
 
-	encode_warp_pointer: { from:     Null_Or(xt::Xid), 
-                               to:       Null_Or(xt::Xid), 
-			       #
-			       from_box: g::Box,
-			       to_point: g::Point
-                             }
-			     ->
-                             v8::Vector;
+	encode_warp_pointer 					# See p 35 (39)  http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	    :
+	    { from:     Null_Or(xt::Xid),
+	      to:       Null_Or(xt::Xid), 
+	      #
+	      from_box: g::Box,
+	      to_point: g::Point
+	    }
+	    ->
+	    v8::Vector;
 
 	request_get_font_path:         v8::Vector;
 	request_get_input_focus:       v8::Vector;

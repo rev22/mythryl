@@ -182,10 +182,11 @@ api  Xcore {
     max_request_length: Xsession -> Int;				# max_request_length		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
 
 
-    # Get location of mouse pointer
+    # Get/set location of mouse pointer
     # relative to root window:
     #
     get_mouse_location: Xsession -> xg::Point;
+    set_mouse_location: Xsession -> xg::Point -> Void;
 
 
     # Screen operations:

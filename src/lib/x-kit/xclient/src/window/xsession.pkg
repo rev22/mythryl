@@ -141,18 +141,19 @@
 stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package s2t = xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
+    package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     #
-    package g   = geometry;				# geometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xok = xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package dy  = display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
-    package ai  = atom_imp;				# atom_imp			is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
-    package cs  = color_spec;				# color_spec			is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
-    package di  = draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
-    package fti = font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
-    package gci = graphics_context_imp;			# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
-    package ki  = keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
-    package xt  = xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package g   =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xok =  xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package dy  =  display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package ai  =  atom_imp;				# atom_imp			is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
+    package cs  =  color_spec;				# color_spec			is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
+    package di  =  draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package fti =  font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
+    package gci =  graphics_context_imp;		# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package ki  =  keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+    package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package xt  =  xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     package xsession: Xsession {			# Xsession			is from   src/lib/x-kit/xclient/src/window/xsession.api
@@ -416,34 +417,63 @@ herein
 	    query_text_extents =  apply_to_xsocket  xok::query_text_extents;
 	    query_tree         =  apply_to_xsocket  xok::query_tree;
 
-	    # Get location of mouse pointer
-	    # plus related information:
-	    #
-	    fun get_mouse_location
-		(XSESSION
-                  { xdisplay       =>  dy::XDISPLAY { xsocket, ... },
-                    default_screen =>  SCREEN_INFO  { xscreen => dy::XSCREEN  { root_window_id, ... }, ... },
-                    ...
-                  }
-                )
-		=
-		{   # The X server query_pointer call takes a window_id
-		    # argument. This seems overcomplex for the typical
-		    # Mythryl caller, so here we just default it to the
-		    # the default-screen root-window:
-		    #
-		    (xok::query_pointer  xsocket  { window_id => root_window_id })
-			->
-			{ root_point, ... };
-
-		    # The X server query_pointer call returns
-		    # a load of stuff.  For now at least, a
-		    # return value of simply the mouse location
-		    # seems more convenient for the Mythryl app hacker:
-		    #
-		    root_point;
-		};
 	end;
+
+	# Get location of mouse pointer
+	# plus related information:
+	#
+	fun get_mouse_location
+	    (XSESSION
+	      { xdisplay       =>  dy::XDISPLAY { xsocket, ... },
+		default_screen =>  SCREEN_INFO  { xscreen => dy::XSCREEN  { root_window_id, ... }, ... },
+		...
+	      }
+	    )
+	    =
+	    {   # The X server query_pointer call takes a window_id
+		# argument. This seems overcomplex for the typical
+		# Mythryl caller, so here we just default it to the
+		# the default-screen root-window:
+		#
+		(xok::query_pointer  xsocket  { window_id => root_window_id })
+		    ->
+		    { root_point, ... };
+
+		# The X server query_pointer call returns
+		# a load of stuff.  For now at least, a
+		# return value of simply the mouse location
+		# seems more convenient for the Mythryl app hacker:
+		#
+		root_point;
+	    };
+
+	fun set_mouse_location
+	    (
+             XSESSION
+	      { xdisplay       =>  dy::XDISPLAY { xsocket, ... },
+		default_screen =>  SCREEN_INFO  { xscreen => dy::XSCREEN  { root_window_id, ... }, ... },
+		...
+	      }
+	    )
+	    to_point
+	    =
+	    {   # This is an ignored dummy value:
+		#	
+	        from_box =  g::BOX { col => 0, row => 0, wide => 0, high => 0 };
+
+		command
+		    =
+		    v2w::encode_warp_pointer
+                      {
+			to_point,			# Move mouse pointer to this coordinate.
+                        to   =>  THE root_window_id,	# Position mouse relative to root window.
+			#				# (That is, in absolute screen coordinates.)
+	                from =>  NULL,
+			from_box			# Ignored because 'from' is NULL.
+                      };
+
+		xok::request  xsocket  command;
+	    };
 
         # Close the xsession.
         # NOTE: there are probably other things

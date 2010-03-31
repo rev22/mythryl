@@ -5,16 +5,6 @@
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
-
-
-
-
-###        "To be on the wire is life.
-###         The rest is waiting."
-###
-###           -- Karl Wallenda, highwire walker
-
-
 									# Socket		is from   src/lib/std/src/socket/socket.api
 									# socket		is from   src/lib/std/socket.pkg
 									# socket_guts		is from   src/lib/std/src/socket/socket-guts.pkg

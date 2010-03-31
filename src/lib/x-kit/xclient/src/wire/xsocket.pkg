@@ -1541,11 +1541,11 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	# a query and then decode the reply.  It was originally
 	# in font_imp, it moved here to avoid replication:
 	#
-	fun query (encode, decode) connection
+	fun query (encode, decode) xsocket
 	    =
 	    ask
 	    where
-		request_reply' =  request_reply  connection;
+		request_reply' =  request_reply  xsocket;
 
 		fun ask msg
 		    =
@@ -1565,6 +1565,7 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	query_pointer      =  query  (v2w::encode_query_pointer,      w2v::decode_query_pointer_reply     );
 	query_tree         =  query  (v2w::encode_query_tree,         w2v::decode_query_tree_reply        );
 	query_text_extents =  query  (v2w::encode_query_text_extents, w2v::decode_query_text_extents_reply);
+
 
     };						# package xsocket
 end;

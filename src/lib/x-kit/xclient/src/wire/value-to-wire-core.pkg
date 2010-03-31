@@ -21,6 +21,14 @@
 #     src/lib/x-kit/xclient/xclient-internals.make6
 
 
+
+###        "To be on the wire is life.
+###         The rest is waiting."
+###
+###           -- Karl Wallenda, highwire walker
+
+
+
 # TODO
 #   - encodeAllocColorCells
 #   - encodeAllocColorPlanes
