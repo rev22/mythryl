@@ -60,6 +60,26 @@ herein
 	    ->
 	    w8v::Vector
 	    ;
+
+	encode_send_button_press_xevent
+	    :
+	    { send_event_to:	xt::Send_Event_To,
+	      propagate:	Bool,
+	      event_mask:	xt::Event_Mask,
+	      #
+	      timestamp:	xt::Timestamp,
+	      root_window:	xt::Xid,
+	      event_window:	xt::Xid,
+	      child_window:	xt::Xid,
+	      root_x:		Int,
+	      root_y:		Int,
+	      event_x:		Int,
+	      event_y:		Int
+	    }
+	    ->
+	    w8v::Vector
+	    ;
+
     };		# package sendevent_to_wire
 end;		# stipulate 
 

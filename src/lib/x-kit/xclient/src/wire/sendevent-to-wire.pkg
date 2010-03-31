@@ -65,8 +65,8 @@ herein
 	    fun put_word32   (buf, i, x) = put32 (buf, i, unt::to_large_unt x);
 	    fun put_signed32 (buf, i, x) = put32 (buf, i, large_unt::from_int x);
 
-	    fun put_bool (buf, i, FALSE) => put8 (buf, i, 0u0);
-		put_bool (buf, i, TRUE) => put8 (buf, i, 0u1);
+	    fun put_bool (buf, i, FALSE) =>  put8 (buf, i, 0u0);
+		put_bool (buf, i, TRUE ) =>  put8 (buf, i, 0u1);
 	    end;
 
 	    fun put_xid (buf, i, xt::XID n)
@@ -173,6 +173,41 @@ herein
 		    put_xid        (msg,  4, event          );
 		    put_xid        (msg,  8, window         );
 		    put_bool       (msg, 12, from_configure );
+
+		    msg;
+		};
+
+	    # For semantics       see   p77  (81)   http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	    # For binary encoding see  p151 (155)   http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	    #
+	    fun encode_send_button_press_xevent
+		  { send_event_to, propagate, event_mask,
+		    #
+                    timestamp,
+                    root_window,
+		    event_window,
+		    child_window,
+		    root_x,
+		    root_y,
+		    event_x,
+		    event_y
+                  }
+		=
+		{   msg = encode_push_event { send_event_to, propagate, event_mask };
+
+		    same_screen = TRUE;		# I'm pretending multiple-screen X servers do not exist.
+
+		    put_event_code (msg, event::button_press_xevent);
+		    put_timestamp  (msg,  4, timestamp		   );
+		    put_xid        (msg,  8, root_window           );
+		    put_xid        (msg, 12, event_window          );
+		    put_xid        (msg, 16, child_window          );	# 0 == NONE
+		    put_signed16   (msg, 20, root_x		   );
+		    put_signed16   (msg, 22, root_y		   );
+		    put_signed16   (msg, 24, event_x		   );
+		    put_signed16   (msg, 26, event_y		   );
+#		    put_signed16   (msg, 28, keys		   ); NOT DONE -- XXX BUGGO FIXME
+		    put_bool       (msg, 30, same_screen	   );
 
 		    msg;
 		};

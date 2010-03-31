@@ -1,3 +1,4 @@
+2010-03-30-19.03.50: src/lib/x-kit/xclient/src/window/xsession.api: Export a set_mouse_location matching get_mouse_location, based on WarpPointer X protocol call.
 2010-03-30-18.12.09: src/lib/x-kit/xclient/src/window/xsession.api: Export the baroque X query_pointer() as a nice simple get_mouse_location().
 2010-03-29-20.48.45: src/lib/x-kit/xclient/src/window/xsession.api: Export query_pointer().
 2010-03-28-15.33.11: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Added query_colors().

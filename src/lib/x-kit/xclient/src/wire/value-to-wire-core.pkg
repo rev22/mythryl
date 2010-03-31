@@ -888,7 +888,7 @@ herein
 	    fun encode_convert_selection
 		{ selection, target, property, requestor, timestamp }
 		=
-		{   msg = make_request req_convert_selection;
+		{   msg =  make_request  req_convert_selection;
 
 		    put_xid         (msg,  4, requestor);
 		    put_atom        (msg,  8, selection);
@@ -900,13 +900,13 @@ herein
 		};
 
 	    # This just encodes the header info;
-	    # encoding of the event message is
-	    # handled by the routines in XSendEvent.
+	    # encoding of the event proper is done in:
+	    # 
+	    #     src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
 	    #
 	    fun encode_push_event { send_event_to, propagate, event_mask }
 		=
-		{
-		    msg = make_request (req_push_event);
+		{   msg =  make_request  req_push_event;
 
 		    put_bool (msg, 1, propagate);
 
