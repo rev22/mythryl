@@ -74,6 +74,10 @@ herein
 		=
 		put16 (buf, i, unt32::from_int (unt::to_int unt));		# There must be a better way to do this conversion...
 
+	    fun put_button  (buf, i, xt::MOUSEBUTTON button)
+		=
+		put_signed8 (buf, i, button);
+
 	    fun put_xid (buf, i, xt::XID n)
 		=
 		put_word32 (buf, i, n);
@@ -194,13 +198,15 @@ herein
 		    #
                     timestamp,
                     root_window,
-		    event_window,
-		    child_window,
-		    root_x,
+		    event_window,	# Window handling the mouse-button click event.
+		    child_window,	# Child of event window containing the click point. NULL if none such exists.
+		    root_x,		# Mouse position on root window at time of button click.
 		    root_y,
-		    event_x,
+		    event_x,		# Mouse position on recipient window at time of button click.
 		    event_y,
-		    buttons
+		    button,		# Mouse button just clicked down.
+		    buttons		# Mouse button state before buttonclick.
+					# We should support modifier keys as well as mouse keys here. XXX BUGGO FIXME.
                   }
 		=
 		{   msg = encode_push_event { send_event_to, propagate, event_mask };
@@ -208,6 +214,7 @@ herein
 		    same_screen = TRUE;		# I'm pretending multiple-screen X servers do not exist.
 
 		    put_event_code  (msg, event::button_press_xevent	);
+		    put_button      (msg,  1, button			);			# Mouse button being clicked.
 		    put_timestamp   (msg,  4, timestamp			);
 		    put_xid         (msg,  8, root_window		);
 		    put_xid         (msg, 12, event_window		);
@@ -216,7 +223,7 @@ herein
 		    put_signed16    (msg, 22, root_y			);
 		    put_signed16    (msg, 24, event_x			);
 		    put_signed16    (msg, 26, event_y			);
-		    put_buttons     (msg, 28, buttons			);
+		    put_buttons     (msg, 28, buttons			);			# Supposed keys-and-buttons state before the click.
 		    put_bool        (msg, 30, same_screen		);
 
 		    msg;
@@ -230,12 +237,13 @@ herein
 		    #
                     timestamp,
                     root_window,
-		    event_window,
-		    child_window,
-		    root_x,
+		    event_window,	# Window handling the mouse-button release event.
+		    child_window,	# Child of event window containing the release point. NULL if none such exists.
+		    root_x,		# Mouse position on root window at time of button release.
 		    root_y,
-		    event_x,
-		    event_y
+		    event_x,		# Mouse position on recipient window at time of button release.
+		    event_y,
+		    button		# Mouse button just released.
                   }
 		=
 		{   msg = encode_push_event { send_event_to, propagate, event_mask };
@@ -245,6 +253,7 @@ herein
 		    # 'buttons' and 'same_screen':
 		    #
 		    put_event_code  (msg, event::button_press_xevent	);
+		    put_button      (msg,  1, button			);			# Mouse button being released.
 		    put_timestamp   (msg,  4, timestamp			);
 		    put_xid         (msg,  8, root_window		);
 		    put_xid         (msg, 12, event_window		);

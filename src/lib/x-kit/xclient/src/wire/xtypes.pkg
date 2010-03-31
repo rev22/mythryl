@@ -162,7 +162,28 @@ herein
 
 	Mousebutton
 	    =
-	    MOUSEBUTTON  Int;
+	    MOUSEBUTTON  Int;			# We use the X protocol "BUTTON" wire encoding.
+
+	# I can't find where the X protocol docs specify
+	# the button encodings, but /usr/include/X11/X.h
+	# on my system gives
+	#
+	#     /* button names. Used as arguments to GrabButton and as detail in ButtonPress
+	#	 and ButtonRelease events.  Not to be confused with button masks above.
+	#	 Note that 0 is already defined above as "AnyButton".  */
+	#
+	#     #define Button1			1
+	#     #define Button2			2
+	#     #define Button3			3
+	#     #define Button4			4
+	#     #define Button5			5
+	#
+	button1 =  MOUSEBUTTON 1;
+	button2 =  MOUSEBUTTON 2;
+	button3 =  MOUSEBUTTON 3;
+	button4 =  MOUSEBUTTON 4;
+	button5 =  MOUSEBUTTON 5;
+
 
 	# A modifier key (shift, ctrl...) state vector:
 	#
@@ -177,8 +198,13 @@ herein
 	Mousebuttons_State
 	  =
           MOUSEBUTTON_STATE  Unt;		# We keep these in the X protocol wire encoding bitmap format.
-						# For the actual bit layout see   src/lib/x-kit/xclient/src/wire/keys-and-buttons.pkg
-						# or p114-115 (117-118)           http://mythryl.org/pub/exene/X-protocol-R6.pdf
+		#				# For the actual bit layout see   src/lib/x-kit/xclient/src/wire/keys-and-buttons.pkg
+		# Having the above value	# or p114-115 (117-118)           http://mythryl.org/pub/exene/X-protocol-R6.pdf
+		# be an Unt (vs Int)	
+		# is a nuisance and doesn't
+		# seem to do any real good.
+		# XXX BUGGO FIXME
+
 	# Modes for AllowEvents 
 	#
 	Event_Mode

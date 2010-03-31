@@ -587,12 +587,12 @@ result;
 			  root        => get_xid           (buf,  8),
 			  event       => get_xid           (buf, 12),
 			  child       => get_xid_option    (buf, 16),
-			  root_point     => get_pt            (buf, 20),
-
-			  event_point    => get_pt            (buf, 24),
+			  root_point  => get_pt		   (buf, 20),
+			  event_point => get_pt		   (buf, 24),
+			  #
 			  modifier_keys_state   => mks,
-			  mousebuttons_state  => mbs,
-			  same_screen => get_bool          (buf, 30)
+			  mousebuttons_state	=> mbs,
+			  same_screen		=> get_bool(buf, 30)
 			};
 		    };
 
@@ -607,8 +607,8 @@ result;
 			  root        => get_xid                   (buf,  8),
 			  event       => get_xid                   (buf, 12),
 			  child       => get_xid_option            (buf, 16),
-			  root_point     => get_pt                    (buf, 20),
-			  event_point    => get_pt                    (buf, 24),
+			  root_point  => get_pt                    (buf, 20),
+			  event_point => get_pt                    (buf, 24),
 			  modifier_keys_state   => mks,
 			  mousebuttons_state  => mbs,
 			  same_screen => get_bool                  (buf, 30)
@@ -958,8 +958,8 @@ result;
 
 			xevent = case n
 				     #
-				     0u2  => et::KEY_PRESS_XEVENT      (get_key_xevent buf);
-				     0u3  => et::KEY_RELEASE_XEVENT    (get_key_xevent buf);
+				     0u2  => et::KEY_PRESS_XEVENT      (get_key_xevent    buf);
+				     0u3  => et::KEY_RELEASE_XEVENT    (get_key_xevent    buf);
 				     0u4  => et::BUTTON_PRESS_XEVENT   (get_button_xevent buf);
 				     0u5  => et::BUTTON_RELEASE_XEVENT (get_button_xevent buf);
 				     0u6  => decode_motion_notify       buf;

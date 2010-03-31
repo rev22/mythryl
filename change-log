@@ -1,3 +1,4 @@
+2010-03-30-21.13.54: src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg: encode_send_button_press_xevent: Add 'buttons' arg specifying button(s) pressed.
 2010-03-30-20.31.48: src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg: Added first-cut version of encode_send_button_release_xevent.
 2010-03-30-20.08.09: src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg: Wrote first-cut version of encode_send_button_press_xevent.
 2010-03-30-19.03.50: src/lib/x-kit/xclient/src/window/xsession.api: Export a set_mouse_location matching get_mouse_location, based on WarpPointer X protocol call.

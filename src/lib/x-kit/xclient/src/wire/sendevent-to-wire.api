@@ -71,13 +71,14 @@ herein
 	      #
 	      timestamp:	xt::Timestamp,
 	      root_window:	xt::Xid,
-	      event_window:	xt::Xid,
-	      child_window:	Null_Or( xt::Xid ),
-	      root_x:		Int,
+	      event_window:	xt::Xid,			# Window handling the mouse-button click event.
+	      child_window:	Null_Or( xt::Xid ),		# Child of event window containing the click point. NULL if none such exists.
+	      root_x:		Int,				# Mouse position on root window at time of button click.
 	      root_y:		Int,
-	      event_x:		Int,
+	      event_x:		Int,				# Mouse position on recipient window at time of button click.
 	      event_y:		Int,
-	      buttons:		xt::Mousebuttons_State
+	      button:		xt::Mousebutton,		# Mouse button just clicked down.
+	      buttons:		xt::Mousebuttons_State		# Mouse button state before buttonclick.
 	    }
 	    ->
 	    w8v::Vector
@@ -93,12 +94,13 @@ herein
 	      #
 	      timestamp:	xt::Timestamp,
 	      root_window:	xt::Xid,
-	      event_window:	xt::Xid,
-	      child_window:	Null_Or( xt::Xid ),
-	      root_x:		Int,
+	      event_window:	xt::Xid,			# Window handling the mouse-button release event.
+	      child_window:	Null_Or( xt::Xid ),		# Child of event window containing the release point. NULL if none such exists.
+	      root_x:		Int,				# Mouse position on root window at time of button release.
 	      root_y:		Int,
-	      event_x:		Int,
-	      event_y:		Int
+	      event_x:		Int,				# Mouse position on recipient window at time of button click.
+	      event_y:		Int,
+	      button:		xt::Mousebutton			# Mouse button just released.
 	    }
 	    ->
 	    w8v::Vector
