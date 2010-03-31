@@ -61,6 +61,8 @@ herein
 	    w8v::Vector
 	    ;
 
+	# See   p77  (81)   http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	#
 	encode_send_button_press_xevent
 	    :
 	    { send_event_to:	xt::Send_Event_To,
@@ -70,7 +72,28 @@ herein
 	      timestamp:	xt::Timestamp,
 	      root_window:	xt::Xid,
 	      event_window:	xt::Xid,
-	      child_window:	xt::Xid,
+	      child_window:	Null_Or( xt::Xid ),
+	      root_x:		Int,
+	      root_y:		Int,
+	      event_x:		Int,
+	      event_y:		Int
+	    }
+	    ->
+	    w8v::Vector
+	    ;
+
+	# See   p77  (81)   http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	#
+	encode_send_button_release_xevent
+	    :
+	    { send_event_to:	xt::Send_Event_To,
+	      propagate:	Bool,
+	      event_mask:	xt::Event_Mask,
+	      #
+	      timestamp:	xt::Timestamp,
+	      root_window:	xt::Xid,
+	      event_window:	xt::Xid,
+	      child_window:	Null_Or( xt::Xid ),
 	      root_x:		Int,
 	      root_y:		Int,
 	      event_x:		Int,

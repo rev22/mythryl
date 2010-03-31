@@ -73,9 +73,9 @@ herein
 		=
 		put_word32 (buf, i, n);
 
-#	    fun put_null_or_xid (buf, i, NULL)            =>  put_word32 (buf, i, 0u0);
-#		put_null_or_xid (buf, i, THE (xt::XID n)) =>  put_word32 (buf, i, n);
-#	    end;
+	    fun put_null_or_xid (buf, i, NULL)            =>  put_word32 (buf, i, 0u0);
+		put_null_or_xid (buf, i, THE (xt::XID n)) =>  put_word32 (buf, i, n);
+	    end;
 
 	    fun put_atom (buf, i, xt::XATOM n)
 		=
@@ -197,17 +197,52 @@ herein
 
 		    same_screen = TRUE;		# I'm pretending multiple-screen X servers do not exist.
 
-		    put_event_code (msg, event::button_press_xevent);
-		    put_timestamp  (msg,  4, timestamp		   );
-		    put_xid        (msg,  8, root_window           );
-		    put_xid        (msg, 12, event_window          );
-		    put_xid        (msg, 16, child_window          );	# 0 == NONE
-		    put_signed16   (msg, 20, root_x		   );
-		    put_signed16   (msg, 22, root_y		   );
-		    put_signed16   (msg, 24, event_x		   );
-		    put_signed16   (msg, 26, event_y		   );
-#		    put_signed16   (msg, 28, keys		   ); NOT DONE -- XXX BUGGO FIXME
-		    put_bool       (msg, 30, same_screen	   );
+		    put_event_code  (msg, event::button_press_xevent	);
+		    put_timestamp   (msg,  4, timestamp			);
+		    put_xid         (msg,  8, root_window		);
+		    put_xid         (msg, 12, event_window		);
+		    put_null_or_xid (msg, 16, child_window		);
+		    put_signed16    (msg, 20, root_x			);
+		    put_signed16    (msg, 22, root_y			);
+		    put_signed16    (msg, 24, event_x			);
+		    put_signed16    (msg, 26, event_y			);
+#		    put_signed16    (msg, 28, keys			); NOT DONE -- XXX BUGGO FIXME
+		    put_bool        (msg, 30, same_screen		);
+
+		    msg;
+		};
+
+	    # For semantics       see   p77  (81)   http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	    # For binary encoding see  p151 (155)   http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	    #
+	    fun encode_send_button_release_xevent
+		  { send_event_to, propagate, event_mask,
+		    #
+                    timestamp,
+                    root_window,
+		    event_window,
+		    child_window,
+		    root_x,
+		    root_y,
+		    event_x,
+		    event_y
+                  }
+		=
+		{   msg = encode_push_event { send_event_to, propagate, event_mask };
+
+		    # Layout is identical to the button-press case
+		    # except that it is missing the final two fields,
+		    # 'buttons' and 'same_screen':
+		    #
+		    put_event_code  (msg, event::button_press_xevent	);
+		    put_timestamp   (msg,  4, timestamp			);
+		    put_xid         (msg,  8, root_window		);
+		    put_xid         (msg, 12, event_window		);
+		    put_null_or_xid (msg, 16, child_window		);
+		    put_signed16    (msg, 20, root_x			);
+		    put_signed16    (msg, 22, root_y			);
+		    put_signed16    (msg, 24, event_x			);
+		    put_signed16    (msg, 26, event_y			);
 
 		    msg;
 		};
