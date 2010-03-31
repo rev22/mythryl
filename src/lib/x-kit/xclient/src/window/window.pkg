@@ -186,8 +186,8 @@ herein
 
 	fun check_site g
 	    =
-	    if (g::valid_shape g)   g;
-	    else                    raise  exception  BAD_WINDOW_SITE;
+	    if (g::valid_site g)   g;
+	    else                   raise  exception  BAD_WINDOW_SITE;
 	    fi;
 
 	fun make_simple_top_window (screen as sn::SCREEN { screen=>screen_info, xsession } )

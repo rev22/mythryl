@@ -249,7 +249,7 @@ herein
 		rc::valid_signed16  angle1  and
 		rc::valid_signed16  angle2;
 
-	    fun valid_shape (WINDOW_SITE { upperleft, size, border_width } )
+	    fun valid_site (WINDOW_SITE { upperleft, size, border_width } )
 		= 
 		valid_point  upperleft      and
 		valid_size   size           and
