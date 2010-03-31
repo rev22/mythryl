@@ -18,32 +18,32 @@ package unt31_guts: (weak)  Unt {		# Unt	is from   src/lib/std/src/unt.api
 
     word_size = 31;
 
-    my to_large_unt:    Unt -> large_unt::Unt = w31::to_large_unt;
-    my to_large_unt_x:  Unt -> large_unt::Unt = w31::to_large_unt_x;
-    my from_large_unt:  large_unt::Unt -> Unt = w31::from_large_unt;
+    my to_large_unt:     Unt -> large_unt::Unt   =   w31::to_large_unt;
+    my to_large_unt_x:   Unt -> large_unt::Unt   =   w31::to_large_unt_x;
+    my from_large_unt:   large_unt::Unt -> Unt   =   w31::from_large_unt;
 
-    my to_large_int:  Unt -> large_int::Int = w31::to_large_int;
-    my to_large_int_x:   Unt -> large_int::Int = w31::to_large_int_x;
-    my from_large_int:  large_int::Int -> Unt = w31::from_large_int;
+    my to_large_int:     Unt -> large_int::Int   =   w31::to_large_int;
+    my to_large_int_x:   Unt -> large_int::Int   =   w31::to_large_int_x;
+    my from_large_int:   large_int::Int -> Unt   =   w31::from_large_int;
 
-    my to_int:    Unt -> Int = w31::to_int;
-    my to_int_x:   Unt -> Int = w31::to_int_x;
-    my from_int:  Int -> Unt = w31::from_int;
+    my to_int:           Unt -> Int   =   w31::to_int;
+    my to_int_x:         Unt -> Int   =   w31::to_int_x;
+    my from_int:         Int -> Unt   =   w31::from_int;
 
-    my bitwise_or:   (Unt, Unt) -> Unt = w31::bitwise_or;
-    my bitwise_xor:  (Unt, Unt) -> Unt = w31::bitwise_xor;
-    my bitwise_and:  (Unt, Unt) -> Unt = w31::bitwise_and;
-    my bitwise_not:  Unt -> Unt = w31::bitwise_not;
+    my bitwise_or:   (Unt, Unt) -> Unt   =   w31::bitwise_or;
+    my bitwise_xor:  (Unt, Unt) -> Unt   =   w31::bitwise_xor;
+    my bitwise_and:  (Unt, Unt) -> Unt   =   w31::bitwise_and;
+    my bitwise_not:   Unt       -> Unt   =   w31::bitwise_not;
 
-    my (*) : (Unt, Unt) -> Unt = w31::(*);
-    my (+) : (Unt, Unt) -> Unt = w31::(+);
-    my (-) : (Unt, Unt) -> Unt = w31::(-);
-    my (/) : (Unt, Unt) -> Unt = w31::div ;
-    my (%) : (Unt, Unt) -> Unt = w31::mod ;
+    my (*) : (Unt, Unt) -> Unt   =   w31::(*);
+    my (+) : (Unt, Unt) -> Unt   =   w31::(+);
+    my (-) : (Unt, Unt) -> Unt   =   w31::(-);
+    my (/) : (Unt, Unt) -> Unt   =   w31::div ;
+    my (%) : (Unt, Unt) -> Unt   =   w31::mod ;
 
-    my (<<)  : (Unt, Unt) -> Unt = w31::check_lshift;
-    my (>>)  : (Unt, Unt) -> Unt = w31::check_rshiftl;
-    my (>>>) : (Unt, Unt) -> Unt = w31::check_rshift;
+    my (<<)  : (Unt, Unt) -> Unt   =   w31::check_lshift;
+    my (>>)  : (Unt, Unt) -> Unt   =   w31::check_rshiftl;
+    my (>>>) : (Unt, Unt) -> Unt   =   w31::check_rshift;
 
     fun compare (w1, w2)
         =

@@ -76,7 +76,8 @@ herein
 	      root_x:		Int,
 	      root_y:		Int,
 	      event_x:		Int,
-	      event_y:		Int
+	      event_y:		Int,
+	      buttons:		xt::Mousebuttons_State
 	    }
 	    ->
 	    w8v::Vector

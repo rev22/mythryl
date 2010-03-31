@@ -7,5 +7,5 @@
 
 package unt
     =
-    unt_guts;			# unt_guts	is from   src/lib/std/src/bind-word-32.pkg
+    unt_guts;			# unt_guts	is from   src/lib/std/src/bind-unt-guts.pkg
 

@@ -58,6 +58,7 @@ herein
 		=
 		put16 (buf, i, large_unt::from_int x);
 
+
 	    fun put32 (buf, i, x)
 		=
 		pack_big_endian_unt32::set (ro2rw buf, i / 4 + event_offset / 4, x);
@@ -68,6 +69,10 @@ herein
 	    fun put_bool (buf, i, FALSE) =>  put8 (buf, i, 0u0);
 		put_bool (buf, i, TRUE ) =>  put8 (buf, i, 0u1);
 	    end;
+
+	    fun put_buttons (buf, i, xt::MOUSEBUTTON_STATE unt)
+		=
+		put16 (buf, i, unt32::from_int (unt::to_int unt));		# There must be a better way to do this conversion...
 
 	    fun put_xid (buf, i, xt::XID n)
 		=
@@ -131,6 +136,10 @@ herein
 		=
 		put8 (msg, 0, code);
 
+	    fun put_detail_code (msg, code)
+		=
+		put8 (msg, 1, code);
+
 	herein
 
 	    # For SendEvent proper, see:
@@ -190,7 +199,8 @@ herein
 		    root_x,
 		    root_y,
 		    event_x,
-		    event_y
+		    event_y,
+		    buttons
                   }
 		=
 		{   msg = encode_push_event { send_event_to, propagate, event_mask };
@@ -206,7 +216,7 @@ herein
 		    put_signed16    (msg, 22, root_y			);
 		    put_signed16    (msg, 24, event_x			);
 		    put_signed16    (msg, 26, event_y			);
-#		    put_signed16    (msg, 28, keys			); NOT DONE -- XXX BUGGO FIXME
+		    put_buttons     (msg, 28, buttons			);
 		    put_bool        (msg, 30, same_screen		);
 
 		    msg;

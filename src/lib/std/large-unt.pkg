@@ -3,4 +3,6 @@
 # Compiled by:
 #     src/lib/std/stdlib.make6
 
-package large_unt= large_unt_guts;	# large_unt_guts	is from   src/lib/std/src/bind-largeword-32.pkg
+package large_unt
+    =
+    large_unt_guts;		# large_unt_guts	is from   src/lib/std/src/bind-largeword-32.pkg

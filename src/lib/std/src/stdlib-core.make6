@@ -356,7 +356,7 @@ LIBRARY_GROUP_COMPONENTS
 	$ROOT/src/lib/std/src/integer.api
 	$ROOT/src/lib/std/src/integer-guts.pkg
 	$ROOT/src/lib/std/src/unt31.pkg
-	$ROOT/src/lib/std/src/unt32.pkg
+	$ROOT/src/lib/std/src/unt32-guts.pkg
 	$ROOT/src/lib/std/src/unt64.pkg
 	$ROOT/src/lib/std/src/float64-guts.pkg
 	#if defined(ARCH_X86)

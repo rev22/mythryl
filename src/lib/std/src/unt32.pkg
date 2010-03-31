@@ -1,4 +1,4 @@
-## unt32.pkg
+## unt32-guts.pkg
 
 # Compiled by:
 #     src/lib/std/src/stdlib-core.make6
@@ -17,28 +17,28 @@ package unt32_guts: (weak)  Unt {		# Unt		is from   src/lib/std/src/unt.api
 
     word_size = 32;
 
-    my to_large_unt:     Unt -> large_unt::Unt = w32::to_large_unt;
-    my to_large_unt_x:   Unt -> large_unt::Unt = w32::to_large_unt_x;
-    my from_large_unt:   large_unt::Unt -> Unt = w32::from_large_unt;
+    my to_large_unt:     Unt -> large_unt::Unt   =   w32::to_large_unt;
+    my to_large_unt_x:   Unt -> large_unt::Unt   =   w32::to_large_unt_x;
+    my from_large_unt:   large_unt::Unt -> Unt   =   w32::from_large_unt;
 
-    to_large_int    = w32::to_large_int;
-    to_large_int_x   = w32::to_large_int_x;
-    from_large_int  = w32::from_large_int;
+    to_large_int    =   w32::to_large_int;
+    to_large_int_x  =   w32::to_large_int_x;
+    from_large_int  =   w32::from_large_int;
 
-    my to_int:    Unt -> Int = w32::to_int;
-    my to_int_x:   Unt -> Int = w32::to_int_x;
-    my from_int:  Int -> Unt = w32::from_int;
+    my to_int:     Unt -> Int   =   w32::to_int;
+    my to_int_x:   Unt -> Int   =   w32::to_int_x;
+    my from_int:   Int -> Unt   =   w32::from_int;
 
-    my bitwise_or:   (Unt, Unt) -> Unt = w32::bitwise_or;
-    my bitwise_xor:  (Unt, Unt) -> Unt = w32::bitwise_xor;
-    my bitwise_and:  (Unt, Unt) -> Unt = w32::bitwise_and;
-    my bitwise_not:  Unt -> Unt = w32::bitwise_not;
+    my bitwise_or:   (Unt, Unt) -> Unt   =   w32::bitwise_or;
+    my bitwise_xor:  (Unt, Unt) -> Unt   =   w32::bitwise_xor;
+    my bitwise_and:  (Unt, Unt) -> Unt   =   w32::bitwise_and;
+    my bitwise_not:  Unt        -> Unt   =   w32::bitwise_not;
 
-    my (*) : (Unt, Unt) -> Unt = w32::(*);
-    my (+) : (Unt, Unt) -> Unt = w32::(+);
-    my (-) : (Unt, Unt) -> Unt = w32::(-);
-    my (/) : (Unt, Unt) -> Unt = w32::div ;
-    my (%) : (Unt, Unt) -> Unt = w32::mod ;
+    my (*) : (Unt, Unt) -> Unt   =   w32::(*);
+    my (+) : (Unt, Unt) -> Unt   =   w32::(+);
+    my (-) : (Unt, Unt) -> Unt   =   w32::(-);
+    my (/) : (Unt, Unt) -> Unt   =   w32::div ;
+    my (%) : (Unt, Unt) -> Unt   =   w32::mod ;
 
     fun compare (w1, w2)
         =
@@ -47,14 +47,14 @@ package unt32_guts: (weak)  Unt {		# Unt		is from   src/lib/std/src/unt.api
 	else                      EQUAL;
         fi;
 
-    my (>)  : (Unt, Unt) -> Bool = w32::(>);
-    my (>=) : (Unt, Unt) -> Bool = w32::(>=);
-    my (<)  : (Unt, Unt) -> Bool = w32::(<);
-    my (<=) : (Unt, Unt) -> Bool = w32::(<=);
+    my (>)  : (Unt, Unt) -> Bool   =   w32::(>);
+    my (>=) : (Unt, Unt) -> Bool   =   w32::(>=);
+    my (<)  : (Unt, Unt) -> Bool   =   w32::(<);
+    my (<=) : (Unt, Unt) -> Bool   =   w32::(<=);
 
-    my (<<)   = w32::check_lshift;
-    my (>>)   = w32::check_rshiftl;
-    my (>>>)  = w32::check_rshift; 
+    my (<<)   =   w32::check_lshift;
+    my (>>)   =   w32::check_rshiftl;
+    my (>>>)  =   w32::check_rshift; 
 
     my (-_)  : Unt -> Unt = (-_);
     my min:  (Unt, Unt) -> Unt = w32::min;
