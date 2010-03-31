@@ -47,24 +47,27 @@ herein
 
 	# User-level window attributes:
 	#
-	Window_Attribute
-	  = WA_BACKGROUND_NONE
-	  | WA_BACKGROUND_PARENT_RELATIVE
-	  | WA_BACKGROUND_RW_PIXMAP          dt::Rw_Pixmap
-	  | WA_BACKGROUND_RO_PIXMAP    	     dt::Ro_Pixmap
-	  | WA_BACKGROUND_COLOR              rgb::Rgb
-	  #
-	  | WA_BORDER_COPY_FROM_PARENT
-	  | WA_BORDER_RW_PIXMAP      	     dt::Rw_Pixmap
-	  | WA_BORDER_RO_PIXMAP        	     dt::Ro_Pixmap
-	  | WA_BORDER_COLOR                  rgb::Rgb
-	  #
-	  | WA_BIT_GRAVITY                   xt::Gravity
-	  | WA_WINDOW_GRAVITY                xt::Gravity
-	  #
-	  | WA_CURSOR_NONE
-	  | WA_CURSOR                        xr::Xcursor
-	  ;
+	package wa: api {
+	    Window_Attribute
+	      #
+	      = BACKGROUND_NONE
+	      | BACKGROUND_PARENT_RELATIVE
+	      | BACKGROUND_RW_PIXMAP          dt::Rw_Pixmap
+	      | BACKGROUND_RO_PIXMAP   	      dt::Ro_Pixmap
+	      | BACKGROUND_COLOR              rgb::Rgb
+	      #
+	      | BORDER_COPY_FROM_PARENT
+	      | BORDER_RW_PIXMAP      	      dt::Rw_Pixmap
+	      | BORDER_RO_PIXMAP              dt::Ro_Pixmap
+	      | BORDER_COLOR                  rgb::Rgb
+	      #
+	      | BIT_GRAVITY                   xt::Gravity
+	      | WINDOW_GRAVITY                xt::Gravity
+	      #
+	      | CURSOR_NONE
+	      | CURSOR                        xr::Xcursor
+	      ;
+	};
 
 	# Window configuration values:
 	#
@@ -190,7 +193,7 @@ herein
 	    # with the right color.
 
 
-	change_window_attributes:  Window -> List( Window_Attribute ) -> Void;
+	change_window_attributes:  Window -> List( wa::Window_Attribute ) -> Void;
 	    #
 	    # Set various window attributes.
 

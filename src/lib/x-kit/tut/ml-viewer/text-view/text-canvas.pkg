@@ -63,8 +63,8 @@ herein
 
 		xw::change_window_attributes  window
 		  [
-		    xw::WA_BACKGROUND_COLOR  background,
-		    xw::WA_BIT_GRAVITY       xc::NORTHWEST_GRAVITY
+		    xw::wa::BACKGROUND_COLOR  background,
+		    xw::wa::BIT_GRAVITY       xc::NORTHWEST_GRAVITY
 		  ];
 
 		TEXT_CANVAS

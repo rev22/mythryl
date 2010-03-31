@@ -21,25 +21,27 @@ api  Xwindow {
 
     # User-level window attributes 
     #
-    Window_Attribute
-      #
-      = WA_BACKGROUND_NONE
-      | WA_BACKGROUND_PARENT_RELATIVE
-      | WA_BACKGROUND_RO_PIXMAP    	 xc::Ro_Pixmap
-      | WA_BACKGROUND_COLOR              xc::Rgb
-      | WA_BACKGROUND_RW_PIXMAP		 xc::Rw_Pixmap
-      #
-      | WA_BORDER_COPY_FROM_PARENT
-      | WA_BORDER_RW_PIXMAP    		 xc::Rw_Pixmap
-      | WA_BORDER_RO_PIXMAP        	 xc::Ro_Pixmap
-      | WA_BORDER_COLOR                  xc::Rgb
-      #
-      | WA_BIT_GRAVITY                   xc::Gravity
-      | WA_WINDOW_GRAVITY                xc::Gravity
-      #
-      | WA_CURSOR                        xc::Xcursor
-      | WA_CURSOR_NONE
-      ;
+    package wa: api {
+	Window_Attribute
+	  #
+	  = BACKGROUND_NONE
+	  | BACKGROUND_PARENT_RELATIVE
+	  | BACKGROUND_RO_PIXMAP    	  xc::Ro_Pixmap
+	  | BACKGROUND_COLOR              xc::Rgb
+	  | BACKGROUND_RW_PIXMAP	  xc::Rw_Pixmap
+	  #
+	  | BORDER_COPY_FROM_PARENT
+	  | BORDER_RW_PIXMAP    	  xc::Rw_Pixmap
+	  | BORDER_RO_PIXMAP        	  xc::Ro_Pixmap
+	  | BORDER_COLOR                  xc::Rgb
+	  #
+	  | BIT_GRAVITY                   xc::Gravity
+	  | WINDOW_GRAVITY                xc::Gravity
+	  #
+	  | CURSOR                        xc::Xcursor
+	  | CURSOR_NONE
+	  ;
+    };
 
     # Window stacking modes:
     #
@@ -178,7 +180,7 @@ api  Xwindow {
         # will come up with the right color.
 
 
-    change_window_attributes:  Window -> List( Window_Attribute ) -> Void;
+    change_window_attributes:  Window -> List( wa::Window_Attribute ) -> Void;
 	#
         # Set various window attributes.
 

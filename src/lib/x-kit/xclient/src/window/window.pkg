@@ -60,24 +60,26 @@ herein
 
 	# User-level window attributes:
 	#
-	Window_Attribute
-	  = WA_BACKGROUND_NONE
-	  | WA_BACKGROUND_PARENT_RELATIVE
-	  | WA_BACKGROUND_RW_PIXMAP   	     dt::Rw_Pixmap
-	  | WA_BACKGROUND_RO_PIXMAP          dt::Ro_Pixmap
-	  | WA_BACKGROUND_COLOR              rgb::Rgb
-	  #
-	  | WA_BORDER_COPY_FROM_PARENT
-	  | WA_BORDER_RW_PIXMAP       	     dt::Rw_Pixmap
-	  | WA_BORDER_RO_PIXMAP              dt::Ro_Pixmap
-	  | WA_BORDER_COLOR                  rgb::Rgb
-	  #
-	  | WA_BIT_GRAVITY                   xt::Gravity
-	  | WA_WINDOW_GRAVITY                xt::Gravity
-	  #
-	  | WA_CURSOR_NONE
-	  | WA_CURSOR                        cs::Xcursor
-	  ;
+	package wa {
+	    Window_Attribute
+	      = BACKGROUND_NONE
+	      | BACKGROUND_PARENT_RELATIVE
+	      | BACKGROUND_RW_PIXMAP   	      dt::Rw_Pixmap
+	      | BACKGROUND_RO_PIXMAP          dt::Ro_Pixmap
+	      | BACKGROUND_COLOR              rgb::Rgb
+	      #
+	      | BORDER_COPY_FROM_PARENT
+	      | BORDER_RW_PIXMAP       	      dt::Rw_Pixmap
+	      | BORDER_RO_PIXMAP              dt::Ro_Pixmap
+	      | BORDER_COLOR                  rgb::Rgb
+	      #
+	      | BIT_GRAVITY                   xt::Gravity
+	      | WINDOW_GRAVITY                xt::Gravity
+	      #
+	      | CURSOR_NONE
+	      | CURSOR                        cs::Xcursor
+	      ;
+	};
 
 	# Window configuration values:
 	#
@@ -98,55 +100,55 @@ herein
 	# Map user-level window attributes
 	# to internal x-window attributes: 
 	#
-	fun user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_NONE)
+	fun user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_NONE)
 		=>
 		xt::wa::BACKGROUND_PIXMAP_NONE;
 
-	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_PARENT_RELATIVE)
+	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_PARENT_RELATIVE)
 		=>
 		xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 
-	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
 		xt::wa::BACKGROUND_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } ))) 
+	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } ))) 
 	       => 
 		xt::wa::BACKGROUND_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (WA_BACKGROUND_COLOR color)
+	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_COLOR color)
 		=>
 		xt::wa::BACKGROUND_PIXEL (rgb8_of color);
 
-	    user_window_attribute_to_internal_window_attribute (WA_BORDER_COPY_FROM_PARENT)
+	    user_window_attribute_to_internal_window_attribute (wa::BORDER_COPY_FROM_PARENT)
 		=>
 		xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT;
 
-	    user_window_attribute_to_internal_window_attribute (WA_BORDER_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (wa::BORDER_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
 		xt::wa::BORDER_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (WA_BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } )))
+	    user_window_attribute_to_internal_window_attribute (wa::BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } )))
 		=>
 		xt::wa::BORDER_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (WA_BORDER_COLOR color)
+	    user_window_attribute_to_internal_window_attribute (wa::BORDER_COLOR color)
 		=>
 		xt::wa::BORDER_PIXEL (rgb8_of color);
 
-	    user_window_attribute_to_internal_window_attribute (WA_BIT_GRAVITY g)
+	    user_window_attribute_to_internal_window_attribute (wa::BIT_GRAVITY g)
 		=>
 		xt::wa::BIT_GRAVITY g;
 
-	    user_window_attribute_to_internal_window_attribute (WA_WINDOW_GRAVITY g)
+	    user_window_attribute_to_internal_window_attribute (wa::WINDOW_GRAVITY g)
 		=>
 		xt::wa::WINDOW_GRAVITY g;
 
-	    user_window_attribute_to_internal_window_attribute (WA_CURSOR_NONE)
+	    user_window_attribute_to_internal_window_attribute (wa::CURSOR_NONE)
 		=>
 		xt::wa::CURSOR_NONE;
 
-	    user_window_attribute_to_internal_window_attribute (WA_CURSOR (cs::XCURSOR { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (wa::CURSOR (cs::XCURSOR { id, ... } ))
 		=>
 		xt::wa::CURSOR id;
 	end;
