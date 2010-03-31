@@ -153,6 +153,7 @@ stipulate
     package gci =  graphics_context_imp;		# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
     package ki  =  keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package s2w =  sendevent_to_wire;			# sendeven_to_wire		is from   src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
     package xt  =  xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
@@ -465,15 +466,96 @@ herein
 		    =
 		    v2w::encode_warp_pointer
                       {
-			to_point,			# Move mouse pointer to this coordinate.
-                        to   =>  THE root_window_id,	# Position mouse relative to root window.
-			#				# (That is, in absolute screen coordinates.)
+			to_point,					# Move mouse pointer to this coordinate.
+                        to   =>  THE root_window_id,			# Position mouse relative to root window.
+			#						# (That is, in absolute screen coordinates.)
 	                from =>  NULL,
-			from_box			# Ignored because 'from' is NULL.
+			from_box					# Ignored because 'from' is NULL.
                       };
 
 		xok::request  xsocket  command;
 	    };
+
+	fun send_mousebutton_press_xevent
+	    (
+             XSESSION
+	      { xdisplay       =>  dy::XDISPLAY { xsocket, ... },
+		default_screen =>  SCREEN_INFO  { xscreen => dy::XSCREEN  { root_window_id, ... }, ... },
+		...
+	      }
+	    )
+	    { window =>  WINDOW { window_id, ... },			# Window handling the mouse-button click event.
+	      button,							# Mouse button just "clicked" down.
+	      point  =>  g::POINT { row, col }				# Click location in local window coordinates.
+	    }
+	    =
+	    {   # For the semantics of these three fields see
+		#     p27 http://mythryl.org/pub/exene/X-protocol-R6.pdf
+		#
+	        send_event_to	=  xt::SEND_EVENT_TO_WINDOW  window_id;
+		propagate	=  FALSE;
+		event_mask	=  xt::EVENT_MASK 0u0;
+		#
+		timestamp	=  xt::CURRENT_TIME;
+		root_window	=  root_window_id;
+		event_window	=  window_id;				# Window handling the mouse-button release event.
+		child_window	=  NULL;				# We'll assume specified window is a leaf.
+		root_x		=  row;	# XXX BUGGO FIXME!		# Mouse position on root window at time of button release.
+		root_y		=  col;	# XXX BUGGO FIXME!
+		event_x		=  row;					# Mouse position on recipient window at time of button release.
+		event_y		=  col;
+		buttons		=  xt::MOUSEBUTTON_STATE 0u0;
+
+		command
+		    =
+		    s2w::encode_send_button_press_xevent
+		      {
+			send_event_to,  propagate,  event_mask,
+			timestamp,  root_window,  event_window,  child_window,  root_x,  root_y,  event_x,  event_y,  button, buttons
+		      };		
+
+		();
+	    };
+
+	fun send_mousebutton_release_xevent
+	    (
+             XSESSION
+	      { xdisplay       =>  dy::XDISPLAY { xsocket, ... },
+		default_screen =>  SCREEN_INFO  { xscreen => dy::XSCREEN  { root_window_id, ... }, ... },
+		...
+	      }
+	    )
+	    { window =>  WINDOW { window_id, ... },			# Window handling the mouse-button click event.
+	      button,							# Mouse button just "clicked" down.
+	      point  =>  g::POINT { row, col }				# Click location in local window coordinates.
+	    }
+	    =
+	    {   # For the semantics of these three fields see
+		#     p27 http://mythryl.org/pub/exene/X-protocol-R6.pdf
+		#
+	        send_event_to	=  xt::SEND_EVENT_TO_WINDOW  window_id;
+		propagate	=  FALSE;
+		event_mask	=  xt::EVENT_MASK 0u0;
+		#
+		timestamp	=  xt::CURRENT_TIME;
+		root_window	=  root_window_id;
+		event_window	=  window_id;				# Window handling the mouse-button release event.
+		child_window	=  NULL;				# We'll assume specified window is a leaf.
+		root_x		=  row;	# XXX BUGGO FIXME!		# Mouse position on root window at time of button release.
+		root_y		=  col;	# XXX BUGGO FIXME!
+		event_x		=  row;					# Mouse position on recipient window at time of button release.
+		event_y		=  col;
+
+		command
+		    =
+		    s2w::encode_send_button_release_xevent
+		      {
+			send_event_to,  propagate,  event_mask,
+			timestamp,  root_window,  event_window,  child_window,  root_x,  root_y,  event_x,  event_y,  button
+		      };		
+		();
+	    };
+
 
         # Close the xsession.
         # NOTE: there are probably other things

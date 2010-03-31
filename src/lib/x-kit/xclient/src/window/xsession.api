@@ -267,6 +267,40 @@ herein
 	    ;
 
 
+	# Make 'window' receive a (faked) mousebutton click at 'point'.
+	# 'window' should be the sub/window actually holding the widget to be activate.
+	# 'point'  should be the click point in that window's coordinate system.
+	#
+	send_mousebutton_press_xevent
+	    :
+	    Xsession
+	    ->
+	    { window:		Window,				# Window handling the mouse-button click event.
+	      button:		xt::Mousebutton,		# Mouse button just clicked down.
+	      point:		g::Point
+	    }
+	    ->
+	    Void
+	    ;
+
+	# Counterpart of previous:  make 'window' receive a (faked) mousebutton release at 'point'.
+	# 'window' should be the sub/window actually holding the widget to be activate.
+	# 'point'  should be the button-release point in that window's coordinate system.
+	#
+	send_mousebutton_release_xevent
+	    :
+	    Xsession
+	    ->
+	    { window:		Window,				# Window handling the mouse-button release event.
+	      button:		xt::Mousebutton,		# Mouse button just released.
+	      point:		g::Point
+	    }
+	    ->
+	    Void
+	    ;
+
+
+
 	# Return the maximum request size
 	# supported by the display. This
 	# information comes ultimately from

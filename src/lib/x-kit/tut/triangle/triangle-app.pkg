@@ -103,6 +103,8 @@ printf "triangle_app: mouse_watcher: row,col d=(%d, %d)\n" r c;
 			row   = row + delta;
 			col   = col + delta;
 
+			if (row == 20)   thread_done ();   fi;
+
 			xc::set_mouse_location  xsession  (xg::POINT { row, col });
 
 			loop (row, col, delta);

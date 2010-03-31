@@ -188,6 +188,39 @@ api  Xcore {
     get_mouse_location: Xsession -> xg::Point;
     set_mouse_location: Xsession -> xg::Point -> Void;
 
+    # Make 'window' receive a (faked) mousebutton click at 'point'.
+    # 'window' should be the sub/window actually holding the widget to be activate.
+    # 'point'  should be the click point in that window's coordinate system.
+    #
+    send_mousebutton_press_xevent
+	:
+	Xsession
+	->
+	{ window:		Window,					# Window handling the mouse-button click event.
+	  button:		xtypes::Mousebutton,			# Mouse button just clicked down.
+	  point:		xg::Point
+	}
+	->
+	Void
+	;
+
+    # Counterpart of previous:  make 'window' receive a (faked) mousebutton release at 'point'.
+    # 'window' should be the sub/window actually holding the widget to be activate.
+    # 'point'  should be the release point in that window's coordinate system.
+    #
+    send_mousebutton_release_xevent
+	:
+	Xsession
+	->
+	{ window:		Window,					# Window handling the mouse-button click event.
+	  button:		xtypes::Mousebutton,			# Mouse button just clicked down.
+	  point:		xg::Point
+	}
+	->
+	Void
+	;
+
+
 
     # Screen operations:
     #
