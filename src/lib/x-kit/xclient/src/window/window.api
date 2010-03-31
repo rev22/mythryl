@@ -48,6 +48,7 @@ herein
 	# User-level window attributes:
 	#
 	package wa: api {
+
 	    Window_Attribute
 	      #
 	      = BACKGROUND_NONE
@@ -71,13 +72,17 @@ herein
 
 	# Window configuration values:
 	#
-	Window_Config
-	  = WC_ORIGIN      g::Point
-	  | WC_SIZE        g::Size
-	  | WC_BORDER_WID  Int
-	  | WC_STACK_MODE               xt::Stack_Mode
-	  | WC_REL_STACK_MODE  (Window, xt::Stack_Mode)
-	  ;
+	package cfg: api {
+
+	    Window_Config
+	      #	
+	      = ORIGIN      g::Point
+	      | SIZE        g::Size
+	      | BORDER_WID  Int
+	      | STACK_MODE               xt::Stack_Mode
+	      | REL_STACK_MODE  (Window, xt::Stack_Mode)
+	      ;
+	};
 
 	exception BAD_WINDOW_SITE;
 
@@ -171,7 +176,7 @@ herein
 
 	# Various routines to reconfigure window layout 
 	#
-	configure_window:        Window -> List( Window_Config )  -> Void;
+	configure_window:        Window -> List(cfg::Window_Config) -> Void;
 	#
 	move_window:             Window -> g::Point     -> Void;
 	resize_window:           Window -> g::Size      -> Void;

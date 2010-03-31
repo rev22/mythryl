@@ -54,16 +54,19 @@ api  Xwindow {
 
     # Window configuration values 
     #
-    Window_Config
-      = WC_ORIGIN          xg::Point
-      | WC_SIZE            xg::Size
-      #
-      | WC_BORDER_WID      Int
-      | WC_STACK_MODE      Stack_Mode
-      #
-      | WC_REL_STACK_MODE  (Window, Stack_Mode)
-      ;
+    package cfg: api {
 
+	Window_Config
+	  #
+	  = ORIGIN          xg::Point
+	  | SIZE            xg::Size
+	  #
+	  | BORDER_WID      Int
+	  | STACK_MODE      Stack_Mode
+	  #
+	  | REL_STACK_MODE  (Window, Stack_Mode)
+	  ;
+    };
 
     # Window operations
 
@@ -157,7 +160,7 @@ api  Xwindow {
 
     # Various routines to reconfigure window layout: 
     #
-    configure_window:        Window -> List( Window_Config ) -> Void;
+    configure_window:        Window -> List( cfg::Window_Config ) -> Void;
     move_window:             Window -> xg::Point -> Void;
     resize_window:           Window -> xg::Size  -> Void;
     move_and_resize_window:  Window -> xg::Box   -> Void;

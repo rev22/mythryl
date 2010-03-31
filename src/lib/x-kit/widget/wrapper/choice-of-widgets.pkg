@@ -277,8 +277,8 @@ herein
 
 			    xw::configure_window   window
 			      [
-				xw::WC_STACK_MODE  xw::ABOVE,
-				xw::WC_SIZE        given_size
+				xw::cfg::STACK_MODE  xw::ABOVE,
+				xw::cfg::SIZE        given_size
 			      ];
 
 			    if (not (w::okay_size (widget, given_size)))
@@ -327,7 +327,7 @@ herein
 
 					mr::add_child router (cwin, cmomplug);
 
-					xw::configure_window  cwin  [xw::WC_STACK_MODE  xw::BELOW];
+					xw::configure_window  cwin  [xw::cfg::STACK_MODE  xw::BELOW];
 
 					w::realize_fn widget { kidplug=>ckidplug, window=>cwin, size };
 
@@ -417,7 +417,7 @@ herein
 						=
 						make_vis (me, i);
 
-					    xw::configure_window window [xw::WC_STACK_MODE xw::ABOVE, xw::WC_SIZE given_size];
+					    xw::configure_window window [xw::cfg::STACK_MODE xw::ABOVE, xw::cfg::SIZE given_size];
 
 					    if (not (w::okay_size (widget, given_size)))
 						#
@@ -449,7 +449,7 @@ herein
 
 						if (not (xc::same_window (window, window')))
 
-						    xw::configure_window window' [xw::WC_STACK_MODE xw::ABOVE, xw::WC_SIZE given_size];
+						    xw::configure_window window' [xw::cfg::STACK_MODE xw::ABOVE, xw::cfg::SIZE given_size];
 
 						    if (not (w::okay_size (widget, given_size)))
 							#

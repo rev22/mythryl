@@ -61,7 +61,9 @@ herein
 	# User-level window attributes:
 	#
 	package wa {
+
 	    Window_Attribute
+	      #
 	      = BACKGROUND_NONE
 	      | BACKGROUND_PARENT_RELATIVE
 	      | BACKGROUND_RW_PIXMAP   	      dt::Rw_Pixmap
@@ -83,13 +85,17 @@ herein
 
 	# Window configuration values:
 	#
-	Window_Config
-	  = WC_ORIGIN      g::Point
-	  | WC_SIZE        g::Size
-	  | WC_BORDER_WID  Int
-	  | WC_STACK_MODE                   xt::Stack_Mode
-	  | WC_REL_STACK_MODE  (dt::Window, xt::Stack_Mode)
-	  ;
+	package cfg {
+
+	    Window_Config
+	      #
+	      = ORIGIN      g::Point
+	      | SIZE        g::Size
+	      | BORDER_WID  Int
+	      | STACK_MODE                   xt::Stack_Mode
+	      | REL_STACK_MODE  (dt::Window, xt::Stack_Mode)
+	      ;
+	};
 
 	# Extract the Rgb8 from a color:
 	#
@@ -532,29 +538,29 @@ herein
 		    rw_vector::set (arr, i, THE v);
 
 
-		fn (WC_ORIGIN (g::POINT { col, row } ))
+		fn (cfg::ORIGIN (g::POINT { col, row } ))
 			=>
 			{   upd (0, unt::from_int col);
 			    upd (1, unt::from_int row);
 			};
 
-		   (WC_SIZE (g::SIZE { wide, high } ))
+		   (cfg::SIZE (g::SIZE { wide, high } ))
 			=>
 			{   upd (2, unt::from_int wide);
 			    upd (3, unt::from_int high);
 			};
 
-		   (WC_BORDER_WID wide)
+		   (cfg::BORDER_WID wide)
 		       =>
 		       upd (4, unt::from_int wide);
 
-		   (WC_STACK_MODE mode)
+		   (cfg::STACK_MODE mode)
 			=>
 			{   rw_vector::set (arr, 5, NULL);
 			    upd (6, v2w::stack_mode_to_wire mode);
 			};
 
-		   (WC_REL_STACK_MODE (dt::WINDOW { window_id => xt::XID x, ... }, mode))
+		   (cfg::REL_STACK_MODE (dt::WINDOW { window_id => xt::XID x, ... }, mode))
 			=>
 			{   upd (5, x);
 			    upd (6, v2w::stack_mode_to_wire mode);
@@ -576,14 +582,14 @@ herein
 		  }
 	      );
 
-	fun move_window   window pt   =   configure_window window [WC_ORIGIN pt];
-	fun resize_window window size =   configure_window window [WC_SIZE size];
+	fun move_window   window pt   =   configure_window window [cfg::ORIGIN pt];
+	fun resize_window window size =   configure_window window [cfg::SIZE size];
 
 	fun move_and_resize_window window (g::BOX { col, row, wide, high } )
 	    =
 	    configure_window window
-	      [ WC_ORIGIN (g::POINT { col,  row  } ),
-		WC_SIZE   (g::SIZE  { wide, high } )
+	      [ cfg::ORIGIN (g::POINT { col,  row  } ),
+		cfg::SIZE   (g::SIZE  { wide, high } )
 	      ];
 
 	# Show ("map") a window:
