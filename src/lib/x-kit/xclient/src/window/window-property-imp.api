@@ -45,7 +45,7 @@ herein
 	    :
 	    (dy::Xdisplay, ai::Atom_Imp)
 	    ->
-	    ( Mailslot( et::Xevent ),
+	    ( Mailslot( et::x::Event ),
 	      Window_Property_Imp
 	    );
 

@@ -139,7 +139,7 @@ herein
 	decode_grab_keyboard_reply: v8::Vector -> xt::Grab_Status;
 	decode_grab_pointer_reply:  v8::Vector -> xt::Grab_Status;
 
-	decode_graphics_expose:     v8::Vector -> event_types::Xevent;
+	decode_graphics_expose:     v8::Vector -> event_types::x::Event;
 	decode_intern_atom_reply:   v8::Vector -> xt::Atom;
 
 	decode_list_extensions_reply: X -> { err: Y };
@@ -151,7 +151,7 @@ herein
 	decode_list_properties_reply:          v8::Vector -> List(xt::Atom);
 
 	decode_lookup_color_reply:    v8::Vector -> { exact_rgb: rgb::Rgb,  visual_rgb: rgb::Rgb };
-	decode_no_expose:             v8::Vector -> event_types::Xevent;
+	decode_no_expose:             v8::Vector -> event_types::x::Event;
 
 	decode_query_best_size_reply: v8::Vector -> { high: Int,  wide: Int };
 	decode_query_colors_reply:    v8::Vector -> List(rgb::Rgb);
@@ -231,6 +231,6 @@ herein
 
 	decode_xevent: (unt8::Unt, v8::Vector)
 		       ->
-		       (Bool, event_types::Xevent);
+		       (Bool, event_types::x::Event);
     };
 end;

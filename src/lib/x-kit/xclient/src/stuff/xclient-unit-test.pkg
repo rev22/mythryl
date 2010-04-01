@@ -70,7 +70,7 @@ herein
                     xok::wait_for_xevent  xsocket;
 
 
-		fun do_xevent (e: event_types::Xevent)
+		fun do_xevent (e: event_types::x::Event)
 		    =
                     ();
 

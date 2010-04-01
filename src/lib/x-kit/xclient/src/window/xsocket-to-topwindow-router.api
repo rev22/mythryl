@@ -38,8 +38,8 @@ herein
 	    { display:        display::Xdisplay,
 	      keymap_imp:     keymap_imp::Keymap_Imp,
 	      #
-	      prop_event_slot:  Mailslot( event_types::Xevent ),
-	      sel_event_slot:   Mailslot( event_types::Xevent )
+	      prop_event_slot:  Mailslot( event_types::x::Event ),
+	      sel_event_slot:   Mailslot( event_types::x::Event )
 	    }
 	    ->
 	    Xsocket_To_Topwindow_Router;
@@ -48,7 +48,7 @@ herein
 	    :
 	    (Xsocket_To_Topwindow_Router, xt::Window_Id)
 	    ->
-	    Mailop( (Envelope_Route, event_types::Xevent) );
+	    Mailop( (Envelope_Route, event_types::x::Event) );
 
 	# Lock a window and all of its descendants.
 	# Return the unlocking function:

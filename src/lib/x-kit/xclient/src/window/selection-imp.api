@@ -36,7 +36,7 @@ herein
 	    :
 	    dy::Xdisplay
 	    ->
-	    ( Mailslot( et::Xevent ),
+	    ( Mailslot( et::x::Event ),
 	      Selection_Imp
 	    );
 

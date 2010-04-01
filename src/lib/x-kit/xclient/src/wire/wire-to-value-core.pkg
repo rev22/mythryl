@@ -255,8 +255,8 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 		=
 		xg::WINDOW_SITE
 		  {
-		    upperleft    => get_pt (s, i),
-		    size         => get_size (s, i+4),
+		    upperleft    => get_pt    (s, i  ),
+		    size         => get_size  (s, i+4),
 		    border_width => get_int16 (s, i+8)
 		  };
 
@@ -334,7 +334,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 		    _   => xgripe::impossible "bad font direction";
 		esac;
 
-	    get_xid_list = get_list (get_xid, 4);
+	    get_xid_list   = get_list (get_xid,   4);
 	    get_xatom_list = get_list (get_xatom, 4);
 
 	    stipulate
@@ -621,7 +621,7 @@ result;
 			    =
 			    get_key_but_set                 (buf, 28);
 
-			et::MOTION_NOTIFY_XEVENT
+			et::x::MOTION_NOTIFY
 			  {
 			    hint       => get_bool          (buf,  1),
 			    timestamp  => get_xs_timestamp  (buf,  4),
@@ -676,11 +676,11 @@ result;
 
 		fun decode_keymap_notify buf
 		    =
-		    et::KEYMAP_NOTIFY_XEVENT { };     # * NOTE: no seqn #    # FIX *
+		    et::x::KEYMAP_NOTIFY { };     # * NOTE: no seqn #    # FIX *
 
 		fun decode_expose buf
 		    =
-		    et::EXPOSE_XEVENT
+		    et::x::EXPOSE
 		      {
 			window => get_xid   (buf,  4),
 			boxes  => [get_box  (buf, 8)],
@@ -689,7 +689,7 @@ result;
 
 		fun decode_graphics_expose buf
 		    =
-		    et::GRAPHICS_EXPOSE_XEVENT
+		    et::x::GRAPHICS_EXPOSE
 		      { drawable     => get_xid    (buf,  4),
 			box          => get_box    (buf,  8),
 			minor_opcode => get_word16 (buf, 16),
@@ -699,7 +699,7 @@ result;
 
 		fun decode_no_expose buf
 		    =
-		    et::NO_EXPOSE_XEVENT
+		    et::x::NO_EXPOSE
 		    {
 		      drawable     => get_xid    (buf,  4),
 
@@ -709,7 +709,7 @@ result;
 
 		fun decode_visibility_notify buf
 		    =
-		    et::VISIBILITY_NOTIFY_XEVENT
+		    et::x::VISIBILITY_NOTIFY
 		      {
 			window => get_xid (buf, 4),
 
@@ -724,7 +724,7 @@ result;
 
 		fun decode_create_notify buf
 		    =
-		    et::CREATE_NOTIFY_XEVENT
+		    et::x::CREATE_NOTIFY
 		      {
 			parent => get_xid               (buf,  4),
 			window => get_xid               (buf,  8),
@@ -737,14 +737,14 @@ result;
 
 		fun decode_destroy_notify buf
 		    =
-		    et::DESTROY_NOTIFY_XEVENT
+		    et::x::DESTROY_NOTIFY
 		      { event  => get_xid (buf, 4),
 			window => get_xid (buf, 8)
 		      };
 
 		fun decode_unmap_notify buf
 		    =
-		    et::UNMAP_NOTIFY_XEVENT
+		    et::x::UNMAP_NOTIFY
 		      {
 			event       => get_xid  (buf,  4),
 			window      => get_xid  (buf,  8),
@@ -753,7 +753,7 @@ result;
 
 		fun decode_map_notify buf
 		    =
-		    et::MAP_NOTIFY_XEVENT
+		    et::x::MAP_NOTIFY
 		      {
 			event  => get_xid (buf, 4),
 			window => get_xid (buf, 8),
@@ -763,7 +763,7 @@ result;
 
 		fun decode_map_request buf
 		    =
-		    et::MAP_REQUEST_XEVENT
+		    et::x::MAP_REQUEST
 		      {
 			parent => get_xid (buf, 4),
 			window => get_xid (buf, 8)
@@ -771,7 +771,7 @@ result;
 
 		fun decode_reparent_notify buf
 		    =
-		    et::REPARENT_NOTIFY_XEVENT
+		    et::x::REPARENT_NOTIFY
 		      {
 			event  => get_xid             (buf,  4),
 			parent => get_xid             (buf,  8),
@@ -783,7 +783,7 @@ result;
 
 		fun decode_configure_notify buf
 		    =
-		    et::CONFIGURE_NOTIFY_XEVENT
+		    et::x::CONFIGURE_NOTIFY
 		    {
 		      event   => get_xid             (buf,  4),
 		      window  => get_xid             (buf,  8),
@@ -803,7 +803,7 @@ result;
 			    is_set (mask, i)  ??  THE (get_fn (buf, j))
 					      ::  NULL;
 
-			et::CONFIGURE_REQUEST_XEVENT
+			et::x::CONFIGURE_REQUEST
 			  {
 			    stack_mode => if (not (is_set (mask, 0u6)))
 					       NULL;
@@ -834,7 +834,7 @@ result;
 
 		fun decode_gravity_notify buf
 		    =
-		    et::GRAVITY_NOTIFY_XEVENT
+		    et::x::GRAVITY_NOTIFY
 		      {
 			event            => get_xid (buf,  4),
 			window           => get_xid (buf,  8),
@@ -843,7 +843,7 @@ result;
 
 		fun decode_resize_request buf
 		    =
-		    et::RESIZE_REQUEST_XEVENT
+		    et::x::RESIZE_REQUEST
 		      {
 			window   => get_xid  (buf, 4),
 			req_size => get_size (buf, 8)
@@ -851,7 +851,7 @@ result;
 
 		fun decode_circulate_notify buf
 		    =
-		    et::CIRCULATE_NOTIFY_XEVENT
+		    et::x::CIRCULATE_NOTIFY
 		      {
 			event  => get_xid     (buf,  4),
 			window => get_xid     (buf,  8),
@@ -861,7 +861,7 @@ result;
 
 		fun decode_circulate_request buf
 		    =
-		    et::CIRCULATE_REQUEST_XEVENT
+		    et::x::CIRCULATE_REQUEST
 		      {
 			parent => get_xid     (buf,  4),
 			window => get_xid     (buf,  8),
@@ -870,7 +870,7 @@ result;
 
 		fun decode_property_notify buf
 		    =
-		    et::PROPERTY_NOTIFY_XEVENT
+		    et::x::PROPERTY_NOTIFY
 		      {
 			window    => get_xid          (buf,  4),
 			atom      => get_xatom        (buf,  8),
@@ -880,7 +880,7 @@ result;
 
 		fun decode_selection_clear buf
 		    =
-		    et::SELECTION_CLEAR_XEVENT
+		    et::x::SELECTION_CLEAR
 		    {
 		      timestamp => get_xs_timestamp (buf,  4),
 		      owner     => get_xid          (buf,  8),
@@ -889,7 +889,7 @@ result;
 
 		fun decode_selection_request buf
 		    =
-		    et::SELECTION_REQUEST_XEVENT
+		    et::x::SELECTION_REQUEST
 		      {
 			timestamp => get_xt_timestamp (buf,  4),
 			owner     => get_xid          (buf,  8),
@@ -901,7 +901,7 @@ result;
 
 		fun decode_selection_notify buf
 		    =
-		    et::SELECTION_NOTIFY_XEVENT
+		    et::x::SELECTION_NOTIFY
 		      {
 			timestamp => get_xt_timestamp (buf,  4),
 			requestor => get_xid          (buf,  8),
@@ -912,7 +912,7 @@ result;
 
 		fun decode_colormap_notify buf
 		    =
-		    et::COLORMAP_NOTIFY_XEVENT
+		    et::x::COLORMAP_NOTIFY
 		      {
 			window    => get_xid         (buf,  4),
 			cmap      => get_xid_option  (buf,  8),
@@ -922,7 +922,7 @@ result;
 
 		fun decode_client_message buf
 		    = 
-		    et::CLIENT_MESSAGE_XEVENT
+		    et::x::CLIENT_MESSAGE
 		      {
 			window => get_xid                      (buf,  4),
 			type   => get_xatom                    (buf,  8),
@@ -937,15 +937,15 @@ result;
 		    =
 		    case (w8v::get (buf, 4))
                         #
-			0u0 => et::MODIFIER_MAPPING_NOTIFY_XEVENT;
+			0u0 => et::x::MODIFIER_MAPPING_NOTIFY;
 
-			0u1 => et::KEYBOARD_MAPPING_NOTIFY_XEVENT
+			0u1 => et::x::KEYBOARD_MAPPING_NOTIFY
 				 {
 				   first_keycode => get_key_code (buf, 5),
 				   count         => get_int8     (buf, 6)
 				 };
 
-			0u2 => et::POINTER_MAPPING_NOTIFY_XEVENT;
+			0u2 => et::x::POINTER_MAPPING_NOTIFY;
 			_   => xgripe::impossible "bad MappingNotify";
 		    esac;
 
@@ -958,15 +958,15 @@ result;
 
 			xevent = case n
 				     #
-				     0u2  => et::KEY_PRESS_XEVENT      (get_key_xevent    buf);
-				     0u3  => et::KEY_RELEASE_XEVENT    (get_key_xevent    buf);
-				     0u4  => et::BUTTON_PRESS_XEVENT   (get_button_xevent buf);
-				     0u5  => et::BUTTON_RELEASE_XEVENT (get_button_xevent buf);
+				     0u2  => et::x::KEY_PRESS           (get_key_xevent    buf);
+				     0u3  => et::x::KEY_RELEASE         (get_key_xevent    buf);
+				     0u4  => et::x::BUTTON_PRESS        (get_button_xevent buf);
+				     0u5  => et::x::BUTTON_RELEASE      (get_button_xevent buf);
 				     0u6  => decode_motion_notify       buf;
-				     0u7  => et::ENTER_NOTIFY_XEVENT   (get_enter_leave_xevent buf);
-				     0u8  => et::LEAVE_NOTIFY_XEVENT   (get_enter_leave_xevent buf);
-				     0u9  => et::FOCUS_IN_XEVENT       (get_focus_xevent buf);
-				     0u10 => et::FOCUS_OUT_XEVENT      (get_focus_xevent buf);
+				     0u7  => et::x::ENTER_NOTIFY        (get_enter_leave_xevent buf);
+				     0u8  => et::x::LEAVE_NOTIFY        (get_enter_leave_xevent buf);
+				     0u9  => et::x::FOCUS_IN            (get_focus_xevent buf);
+				     0u10 => et::x::FOCUS_OUT           (get_focus_xevent buf);
 				     0u11 => decode_keymap_notify       buf;
 				     0u12 => decode_expose              buf;
 				     0u13 => decode_graphics_expose     buf;
@@ -1120,9 +1120,9 @@ result;
 
 	    fun decode_get_geometry_reply msg
 		=
-		{ depth => get_int8      (msg,  1),
-		  root  => get_xid       (msg,  8),
-		  geometry  => get_wgeom (msg, 12)
+		{ depth     =>  get_int8  (msg,  1),
+		  root      =>  get_xid   (msg,  8),
+		  geometry  =>  get_wgeom (msg, 12)
 		};
 
 	    fun decode_get_image_reply msg

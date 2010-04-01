@@ -53,7 +53,7 @@ herein
 
 	flush:  Xsocket -> Void;
 
-	wait_for_xevent:  Xsocket -> Mailop( event_types::Xevent );
+	wait_for_xevent:  Xsocket -> Mailop( event_types::x::Event );
 
 	read_xerror:  Xsocket -> (Unt, unt8_vector::Vector);
 

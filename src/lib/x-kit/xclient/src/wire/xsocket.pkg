@@ -177,7 +177,7 @@ herein
 	      {
 		xsocket_id:     Ref( Void ),				# The usual trick -- REFs are equal to themselves and
 									# nothing else, hence work fine as unique identifiers.
-		xevent_slot:    Mailslot( event_types::Xevent ),
+		xevent_slot:    Mailslot( event_types::x::Event ),
 		plea_slot:      Mailslot( Plea_Mail ),
 		xerror_slot:    Mailslot( (u::Unt, v8::Vector) ),
 
@@ -1128,11 +1128,11 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling GraphicsExpose ev
 								# The X server sends numbered trains of expose events;
 								# read a complete train and return it as a list:
 								#
-								fun read_expose_event_train (result_list, GRAPHICS_EXPOSE_XEVENT { box, count=>0, ... } )
+								fun read_expose_event_train (result_list, x::GRAPHICS_EXPOSE { box, count=>0, ... } )
 									=>
 									box ! result_list;		# DONE.
 
-								    read_expose_event_train (result_list, GRAPHICS_EXPOSE_XEVENT { box, ... } )
+								    read_expose_event_train (result_list, x::GRAPHICS_EXPOSE { box, ... } )
 									=>
 									case (take  from_x_slot)	# Read next expose event, add to result list.
 									    #
@@ -1225,18 +1225,18 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.
   trace  .{  "xsocket.pkg: xbuf_imp: decode: back from wire_to_value::decode_xevent.";  }; result;
 };
 
-		fun pack_expose_events (e as EXPOSE_XEVENT { window, ... } )
+		fun pack_expose_events (e as x::EXPOSE { window, ... } )
 		    =
 { trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events:   calling pack() ...";  }; result =
-		    EXPOSE_XEVENT { window, boxes => pack([], e), count => 0 };
+		    x::EXPOSE { window, boxes => pack([], e), count => 0 };
   trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events: back from pack.";  }; result;
 }
 		    where
-			fun pack (rl, EXPOSE_XEVENT { boxes, count=>0, ... } )
+			fun pack (rl, x::EXPOSE { boxes, count=>0, ... } )
 				=>
 				boxes@rl;
 
-			    pack (rl, EXPOSE_XEVENT { boxes, ... } )
+			    pack (rl, x::EXPOSE { boxes, ... } )
 				=>
 				pack  (boxes @ rl,  decode (take  from_sequencer_slot));
 
@@ -1253,7 +1253,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.
 { trace  .{  "xsocket.pkg: xbuf_imp: do_xevent/TOP ...";  }; result =
 		    case (decode msg)
 			#
-			(e as EXPOSE_XEVENT _)
+			(e as x::EXPOSE _)
 			    =>
 			    pack_expose_events e  !  q;
 

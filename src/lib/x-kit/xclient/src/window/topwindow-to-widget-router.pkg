@@ -164,94 +164,94 @@ herein
 			    do_mailop (route_ci (wrap_mail (path, config_msg)));
 			};
 
-		fun route_xevent (path, et::KEY_PRESS_XEVENT arg)
+		fun route_xevent (path, et::x::KEY_PRESS arg)
 			=>
 			do_key (fn x = wrap_mail (path, wc::KEY_PRESS x), arg);
 
-		    route_xevent (path, et::KEY_RELEASE_XEVENT arg)
+		    route_xevent (path, et::x::KEY_RELEASE arg)
 			=>
 			do_key (fn x = wrap_mail (path, wc::KEY_RELEASE x), arg);
 
-		    route_xevent (path, et::BUTTON_PRESS_XEVENT   arg) =>   do_button_press    (path, arg);
-		    route_xevent (path, et::BUTTON_RELEASE_XEVENT arg) =>   do_button_release  (path, arg);
+		    route_xevent (path, et::x::BUTTON_PRESS   arg) =>   do_button_press    (path, arg);
+		    route_xevent (path, et::x::BUTTON_RELEASE arg) =>   do_button_release  (path, arg);
 
-		    route_xevent (path, et::MOTION_NOTIFY_XEVENT { event_point, root_point, timestamp, ... } )
+		    route_xevent (path, et::x::MOTION_NOTIFY { event_point, root_point, timestamp, ... } )
 			=>
 			route_m (wrap_mail (path, wc::MOUSE_MOTION { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
-		    route_xevent (path, et::ENTER_NOTIFY_XEVENT { event_point, root_point, timestamp, ... } )
+		    route_xevent (path, et::x::ENTER_NOTIFY { event_point, root_point, timestamp, ... } )
 			=>
 			route_m (wrap_mail (path, wc::MOUSE_ENTER { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
-		    route_xevent (path, et::LEAVE_NOTIFY_XEVENT { event_point, root_point, timestamp, ... } )
+		    route_xevent (path, et::x::LEAVE_NOTIFY { event_point, root_point, timestamp, ... } )
 			=>
 			route_m (wrap_mail (path, wc::MOUSE_LEAVE { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
 	  /*******
-		  | routeXEvt (_, et::FOCUS_IN_XEVENT {... } ) = ()
-		  | routeXEvt (_, et::FOCUS_OUT_XEVENT {... } ) = ()
-		  | routeXEvt (_, et::KEYMAP_NOTIFY_XEVENT {... } ) = ()
+		  | routeXEvt (_, et::x::FOCUS_IN {... } ) = ()
+		  | routeXEvt (_, et::x::FOCUS_OUT {... } ) = ()
+		  | routeXEvt (_, et::x::KEYMAP_NOTIFY {... } ) = ()
 	  ******/
 
-		   route_xevent (path, et::EXPOSE_XEVENT { boxes, ... } )
+		   route_xevent (path, et::x::EXPOSE { boxes, ... } )
                        =>
 		      route_ci (wrap_mail (path, wc::ETC_REDRAW boxes));
 
 	  /*******
-		  | routeXEvt (_, GRAPHICS_EXPOSE_XEVENT {... } ) = ()
-		  | routeXEvt (_, NO_EXPOSE_XEVENT {... } ) = ()
-		  | routeXEvt (_, VISIBILITY_NOTIFY_XEVENT _) = ()
+		  | routeXEvt (_, et::x::GRAPHICS_EXPOSE {... } ) = ()
+		  | routeXEvt (_, et::x::NO_EXPOSE {... } ) = ()
+		  | routeXEvt (_, et::x::VISIBILITY_NOTIFY _) = ()
 	  ******/
 
-		    route_xevent (path, et::CREATE_NOTIFY_XEVENT { parent, window, ... } )
+		    route_xevent (path, et::x::CREATE_NOTIFY { parent, window, ... } )
 			=>
 			do_config_sync (path, wc::ETC_CHILD_BIRTH (make_descendant_window window));
 
-		    route_xevent (path, et::DESTROY_NOTIFY_XEVENT { window, event, ... } )
+		    route_xevent (path, et::x::DESTROY_NOTIFY { window, event, ... } )
 			=>
 			window == event   ??   route_ci (wrap_mail (path, wc::ETC_OWN_DEATH))
 					  ::   do_config_sync (path, wc::ETC_CHILD_DEATH (make_descendant_window window));
 
-		    route_xevent (xsocket_to_topwindow_router::ENVELOPE_ROUTE_END _, et::UNMAP_NOTIFY_XEVENT _)
+		    route_xevent (xsocket_to_topwindow_router::ENVELOPE_ROUTE_END _, et::x::UNMAP_NOTIFY _)
 			=>
 			always_void
 			    ==> 
 			    .{  give (dm_config_slot, di::DM_UNMAP);  };
 
-		    route_xevent (_, et::UNMAP_NOTIFY_XEVENT _)
+		    route_xevent (_, et::x::UNMAP_NOTIFY _)
 			=>
 			always_void;
 
-		    route_xevent (xsocket_to_topwindow_router::ENVELOPE_ROUTE_END _, et::MAP_NOTIFY_XEVENT _)
+		    route_xevent (xsocket_to_topwindow_router::ENVELOPE_ROUTE_END _, et::x::MAP_NOTIFY _)
 			=>
 			always_void
 			    ==>
 			    .{   give  (dm_config_slot,  di::DM_MAP);   };
 
-		   route_xevent (_, et::MAP_NOTIFY_XEVENT _)
+		   route_xevent (_, et::x::MAP_NOTIFY _)
 		       =>
 		       always_void;
 
 	  /*******
-		  | routeXEvt (_, et::MAP_REQUEST_XEVENT {... } ) = ()
-		  | routeXEvt (_, et::REPARENT_NOTIFY_XEVENT {... } ) = ()
+		  | routeXEvt (_, et::x::MAP_REQUEST {... } ) = ()
+		  | routeXEvt (_, et::x::REPARENT_NOTIFY {... } ) = ()
 	  ******/
 
-		  route_xevent (path, et::CONFIGURE_NOTIFY_XEVENT { box, ... } )
+		  route_xevent (path, et::x::CONFIGURE_NOTIFY { box, ... } )
 		      =>
 		      route_ci (wrap_mail (path, wc::ETC_RESIZE box));
 
 	  /*******
-		  | routeXEvt (_, ConfigureRequestXEvt {... } ) = ()
-		  | routeXEvt (_, GravityNotifyXEvt {... } ) = ()
-		  | routeXEvt (_, ResizeRequestXEvt {... } ) = ()
-		  | routeXEvt (_, CirculateNotifyXEvt {... } ) = ()
-		  | routeXEvt (_, CirculateRequestXEvt {... } ) = ()
-		  | routeXEvt (_, PropertyNotifyXEvt {... } ) = ()
-		  | routeXEvt (_, SelectionClearXEvt {... } ) = ()
-		  | routeXEvt (_, SelectionRequestXEvt {... } ) = ()
-		  | routeXEvt (_, SelectionNotifyXEvt {... } ) = ()
-		  | routeXEvt (_, ColormapNotifyXEvt {... } ) = ()
+		  | routeXEvt (_, et::x::ConfigureRequest {... } ) = ()
+		  | routeXEvt (_, et::x::GravityNotify {... } ) = ()
+		  | routeXEvt (_, et::x::ResizeRequest {... } ) = ()
+		  | routeXEvt (_, et::x::CirculateNotify {... } ) = ()
+		  | routeXEvt (_, et::x::CirculateRequest {... } ) = ()
+		  | routeXEvt (_, et::x::PropertyNotify {... } ) = ()
+		  | routeXEvt (_, et::x::SelectionClear {... } ) = ()
+		  | routeXEvt (_, et::x::SelectionRequest {... } ) = ()
+		  | routeXEvt (_, et::x::SelectionNotify {... } ) = ()
+		  | routeXEvt (_, et::x::ColormapNotify {... } ) = ()
 	  ******/
 	  /****** modification, ddeboer, Jul 2004: route this event when delete. 
 	  from ..protocol/event-types.pkg:
@@ -262,7 +262,7 @@ herein
 		}
 	  */
 
-		   route_xevent (_, et::CLIENT_MESSAGE_XEVENT { window, type, ... } )
+		   route_xevent (_, et::x::CLIENT_MESSAGE { window, type, ... } )
 		       => 
 		       always_void
 			   ==>
@@ -327,7 +327,8 @@ herein
 	# input dictionary and top-level window.
 	#
 	fun make_topwindow_to_widget_router
-	    ( screen       as sn::SCREEN { xsession, ... },
+	    (
+              screen       as sn::SCREEN { xsession, ... },
 	      screen_depth as sn::SCREEN_DEPTH_IMPS  { gcontext_imp, ... },
 	      window_id
 	    )
@@ -368,7 +369,7 @@ herein
 			    =
 			    case (do_mailop xevent_mailop)
 				#
-				arg as (_, et::EXPOSE_XEVENT _)
+				arg as (_, et::x::EXPOSE _)
 				    =>
 				    {
 											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: ExposeEvt"; };

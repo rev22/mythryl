@@ -1,3 +1,4 @@
+2010-03-31-14.07.02: src/lib/x-kit/xclient/src/wire/event-types.pkg: Moved Xevent_Name into its own xevent subpackage to eliminate the XEVENT_ constructor prefixes.
 2010-03-31-13.53.30: src/lib/x-kit/xclient/xwindow.api: Moved Window_Configuration into a package cfg to get rid of the WC_ constructor prefixes.
 2010-03-31-13.22.07: src/lib/x-kit/xclient/xwindow.api: Moved Window_Attribute into a package wa to get rid of the WA_ constructor prefixes.
 2010-03-31-12.48.18: src/lib/x-kit/xclient/src/window/geometry.pkg: For consistency and clarity, renamed validate_shape -> validate_site.

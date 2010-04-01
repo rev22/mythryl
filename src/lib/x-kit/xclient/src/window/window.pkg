@@ -168,26 +168,26 @@ herein
 	    =
 	    et::mask_of_xevent_list
 	      [
-		et::xevent::KEY_PRESS,
-		et::xevent::KEY_RELEASE,
-		et::xevent::BUTTON_PRESS,
-		et::xevent::BUTTON_RELEASE,
-		et::xevent::POINTER_MOTION,
-		et::xevent::ENTER_WINDOW,
-		et::xevent::LEAVE_WINDOW,
-		et::xevent::EXPOSURE,
-		et::xevent::STRUCTURE_NOTIFY,
-		et::xevent::SUBSTRUCTURE_NOTIFY,
-                et::xevent::PROPERTY_CHANGE
+		et::n::KEY_PRESS,
+		et::n::KEY_RELEASE,
+		et::n::BUTTON_PRESS,
+		et::n::BUTTON_RELEASE,
+		et::n::POINTER_MOTION,
+		et::n::ENTER_WINDOW,
+		et::n::LEAVE_WINDOW,
+		et::n::EXPOSURE,
+		et::n::STRUCTURE_NOTIFY,
+		et::n::SUBSTRUCTURE_NOTIFY,
+                et::n::PROPERTY_CHANGE
 	      ];
 
 	popup_xevent_mask
 	    =
 	    et::mask_of_xevent_list
 	      [
-		et::xevent::EXPOSURE,
-		et::xevent::STRUCTURE_NOTIFY,
-		et::xevent::SUBSTRUCTURE_NOTIFY
+		et::n::EXPOSURE,
+		et::n::STRUCTURE_NOTIFY,
+		et::n::SUBSTRUCTURE_NOTIFY
 	      ];
 
 	exception BAD_WINDOW_SITE;
@@ -614,8 +614,8 @@ herein
 	stipulate 
 
 	    mask = et::mask_of_xevent_list
-                     [ et::xevent::SUBSTRUCTURE_NOTIFY,
-		       et::xevent::SUBSTRUCTURE_REDIRECT
+                     [ et::n::SUBSTRUCTURE_NOTIFY,
+		       et::n::SUBSTRUCTURE_REDIRECT
 		     ];
 	herein
 

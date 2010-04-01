@@ -340,7 +340,7 @@ herein
 
 		# Handle a selection related X-event:
 		#	 
-		fun handle_xevent (et::SELECTION_REQUEST_XEVENT xevent)
+		fun handle_xevent (et::x::SELECTION_REQUEST xevent)
 			=>
 			{   fun reject_req ()
 				=
@@ -431,7 +431,7 @@ herein
 
 			};				#  handleEvt SelectionRequestXEvt 
 
-		    handle_xevent (et::SELECTION_CLEAR_XEVENT { selection, ... } )
+		    handle_xevent (et::x::SELECTION_CLEAR { selection, ... } )
 			=>
 			{   print_if .{ "SelectionClearXEvt"; };
 
@@ -447,7 +447,7 @@ herein
 			    esac;
 			};
 
-		    handle_xevent (et::SELECTION_NOTIFY_XEVENT xevent)
+		    handle_xevent (et::x::SELECTION_NOTIFY xevent)
 			=>
 			{   print_if .{ "SelectionNotifyXEvt"; };
 

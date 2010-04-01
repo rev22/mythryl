@@ -260,7 +260,7 @@ herein
 
 		# Handle a selection related X-event 
 		#
-		fun do_xevent (xe::PROPERTY_NOTIFY_XEVENT { window, atom, timestamp, deleted } )
+		fun do_xevent (xe::x::PROPERTY_NOTIFY { window, atom, timestamp, deleted } )
 			=>
 			case (find_prop (prop_table, window, atom), deleted)
 

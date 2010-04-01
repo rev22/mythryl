@@ -41,9 +41,9 @@ herein
 
 	    # X event names 
 	    #
-	    package xevent {
+	    package n {
 
-		Name
+		Xevent_Name
 		  #
 		  = KEY_PRESS
 		  | KEY_RELEASE
@@ -76,7 +76,7 @@ herein
 	    # The types of the information
 	    # carried by some XEvents: 
 	    #
-	    Key_Xevtinfo						#  KeyPress and KeyRelease 
+	    Key_Xevtinfo						# KeyPress and KeyRelease 
 	       =
 	       { root:     		xt::Window_Id,			# Root of the source window.
 		 event:    		xt::Window_Id,			# The window in which this was generated.
@@ -134,221 +134,224 @@ herein
 
 	    # X event messages:
 	    #
-	    Xevent
-	     = KEY_PRESS_XEVENT       Key_Xevtinfo
-	     | KEY_RELEASE_XEVENT     Key_Xevtinfo
-	     | BUTTON_PRESS_XEVENT    Button_Xevtinfo
-	     | BUTTON_RELEASE_XEVENT  Button_Xevtinfo
-	     #
-	     | MOTION_NOTIFY_XEVENT
-		 {
-		   root:		xt::Window_Id,			# The root of the source window.
-		   event:		xt::Window_Id,			# The window in which this was generated.
-		   child:		Null_Or(xt::Window_Id),		# The child of the event window that is the 
-									# ancestor of the source window 
-		   same_screen:		Bool,				#  
-		   root_point:		g::Point,			# Event coords in the root window.
-		   event_point:		g::Point,			# Event coords in the event window.
-		   hint:		Bool,				# TRUE if PointerMotionHint is selected.
-		   modifier_keys_state:	xt::Modifier_Keys_State,
-		   mousebuttons_state:	xt::Mousebuttons_State,
-		   timestamp:		ts::Xserver_Timestamp
-		 }
+	    package x {
 
-	     | ENTER_NOTIFY_XEVENT  Inout_Xevtinfo
-	     | LEAVE_NOTIFY_XEVENT  Inout_Xevtinfo
-	     | FOCUS_IN_XEVENT      Focus_Xevtinfo
-	     | FOCUS_OUT_XEVENT     Focus_Xevtinfo
-	     | KEYMAP_NOTIFY_XEVENT  { }
+		Event
+		  = KEY_PRESS       Key_Xevtinfo
+		  | KEY_RELEASE     Key_Xevtinfo
+		  | BUTTON_PRESS    Button_Xevtinfo
+		  | BUTTON_RELEASE  Button_Xevtinfo
+		  #
+		  | MOTION_NOTIFY
+		      {
+			root:		xt::Window_Id,			# The root of the source window.
+			event:		xt::Window_Id,			# The window in which this was generated.
+			child:		Null_Or(xt::Window_Id),		# The child of the event window that is the 
+									 # ancestor of the source window 
+			same_screen:		Bool,			#  
+			root_point:		g::Point,		# Event coords in the root window.
+			event_point:		g::Point,		# Event coords in the event window.
+			hint:		Bool,				# TRUE if PointerMotionHint is selected.
+			modifier_keys_state:	xt::Modifier_Keys_State,
+			mousebuttons_state:	xt::Mousebuttons_State,
+			timestamp:		ts::Xserver_Timestamp
+		      }
 
-	     | EXPOSE_XEVENT
-		 { window:  xt::Window_Id,				# The exposed window. 
-		   boxes:  List( g::Box ),				# The exposed rectangle.  The list is
-									# so  that multiple events can be packed. 
-		   count:  Int						# Number of subsequent expose events.
-		 }
+		  | ENTER_NOTIFY  Inout_Xevtinfo
+		  | LEAVE_NOTIFY  Inout_Xevtinfo
+		  | FOCUS_IN      Focus_Xevtinfo
+		  | FOCUS_OUT     Focus_Xevtinfo
+		  | KEYMAP_NOTIFY  { }
 
-	     | GRAPHICS_EXPOSE_XEVENT
-		 { drawable:      xt::Drawable_Id,
-		   box:           g::Box,				# The obscured rectangle. 
-		   count:         Int,					# The number of additional GraphicsExpose events.
-		   major_opcode:  Unt,					# The graphics operation code.
-		   minor_opcode:  Unt					# Always 0 for core protocol.
-		 }
+		  | EXPOSE
+		      { window:  xt::Window_Id,				# The exposed window. 
+			boxes:  List( g::Box ),				# The exposed rectangle.  The list is
+									 # so  that multiple events can be packed. 
+			count:  Int					# Number of subsequent expose events.
+		      }
 
-	     | NO_EXPOSE_XEVENT
-		 { drawable:      xt::Drawable_Id,
-		   major_opcode:  Unt,					# The graphics operation code.
-		   minor_opcode:  Unt					# Always 0 for core protocol.
-		 }
+		  | GRAPHICS_EXPOSE
+		      { drawable:      xt::Drawable_Id,
+			box:           g::Box,				# The obscured rectangle. 
+			count:         Int,				# The number of additional GraphicsExpose events.
+			major_opcode:  Unt,				# The graphics operation code.
+			minor_opcode:  Unt				# Always 0 for core protocol.
+		      }
 
-	     | VISIBILITY_NOTIFY_XEVENT
-		 { window:      xt::Window_Id,				# The window with changed visibility state.
-		   state:       xt::Visibility				# The new visibility state.
-		 }
+		  | NO_EXPOSE
+		      { drawable:      xt::Drawable_Id,
+			major_opcode:  Unt,				# The graphics operation code.
+			minor_opcode:  Unt				# Always 0 for core protocol.
+		      }
 
-	     | CREATE_NOTIFY_XEVENT
-		 { parent:      xt::Window_Id,				# The created window's parent.
-		   window:      xt::Window_Id,				# The created window.
-		   box:         g::Box,					# The window's rectangle.
-		   border_wid:  Int,					# The width of the border.
-		   override_redirect:  Bool				#  
-		 }
+		  | VISIBILITY_NOTIFY
+		      { window:      xt::Window_Id,			# The window with changed visibility state.
+			state:       xt::Visibility			# The new visibility state.
+		      }
 
-	     | DESTROY_NOTIFY_XEVENT
-		 { event:       xt::Window_Id,				# The window on which this was generated.
-		   window:      xt::Window_Id				# The destroyed window.
-		 }
+		  | CREATE_NOTIFY
+		      { parent:      xt::Window_Id,			# The created window's parent.
+			window:      xt::Window_Id,			# The created window.
+			box:         g::Box,				# The window's rectangle.
+			border_wid:  Int,				# The width of the border.
+			override_redirect:  Bool				#  
+		      }
 
-	     | UNMAP_NOTIFY_XEVENT
-		 { event:       xt::Window_Id,				# The window on which this was generated.
-		   window:      xt::Window_Id,				# The window being unmapped.
-		   from_config: Bool					# TRUE if parent was resized.
-		 }
+		  | DESTROY_NOTIFY
+		      { event:       xt::Window_Id,			# The window on which this was generated.
+			window:      xt::Window_Id			# The destroyed window.
+		      }
 
-	     | MAP_NOTIFY_XEVENT
-		 { event:       xt::Window_Id,				# The window on which this was generated.
-		   window:      xt::Window_Id,				# Tthe window being mapped.
-		   override_redirect:  Bool				#  
-		 }
+		  | UNMAP_NOTIFY
+		      { event:       xt::Window_Id,			# The window on which this was generated.
+			window:      xt::Window_Id,			# The window being unmapped.
+			from_config: Bool				# TRUE if parent was resized.
+		      }
 
-	     | MAP_REQUEST_XEVENT
-		 { parent:      xt::Window_Id,				# The parent.
-		   window:      xt::Window_Id				# The mapped window.
-		 }
+		  | MAP_NOTIFY
+		      { event:       xt::Window_Id,			# The window on which this was generated.
+			window:      xt::Window_Id,			# Tthe window being mapped.
+			override_redirect:  Bool				#  
+		      }
 
-	     | REPARENT_NOTIFY_XEVENT
-		 { event:       	xt::Window_Id,			# The window on which this was generated.
-		   parent:      	xt::Window_Id,			# The new parent.
-		   window:      	xt::Window_Id,			# The re-rooted window.
-		   upperleft_corner:    g::Point,			# The upper-left corner.
-		   override_redirect:   Bool				#  
-		 }
+		  | MAP_REQUEST
+		      { parent:      xt::Window_Id,			# The parent.
+			window:      xt::Window_Id			# The mapped window.
+		      }
 
-	     | CONFIGURE_NOTIFY_XEVENT
-		 { event:       xt::Window_Id,				# The window on which this was generated.
-		   window:      xt::Window_Id,				# The reconfigured window.
-		   sibling:     Null_Or(xt::Window_Id),			# The sibling that window is above (if any).
-		   box:         g::Box,					# The window's rectangle.
-		   border_wid:  Int,					# The width of the border.
-		   override_redirect:  Bool				#  
-		 }
+		  | REPARENT_NOTIFY
+		      { event:       	xt::Window_Id,			# The window on which this was generated.
+			parent:      	xt::Window_Id,			# The new parent.
+			window:      	xt::Window_Id,			# The re-rooted window.
+			upperleft_corner:    g::Point,			# The upper-left corner.
+			override_redirect:   Bool			#  
+		      }
 
-	     | CONFIGURE_REQUEST_XEVENT
-		 { parent:      xt::Window_Id,				# The parent.
-		   window:      xt::Window_Id,				# The window to reconfigure.
-		   sibling:     Null_Or(xt::Window_Id),			# The new sibling (if any).
-		   x:           Null_Or(Int),				# The window's rectangle.
-		   y:           Null_Or(Int),
-		   wide:        Null_Or(Int),
-		   high:        Null_Or(Int),
-		   border_wid:  Null_Or(Int),				# The width of the border.
-		   stack_mode:  Null_Or(xt::Stack_Mode)			# The mode for stacking windows.
-		 }
+		  | CONFIGURE_NOTIFY
+		      { event:       xt::Window_Id,			# The window on which this was generated.
+			window:      xt::Window_Id,			# The reconfigured window.
+			sibling:     Null_Or(xt::Window_Id),		# The sibling that window is above (if any).
+			box:         g::Box,				# The window's rectangle.
+			border_wid:  Int,				# The width of the border.
+			override_redirect:  Bool				#  
+		      }
 
-	     | GRAVITY_NOTIFY_XEVENT  {
-	       event:			xt::Window_Id,			# The window on which this was generated.
-	       window:      		xt::Window_Id,			# The window being moved.
-	       upperleft_corner:	g::Point			# Upper-left corner of window.
-	     }		
+		  | CONFIGURE_REQUEST
+		      { parent:      xt::Window_Id,			# The parent.
+			window:      xt::Window_Id,			# The window to reconfigure.
+			sibling:     Null_Or(xt::Window_Id),		# The new sibling (if any).
+			x:           Null_Or(Int),			# The window's rectangle.
+			y:           Null_Or(Int),
+			wide:        Null_Or(Int),
+			high:        Null_Or(Int),
+			border_wid:  Null_Or(Int),			# The width of the border.
+			stack_mode:  Null_Or(xt::Stack_Mode)		# The mode for stacking windows.
+		      }
 
-	     | RESIZE_REQUEST_XEVENT  {
-	       window:      xt::Window_Id,				# The window to resize.
-	       req_size:    g::Size					# The requested new size.
-	     }
+		  | GRAVITY_NOTIFY  {
+		    event:			xt::Window_Id,		# The window on which this was generated.
+		    window:      		xt::Window_Id,		# The window being moved.
+		    upperleft_corner:	g::Point			# Upper-left corner of window.
+		  }		
 
-	     | CIRCULATE_NOTIFY_XEVENT  {
-	       event:       xt::Window_Id,				# The window on which this was generated.
-	       window:      xt::Window_Id,				# The window being circulated.
-	       parent:      xt::Window_Id,				# The parent.
-	       place:       xt::Stack_Pos				# The new place.
-	     }
+		  | RESIZE_REQUEST  {
+		    window:      xt::Window_Id,				# The window to resize.
+		    req_size:    g::Size					# The requested new size.
+		  }
 
-	     | CIRCULATE_REQUEST_XEVENT  {
-	       parent:      xt::Window_Id,				# The parent.
-	       window:      xt::Window_Id,				# The window to circulate.
-	       place:       xt::Stack_Pos				# The place to circulate the window to.
-	     }
+		  | CIRCULATE_NOTIFY  {
+		    event:       xt::Window_Id,				# The window on which this was generated.
+		    window:      xt::Window_Id,				# The window being circulated.
+		    parent:      xt::Window_Id,				# The parent.
+		    place:       xt::Stack_Pos				# The new place.
+		  }
 
-	     | PROPERTY_NOTIFY_XEVENT  {
-	       window:      xt::Window_Id,				# The window with the changed property.
-	       atom:        xt::Atom,					# The affected property.
-	       timestamp:   ts::Xserver_Timestamp,			# When the property was changed.
-	       deleted:     Bool					# TRUE if the property was deleted.
-	     }
+		  | CIRCULATE_REQUEST  {
+		    parent:      xt::Window_Id,				# The parent.
+		    window:      xt::Window_Id,				# The window to circulate.
+		    place:       xt::Stack_Pos				# The place to circulate the window to.
+		  }
 
-	     | SELECTION_CLEAR_XEVENT  {
-	       owner:       xt::Window_Id,				# The current owner of the selection.
-	       selection:   xt::Atom,					# The selection.
-	       timestamp:   ts::Xserver_Timestamp			# The last-change time.
-	     }		
+		  | PROPERTY_NOTIFY  {
+		    window:      xt::Window_Id,				# The window with the changed property.
+		    atom:        xt::Atom,				# The affected property.
+		    timestamp:   ts::Xserver_Timestamp,			# When the property was changed.
+		    deleted:     Bool					# TRUE if the property was deleted.
+		  }
 
-	     | SELECTION_REQUEST_XEVENT  {
-	       owner:       xt::Window_Id,				# The owner of the selection.
-	       selection:   xt::Atom,					# The selection.
-	       target:      xt::Atom,					# The requested type for the selection.
-	       requestor:   xt::Window_Id,				# The requesting window.
-	       property:    Null_Or( xt::Atom ),			# The property to store the selection in. 
-	       timestamp:   xt::Timestamp				#  
-	     }
+		  | SELECTION_CLEAR  {
+		    owner:       xt::Window_Id,				# The current owner of the selection.
+		    selection:   xt::Atom,				# The selection.
+		    timestamp:   ts::Xserver_Timestamp			# The last-change time.
+		  }		
 
-	     | SELECTION_NOTIFY_XEVENT  {
-	       requestor:  xt::Window_Id,				# The requestor of the selection.
-	       selection:  xt::Atom,					# The selection.
-	       target:     xt::Atom,          				# The requested type of the selection.
-	       property:   Null_Or( xt::Atom ),				# The property to store the selection in.
-	       timestamp:  xt::Timestamp       				#  
-	     }
+		  | SELECTION_REQUEST  {
+		    owner:       xt::Window_Id,				# The owner of the selection.
+		    selection:   xt::Atom,				# The selection.
+		    target:      xt::Atom,				# The requested type for the selection.
+		    requestor:   xt::Window_Id,				# The requesting window.
+		    property:    Null_Or( xt::Atom ),			# The property to store the selection in. 
+		    timestamp:   xt::Timestamp				#  
+		  }
 
-	     | COLORMAP_NOTIFY_XEVENT  {
-	       window:     xt::Window_Id,				# The affected window.
-	       cmap:       Null_Or( xt::Colormap_Id ),			# The colormap.
-	       new:        Bool,					# TRUE, if the colormap attribute is changed.
-	       installed:  Bool						# TRUE, if the colormap is installed.
-	     }
+		  | SELECTION_NOTIFY  {
+		    requestor:  xt::Window_Id,				# The requestor of the selection.
+		    selection:  xt::Atom,				# The selection.
+		    target:     xt::Atom,          			# The requested type of the selection.
+		    property:   Null_Or( xt::Atom ),			# The property to store the selection in.
+		    timestamp:  xt::Timestamp       			#  
+		  }
 
-	     | CLIENT_MESSAGE_XEVENT  {
-	       window:     xt::Window_Id,				#  
-	       type:       xt::Atom,					# The type of the message.
-	       value:      xt::Raw_Data	        			# The message value.
-	     }
+		  | COLORMAP_NOTIFY  {
+		    window:     xt::Window_Id,				# The affected window.
+		    cmap:       Null_Or( xt::Colormap_Id ),		# The colormap.
+		    new:        Bool,					# TRUE, if the colormap attribute is changed.
+		    installed:  Bool					# TRUE, if the colormap is installed.
+		  }
 
-	     | MODIFIER_MAPPING_NOTIFY_XEVENT				# Really a MappingNotify event.
+		  | CLIENT_MESSAGE  {
+		    window:     xt::Window_Id,				#  
+		    type:       xt::Atom,				# The type of the message.
+		    value:      xt::Raw_Data	        		# The message value.
+		  }
 
-	     | KEYBOARD_MAPPING_NOTIFY_XEVENT				# Really a MappingNotify event.
-		 {
-		   first_keycode:  xt::Keycode,
-		   count:          Int
-		 }
+		  | MODIFIER_MAPPING_NOTIFY				# Really a MappingNotify event.
 
-	     | POINTER_MAPPING_NOTIFY_XEVENT		# Really a MappingNotify event.
-	     ;
+		  | KEYBOARD_MAPPING_NOTIFY				# Really a MappingNotify event.
+		      {
+			first_keycode:  xt::Keycode,
+			count:          Int
+		      }
 
-	    fun mask_of_xevent xevent::KEY_PRESS             => xt::EVENT_MASK (0u1 << 0u0);
-		mask_of_xevent xevent::KEY_RELEASE           => xt::EVENT_MASK (0u1 << 0u1);
-		mask_of_xevent xevent::BUTTON_PRESS          => xt::EVENT_MASK (0u1 << 0u2);
-		mask_of_xevent xevent::BUTTON_RELEASE        => xt::EVENT_MASK (0u1 << 0u3);
-		mask_of_xevent xevent::ENTER_WINDOW          => xt::EVENT_MASK (0u1 << 0u4);
-		mask_of_xevent xevent::LEAVE_WINDOW          => xt::EVENT_MASK (0u1 << 0u5);
-		mask_of_xevent xevent::POINTER_MOTION        => xt::EVENT_MASK (0u1 << 0u6);
-		mask_of_xevent xevent::POINTER_MOTION_HINT   => xt::EVENT_MASK (0u1 << 0u7);
-		mask_of_xevent xevent::BUTTON1MOTION         => xt::EVENT_MASK (0u1 << 0u8);
-		mask_of_xevent xevent::BUTTON2MOTION         => xt::EVENT_MASK (0u1 << 0u9);
-		mask_of_xevent xevent::BUTTON3MOTION         => xt::EVENT_MASK (0u1 << 0u10);
-		mask_of_xevent xevent::BUTTON4MOTION         => xt::EVENT_MASK (0u1 << 0u11);
-		mask_of_xevent xevent::BUTTON5MOTION         => xt::EVENT_MASK (0u1 << 0u12);
-		mask_of_xevent xevent::BUTTON_MOTION         => xt::EVENT_MASK (0u1 << 0u13);
-		mask_of_xevent xevent::KEYMAP_STATE          => xt::EVENT_MASK (0u1 << 0u14);
-		mask_of_xevent xevent::EXPOSURE              => xt::EVENT_MASK (0u1 << 0u15);
-		mask_of_xevent xevent::VISIBILITY_CHANGE     => xt::EVENT_MASK (0u1 << 0u16);
-		mask_of_xevent xevent::STRUCTURE_NOTIFY      => xt::EVENT_MASK (0u1 << 0u17);
-		mask_of_xevent xevent::RESIZE_REDIRECT       => xt::EVENT_MASK (0u1 << 0u18);
-		mask_of_xevent xevent::SUBSTRUCTURE_NOTIFY   => xt::EVENT_MASK (0u1 << 0u19);
-		mask_of_xevent xevent::SUBSTRUCTURE_REDIRECT => xt::EVENT_MASK (0u1 << 0u20);
-		mask_of_xevent xevent::FOCUS_CHANGE          => xt::EVENT_MASK (0u1 << 0u21);
-		mask_of_xevent xevent::PROPERTY_CHANGE       => xt::EVENT_MASK (0u1 << 0u22);
-		mask_of_xevent xevent::COLORMAP_CHANGE       => xt::EVENT_MASK (0u1 << 0u23);
-		mask_of_xevent xevent::OWNER_GRAB_BUTTON     => xt::EVENT_MASK (0u1 << 0u24);
+		  | POINTER_MAPPING_NOTIFY				# Really a MappingNotify event.
+		  ;
+	    };
+
+	    fun mask_of_xevent n::KEY_PRESS             => xt::EVENT_MASK (0u1 << 0u0);
+		mask_of_xevent n::KEY_RELEASE           => xt::EVENT_MASK (0u1 << 0u1);
+		mask_of_xevent n::BUTTON_PRESS          => xt::EVENT_MASK (0u1 << 0u2);
+		mask_of_xevent n::BUTTON_RELEASE        => xt::EVENT_MASK (0u1 << 0u3);
+		mask_of_xevent n::ENTER_WINDOW          => xt::EVENT_MASK (0u1 << 0u4);
+		mask_of_xevent n::LEAVE_WINDOW          => xt::EVENT_MASK (0u1 << 0u5);
+		mask_of_xevent n::POINTER_MOTION        => xt::EVENT_MASK (0u1 << 0u6);
+		mask_of_xevent n::POINTER_MOTION_HINT   => xt::EVENT_MASK (0u1 << 0u7);
+		mask_of_xevent n::BUTTON1MOTION         => xt::EVENT_MASK (0u1 << 0u8);
+		mask_of_xevent n::BUTTON2MOTION         => xt::EVENT_MASK (0u1 << 0u9);
+		mask_of_xevent n::BUTTON3MOTION         => xt::EVENT_MASK (0u1 << 0u10);
+		mask_of_xevent n::BUTTON4MOTION         => xt::EVENT_MASK (0u1 << 0u11);
+		mask_of_xevent n::BUTTON5MOTION         => xt::EVENT_MASK (0u1 << 0u12);
+		mask_of_xevent n::BUTTON_MOTION         => xt::EVENT_MASK (0u1 << 0u13);
+		mask_of_xevent n::KEYMAP_STATE          => xt::EVENT_MASK (0u1 << 0u14);
+		mask_of_xevent n::EXPOSURE              => xt::EVENT_MASK (0u1 << 0u15);
+		mask_of_xevent n::VISIBILITY_CHANGE     => xt::EVENT_MASK (0u1 << 0u16);
+		mask_of_xevent n::STRUCTURE_NOTIFY      => xt::EVENT_MASK (0u1 << 0u17);
+		mask_of_xevent n::RESIZE_REDIRECT       => xt::EVENT_MASK (0u1 << 0u18);
+		mask_of_xevent n::SUBSTRUCTURE_NOTIFY   => xt::EVENT_MASK (0u1 << 0u19);
+		mask_of_xevent n::SUBSTRUCTURE_REDIRECT => xt::EVENT_MASK (0u1 << 0u20);
+		mask_of_xevent n::FOCUS_CHANGE          => xt::EVENT_MASK (0u1 << 0u21);
+		mask_of_xevent n::PROPERTY_CHANGE       => xt::EVENT_MASK (0u1 << 0u22);
+		mask_of_xevent n::COLORMAP_CHANGE       => xt::EVENT_MASK (0u1 << 0u23);
+		mask_of_xevent n::OWNER_GRAB_BUTTON     => xt::EVENT_MASK (0u1 << 0u24);
 	    end;
 
 	    fun mask_of_xevent_list l
