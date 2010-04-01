@@ -582,13 +582,13 @@ result;
 		    =
 		    {   my (mks, mbs) = get_key_but_set    (buf, 28);
 
-			{ keycode     => get_key_code      (buf,  1),
-			  timestamp   => get_xs_timestamp  (buf,  4),
-			  root        => get_xid           (buf,  8),
-			  event       => get_xid           (buf, 12),
-			  child       => get_xid_option    (buf, 16),
-			  root_point  => get_pt		   (buf, 20),
-			  event_point => get_pt		   (buf, 24),
+			{ keycode         => get_key_code      (buf,  1),
+			  timestamp       => get_xs_timestamp  (buf,  4),
+			  root_window_id  => get_xid           (buf,  8),
+			  event_window_id => get_xid           (buf, 12),
+			  child_window_id => get_xid_option    (buf, 16),
+			  root_point      => get_pt		   (buf, 20),
+			  event_point     => get_pt		   (buf, 24),
 			  #
 			  modifier_keys_state   => mks,
 			  mousebuttons_state	=> mbs,
@@ -602,16 +602,17 @@ result;
 			    =
 			    get_key_but_set                        (buf, 28);
 
-			{ button      => xt::MOUSEBUTTON (get_int8 (buf,  1)),
-			  timestamp   => get_xs_timestamp          (buf,  4),
-			  root        => get_xid                   (buf,  8),
-			  event       => get_xid                   (buf, 12),
-			  child       => get_xid_option            (buf, 16),
-			  root_point  => get_pt                    (buf, 20),
-			  event_point => get_pt                    (buf, 24),
-			  modifier_keys_state   => mks,
-			  mousebuttons_state  => mbs,
-			  same_screen => get_bool                  (buf, 30)
+			{ button          => xt::MOUSEBUTTON (get_int8 (buf,  1)),
+			  timestamp       => get_xs_timestamp          (buf,  4),
+			  root_window_id  => get_xid                   (buf,  8),
+			  event_window_id => get_xid                   (buf, 12),
+			  child_window_id => get_xid_option            (buf, 16),
+			  root_point      => get_pt                    (buf, 20),
+			  event_point     => get_pt                    (buf, 24),
+			  #
+			  modifier_keys_state  => mks,
+			  mousebuttons_state   => mbs,
+			  same_screen          => get_bool             (buf, 30)
 		       };
 		    };
 
@@ -623,20 +624,20 @@ result;
 
 			et::x::MOTION_NOTIFY
 			  {
-			    hint       => get_bool          (buf,  1),
-			    timestamp  => get_xs_timestamp  (buf,  4),
+			    hint            => get_bool          (buf,  1),
+			    timestamp       => get_xs_timestamp  (buf,  4),
 
-			    root       => get_xid           (buf,  8),
-			    event      => get_xid           (buf, 12),
-			    child      => get_xid_option    (buf, 16),
+			    root_window_id  => get_xid           (buf,  8),
+			    event_window_id => get_xid           (buf, 12),
+			    child_window_id => get_xid_option    (buf, 16),
 
-			    root_point    => get_pt            (buf, 20),
-			    event_point   => get_pt            (buf, 24),
+			    root_point      => get_pt            (buf, 20),
+			    event_point     => get_pt            (buf, 24),
 
 			    modifier_keys_state  => mks,
-			    mousebuttons_state => mbs,
+			    mousebuttons_state   => mbs,
 
-			    same_screen => get_bool         (buf, 30)
+			    same_screen     => get_bool          (buf, 30)
 			  };
 		    };
 
@@ -644,23 +645,24 @@ result;
 		    =
 		    {   my (mks, mbs)
 			    =
-			    get_key_but_set              (buf, 28);
+			    get_key_but_set                   (buf, 28);
 
-			flags = get8                     (buf, 31);
+			flags = get8                          (buf, 31);
 
-			{ detail     => get_focus_detail (buf,  1),
-			  timestamp  => get_xs_timestamp (buf,  4),
-			  root       => get_xid          (buf,  8),
-			  event      => get_xid          (buf, 12),
-			  child      => get_xid_option   (buf, 16),
+			{ detail          => get_focus_detail (buf,  1),
+			  timestamp       => get_xs_timestamp (buf,  4),
+			  #
+			  root_window_id  => get_xid          (buf,  8),
+			  event_window_id => get_xid          (buf, 12),
+			  child_window_id => get_xid_option   (buf, 16),
 
-			  root_point    => get_pt           (buf, 20),
-			  event_point   => get_pt           (buf, 24),
+			  root_point      => get_pt           (buf, 20),
+			  event_point     => get_pt           (buf, 24),
 
-			  modifier_keys_state  => mks,
-			  mousebuttons_state => mbs,
+			  modifier_keys_state => mks,
+			  mousebuttons_state  => mbs,
 
-			  mode  => get_focus_mode        (buf, 30),
+			  mode  =>     get_focus_mode        (buf, 30),
 			  focus => is_set (flags, 0u0),
 
 			  same_screen => is_set (flags, 0u1)
@@ -669,9 +671,9 @@ result;
 
 		fun get_focus_xevent buf
 		    =
-		    {   detail => get_focus_detail (buf, 1),
-			event  => get_xid          (buf, 4),
-			mode   => get_focus_mode   (buf, 8)
+		    {   detail           => get_focus_detail (buf, 1),
+			event_window_id  => get_xid          (buf, 4),
+			mode             => get_focus_mode   (buf, 8)
 		    };
 
 		fun decode_keymap_notify buf
@@ -682,9 +684,9 @@ result;
 		    =
 		    et::x::EXPOSE
 		      {
-			window => get_xid   (buf,  4),
-			boxes  => [get_box  (buf, 8)],
-			count  => get_int16 (buf, 16)
+			exposed_window_id =>   get_xid   (buf,  4),
+			boxes             => [ get_box   (buf,  8) ],
+			count             =>   get_int16 (buf, 16)
 		      };
 
 		fun decode_graphics_expose buf
@@ -711,7 +713,7 @@ result;
 		    =
 		    et::x::VISIBILITY_NOTIFY
 		      {
-			window => get_xid (buf, 4),
+			changed_window_id =>  get_xid (buf, 4),
 
 			state  => case (w8v::get (buf, 8))
 		                      #
@@ -726,10 +728,10 @@ result;
 		    =
 		    et::x::CREATE_NOTIFY
 		      {
-			parent => get_xid               (buf,  4),
-			window => get_xid               (buf,  8),
+			parent_window_id  =>  get_xid   (buf,  4),
+			created_window_id =>  get_xid   (buf,  8),
 
-			box   => get_box                (buf, 12),
+			box   		  =>  get_box   (buf, 12),
 
 			border_wid        =>  get_int16 (buf, 20),
 			override_redirect =>  get_bool  (buf, 21)
@@ -738,60 +740,60 @@ result;
 		fun decode_destroy_notify buf
 		    =
 		    et::x::DESTROY_NOTIFY
-		      { event  => get_xid (buf, 4),
-			window => get_xid (buf, 8)
+		      { event_window_id     =>  get_xid (buf, 4),
+			destroyed_window_id =>  get_xid (buf, 8)
 		      };
 
 		fun decode_unmap_notify buf
 		    =
 		    et::x::UNMAP_NOTIFY
 		      {
-			event       => get_xid  (buf,  4),
-			window      => get_xid  (buf,  8),
-			from_config => get_bool (buf, 12)
+			event_window_id    =>  get_xid  (buf,  4),
+			unmapped_window_id =>  get_xid  (buf,  8),
+			from_config        =>  get_bool (buf, 12)
 		      };
 
 		fun decode_map_notify buf
 		    =
 		    et::x::MAP_NOTIFY
 		      {
-			event  => get_xid (buf, 4),
-			window => get_xid (buf, 8),
-
-			override_redirect => get_bool (buf, 12)
+			event_window_id    =>  get_xid  (buf,  4),
+			mapped_window_id   =>  get_xid  (buf,  8),
+			#
+			override_redirect  =>  get_bool (buf, 12)
 		      };
 
 		fun decode_map_request buf
 		    =
 		    et::x::MAP_REQUEST
 		      {
-			parent => get_xid (buf, 4),
-			window => get_xid (buf, 8)
+			parent_window_id   =>  get_xid (buf,  4),
+			mapped_window_id   =>  get_xid (buf,  8)
 		      };
 
 		fun decode_reparent_notify buf
 		    =
 		    et::x::REPARENT_NOTIFY
 		      {
-			event  => get_xid             (buf,  4),
-			parent => get_xid             (buf,  8),
-			window => get_xid             (buf, 12),
-
-			upperleft_corner  => get_pt   (buf, 16),
-			override_redirect => get_bool (buf, 20)
+			event_window_id    =>  get_xid             (buf,  4),
+			parent_window_id   =>  get_xid             (buf,  8),
+			rerooted_window_id =>  get_xid             (buf, 12),	# I suspect this should be "reparented_window_id"
+			#
+			upperleft_corner   =>  get_pt   	   (buf, 16),
+			override_redirect  =>  get_bool            (buf, 20)
 		      };
 
 		fun decode_configure_notify buf
 		    =
 		    et::x::CONFIGURE_NOTIFY
 		    {
-		      event   => get_xid             (buf,  4),
-		      window  => get_xid             (buf,  8),
-		      sibling => get_xid_option      (buf, 12),
-		      box    => get_box              (buf, 16),
-
-		      border_wid        => get_int16 (buf, 20),
-		      override_redirect => get_bool  (buf, 22)
+		      event_window_id      =>  get_xid             (buf,  4),
+		      configured_window_id =>  get_xid             (buf,  8),
+		      sibling_window_id    =>  get_xid_option      (buf, 12),
+		      #	
+		      box                  =>  get_box             (buf, 16),
+		      border_wid           =>  get_int16           (buf, 20),
+		      override_redirect    =>  get_bool            (buf, 22)
 		    };
 
 		fun decode_configure_request buf
@@ -820,15 +822,15 @@ result;
 					  fi,
 
 
-			    parent     => get_xid               (buf,  4),
-			    window     => get_xid               (buf,  8),
-
-			    sibling    => get_xid_option        (buf, 12),
-			    x          => the_else get_signed16 (0u0, 16),
-			    y          => the_else get_signed16 (0u1, 18),
-			    wide       => the_else get_int16    (0u2, 20),
-			    high       => the_else get_int16    (0u3, 22),
-			    border_wid => the_else get_int16    (0u4, 24)
+			    parent_window_id    =>  get_xid               (buf,  4),
+			    configure_window_id =>  get_xid               (buf,  8),
+			    sibling_window_id   =>  get_xid_option        (buf, 12),
+			    #
+			    x                   =>  the_else get_signed16 (0u0, 16),
+			    y                   =>  the_else get_signed16 (0u1, 18),
+			    wide                =>  the_else get_int16    (0u2, 20),
+			    high                =>  the_else get_int16    (0u3, 22),
+			    border_wid          =>  the_else get_int16    (0u4, 24)
 			  };
 		    };
 
@@ -836,96 +838,99 @@ result;
 		    =
 		    et::x::GRAVITY_NOTIFY
 		      {
-			event            => get_xid (buf,  4),
-			window           => get_xid (buf,  8),
-			upperleft_corner => get_pt  (buf, 12)
+			event_window_id  =>  get_xid (buf,  4),
+			moved_window_id  =>  get_xid (buf,  8),
+			#
+			upperleft_corner =>  get_pt  (buf, 12)
 		      };
 
 		fun decode_resize_request buf
 		    =
 		    et::x::RESIZE_REQUEST
 		      {
-			window   => get_xid  (buf, 4),
-			req_size => get_size (buf, 8)
+			resize_window_id  =>  get_xid  (buf, 4),
+			req_size          =>  get_size (buf, 8)
 		      };
 
 		fun decode_circulate_notify buf
 		    =
 		    et::x::CIRCULATE_NOTIFY
 		      {
-			event  => get_xid     (buf,  4),
-			window => get_xid     (buf,  8),
-			parent => get_xid     (buf, 12),
-			place  => get_stk_pos (buf, 16)
+			event_window_id      =>  get_xid     (buf,  4),
+			circulated_window_id =>  get_xid     (buf,  8),
+			parent_window_id     =>  get_xid     (buf, 12),
+			#
+			place                =>  get_stk_pos (buf, 16)
 		      };
 
 		fun decode_circulate_request buf
 		    =
 		    et::x::CIRCULATE_REQUEST
 		      {
-			parent => get_xid     (buf,  4),
-			window => get_xid     (buf,  8),
-			place  => get_stk_pos (buf, 12)
+			parent_window_id     =>  get_xid     (buf,  4),
+			circulate_window_id  =>  get_xid     (buf,  8),
+			place  		     =>  get_stk_pos (buf, 12)
 		      };
 
 		fun decode_property_notify buf
 		    =
 		    et::x::PROPERTY_NOTIFY
 		      {
-			window    => get_xid          (buf,  4),
-			atom      => get_xatom        (buf,  8),
-			timestamp => get_xs_timestamp (buf, 12),
-			deleted   => get_bool         (buf, 16)        
+			changed_window_id    =>  get_xid          (buf,  4),
+			atom      	     =>  get_xatom        (buf,  8),
+			timestamp 	     =>  get_xs_timestamp (buf, 12),
+			deleted   	     =>  get_bool         (buf, 16)        
 		      };
 
 		fun decode_selection_clear buf
 		    =
 		    et::x::SELECTION_CLEAR
 		    {
-		      timestamp => get_xs_timestamp (buf,  4),
-		      owner     => get_xid          (buf,  8),
-		      selection => get_xatom        (buf, 12)
+		      timestamp              =>  get_xs_timestamp (buf,  4),
+		      owning_window_id       =>  get_xid          (buf,  8),
+		      selection              =>  get_xatom        (buf, 12)
 		    };
 
 		fun decode_selection_request buf
 		    =
 		    et::x::SELECTION_REQUEST
 		      {
-			timestamp => get_xt_timestamp (buf,  4),
-			owner     => get_xid          (buf,  8),
-			requestor => get_xid          (buf, 12),
-			selection => get_xatom        (buf, 16),
-			target    => get_xatom        (buf, 20),
-			property  => get_xatom_option (buf, 24)
+			timestamp            =>  get_xt_timestamp (buf,  4),
+			owning_window_id     =>  get_xid          (buf,  8),
+			requesting_window_id =>  get_xid          (buf, 12),
+			selection 	     =>  get_xatom        (buf, 16),
+			target    	     =>  get_xatom        (buf, 20),
+			property	     =>  get_xatom_option (buf, 24)
 		      };
 
 		fun decode_selection_notify buf
 		    =
 		    et::x::SELECTION_NOTIFY
 		      {
-			timestamp => get_xt_timestamp (buf,  4),
-			requestor => get_xid          (buf,  8),
-			selection => get_xatom        (buf, 12),
-			target    => get_xatom        (buf, 16),
-			property  => get_xatom_option (buf, 20)
+			timestamp            =>  get_xt_timestamp (buf,  4),
+			requesting_window_id =>  get_xid          (buf,  8),
+			selection 	     =>  get_xatom        (buf, 12),
+			target    	     =>  get_xatom        (buf, 16),
+			property  	     =>  get_xatom_option (buf, 20)
 		      };
 
 		fun decode_colormap_notify buf
 		    =
 		    et::x::COLORMAP_NOTIFY
 		      {
-			window    => get_xid         (buf,  4),
-			cmap      => get_xid_option  (buf,  8),
-			new       => get_bool        (buf, 12),
-			installed => get_bool        (buf, 13)
+			window_id           =>  get_xid           (buf,  4),
+			cmap      	    =>  get_xid_option    (buf,  8),
+			new                 =>  get_bool          (buf, 12),
+			installed           =>  get_bool          (buf, 13)
 		      };
 
 		fun decode_client_message buf
 		    = 
 		    et::x::CLIENT_MESSAGE
 		      {
-			window => get_xid                      (buf,  4),
-			type   => get_xatom                    (buf,  8),
+			window_id           =>  get_xid           (buf,  4),
+			type                =>  get_xatom         (buf,  8),
+			#
 			value  => xt::RAW_DATA
 				    {
 				      format => get_raw_format (buf,  1),

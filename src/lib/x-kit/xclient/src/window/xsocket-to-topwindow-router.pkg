@@ -109,9 +109,9 @@ herein
 
 	    # Discard instances of an X-event that
 	    # are the product of SubstructureNotify,
-	    # instead of PackageNotify.
+	    # instead of StructureNotify.
 	    #
-	    fun ignore_substruct_xevents (w1, w2)
+	    fun ignore_substructure_notify_xevents (w1, w2)
 		=
 		if (w1 == w2)  TO_WINDOW w1;
 		else           TO_TRASH;
@@ -119,64 +119,66 @@ herein
 
 	    # Extract the destination xid of an X-event 
 	    #
-	    fun extract_dst (et::x::KEY_PRESS      { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::KEY_RELEASE    { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::BUTTON_PRESS   { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::BUTTON_RELEASE { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::MOTION_NOTIFY  { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::ENTER_NOTIFY   { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::LEAVE_NOTIFY   { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::FOCUS_IN       { event, ... } ) =>  TO_WINDOW event;
-		extract_dst (et::x::FOCUS_OUT      { event, ... } ) =>  TO_WINDOW event;
+	    fun extract_dst (et::x::KEY_PRESS      { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::KEY_RELEASE    { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::BUTTON_PRESS   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::BUTTON_RELEASE { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::MOTION_NOTIFY  { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::ENTER_NOTIFY   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::LEAVE_NOTIFY   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::FOCUS_IN       { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		extract_dst (et::x::FOCUS_OUT      { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
 
-#		extract_dst (et::x::KeymapNotifyXEvt {, ... } ) = 
-#		extract_dst (et::x::GraphicsExposeXEvt ?? 
-#		extract_dst (et::x::NoExposeXEvt {, ... } ) =
-#		extract_dst (et::x::MapRequestXEvt {, ... } ) =
-#		extract_dst (et::x::ConfigureRequestXEvt {, ... } ) =
-#		extract_dst (et::x::ResizeRequestXEvt {, ... } ) =
-#		extract_dst (et::x::CirculateRequestXEvt {, ... } ) =
+#		extract_dst (et::x::KeymapNotify {, ... } ) = 
+#		extract_dst (et::x::GraphicsExpose ?? 
+#		extract_dst (et::x::NoExpose {, ... } ) =
+#		extract_dst (et::x::MapRequest {, ... } ) =
+#		extract_dst (et::x::ConfigureRequest {, ... } ) =
+#		extract_dst (et::x::ResizeRequest {, ... } ) =
+#		extract_dst (et::x::CirculateRequest {, ... } ) =
 
-		extract_dst (et::x::EXPOSE { window, ... } ) => TO_WINDOW window;
+		extract_dst (et::x::EXPOSE { exposed_window_id, ... } ) =>  TO_WINDOW  exposed_window_id;
 
 
-		extract_dst (et::x::VISIBILITY_NOTIFY { window, ... } ) => TO_WINDOW window;
+		extract_dst (et::x::VISIBILITY_NOTIFY { changed_window_id, ... } ) =>  TO_WINDOW  changed_window_id;
 
-		extract_dst (et::x::CREATE_NOTIFY { parent, window, ... } )
+		extract_dst (et::x::CREATE_NOTIFY { parent_window_id => parent , created_window_id, ... } )
 		    =>
-		    CREATE_WINDOW { parent, new_window => window };
+		    CREATE_WINDOW { parent, new_window => created_window_id };
 
-		extract_dst (et::x::DESTROY_NOTIFY { event, window, ... } )
+		extract_dst (et::x::DESTROY_NOTIFY { event_window_id, destroyed_window_id, ... } )
 		    =>
-		    event == window  ??  DESTROY_WINDOW event	# Remove window from registry. 
-				     ::  TO_WINDOW      event;	# Report to parent that child is dead. 
+		    event_window_id == destroyed_window_id
+			##
+                        ??  DESTROY_WINDOW  event_window_id	# Remove window from registry. 
+			::  TO_WINDOW       event_window_id;	# Report to parent that child is dead. 
 
-		extract_dst (et::x::UNMAP_NOTIFY { event, window, ... } )
+		extract_dst (et::x::UNMAP_NOTIFY { event_window_id, unmapped_window_id, ... } )
 		    =>
-		    ignore_substruct_xevents (event, window);
+		    ignore_substructure_notify_xevents (event_window_id, unmapped_window_id);
 
-		extract_dst (et::x::MAP_NOTIFY { event, window, ... } )
+		extract_dst (et::x::MAP_NOTIFY { event_window_id, mapped_window_id, ... } )
 		    =>
-		    ignore_substruct_xevents (event, window);
+		    ignore_substructure_notify_xevents (event_window_id, mapped_window_id);
 
 
 		extract_dst (et::x::REPARENT_NOTIFY _)
 		    =>
 		    TO_TRASH;
 
-		extract_dst (et::x::CONFIGURE_NOTIFY { event, window, ... } )
+		extract_dst (et::x::CONFIGURE_NOTIFY { event_window_id, configured_window_id, ... } )
 		    =>
-		    ignore_substruct_xevents (event, window);
+		    ignore_substructure_notify_xevents (event_window_id, configured_window_id);
 
 
-		extract_dst (et::x::GRAVITY_NOTIFY { event, window, ... } )
+		extract_dst (et::x::GRAVITY_NOTIFY { event_window_id, moved_window_id, ... } )
 		    =>
-		    ignore_substruct_xevents (event, window);
+		    ignore_substructure_notify_xevents (event_window_id, moved_window_id);
 
 
-		extract_dst (et::x::CIRCULATE_NOTIFY { event, window, ... } )
+		extract_dst (et::x::CIRCULATE_NOTIFY { event_window_id, circulated_window_id, ... } )
 		    =>
-		    ignore_substruct_xevents (event, window);
+		    ignore_substructure_notify_xevents (event_window_id, circulated_window_id);
 
 
 		extract_dst (et::x::PROPERTY_NOTIFY   _) => TO_WINDOW_PROPERTY_IMP;    # We may have other uses of PropertyNotify someday.
@@ -184,8 +186,8 @@ herein
 		extract_dst (et::x::SELECTION_REQUEST _) => TO_SELECTION_IMP;
 		extract_dst (et::x::SELECTION_NOTIFY  _) => TO_SELECTION_IMP;
 
-		extract_dst (et::x::COLORMAP_NOTIFY { window, ... } ) => TO_WINDOW window;
-		extract_dst (et::x::CLIENT_MESSAGE  { window, ... } ) => TO_WINDOW window;
+		extract_dst (et::x::COLORMAP_NOTIFY { window_id, ... } ) => TO_WINDOW window_id;
+		extract_dst (et::x::CLIENT_MESSAGE  { window_id, ... } ) => TO_WINDOW window_id;
 
 		extract_dst  et::x::MODIFIER_MAPPING_NOTIFY      => TO_ALL;
 		extract_dst (et::x::KEYBOARD_MAPPING_NOTIFY _)  => TO_ALL;

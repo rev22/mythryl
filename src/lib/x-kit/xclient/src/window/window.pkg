@@ -633,8 +633,8 @@ herein
 			    propagate      => FALSE,
 			    event_mask     => mask, 
 			    #
-			    event          => root_window_id,
-			    window         => window_id
+			    event_window_id    =>  root_window_id,
+			    unmapped_window_id =>  window_id
 			  }
 			);
 

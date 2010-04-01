@@ -117,22 +117,22 @@ herein
 	    xok::request connection (v2w::encode_convert_selection arg);
 
 
-	fun selection_notify connection { requestor, selection, target, prop, timestamp }
+	fun selection_notify connection { requesting_window_id, selection, target, property, timestamp }
 	    =
 	    xok::request
 		connection
 		(s2w::encode_send_selection_notify
 		  {
-		    requestor,
+		    requesting_window_id,
 		    selection,
 		    target,
 		    timestamp,
+		    property,
 
-		    send_event_to =>  xt::SEND_EVENT_TO_WINDOW requestor,
+		    send_event_to =>  xt::SEND_EVENT_TO_WINDOW requesting_window_id,
 		    propagate     =>  FALSE,
 
-		    event_mask    =>  xt::EVENT_MASK 0u0,
-		    property      =>  prop
+		    event_mask    =>  xt::EVENT_MASK 0u0
 		  }
 		);
 
@@ -346,10 +346,11 @@ herein
 				=
 				selection_notify  xsocket
 				  {
-				    requestor => xevent.requestor,
-				    selection => xevent.selection,
-				    target    => xevent.target,
-				    prop      => NULL,
+				    requesting_window_id =>  xevent.requesting_window_id,
+				    selection            =>  xevent.selection,
+				    target               =>  xevent.target,
+				    #
+				    property  => NULL,
 				    timestamp => xevent.timestamp
 				  };
 
@@ -405,18 +406,18 @@ herein
 
 							     change_property xsocket
                                                                {
-								 window_id => xevent.requestor,
-								 name      => prop,
-								 mode      => xt::REPLACE_PROPERTY,
-								 property  => prop_val
+								 window_id =>  xevent.requesting_window_id,
+								 name      =>  prop,
+								 mode      =>  xt::REPLACE_PROPERTY,
+								 property  =>  prop_val
 							       };
 
 							     selection_notify xsocket
                                                                {
-								 requestor => xevent.requestor,
-								 selection => xevent.selection,
-								 target    => xevent.target,
-								 prop      => xevent.property,
+								 requesting_window_id =>  xevent.requesting_window_id,
+								 selection            =>  xevent.selection,
+								 target               =>  xevent.target,
+								 property             =>  xevent.property,
 								 timestamp
 							       };
 							 };
@@ -461,9 +462,9 @@ herein
 					set (reply_1shot, NULL);
 				    };
 
-				(THE reply_1shot, THE prop)
+				(THE reply_1shot, THE property)
 				    =>
-				    {   prop_val = get_property xsocket (xevent.requestor, prop);
+				    {   prop_val = get_property xsocket (xevent.requesting_window_id, property);
 
 					remove_plea xevent.selection;
 

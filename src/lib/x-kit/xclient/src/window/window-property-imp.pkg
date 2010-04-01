@@ -260,10 +260,10 @@ herein
 
 		# Handle a selection related X-event 
 		#
-		fun do_xevent (xe::x::PROPERTY_NOTIFY { window, atom, timestamp, deleted } )
+		fun do_xevent (xe::x::PROPERTY_NOTIFY { changed_window_id, atom, timestamp, deleted } )
 			=>
-			case (find_prop (prop_table, window, atom), deleted)
-
+			case (find_prop (prop_table, changed_window_id, atom), deleted)
+			    #
 			    (THE { watchers, ... }, FALSE)
 				=>
 				broadcast (watchers, (NEW_VALUE, timestamp));
@@ -271,7 +271,7 @@ herein
 			    (THE { watchers, is_unique, ... }, TRUE)
 				=>
 				{   broadcast (watchers, (DELETED, timestamp));
-				    remove_prop (prop_table, window, atom);
+				    remove_prop (prop_table, changed_window_id, atom);
 
 				    if is_unique    free_prop atom;   fi;
 				};

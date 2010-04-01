@@ -2,7 +2,9 @@
 #
 # At the root of each widget hierarchy we need
 # a thread which accepts xevents from
-# xsocket_to_topwindow_router and passes
+#
+#     src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
+#
 # them on down the widgettree.  That's our job here.
 #
 # For the big picture see the diagram in
@@ -203,14 +205,16 @@ herein
 		  | routeXEvt (_, et::x::VISIBILITY_NOTIFY _) = ()
 	  ******/
 
-		    route_xevent (path, et::x::CREATE_NOTIFY { parent, window, ... } )
+		    route_xevent (path, et::x::CREATE_NOTIFY { parent_window_id, created_window_id, ... } )
 			=>
-			do_config_sync (path, wc::ETC_CHILD_BIRTH (make_descendant_window window));
+			do_config_sync (path, wc::ETC_CHILD_BIRTH (make_descendant_window  created_window_id));
 
-		    route_xevent (path, et::x::DESTROY_NOTIFY { window, event, ... } )
+		    route_xevent (path, et::x::DESTROY_NOTIFY { destroyed_window_id, event_window_id, ... } )
 			=>
-			window == event   ??   route_ci (wrap_mail (path, wc::ETC_OWN_DEATH))
-					  ::   do_config_sync (path, wc::ETC_CHILD_DEATH (make_descendant_window window));
+			destroyed_window_id == event_window_id
+			    ##
+			    ??   route_ci (wrap_mail (path, wc::ETC_OWN_DEATH))
+			    ::   do_config_sync (path, wc::ETC_CHILD_DEATH (make_descendant_window  destroyed_window_id));
 
 		    route_xevent (xsocket_to_topwindow_router::ENVELOPE_ROUTE_END _, et::x::UNMAP_NOTIFY _)
 			=>
@@ -262,7 +266,7 @@ herein
 		}
 	  */
 
-		   route_xevent (_, et::x::CLIENT_MESSAGE { window, type, ... } )
+		   route_xevent (_, et::x::CLIENT_MESSAGE { window_id, type, ... } )
 		       => 
 		       always_void
 			   ==>

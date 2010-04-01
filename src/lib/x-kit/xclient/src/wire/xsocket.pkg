@@ -1225,10 +1225,10 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.
   trace  .{  "xsocket.pkg: xbuf_imp: decode: back from wire_to_value::decode_xevent.";  }; result;
 };
 
-		fun pack_expose_events (e as x::EXPOSE { window, ... } )
+		fun pack_expose_events (e as x::EXPOSE { exposed_window_id, ... } )
 		    =
 { trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events:   calling pack() ...";  }; result =
-		    x::EXPOSE { window, boxes => pack([], e), count => 0 };
+		    x::EXPOSE { exposed_window_id, boxes => pack([], e), count => 0 };
   trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events: back from pack.";  }; result;
 }
 		    where

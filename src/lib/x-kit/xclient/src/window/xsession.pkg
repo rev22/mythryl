@@ -497,9 +497,9 @@ herein
 		event_mask	=  xt::EVENT_MASK 0u0;
 		#
 		timestamp	=  xt::CURRENT_TIME;
-		root_window	=  root_window_id;
-		event_window	=  window_id;				# Window handling the mouse-button release event.
-		child_window	=  NULL;				# We'll assume specified window is a leaf.
+		root_window_id	=  root_window_id;
+		event_window_id	=  window_id;				# Window handling the mouse-button release event.
+		child_window_id	=  NULL;				# We'll assume specified window is a leaf.
 		root_x		=  row;	# XXX BUGGO FIXME!		# Mouse position on root window at time of button release.
 		root_y		=  col;	# XXX BUGGO FIXME!
 		event_x		=  row;					# Mouse position on recipient window at time of button release.
@@ -511,7 +511,7 @@ herein
 		    s2w::encode_send_button_press_xevent
 		      {
 			send_event_to,  propagate,  event_mask,
-			timestamp,  root_window,  event_window,  child_window,  root_x,  root_y,  event_x,  event_y,  button, buttons
+			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button, buttons
 		      };		
 
 		();
@@ -538,9 +538,9 @@ herein
 		event_mask	=  xt::EVENT_MASK 0u0;
 		#
 		timestamp	=  xt::CURRENT_TIME;
-		root_window	=  root_window_id;
-		event_window	=  window_id;				# Window handling the mouse-button release event.
-		child_window	=  NULL;				# We'll assume specified window is a leaf.
+		root_window_id	=  root_window_id;
+		event_window_id	=  window_id;				# Window handling the mouse-button release event.
+		child_window_id	=  NULL;				# We'll assume specified window is a leaf.
 		root_x		=  row;	# XXX BUGGO FIXME!		# Mouse position on root window at time of button release.
 		root_y		=  col;	# XXX BUGGO FIXME!
 		event_x		=  row;					# Mouse position on recipient window at time of button release.
@@ -551,7 +551,7 @@ herein
 		    s2w::encode_send_button_release_xevent
 		      {
 			send_event_to,  propagate,  event_mask,
-			timestamp,  root_window,  event_window,  child_window,  root_x,  root_y,  event_x,  event_y,  button
+			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button
 		      };		
 		();
 	    };

@@ -31,15 +31,15 @@ herein
 
 	encode_send_selection_notify
 	    :
-	    { send_event_to:	xt::Send_Event_To,
-	      propagate:	Bool,
-	      event_mask:	xt::Event_Mask,
+	    { send_event_to:		xt::Send_Event_To,
+	      propagate:		Bool,
+	      event_mask:		xt::Event_Mask,
 	      #
-	      property:		Null_Or( xt::Atom ),
-	      requestor:	xt::Xid,
-	      selection:	xt::Atom,
-	      target:		xt::Atom,
-	      timestamp:	xt::Timestamp
+	      property:			Null_Or( xt::Atom ),
+	      requesting_window_id:	xt::Xid,
+	      selection:		xt::Atom,
+	      target:			xt::Atom,
+	      timestamp:		xt::Timestamp
 	      
 	    }
 	    ->
@@ -49,13 +49,13 @@ herein
 
 	encode_send_unmap_notify
 	    :
-	    { send_event_to:	xt::Send_Event_To,
-	      propagate:	Bool,
-	      event_mask:	xt::Event_Mask,
+	    { send_event_to:		xt::Send_Event_To,
+	      propagate:		Bool,
+	      event_mask:		xt::Event_Mask,
 	      #
-	      event:		xt::Xid,
-	      window:		xt::Xid,
-	      from_configure:	Bool
+	      event_window_id:		xt::Xid,
+	      unmapped_window_id:	xt::Xid,
+	      from_configure:		Bool
 	    }
 	    ->
 	    w8v::Vector
@@ -70,9 +70,9 @@ herein
 	      event_mask:	xt::Event_Mask,
 	      #
 	      timestamp:	xt::Timestamp,
-	      root_window:	xt::Xid,
-	      event_window:	xt::Xid,			# Window handling the mouse-button click event.
-	      child_window:	Null_Or( xt::Xid ),		# Child of event window containing the click point. NULL if none such exists.
+	      root_window_id:	xt::Xid,
+	      event_window_id:	xt::Xid,			# Window handling the mouse-button click event.
+	      child_window_id:	Null_Or( xt::Xid ),		# Child of event window containing the click point. NULL if none such exists.
 	      root_x:		Int,				# Mouse position on root window at time of button click.
 	      root_y:		Int,
 	      event_x:		Int,				# Mouse position on recipient window at time of button click.
@@ -93,9 +93,9 @@ herein
 	      event_mask:	xt::Event_Mask,
 	      #
 	      timestamp:	xt::Timestamp,
-	      root_window:	xt::Xid,
-	      event_window:	xt::Xid,			# Window handling the mouse-button release event.
-	      child_window:	Null_Or( xt::Xid ),		# Child of event window containing the release point. NULL if none such exists.
+	      root_window_id:	xt::Xid,
+	      event_window_id:	xt::Xid,			# Window handling the mouse-button release event.
+	      child_window_id:	Null_Or( xt::Xid ),		# Child of event window containing the release point. NULL if none such exists.
 	      root_x:		Int,				# Mouse position on root window at time of button release.
 	      root_y:		Int,
 	      event_x:		Int,				# Mouse position on recipient window at time of button click.
