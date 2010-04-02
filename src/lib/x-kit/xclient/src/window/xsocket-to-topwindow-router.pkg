@@ -98,16 +98,17 @@ herein
 	    #
 	    Xevent_Action
 	      #	
-	      = TO_WINDOW       xt::Window_Id
-	      | DESTROY_WINDOW  xt::Window_Id
+	      = TO_WINDOW                xt::Window_Id
+	      | NOTE_WINDOW_DESTRUCTION  xt::Window_Id
 	      | TO_KEYMAP_IMP
 	      | TO_WINDOW_PROPERTY_IMP
 	      | TO_SELECTION_IMP
 	      | TO_ALL
 	      | TO_TRASH
-	      | CREATE_WINDOW  { parent_window_id:   xt::Window_Id,
-				 created_window_id:  xt::Window_Id
-			       }
+	      | NOTE_NEW_WINDOW
+                  { parent_window_id:   xt::Window_Id,
+		    created_window_id:  xt::Window_Id
+		  }
 	      ;
 
 		# ddeboer test, fall 2004. 
@@ -150,14 +151,14 @@ herein
 
 		pick_xevent_action (et::x::CREATE_NOTIFY { parent_window_id, created_window_id, ... } )
 		    =>
-		    CREATE_WINDOW { parent_window_id, created_window_id };
+		    NOTE_NEW_WINDOW { parent_window_id, created_window_id };
 
 		pick_xevent_action (et::x::DESTROY_NOTIFY { event_window_id, destroyed_window_id, ... } )
 		    =>
 		    event_window_id == destroyed_window_id
 			##
-                        ??  DESTROY_WINDOW  event_window_id	# Remove window from registry. 
-			::  TO_WINDOW       event_window_id;	# Report to parent that child is dead. 
+                        ??  NOTE_WINDOW_DESTRUCTION  event_window_id	# Remove window from registry. 
+			::  TO_WINDOW                event_window_id;	# Report to parent that child is dead. 
 
 		pick_xevent_action (et::x::UNMAP_NOTIFY { event_window_id, unmapped_window_id, ... } )
 		    =>
@@ -210,40 +211,43 @@ herein
 
 	    xid_to_string = xtype_to_string::xid_to_string;
 
-	    fun dst2s (TO_WINDOW w)
+	    fun xevent_action_to_string (TO_WINDOW w)
 		    =>
-		    ("ToWindow(" + xid_to_string w + ")");
+		    ("TO_WINDOW(" + xid_to_string w + ")");
 
-		dst2s (CREATE_WINDOW { parent_window_id, created_window_id } )
+		xevent_action_to_string (NOTE_NEW_WINDOW { parent_window_id, created_window_id } )
 		    =>
 		    string::cat
 		      [
-			"CreateWin { parent=",  xid_to_string  parent_window_id,
+			"NOTE_NEW_WINDOW { parent=",  xid_to_string  parent_window_id,
 			      ", new_window=",  xid_to_string created_window_id,
 			"}"
 		      ];
 
-		dst2s (DESTROY_WINDOW w)     => ("DestroyWin(" + xid_to_string w + ")");
-		dst2s TO_KEYMAP_IMP          => "ToKeymapServer";
-		dst2s TO_WINDOW_PROPERTY_IMP => "ToPropertyServer";
-		dst2s TO_SELECTION_IMP       => "ToSelectionServer";
-		dst2s TO_ALL                 => "ToAll";
-		dst2s TO_TRASH               => "ToTrash";
+		xevent_action_to_string (NOTE_WINDOW_DESTRUCTION w) => ("NOTE_WINDOW_DESTRUCTION(" + xid_to_string w + ")");
+		xevent_action_to_string TO_KEYMAP_IMP               => "TO_KEYMAP_IMP";
+		xevent_action_to_string TO_WINDOW_PROPERTY_IMP      => "TO_WINDOW_PROPERTY_IMP";
+		xevent_action_to_string TO_SELECTION_IMP            => "TO_SELECTION_IMP";
+		xevent_action_to_string TO_ALL                      => "TO_ALL";
+		xevent_action_to_string TO_TRASH                    => "TO_TRASH";
 	    end;
 
 	herein
 
 	    pick_xevent_action
 		=
-		fn event
+		fn xevent
 		    =
-		    {   dst = pick_xevent_action event;
+		    {   xevent_action =  pick_xevent_action  xevent;
 
 			xtracing::print_if xtracing::winreg_tracing .{
-			    cat ["xsocket_to_topwindow_router: ", xevent_to_string::xevent_name event, " => ", dst2s dst];
+			    #
+			    cat [ "xsocket_to_topwindow_router: ", xevent_to_string::xevent_name  xevent,
+                                  " => ", xevent_action_to_string xevent_action
+                                ];
 			};
 
-			dst;
+			xevent_action;
 		    };
 	end;
     #  -DEBUG 
@@ -413,14 +417,14 @@ herein
 				=>
 				push_event_to_window (e, window_id);
 
-			    CREATE_WINDOW { parent_window_id, created_window_id }
+			    NOTE_NEW_WINDOW { parent_window_id, created_window_id }
 				=>
 				{   note_new_subwindow (parent_window_id, created_window_id);
 				    #
 				    push_event_to_window (e, parent_window_id);
 				};
 
-			    DESTROY_WINDOW window_id
+			    NOTE_WINDOW_DESTRUCTION  window_id
 				=>
 				case (drop_info  window_id)
 				    #
