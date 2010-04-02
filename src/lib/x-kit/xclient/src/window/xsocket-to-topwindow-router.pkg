@@ -86,7 +86,7 @@ herein
 		WINDOW_INFO
 		  { window_id:   xt::Window_Id,
 		    route:       Envelope_Route,
-		    parent:      Null_Or( Window_Info ),
+		    parent_info:  Null_Or( Window_Info ),
 
 		    children:    Ref(  List(  Window_Info ) ),
 		    lock:        Ref( Bool ),
@@ -322,9 +322,9 @@ herein
 								    # hash_xid	is from   src/lib/x-kit/xclient/src/stuff/hash-xid.pkg
 		    id_map =  hash_xid::make_map ();
 		    #
-		    find   =  hash_xid::get    id_map;
-		    insert =  hash_xid::set    id_map;
-		    remove =  hash_xid::remove id_map;
+		    get_info  =  hash_xid::get    id_map;
+		    set_info  =  hash_xid::set    id_map;
+		    drop_info =  hash_xid::remove id_map;
 
 		    fun do_plea (plea::NOTE_WINDOW  window_id)
 			    =>
@@ -332,62 +332,63 @@ herein
 
 				event_slot = make_mailslot ();
 
-				insert
+				set_info
 				  ( window_id,
 				    WINDOW_INFO
 				      {
 					window_id,
-					route  => ENVELOPE_ROUTE_END  window_id,
-					parent => NULL,
-					children => REF [],
-					lock => REF FALSE,
-					event_slot => event_slot
+					event_slot,
+					route       =>  ENVELOPE_ROUTE_END  window_id,
+					parent_info =>  NULL,
+					children    =>  REF [],
+					lock        =>  REF FALSE
 				      }
 				  );
 
 				give  (register_reply_slot,  take'  event_slot);
 			    };
 
-		       do_plea (plea::LOCK_WINDOW   window_id) =>   lock_tree (find window_id);
-		       do_plea (plea::UNLOCK_WINDOW window_id) => unlock_tree (find window_id);
+		       do_plea (plea::LOCK_WINDOW   window_id) =>   lock_tree (get_info  window_id);
+		       do_plea (plea::UNLOCK_WINDOW window_id) => unlock_tree (get_info  window_id);
 
 		       do_plea (plea::WINDOW_IS_LOCKED window_id)
 			   =>
-			   {   my WINDOW_INFO { lock, ... }
-				   =
-				   find  window_id;
+			   {   (get_info  window_id)
+				   ->
+				    WINDOW_INFO { lock, ... };
 
 			       give  (lock_reply_slot,  *lock);
 			   };
 		    end;
 
-		    fun note_new_subwindow (parent, child_id)
+		    fun note_new_subwindow (parent_window_id, child_window_id)
 			=
 			{
-			    (find parent)
+			    (get_info  parent_window_id)
 				-> 
-				parent_desc as WINDOW_INFO { route, event_slot, children, lock, ... };
+				parent_info as WINDOW_INFO { route, event_slot, children, lock, ... };
 
-			    fun extend_route (ENVELOPE_ROUTE_END w)      =>  ENVELOPE_ROUTE (w, ENVELOPE_ROUTE_END child_id);
+			    fun extend_route (ENVELOPE_ROUTE_END w)      =>  ENVELOPE_ROUTE (w, ENVELOPE_ROUTE_END child_window_id);
 				extend_route (ENVELOPE_ROUTE (w, route)) =>  ENVELOPE_ROUTE (w, extend_route route);
 			    end;
 
 			    child_route = extend_route route;
 
-			    child
+			    child_info
 				=
 				WINDOW_INFO
 				  {
-				    window_id => child_id,
-				    route => child_route,
-				    parent => THE parent_desc,
-				    children => REF [],
-				    lock => REF *lock,
+				    window_id   =>  child_window_id,
+				    route       =>  child_route,
+				    parent_info =>  THE parent_info,
+				    children    =>  REF [],
+				    lock        =>  REF *lock,
 				    event_slot
 				  };
 
-			    children := child ! *children;
-			    insert (child_id, child);
+			    children := child_info ! *children;
+
+			    set_info (child_window_id, child_info);
 			};
 
 		    # ddeboer, test, fall 2004 
@@ -400,7 +401,7 @@ herein
 
 		    fun push_event_to_window (e, window_id)
 			=
-			(push_event (e, find window_id))
+			(push_event (e, get_info window_id))
 			except
 			    hash_xid::XID_NOT_FOUND = ();
 
@@ -421,9 +422,9 @@ herein
 
 			    DESTROY_WINDOW window_id
 				=>
-				case (remove window_id)
+				case (drop_info  window_id)
 				    #
-				    (window as WINDOW_INFO { parent=>THE (WINDOW_INFO { children, ... } ), ... } )
+				    (window as WINDOW_INFO { parent_info => THE (WINDOW_INFO { children, ... } ), ... } )
 					=>
 					{   fun remove_child ((window_info as WINDOW_INFO { window_id => window_id', ... } ) ! rest)
 						    =>
