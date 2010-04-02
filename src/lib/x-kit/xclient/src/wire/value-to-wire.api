@@ -174,8 +174,9 @@ herein
                               }
 			      -> v8::Vector;
 
-	encode_create_window: { window_id:  xt::Xid,
-                                parent_id:  xt::Xid, 
+	encode_create_window: { window_id:		xt::Xid,
+                                parent_window_id:	xt::Xid, 
+				#
 				visual_id:  xt::Visual_Id_Choice,
 				depth:      Int,
                                 site:       g::Window_Site, 

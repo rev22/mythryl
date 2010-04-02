@@ -56,7 +56,7 @@ herein
 
 		screen =  list::nth  (screens, default_screen);
 
-		screen -> dy::XSCREEN { root_window_id => parent_id, root_visual, black_rgb8, white_rgb8, ... };
+		screen -> dy::XSCREEN { root_window_id => parent_window_id, root_visual, black_rgb8, white_rgb8, ... };
 
 		green_pixel =  rgb8::green;
 
@@ -96,7 +96,7 @@ herein
 			    wio::create_window   xsocket
 			      {
 				window_id,
-				parent_id,
+				parent_window_id,
 				visual_id => xt::SAME_VISUAL_AS_PARENT,
 				#
 				depth => 24,

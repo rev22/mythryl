@@ -1,3 +1,4 @@
+2010-04-01-23.45.38: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: Moved Plea_Mail into a <<plea>> package, dropped PLEA_ prefixes.
 2010-04-01-16.15.21: src/lib/x-kit/xclient/src/wire/event-types.pkg: For clarity, much renaming like event -> event_window_id.
 2010-04-01-13.37.43: src/lib/x-kit/xclient/src/wire/event-types.pkg: For clarity, renamed root, event, child -> root_window_id, event_window_id, child_window_id various places.
 2010-04-01-13.37.43: src/lib/x-kit/xclient/src/wire/event-types.pkg: Renamed Xevent_Name subpackage to n;  Moved Xevent into its own x subpackage to eliminate the _XEVENT constructor suffixes.

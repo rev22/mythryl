@@ -26,15 +26,15 @@ herein
 	    :
 	    xok::Xsocket
 	    ->
-	     { window_id:   xt::Window_Id,
-	       parent_id:   xt::Window_Id,
+	     { window_id:		xt::Window_Id,
+	       parent_window_id:	xt::Window_Id,
 	       #
-	       io_class:    xt::Io_Class,
-	       depth:       Int,
-	       visual_id:   xt::Visual_Id_Choice,
+	       io_class:		xt::Io_Class,
+	       depth:			Int,
+	       visual_id:		xt::Visual_Id_Choice,
 	       #
-	       site:        g::Window_Site,
-	       attributes:  List( xt::wa::Window_Attribute )
+	       site:			g::Window_Site,
+	       attributes:		List( xt::wa::Window_Attribute )
 	     }
 	    ->
 	    Void;

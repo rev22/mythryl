@@ -211,6 +211,7 @@ herein
 		my (kidplug, window, delete_slot)
 		    =
 		    wr::make_topwindow_to_widget_router
+			#
 			(screen, root_imps, window_id);
 
 		fun create_fn { site, border_color, background_color }
@@ -221,7 +222,7 @@ herein
 			    depth,
 			    #
 			    window_id,
-			    parent_id   => root_window_id,
+			    parent_window_id   => root_window_id,
 			    #
 			    io_class    => xt::INPUT_OUTPUT,
 			    visual_id   => xt::SAME_VISUAL_AS_PARENT,
@@ -241,7 +242,7 @@ herein
 		    };
 	    end;
 
-	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_id, screen, draw_fn, screen_depth, ... } )
+	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_window_id, screen, draw_fn, screen_depth, ... } )
 	    =
 	    create_fn
 	    where 
@@ -285,7 +286,7 @@ herein
 			  wio::create_window   xsocket
                             {
 			      window_id,
-			      parent_id,
+			      parent_window_id,
 			      #	
 			      io_class   => xt::INPUT_OUTPUT,
 			      depth,
@@ -339,7 +340,7 @@ herein
 		wio::create_window  xsocket
                   {
 		    window_id,
-		    parent_id  => root_window_id,
+		    parent_window_id  => root_window_id,
 		    #
 		    io_class   => xt::INPUT_OUTPUT,
 		    depth,
@@ -382,7 +383,7 @@ herein
 		wio::create_window  xsocket
                   {
 		    window_id,
-		    parent_id  => root_window_id,
+		    parent_window_id  => root_window_id,
 		    #
 		    io_class   => xt::INPUT_OUTPUT,
 		    depth,
@@ -408,7 +409,7 @@ herein
 	    window
 	    where  
 
-		window ->   dt::WINDOW { window_id=>parent_id, screen, screen_depth, draw_fn, ... };
+		window ->   dt::WINDOW { window_id=>parent_window_id, screen, screen_depth, draw_fn, ... };
 		screen ->   sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }, ... };
 
 		window_id = next_xid();
@@ -435,7 +436,7 @@ herein
 		wio::create_window  xsocket
                   {
 		    window_id,
-		    parent_id,
+		    parent_window_id,
 		    #	
 		    io_class   => xt::INPUT_ONLY,
 		    depth      => 0,
