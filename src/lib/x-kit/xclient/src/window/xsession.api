@@ -355,6 +355,11 @@ herein
         # for a given depth:
 	#
 	servers_of_screen_depth:  (Screen, Int) ->  Screen_Depth_Imps;
+
+	# Map a point in the window's coordinate system
+	# to the screen's coordinate system
+	#
+	window_point_to_screen_point:  Window -> ge::Point -> ge::Point;
     };									# api Xsession
 end;									# stipulate.
 

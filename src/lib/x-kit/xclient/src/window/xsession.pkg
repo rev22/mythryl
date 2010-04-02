@@ -154,6 +154,7 @@ stipulate
     package ki  =  keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package s2w =  sendevent_to_wire;			# sendeven_to_wire		is from   src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
+    package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     package xt  =  xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
@@ -476,6 +477,27 @@ herein
 		xok::request  xsocket  command;
 	    };
 
+	# Map a point in the window's coordinate
+	# system to the screen's coordinate system:
+	#
+	fun window_point_to_screen_point (WINDOW { window_id, screen, ... } ) pt
+	    =
+	    {   screen ->  SCREEN { xsession, screen=> SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... };
+
+		my { to_point, ... }
+		    =
+		    w2v::decode_translate_coordinates_reply
+		      (
+			do_mailop
+			  (request_reply
+			      xsession
+			      (v2w::encode_translate_coordinates { from_window=>window_id, to_window=>root_window_id, from_point=>pt } )
+			  )
+		      );
+
+		to_point;
+	    };
+
 	fun send_mousebutton_press_xevent
 	    (
              XSESSION
@@ -484,12 +506,21 @@ herein
 		...
 	      }
 	    )
-	    { window =>  WINDOW { window_id, ... },			# Window handling the mouse-button click event.
+	    { window =>  window as WINDOW { window_id, ... },		# Window handling the mouse-button click event.
 	      button,							# Mouse button just "clicked" down.
-	      point  =>  ge::POINT { row, col }				# Click location in local window coordinates.
+	      point  =>  point as ge::POINT { row, col }		# Click location in local window coordinates.
 	    }
 	    =
-	    {   # For the semantics of these three fields see
+	    {   # We need the clickpoint in both
+                # local and screen coords:
+		#
+		(window_point_to_screen_point  window  point)
+		    ->
+		    ge::POINT { row => screen_row,
+                                col => screen_col
+                              };
+
+		# For the semantics of these three fields see
 		#     p27 http://mythryl.org/pub/exene/X-protocol-R6.pdf
 		#
 	        send_event_to	=  xt::SEND_EVENT_TO_WINDOW  window_id;
@@ -500,8 +531,8 @@ herein
 		root_window_id	=  root_window_id;
 		event_window_id	=  window_id;				# Window handling the mouse-button release event.
 		child_window_id	=  NULL;				# We'll assume specified window is a leaf.
-		root_x		=  row;	# XXX BUGGO FIXME!		# Mouse position on root window at time of button release.
-		root_y		=  col;	# XXX BUGGO FIXME!
+		root_x		=  screen_row;				# Mouse position on root window at time of button release.
+		root_y		=  screen_col;
 		event_x		=  row;					# Mouse position on recipient window at time of button release.
 		event_y		=  col;
 		buttons		=  xt::MOUSEBUTTON_STATE 0u0;
@@ -525,12 +556,21 @@ herein
 		...
 	      }
 	    )
-	    { window =>  WINDOW { window_id, ... },			# Window handling the mouse-button click event.
+	    { window =>  window as WINDOW { window_id, ... },		# Window handling the mouse-button click event.
 	      button,							# Mouse button just "clicked" down.
-	      point  =>  ge::POINT { row, col }				# Click location in local window coordinates.
+	      point  =>  point as ge::POINT { row, col }		# Click location in local window coordinates.
 	    }
 	    =
-	    {   # For the semantics of these three fields see
+	    {   # We need the clickpoint in both
+                # local and screen coords:
+		#
+		(window_point_to_screen_point  window  point)
+		    ->
+		    ge::POINT { row => screen_row,
+                                col => screen_col
+                              };
+
+		# For the semantics of these three fields see
 		#     p27 http://mythryl.org/pub/exene/X-protocol-R6.pdf
 		#
 	        send_event_to	=  xt::SEND_EVENT_TO_WINDOW  window_id;
@@ -541,8 +581,8 @@ herein
 		root_window_id	=  root_window_id;
 		event_window_id	=  window_id;				# Window handling the mouse-button release event.
 		child_window_id	=  NULL;				# We'll assume specified window is a leaf.
-		root_x		=  row;	# XXX BUGGO FIXME!		# Mouse position on root window at time of button release.
-		root_y		=  col;	# XXX BUGGO FIXME!
+		root_x		=  screen_row;				# Mouse position on root window at time of button release.
+		root_y		=  screen_col;
 		event_x		=  row;					# Mouse position on recipient window at time of button release.
 		event_y		=  col;
 

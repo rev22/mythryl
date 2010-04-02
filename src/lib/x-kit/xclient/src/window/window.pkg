@@ -655,23 +655,9 @@ herein
 	# Map a point in the window's coordinate
 	# system to the screen's coordinate system
 	#
-	fun window_point_to_screen_point (dt::WINDOW { window_id, screen, ... } ) pt
+	window_point_to_screen_point
 	    =
-	    {   screen ->  sn::SCREEN { xsession, screen=> sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... };
-
-		my { to_point, ... }
-		    =
-		    w2v::decode_translate_coordinates_reply
-		      (
-			do_mailop
-			  (sn::request_reply
-			      xsession
-			      (v2w::encode_translate_coordinates { from_window=>window_id, to_window=>root_window_id, from_point=>pt } )
-			  )
-		      );
-
-		to_point;
-	    };
+	    sn::window_point_to_screen_point;
 
 
 	# Set the window cursor:
