@@ -25,8 +25,8 @@
 #     src/lib/x-kit/widget/text/scrollable-string-editor.pkg
 
 stipulate
-    package w  = widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xc = xcore;				# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;			# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
     api Scrollable_String_Editor {
@@ -35,7 +35,7 @@ herein
 
 	make_scrollable_string_editor
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    { foreground:      Null_Or( xc::Rgb ),
 	      background:      Null_Or( xc::Rgb ),
@@ -49,7 +49,7 @@ herein
 	 set_string:  Scrollable_String_Editor -> String -> Void;
 	 get_string:  Scrollable_String_Editor -> String;
 
-	 as_widget:   Scrollable_String_Editor -> w::Widget;
+	 as_widget:   Scrollable_String_Editor -> wg::Widget;
 
     };
 

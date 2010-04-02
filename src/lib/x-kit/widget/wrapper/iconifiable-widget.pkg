@@ -21,7 +21,7 @@ stipulate
     #
     package d3 =  three_d;					# three_d		is from   src/lib/x-kit/widget/lib/three-d.pkg
     package mr =  xevent_mail_router;				# xevent_mail_router	is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
-    package w  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;				# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     #
     package xc =  xcore;					# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
@@ -36,7 +36,7 @@ herein
 
 	Plea_Mail
 	  #	
-	  = GET_SIZE_CONSTRAINT    Oneshot_Maildrop( w::Widget_Size_Preference )
+	  = GET_SIZE_CONSTRAINT    Oneshot_Maildrop( wg::Widget_Size_Preference )
 	  #	
 	  | DO_REALIZE  { kidplug:  xi::Kidplug,
 			  window:   xc::Window,
@@ -47,7 +47,7 @@ herein
 	Iconifiable_Widget
 	    =
 	    ICONIFIABLE_WIDGET
-	      { widget:     w::Widget,
+	      { widget:     wg::Widget,
 		plea_slot:  Mailslot( Plea_Mail )
 	      };
 
@@ -101,8 +101,8 @@ herein
 	    =
 	    (80 * (fonta+fontd)) / 100;
 
-	Result = { child:     w::Widget,
-		   shades:    w::Shades,
+	Result = { child:     wg::Widget,
+		   shades:    wg::Shades,
 
 		   fontinfo: (xc::Font, Int, Int),
 		   label:    (String, Int, Int),
@@ -118,7 +118,7 @@ herein
 
 	fun make_result (root, view, args) child
 	    =
-	    {   attributes = w::find_attribute (w::attributes (view, attributes, args));
+	    {   attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		my fontinfo as (f, _, _)
 		    =
@@ -146,7 +146,7 @@ herein
 		    fg => foreground_color,
 		    bg => background_color,
 		    pady,
-		    shades => w::shades root color,
+		    shades => wg::shades root color,
 		    light_size,
 		    border_width => int::max (border_width, min_border_width),
 		    on_color => select_color
@@ -213,7 +213,7 @@ herein
 				high => font_high
 			      };
 
-			arg = { box, width=>2, relief=>w::GROOVE };
+			arg = { box, width=>2, relief=>wg::GROOVE };
 
 			d3::draw_box dr arg v.shades;
 
@@ -250,7 +250,7 @@ herein
 
 			draw_light
 			  ( is_open,
-			    down ?? w::SUNKEN :: w::RAISED
+			    down ?? wg::SUNKEN :: wg::RAISED
 			  );
 		    };
 
@@ -293,7 +293,7 @@ herein
 		    };
 	    end;
 
-	fun adjust (w::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps }, low)
+	fun adjust (wg::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps }, low)
 	    =
 	    {   fun adj (l, mn)
 		    =
@@ -312,16 +312,16 @@ herein
 			NULL => NULL; 
 		    esac;
 
-		w::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps };
+		wg::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps };
 	    };
 
 
 	fun bounds (result:  Result, is_open)
 	    =
 	    {
-		fun inc_base (w::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps }, extra)
+		fun inc_base (wg::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps }, extra)
 		    =
-		    w::INT_PREFERENCE { start_at=>start_at+extra, step_by, min_steps, ideal_steps, max_steps };
+		    wg::INT_PREFERENCE { start_at=>start_at+extra, step_by, min_steps, ideal_steps, max_steps };
 
 		my  xg::SIZE { wide, high }
 		    =
@@ -329,7 +329,7 @@ herein
 
 		my { col_preference, row_preference }
 		    =
-		    w::size_preference_of  result.child;
+		    wg::size_preference_of  result.child;
 
 		xextra =  2*result.border_width;
 
@@ -337,7 +337,7 @@ herein
 
 		col_preference
 		    =
-		    if (w::minimum_length col_preference >= topwid)         col_preference;
+		    if (wg::minimum_length col_preference >= topwid)         col_preference;
 		    else                                            adjust (col_preference, topwid);
 		    fi;
 
@@ -346,7 +346,7 @@ herein
 		row_preference
 		    =
 		    if is_open  inc_base (row_preference, yextra);
-		    else        w::tight_preference yextra;
+		    else        wg::tight_preference yextra;
 		    fi;
 
 		{ col_preference =>  inc_base (col_preference, xextra),
@@ -390,7 +390,7 @@ herein
 
 		crect = child_box size;
 
-		cwin =  w::make_child_window  (window,  crect,  w::args_of result.child);
+		cwin =  wg::make_child_window  (window,  crect,  wg::args_of result.child);
 
 		my  { kidplug => ckidplug,
                       momplug => cmomplug
@@ -488,7 +488,7 @@ herein
 
 		    mr::route_pair (kidplug, momplug, cmomplug);
 
-		    w::realize_fn
+		    wg::realize_fn
 
 			result.child
 
@@ -529,7 +529,7 @@ herein
 			get reply_1shot;
 		    };
 
-		w = w::make_widget {
+		w = wg::make_widget {
 			  root_window,
 			  size_preference_thunk_of,
 			  args    =>  fn ()  =  { background => THE result.bg },

@@ -41,7 +41,7 @@ stipulate
     package xc = xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
     package xd = xdraw;				# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
 
-    package w  = widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg = widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa = widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
 
     package sa = scrollbar_appearance;		# scrollbar_appearance	is from   src/lib/x-kit/widget/leaf/scrollbar-appearance.api
@@ -689,8 +689,8 @@ herein
 	    =
 	    {   attributes
 		    =
-		    w::find_attribute
-			(w::attributes (view, attributes, args));
+		    wg::find_attribute
+			(wg::attributes (view, attributes, args));
 
 		size = wa::get_int   (attributes wa::width);
 		bg   = wa::get_color (attributes wa::background);

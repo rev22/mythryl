@@ -17,7 +17,7 @@ stipulate
     include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package d3 =  three_d;						# three_d			is from   src/lib/x-kit/widget/lib/three-d.pkg
-    package w  =  widget;						# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;					# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wt =  widget_types;						# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
     #
@@ -39,7 +39,7 @@ herein
     #      | SET_BC     xc::Color
     #      | SET_FC     xc::Color
     #      #
-    #      | GET_SIZE_CONSTRAINT  Oneshot_Maildrop( w::Bounds )
+    #      | GET_SIZE_CONSTRAINT  Oneshot_Maildrop( wg::Bounds )
     #      #
     #      | DO_REALIZE  {
     #          kidplug:  xinputt::Kidplug,
@@ -137,13 +137,13 @@ herein
 	    BUTTON_APPEARANCE
 	      { light:  Null_Or( Light ), 
 		label:  Label_Data, 
-		relief:  w::Relief,
+		relief:  wg::Relief,
 		#
 		fg:      xc::Rgb, 
 		bg:      xc::Rgb, 
 		readyc:  xc::Rgb, 
 		#
-		shades:  w::Shades,
+		shades:  wg::Shades,
 		stipple:  xc::Ro_Pixmap,
 		border_width:  Int,
 		#
@@ -171,7 +171,7 @@ herein
 	      (wa::padx,           wa::INT,        wa::INT_VAL 1),
 	      (wa::pady,           wa::INT,        wa::INT_VAL 1),
 	      (wa::font,           wa::FONT,       wa::STRING_VAL default_font),
-	      (wa::relief,         wa::RELIEF,     wa::RELIEF_VAL w::RAISED),
+	      (wa::relief,         wa::RELIEF,     wa::RELIEF_VAL wg::RAISED),
 	      (wa::foreground,     wa::COLOR,      wa::STRING_VAL "black"),
 	      (wa::color,          wa::COLOR,      wa::NO_VAL),
 	      (wa::ready_color,    wa::COLOR,      wa::NO_VAL),
@@ -183,7 +183,7 @@ herein
 	    =
 	    {   
 
-		attributes = w::find_attribute (w::attributes (view, attributes, args));
+		attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		ltype  = wa::get_string (attributes wa::type);
 		align  = wa::get_halign (attributes wa::halign);
@@ -226,10 +226,10 @@ herein
 		  light,
 		  label,
 		  relief,
-		  stipple => w::ro_pixmap root "gray",
+		  stipple => wg::ro_pixmap root "gray",
 		  fg,
 		  bg,
-		  shades => w::shades root bg,
+		  shades => wg::shades root bg,
 		  readyc,
 		  border_width => int::max (0, bw),
 		  font,
@@ -265,8 +265,8 @@ herein
 		       else             (2*border_width + 2*pady + high);
 		       fi;
 
-		col_preference =  w::loose_preference  wide;
-		row_preference =  w::loose_preference  high;
+		col_preference =  wg::loose_preference  wide;
+		row_preference =  wg::loose_preference  high;
 
 		{ col_preference,
 		  row_preference
@@ -315,7 +315,7 @@ herein
 
 			if is_on   xd::fill_polygon dr pen { verts=>ps, shape=>xd::CONVEX_SHAPE };   fi;
 
-			d3::draw_poly dr { pts=>ps, width=>bw, relief=>w::RAISED } shades;
+			d3::draw_poly dr { pts=>ps, width=>bw, relief=>wg::RAISED } shades;
 		    };
 
 
@@ -325,7 +325,7 @@ herein
 
 			if is_on   xd::fill_box dr pen r;   fi;
 
-			d3::draw_box dr { box=>r, width=>bw, relief=>w::SUNKEN } shades;
+			d3::draw_box dr { box=>r, width=>bw, relief=>wg::SUNKEN } shades;
 		    };
 
 		draw_label
@@ -386,7 +386,7 @@ herein
 
 		fun setf (wt::INACTIVE s, _, _)
 			=>
-			{   rel =   s  ??  w::SUNKEN
+			{   rel =   s  ??  wg::SUNKEN
 				       ::  v.relief;
 
 			    xd::fill_box dr back_pen box;
@@ -401,7 +401,7 @@ herein
 			{   backpen = if r  ready_pen; else back_pen;fi;
 
 			    rel =    (s == d)  ??   v.relief
-					       ::   w::SUNKEN;
+					       ::   wg::SUNKEN;
 
 			    xd::fill_box dr backpen box;
 
@@ -427,7 +427,7 @@ herein
 			=>
 			{   backpen = if r  ready_pen; else back_pen;fi;
 
-			    rel =    d  ??  w::SUNKEN
+			    rel =    d  ??  wg::SUNKEN
 					::  v.relief;
 
 			    xd::fill_box dr backpen box;

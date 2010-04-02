@@ -11,7 +11,7 @@ stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package v   =  sim::v;
-    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     #
     package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
     package xd  =  xdraw;				# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
@@ -22,7 +22,7 @@ stipulate
     package low =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
     package pb  =  pushbuttons;				# pushbuttons			is from   src/lib/x-kit/widget/leaf/pushbuttons.pkg
     package rw  =  root_window;				# root_window			is from   src/lib/x-kit/widget/basic/root-window.pkg
-    package s   =  widget_style;			# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
+    package ws  =  widget_style;			# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
     package sld =  slider;				# slider			is from   src/lib/x-kit/widget/leaf/slider.pkg
     package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
     package top =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
@@ -66,8 +66,8 @@ herein
 			();
 		    };
 
-		screen   = w::screen_of    root_window;
-		xsession = w::xsession_of  root_window;
+		screen   = wg::screen_of    root_window;
+		xsession = wg::xsession_of  root_window;
 
 		black = xc::black;
 		white = xc::white;
@@ -437,12 +437,12 @@ herein
 			*/
 		    end;			# fun realize
 
-		size = w::make_tight_size_preference (500, 500);
+		size = wg::make_tight_size_preference (500, 500);
 
 		disp_w
 		    =
 		    sz::make_loose_size_preference_wrapper
-			(w::make_widget
+			(wg::make_widget
 			   { size_preference_thunk_of =>   fn () = size,
 			     args      =>   fn () = { background => THE black },
 			     root_window,
@@ -467,11 +467,11 @@ herein
 	fun simdisplay root_window
 	    =
 	    {
-		style = w::style_from_strings (root_window, []);
+		style = wg::style_from_strings (root_window, []);
 
-		name = s::make_view
-			 { name    =>    s::style_name [],
-			   aliases =>  [ s::style_name [] ]
+		name = ws::make_view
+			 { name    =>    ws::style_name [],
+			   aliases =>  [ ws::style_name [] ]
 			 };
 
 		view = (name, style);

@@ -20,7 +20,7 @@
 
 stipulate
     package xg =  xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package w  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wt =  widget_types;					# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
 herein
 
@@ -31,8 +31,8 @@ herein
 
 	Box_Item
 	  #
-	  = GEOMETRY      w::Widget_Size_Preference
-	  | WIDGET        w::Widget
+	  = GEOMETRY      wg::Widget_Size_Preference
+	  | WIDGET        wg::Widget
 	  #
 	  | HB           (wt::Vertical_Alignment, List( Box_Item ))
 	  | NAMED_VALUE  (wt::Vertical_Alignment, List( Box_Item ))
@@ -40,15 +40,15 @@ herein
 
 	Bnds_Tree
 	  #
-	  = BT_G    w::Widget_Size_Preference
-	  | BT_W   (w::Widget_Size_Preference, w::Widget)
-	  | BT_HB  (w::Widget_Size_Preference, wt::Vertical_Alignment, List( Bnds_Tree ))
-	  | BT_VB  (w::Widget_Size_Preference, wt::Vertical_Alignment, List( Bnds_Tree ))
+	  = BT_G    wg::Widget_Size_Preference
+	  | BT_W   (wg::Widget_Size_Preference, wg::Widget)
+	  | BT_HB  (wg::Widget_Size_Preference, wt::Vertical_Alignment, List( Bnds_Tree ))
+	  | BT_VB  (wg::Widget_Size_Preference, wt::Vertical_Alignment, List( Bnds_Tree ))
 	  ;
 
 	max_x = 65535;       #  Maximum dimension of an X window. 
 
-	fun flip_bounds ( { col_preference, row_preference }:  w::Widget_Size_Preference)
+	fun flip_bounds ( { col_preference, row_preference }:  wg::Widget_Size_Preference)
 	    =
 	    { col_preference => row_preference,
 	      row_preference => col_preference
@@ -66,17 +66,17 @@ herein
 	    flip_bt (BT_VB (b, a, l)) => BT_VB (flip_bounds b, a, l);
 	end;
 
-	fun get_bounds (w::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps=>NULL } )
+	fun get_bounds (wg::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps=>NULL } )
 		=>
 		(start_at+step_by*ideal_steps, start_at+step_by*min_steps, NULL, step_by);
 
-	   get_bounds (w::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps=>THE max } )
+	   get_bounds (wg::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps=>THE max } )
 	       =>
 	       (start_at+step_by*ideal_steps, start_at+step_by*min_steps, THE (start_at+step_by*max), step_by);
 	end;
 
-	fun x_bounds ( { col_preference, ... }: w::Widget_Size_Preference) =  get_bounds col_preference;
-	fun y_bounds ( { row_preference, ... }: w::Widget_Size_Preference) =  get_bounds row_preference;
+	fun x_bounds ( { col_preference, ... }: wg::Widget_Size_Preference) =  get_bounds col_preference;
+	fun y_bounds ( { row_preference, ... }: wg::Widget_Size_Preference) =  get_bounds row_preference;
 
 	fun comp_size' cl
 	    =
@@ -94,14 +94,14 @@ herein
 		    tight (mn, THE mx) => (mn == mx);
 		end;
 
-		fun maximum_length (w::INT_PREFERENCE { start_at, step_by, max_steps=>NULL,    ... } ) =>  NULL;
-		    maximum_length (w::INT_PREFERENCE { start_at, step_by, max_steps=>THE max, ... } ) =>  THE (start_at + step_by*max);
+		fun maximum_length (wg::INT_PREFERENCE { start_at, step_by, max_steps=>NULL,    ... } ) =>  NULL;
+		    maximum_length (wg::INT_PREFERENCE { start_at, step_by, max_steps=>THE max, ... } ) =>  THE (start_at + step_by*max);
 		end;
 
 		fun acc_bounds ( { col_preference, row_preference }, (nx, ny, mnx, mny, mxx, mxy, ix, iy))
 		    =
-		    {   col_preference ->  w::INT_PREFERENCE { start_at=>basex, step_by=>incx, min_steps=>minx, ideal_steps=>natx, max_steps=>maxx };
-			row_preference ->  w::INT_PREFERENCE { start_at=>basey, step_by=>incy, min_steps=>miny, ideal_steps=>naty, max_steps=>maxy };
+		    {   col_preference ->  wg::INT_PREFERENCE { start_at=>basex, step_by=>incx, min_steps=>minx, ideal_steps=>natx, max_steps=>maxx };
+			row_preference ->  wg::INT_PREFERENCE { start_at=>basey, step_by=>incy, min_steps=>miny, ideal_steps=>naty, max_steps=>maxy };
 
 			( nx + basex + incx*natx,
 			  max (ny, basey + incy*naty),
@@ -147,7 +147,7 @@ herein
 
 		{ col_preference
 		    =>
-		    w::INT_PREFERENCE
+		    wg::INT_PREFERENCE
 		      { start_at=>minx,
 			step_by=>incx,
 			min_steps=>0,
@@ -157,7 +157,7 @@ herein
 
 		  row_preference
 		    =>
-		    w::INT_PREFERENCE
+		    wg::INT_PREFERENCE
 		      { start_at=>miny,
 			step_by=>incy,
 			min_steps=>0,
@@ -168,7 +168,7 @@ herein
 	    };
 
 	fun comp_size (GEOMETRY bnds) =>  bnds;
-	    comp_size (WIDGET widget) =>  w::size_preference_of  widget;
+	    comp_size (WIDGET widget) =>  wg::size_preference_of  widget;
 	    comp_size (HB(_, boxes))  =>  comp_size' (map comp_size boxes);
 
 	    comp_size (NAMED_VALUE(_, boxes))
@@ -184,7 +184,7 @@ herein
 	    except
                 DIVIDE_BY_ZERO
                     =
-                    raise exception  w::BAD_STEP;
+                    raise exception  wg::BAD_STEP;
 
 	fun ceil (v:  Int, base, inc)
 	    =
@@ -192,7 +192,7 @@ herein
 	    except
 		DIVIDE_BY_ZERO
 		    =
-                    raise exception  w::BAD_STEP;
+                    raise exception  wg::BAD_STEP;
 
 	fun set_minors (yo, ys, bndl, align)
 	    =
@@ -326,7 +326,7 @@ herein
 
 	    bnds_tree (WIDGET tw)
 		=>
-		BT_W (w::size_preference_of  tw,  tw);
+		BT_W (wg::size_preference_of  tw,  tw);
 
 	    bnds_tree (HB (a, boxes))
 		=>
@@ -392,7 +392,7 @@ herein
 	    =
 	    {   bnds_t = bnds_tree boxes;
 
-		fits = w::is_within_size_limits
+		fits = wg::is_within_size_limits
                          ( bnds_of  bnds_t,
                            xg::size_of_box  box
                          );

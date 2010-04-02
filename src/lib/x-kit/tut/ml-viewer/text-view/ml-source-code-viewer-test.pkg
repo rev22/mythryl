@@ -12,7 +12,7 @@
 
 stipulate
     package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 #   package v  =  ml_source_code_viewer;		# ml_source_code_viewer	is from   src/lib/x-kit/tut/ml-viewer/text-view/ml-source-code-viewer.pkg
     package mv =  ml_viewer;				# ml_viewer		is from   src/lib/x-kit/tut/ml-viewer/text-view/ml-viewer.pkg
 herein
@@ -21,7 +21,7 @@ herein
         =
 	loop ()
         where
-	    root = w::make_root  display;
+	    root = wg::make_root  display;
 
 	    fun open_view fname
                 =
@@ -35,7 +35,7 @@ herein
 
 	    fun quit ()
 		=
-                {   w::delete_root_window root;
+                {   wg::delete_root_window root;
                     shut_down_thread_scheduler();
 		};
 

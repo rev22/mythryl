@@ -6,7 +6,7 @@
 stipulate
     include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
 herein
 
@@ -18,7 +18,7 @@ herein
 
 	make_bitmap_editor
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    { horz_cells:  Int,
 	      vert_cells:  Int,
@@ -27,7 +27,7 @@ herein
 	    ->
 	    Bitmap_Editor;
 
-	as_widget:  Bitmap_Editor -> w::Widget;
+	as_widget:  Bitmap_Editor -> wg::Widget;
 
 	mailop_of:  Bitmap_Editor -> Mailop( (Bool, xg::Point) );
     };

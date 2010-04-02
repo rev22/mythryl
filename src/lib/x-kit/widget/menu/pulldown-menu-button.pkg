@@ -15,7 +15,7 @@ stipulate
     #
     package pu =  popup_menu;					# popup_menu			is from   src/lib/x-kit/widget/composite/popup-menu.pkg
     package ts =  toggleswitches;				# toggleswitches		is from   src/lib/x-kit/widget/leaf/toggleswitches.pkg
-    package w  =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;				# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy =  widget_style;					# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
     package xg =  xgeometry;					# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
@@ -35,14 +35,14 @@ herein
 				       aliases =>  []
 				     };
 
-		args = [ (wa::relief, wa::RELIEF_VAL w::FLAT),
+		args = [ (wa::relief, wa::RELIEF_VAL wg::FLAT),
 			 (wa::label,  wa::STRING_VAL label)
 		       ];
 
 		bttn = ts::label_button
                          ( root_window,
                            ( name,
-                             w::style_of  root_window
+                             wg::style_of  root_window
                            ),
                            args
                          )
@@ -124,7 +124,7 @@ herein
 			    loop size;
 			};
 
-			w::realize_fn  widget
+			wg::realize_fn  widget
 			  {
 			    window,
 			    size,
@@ -137,7 +137,7 @@ herein
 
 		menu_widget
 		    =
-		    w::make_widget
+		    wg::make_widget
 		      {
 			root_window,
 
@@ -147,7 +147,7 @@ herein
 
 			size_preference_thunk_of
 			    =>
-			    w::size_preference_thunk_of  widget
+			    wg::size_preference_thunk_of  widget
 		      };
 
 		(menu_widget, mailop);

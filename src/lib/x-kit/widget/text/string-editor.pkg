@@ -19,7 +19,7 @@ stipulate
     #
     package es  =  extensible_string;			# extensible_string		is from   src/lib/x-kit/widget/text/extensible-string.pkg
     package vt1 =  one_line_virtual_terminal;		# one_line_virtual_terminal	is from   src/lib/x-kit/widget/text/one-line-virtual-terminal.pkg
-    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
     package xd  =  xdraw;				# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
     package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
@@ -45,7 +45,7 @@ herein
 
 	 Reply_Mail
 	  #
-	  = BOUNDS  w::Widget_Size_Preference
+	  = BOUNDS  wg::Widget_Size_Preference
 	  | STRING  String
 	  ;
 
@@ -156,7 +156,7 @@ herein
 	String_Editor
 	    =
 	    STRING_EDITOR 
-	      ( w::Widget,
+	      ( wg::Widget,
 		Mailslot( Plea_Mail  ),
 		Mailslot( Reply_Mail )
 	      );
@@ -195,7 +195,7 @@ herein
 
 			col_preference
 			    =
-			    w::INT_PREFERENCE
+			    wg::INT_PREFERENCE
 			      { start_at => 0,
 				step_by  => 1,
 				#
@@ -205,7 +205,7 @@ herein
 			      };
 
 			{ col_preference,
-			  row_preference => w::tight_preference  high
+			  row_preference => wg::tight_preference  high
 			};
 		    };
 
@@ -309,7 +309,7 @@ herein
 				    if (v <= 0)
 
 					 if (woff == 0)
-					     w::ring_bell  root_window  0;
+					     wg::ring_bell  root_window  0;
 					 fi;
 
 					 left_shift (min(-v, woff), me);
@@ -359,7 +359,7 @@ herein
 				    =
 				    if (pos == 0)
 
-					 w::ring_bell  root_window  0;
+					 wg::ring_bell  root_window  0;
 					 me;
 
 				    elif (pos == woff and woff > 0)
@@ -526,7 +526,7 @@ herein
 		};
 
 		STRING_EDITOR (
-		  w::make_widget {
+		  wg::make_widget {
 		    root_window,
 		    args=> fn () =  { background => NULL }, 
 

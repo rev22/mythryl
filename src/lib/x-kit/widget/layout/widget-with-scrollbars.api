@@ -35,7 +35,7 @@
 
 stipulate
     package lw =  line_of_widgets;				# line_of_widgets	is from   src/lib/x-kit/widget/composite/line-of-widgets.pkg
-    package w  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Widget_With_Scrollbars {
@@ -51,13 +51,13 @@ herein
 	#
 	make_widget_with_scrollbars
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    {
-	      scrolled_widget:  w::Widget,
+	      scrolled_widget:  wg::Widget,
 	      #
-	      horizontal_scrollbar:  Null_Or {   scrollbar: w::Widget,   pad: Int,   top:  Bool   },
-	      vertical_scrollbar:    Null_Or {   scrollbar: w::Widget,   pad: Int,   left: Bool   }
+	      horizontal_scrollbar:  Null_Or {   scrollbar: wg::Widget,   pad: Int,   top:  Bool   },
+	      vertical_scrollbar:    Null_Or {   scrollbar: wg::Widget,   pad: Int,   left: Bool   }
 	    }
 	    ->
 	    lw::Line_Of_Widgets;

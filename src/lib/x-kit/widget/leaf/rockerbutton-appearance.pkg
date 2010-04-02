@@ -27,7 +27,7 @@ stipulate
     package xd =  xdraw;						# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
     package xg =  xgeometry;						# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     #
-    package w  =  widget;						# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;					# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wt =  widget_types;						# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
 herein
@@ -100,7 +100,7 @@ herein
 
 	fun make_button_appearance (root, view, args)
 	    =
-	    {   attributes = w::find_attribute (w::attributes (view, attributes, args));
+	    {   attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		fg = wa::get_color (attributes wa::foreground); 
 		bg = wa::get_color (attributes wa::background); 
@@ -117,9 +117,9 @@ herein
 			     NULL  => color;
 			 esac;
 
-		screen = w::screen_of root;
+		screen = wg::screen_of root;
 
-		stipple = w::ro_pixmap root "gray";
+		stipple = wg::ro_pixmap root "gray";
 
 		on_src      = xc::make_readonly_pixmap_from_clientside_pixmap screen on_switch_data;
 		off_src     = xc::make_readonly_pixmap_from_clientside_pixmap screen off_switch_data;
@@ -174,7 +174,7 @@ herein
 
 	fun bounds (BUTTON_APPEARANCE { iwid, iht, ... } )
 	    =
-	    w::make_tight_size_preference (iwid, iht);
+	    wg::make_tight_size_preference (iwid, iht);
 
 
 	fun window_args (BUTTON_APPEARANCE { bg, ... } )
@@ -262,10 +262,10 @@ herein
 			fi;
 		end;
       /*
-		setf = fn (a as (w::INACTIVE s, r, d)) =>
+		setf = fn (a as (wg::INACTIVE s, r, d)) =>
 			(file::print (f::sprintf "Inactive %b %b %b\n"
 			    [f::BOOL s, f::BOOL r, f::BOOL d]); setf a)
-			    | (a as (w::Active s, r, d)) =>
+			    | (a as (wg::Active s, r, d)) =>
 			(file::print (f::sprintf "Active %b %b %b\n"
 			    [f::BOOL s, f::BOOL r, f::BOOL d]); setf a)
       */

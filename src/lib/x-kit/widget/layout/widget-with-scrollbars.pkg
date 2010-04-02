@@ -33,13 +33,13 @@ stipulate
     include threadkit;								# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package low =  line_of_widgets;						# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
-    package w   =  widget;							# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;							# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     package widget_with_scrollbars: (weak)  Widget_With_Scrollbars {		# Widget_With_Scrollbars	is from   src/lib/x-kit/widget/layout/widget-with-scrollbars.api
 
-	Hsb_Desc =   {   scrollbar: w::Widget,   pad: Int,   top:  Bool   };
-	Vsb_Desc =   {   scrollbar: w::Widget,   pad: Int,   left: Bool   };
+	Hsb_Desc =   {   scrollbar: wg::Widget,   pad: Int,   top:  Bool   };
+	Vsb_Desc =   {   scrollbar: wg::Widget,   pad: Int,   left: Bool   };
 
 	fun fix_glue pad
 	    =
@@ -52,7 +52,7 @@ herein
 
 	    make_widget_with_scrollbars  root_window  { scrolled_widget, horizontal_scrollbar=> THE (hdesc:  Hsb_Desc), vertical_scrollbar=>NULL }
 		=>
-		{   screen = w::screen_of root_window;
+		{   screen = wg::screen_of root_window;
 
 		    hdesc ->  { scrollbar, pad, top };
 
@@ -82,7 +82,7 @@ herein
 
 	    make_widget_with_scrollbars  root_window  { scrolled_widget, vertical_scrollbar => THE (vdesc:  Vsb_Desc), horizontal_scrollbar=>NULL }
 		=>
-		{   screen = w::screen_of  root_window;
+		{   screen = wg::screen_of  root_window;
 
 		    vdesc ->  { scrollbar, left, pad };
 
@@ -112,16 +112,16 @@ herein
 
 	    make_widget_with_scrollbars  root_window  { scrolled_widget, horizontal_scrollbar => THE hdesc, vertical_scrollbar => THE vdesc }
 		=>
-		{   screen =  w::screen_of  root_window;
+		{   screen =  wg::screen_of  root_window;
 
 		    hpad = hdesc.pad;	hsb  = hdesc.scrollbar;
 		    vpad = vdesc.pad;	vsb  = vdesc.scrollbar;
 
 		    my { col_preference, ... }
 			=
-			w::size_preference_of  vsb;
+			wg::size_preference_of  vsb;
 
-		    vsz = w::preferred_length  col_preference;
+		    vsz = wg::preferred_length  col_preference;
 
 
 		    case (hdesc.top, vdesc.left)   

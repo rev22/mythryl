@@ -39,18 +39,18 @@ api {
 
 }
 {
-    package w   =  inline_t::unt32;				# inline_t		is from   src/lib/core/init/built-in.pkg
+    package w32 =  inline_t::unt32;				# inline_t		is from   src/lib/core/init/built-in.pkg
     package i   =  inline_t::int31;
     package i32 =  inline_t::int32;
     package r   =  inline_t::float64;
 
     Unt = unt32::Unt;
 
-    my (<)  = w::(<);
-    my (>=) = w::(>=);
-    my (+)  = w::(+);
-    my (-)  = w::(-);
-    my (*)  = w::(*);
+    my (<)  = u32::(<);
+    my (>=) = u32::(>=);
+    my (+)  = u32::(+);
+    my (-)  = u32::(-);
+    my (*)  = u32::(*);
 
     my largest_word_div10:  Unt = 0u429496729;	#  2^32-1 divided by 10 
     my largest_word_mod10:  Unt = 0u5;		#  remainder 
@@ -91,7 +91,7 @@ api {
 
 	fun code (c:  Char)
 	    =
-	    w::from_int (to_int (inline_t::char_vector::get (cvt_table, to_int c)));
+	    u32::from_int (to_int (inline_t::char_vector::get (cvt_table, to_int c)));
 
 	my ws_code:     Unt = 0u128;		#  Code for whitespace 
 	my plus_code:   Unt = 0u129;		#  Code for '+' 
@@ -256,7 +256,7 @@ api {
     #
     fun check_overflow mask w
         =
-	if (w::bitwise_and (mask, w) != 0u0)   raise exception OVERFLOW;   fi;
+	if (u32::bitwise_and (mask, w) != 0u0)   raise exception OVERFLOW;   fi;
 
     fun is_bin_digit d = (d < 0u2);
     fun is_oct_digit d = (d < 0u8);
@@ -295,7 +295,7 @@ api {
 				    if (is_bin_digit d)
 
 					check_overflow w;
-					convert (w::(+) (w::lshift (w, 0u1), d), rest');
+					convert (u32::(+) (u32::lshift (w, 0u1), d), rest');
 				    else
 					THE { neg, word=>w, rest };
 				    fi;
@@ -332,7 +332,7 @@ api {
 				    if (is_oct_digit d)
 
 					check_overflow w;
-					convert (w::(+) (w::lshift (w, 0u3), d), rest');
+					convert (u32::(+) (u32::lshift (w, 0u3), d), rest');
 				    else
 					THE { neg, word=>w, rest };
 				    fi;
@@ -408,7 +408,7 @@ api {
 				    if (is_hex_digit d)
 
 					check_overflow w;
-					convert (w::(+) (w::lshift (w, 0u4), d), rest');
+					convert (u32::(+) (u32::lshift (w, 0u4), d), rest');
 				    else
 					THE { neg, word=>w, rest };
 				    fi;
@@ -441,7 +441,7 @@ api {
 
     stipulate
 
-        fromword32 = i32::from_large o w::to_large_int_x; 
+        fromword32 = i32::from_large o u32::to_large_int_x; 
 
     herein
 
@@ -490,7 +490,7 @@ api {
         =
 	{   fun word_to_real w
                 =
-                inline_t::float64::from_int31 (w::to_int_x w);
+                inline_t::float64::from_int31 (u32::to_int_x w);
 
 	    fun scan (accum, n, cs)
                 =
@@ -604,7 +604,7 @@ api {
 
 					    if (is_dec_digit d)
 
-						scan (i::(+) (i::(*) (accum, 10), w::to_int_x d), cs');
+						scan (i::(+) (i::(*) (accum, 10), u32::to_int_x d), cs');
 					    else
 						(accum, cs);
 					    fi;
@@ -617,7 +617,7 @@ api {
 
 			    if (is_dec_digit  d)
 
-				THE (scan (w::to_int_x d, cs));
+				THE (scan (u32::to_int_x d, cs));
 			    else
                                 NULL;
                             fi;

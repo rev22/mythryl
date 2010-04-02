@@ -29,17 +29,17 @@ stipulate
     package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     #
     package bb =  button_base;			# button_base		is from   src/lib/x-kit/widget/leaf/button-base.pkg
-    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Button_Appearance {
 
 	Button_Appearance;
 
-	make_button_appearance:  (w::Root_Window, w::View, List(w::Arg)) -> Button_Appearance;
+	make_button_appearance:  (wg::Root_Window, wg::View, List(wg::Arg)) -> Button_Appearance;
 
-	bounds:       Button_Appearance -> w::Widget_Size_Preference;
-	window_args:  Button_Appearance -> w::Window_Args;
+	bounds:       Button_Appearance -> wg::Widget_Size_Preference;
+	window_args:  Button_Appearance -> wg::Window_Args;
 
 	config
 	   :

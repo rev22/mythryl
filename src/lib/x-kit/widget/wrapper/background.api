@@ -23,8 +23,8 @@
 #     src/lib/x-kit/widget/wrapper/background.pkg
 
 stipulate
-    package w  = widget;				# Widget		is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xc = xcore;					# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
+    package wg =  widget;				# Widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
 herein
 
     api Background {
@@ -33,20 +33,20 @@ herein
 
 	background
 	    :
-	    (w::Root_Window, w::View, List(w::Arg))
+	    (wg::Root_Window, wg::View, List(wg::Arg))
 	    ->
-	    w::Widget
+	    wg::Widget
 	    ->
 	    Background;
 
 	make_background
 	    :
 	    { color:   Null_Or( xc::Rgb ),			# New background color. Defaults to white if not specified.
-	      widget:  w::Widget				# Affected widget-tree.
+	      widget:  wg::Widget				# Affected widget-tree.
 	    }
 	    -> Background;
 
-	as_widget:  Background -> w::Widget;
+	as_widget:  Background -> wg::Widget;
     };
 
 end;

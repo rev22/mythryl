@@ -11,7 +11,7 @@ stipulate
     #
     package xg  =  xgeometry;					# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
     #
-    package w   =  widget;					# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+#   package wg  =  widget;					# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package tc  =  text_canvas;					# text_canvas	is from   src/lib/x-kit/tut/ml-viewer/text-view/text-canvas.pkg
     package tw  =  text_widget;					# text_widget	is from   src/lib/x-kit/widget/text/text-widget.pkg
     #

@@ -9,7 +9,7 @@
 stipulate
     include threadkit;			# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  =  widget;		# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;		# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     #
     package bu =  brick_util;		# brick_util		is from   src/lib/x-kit/tut/bricks/brick-util.pkg
 herein
@@ -20,13 +20,13 @@ herein
 
 	make_brick_view
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    (bu::Position, Mailslot( bu::Mse_Evt ), bu::Palette)
 	    ->
 	    Brick_View;
 
-	as_widget:  Brick_View -> w::Widget;
+	as_widget:  Brick_View -> wg::Widget;
 
 	show_view:  Brick_View -> String -> Void;
 	end_view:   Brick_View -> String -> Void;

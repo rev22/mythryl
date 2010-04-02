@@ -23,7 +23,7 @@
 stipulate
 #    include xgeometry;							# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
 
-    package w  =  widget;						# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     #
     package xd =  xdraw;						# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
     package xg =  xgeometry;						# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
@@ -63,7 +63,7 @@ herein
 
 	fun sizefn (wide, _)
 	    =
-	    w::make_tight_size_preference (wide, wide);
+	    wg::make_tight_size_preference (wide, wide);
 
 	fun config _
 	    =

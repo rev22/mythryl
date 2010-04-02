@@ -22,7 +22,7 @@
 stipulate
     include threadkit;							# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w   =  widget;						# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;						# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc  =  xcore;						# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
     package xd  =  xdraw;						# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
     package xf  =  xfont;						# xfont		is from   src/lib/x-kit/xclient/xfont.pkg
@@ -641,10 +641,10 @@ herein
 
 	fun attach (selection_channel, widget, mbuts, menu, label, pos)
 	    =
-	    {   root_window =  w::root_window_of  widget;
+	    {   root_window =  wg::root_window_of  widget;
 
-		xsession    =  w::xsession_of  root_window;
-		screen      =  w::screen_of    root_window;
+		xsession    =  wg::xsession_of  root_window;
+		screen      =  wg::screen_of    root_window;
 
 		font =  xf::open_font  xsession  menu_font;
 
@@ -699,7 +699,7 @@ herein
 				};
 			end;
 
-			w::realize_fn widget 
+			wg::realize_fn widget 
 			    { window,
                               size,
                               kidplug =>  xi::replace_mouse (kidplug, take' m_slot)
@@ -708,14 +708,14 @@ herein
 			();
 		    };				# fun realize
 
-		w::make_widget
+		wg::make_widget
 		    { root_window,
 		      realize,
 		      args      =>  fn () = { background => NULL },
 
 		      size_preference_thunk_of
 			  =>
-			  w::size_preference_thunk_of  widget
+			  wg::size_preference_thunk_of  widget
 		    };
 
 	    };		# fun attach 
@@ -751,8 +751,8 @@ herein
 	    =
 	    do_pop
 	    where
-		xsession =  w::xsession_of root_window;
-		screen   =  w::screen_of   root_window;
+		xsession =  wg::xsession_of  root_window;
+		screen   =  wg::screen_of    root_window;
 
 		font     =  xf::open_font  xsession  menu_font;
 		menu_rep =  layout_menu (font, menu, label);

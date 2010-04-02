@@ -23,15 +23,15 @@
 stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w   =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
-    package wa  =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
-    package mr  =  xevent_mail_router;		# xevent_mail_router	is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package mr =  xevent_mail_router;		# xevent_mail_router	is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
     #
-    package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
-    package xg  =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xi  =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
-    package xs  =  xselection;			# xselection		is from   src/lib/x-kit/xclient/xselection.pkg
-    package xw  =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
+    package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
+    package xs =  xselection;			# xselection		is from   src/lib/x-kit/xclient/xselection.pkg
+    package xw =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
 herein
 
     package topwindow: (weak)  Topwindow {	# Topwindow		is from   src/lib/x-kit/widget/basic/topwindow.api
@@ -59,16 +59,16 @@ herein
 
 	fun set_size_hints
             {
-              col_preference  as  w::INT_PREFERENCE  xdim,
-              row_preference  as  w::INT_PREFERENCE  ydim
+              col_preference  as  wg::INT_PREFERENCE  xdim,
+              row_preference  as  wg::INT_PREFERENCE  ydim
             }
 	    =
 	    do_inc() @ do_max() @ do_min()
 	    where
 		fun min_size ()
                     =
-                    {   minx =  w::minimum_length  col_preference;
-			miny =  w::minimum_length  row_preference;
+                    {   minx =  wg::minimum_length  col_preference;
+			miny =  wg::minimum_length  row_preference;
 
 			xg::SIZE { wide => int::max (1, minx),
                                    high => int::max (1, miny)
@@ -77,8 +77,8 @@ herein
 
 		fun max_size ()
 		    =
-		    ( w::maximum_length  col_preference,
-                      w::maximum_length  row_preference
+		    ( wg::maximum_length  col_preference,
+                      wg::maximum_length  row_preference
                     );
 
 		fun inc_size ()
@@ -164,11 +164,11 @@ herein
                   wm_args:  Window_And_Icon_Names
                 )
 	    =
-	    {   root_window =  w::root_window_of  widget;
+	    {   root_window =  wg::root_window_of  widget;
 
 		plea_slot = make_mailslot ();
 
-		screen =  w::screen_of  root_window;
+		screen =  wg::screen_of  root_window;
 
 		color = case color_opt    
 			    #
@@ -184,18 +184,18 @@ herein
 			#
                         window
 			#
-                        [ (xs::make_atom (w::xsession_of root_window) "WM_DELETE_WINDOW") ];
+                        [ (xs::make_atom (wg::xsession_of root_window) "WM_DELETE_WINDOW") ];
 
 		fun start (hintlist, mapped)
 		    =
-		    {   (w::size_preference_of  widget)
+		    {   (wg::size_preference_of  widget)
 			    ->
 			    bounds as { col_preference, row_preference };
 
 			default_size
 			    =
-			    xg::SIZE { wide =>  w::preferred_length  col_preference,
-                                       high =>  w::preferred_length  row_preference
+			    xg::SIZE { wide =>  wg::preferred_length  col_preference,
+                                       high =>  wg::preferred_length  row_preference
                                      };
 
 			my (upperleft, size)
@@ -247,17 +247,17 @@ herein
 			    =
 			    xi::make_widget_cable ();
 
-			cwin =  w::make_child_window
+			cwin =  wg::make_child_window
                                   ( twin,
                                     xg::make_box (xg::point_00, size),
-                                    w::args_of  widget
+                                    wg::args_of  widget
                                   );
 
                         (xi::make_widget_cable ())
 			    ->
 			    { kidplug => ckidplug, momplug => cmomplug as xi::MOMPLUG { from_kid', ... } };
 
-			childco =  w::wrap_queue  from_kid';
+			childco =  wg::wrap_queue  from_kid';
 
 			my  xi::KIDPLUG { from_other', ... }
                             =
@@ -275,7 +275,7 @@ herein
 
 			fun handle_co  xi::REQ_RESIZE
 				=>
-				{   (w::size_preference_of  widget)
+				{   (wg::size_preference_of  widget)
 					->
 					bounds as { col_preference,
                                                     row_preference
@@ -294,8 +294,8 @@ herein
 
 				      xw::resize_window
                                         twin
-                                        (xg::SIZE { wide =>  w::preferred_length  col_preference,
-                                                    high =>  w::preferred_length  row_preference
+                                        (xg::SIZE { wide =>  wg::preferred_length  col_preference,
+                                                    high =>  wg::preferred_length  row_preference
                                                   }
                                         );
 				};
@@ -365,7 +365,7 @@ herein
 
 			mr::route_pair (in_kidplug, my_momplug, cmomplug);
 
-			w::realize_fn
+			wg::realize_fn
 			     widget
 			     {
 			       kidplug => ckidplug, 
@@ -402,7 +402,7 @@ herein
 		{   my (window, in_kidplug, delete_slot)
 			=
 			xw::make_simple_top_window
-			    (w::screen_of  (w::root_window_of  widget))
+			    (wg::screen_of  (wg::root_window_of  widget))
 			    g;
 
 		    (window, in_kidplug, THE delete_slot);
@@ -436,7 +436,7 @@ herein
 
 	    fun topwindow (root_window, view, args) widget
 		=
-		{   attributes = w::find_attribute (w::attributes (view, attributes, args));
+		{   attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		    window_name = wa::get_string_opt (attributes wa::title);
 		    icon_name   = wa::get_string_opt (attributes wa::icon_name);

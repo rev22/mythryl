@@ -27,7 +27,7 @@
 stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  = widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Slider {
@@ -38,10 +38,10 @@ herein
                   to:    Int
                 };
 
-	make_slider:  (w::Root_Window, w::View, List(w::Arg)) -> Slider;
+	make_slider:  (wg::Root_Window, wg::View, List(wg::Arg)) -> Slider;
 
 
-	as_widget:  Slider -> w::Widget;
+	as_widget:  Slider -> wg::Widget;
 
 	slider_motion'_of:  Slider -> Mailop( Int );
 	    #

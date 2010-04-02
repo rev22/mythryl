@@ -29,7 +29,7 @@ stipulate
     #
     package bb =  button_base;					# button_base		is from   src/lib/x-kit/widget/leaf/button-base.pkg
     package tt =  toggle_type;					# toggle_type		is from   src/lib/x-kit/widget/leaf/toggle-type.pkg
-    package w  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;				# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package xg =  xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;					# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
@@ -290,7 +290,7 @@ herein
 	    =
 	    {   attributes
 		    =
-		    w::find_attribute (w::attributes (view, attributes, args));
+		    wg::find_attribute (wg::attributes (view, attributes, args));
 
 		plea_slot  =  make_mailslot ();
 		event_slot =  make_mailslot ();
@@ -325,7 +325,7 @@ herein
 
 		    widget
 			=>
-			w::make_widget
+			wg::make_widget
 			  {
 			    root_window,
 			    args                     =>   getval bb::GET_ARGS,

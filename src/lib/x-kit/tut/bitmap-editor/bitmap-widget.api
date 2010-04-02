@@ -7,7 +7,7 @@
 #     src/lib/x-kit/tut/bitmap-editor/bitmap-widget.pkg
 
 stipulate
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
     package xg =  xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
 herein
@@ -20,7 +20,7 @@ herein
 
 	make_bitmap_widget
 	    :
-	    w::Root
+	    wg::Root
 	    ->
 	    { background:  Null_Or( xc::Color ),
 	      foreground:  Null_Or( xc::Color ),
@@ -30,7 +30,7 @@ herein
 	    ->
 	    Bitmap_Widget;
 
-	as_widget:  Bitmap_Widget -> w::Widget;
+	as_widget:  Bitmap_Widget -> wg::Widget;
 	image_of:   Bitmap_Widget -> xc::Image;
 
 	set_pixel:  Bitmap_Widget -> (Bool, xg::Point) -> Void;

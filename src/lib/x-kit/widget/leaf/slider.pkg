@@ -22,7 +22,7 @@ stipulate
     package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     #
-    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     #
     package sa =  slider_appearance;		# slider_appearance	is from   src/lib/x-kit/widget/leaf/slider-appearance.pkg
@@ -72,7 +72,7 @@ herein
 	Slider
 	    =
 	    SLIDER
-	      { widget:          w::Widget,
+	      { widget:          wg::Widget,
 		plea_slot:       Mailslot( Plea_Mail ),
 		slider_motion':  Mailop( Int )
 	      };
@@ -520,7 +520,7 @@ herein
 
 	fun make_slider (root_window, view, args)
 	    =
-	    {   attributes = w::find_attribute (w::attributes (view, attributes @ sa::attributes, args));
+	    {   attributes = wg::find_attribute (wg::attributes (view, attributes @ sa::attributes, args));
 
 		result = sa::get_resources (root_window, attributes);
 
@@ -544,7 +544,7 @@ herein
 			=>
 			take' val_slot,
 
-		    widget => w::make_widget { root_window,
+		    widget => wg::make_widget { root_window,
 					       args      =>  fn ()  =  { background => THE result.bg },
 					       realize   =>  fn arg =  give (plea_slot, DO_REALIZE arg),
 					       size_preference_thunk_of =>  sa::size_preference_thunk_of result

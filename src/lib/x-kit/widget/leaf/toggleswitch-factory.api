@@ -9,16 +9,16 @@
 
 stipulate
     package tt =  toggle_type;						# toggle_type	is from   src/lib/x-kit/widget/leaf/toggle-type.pkg
-    package w  =  widget;						# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Toggleswitch_Factory {
 
-	make_toggleswitchxxx:  (w::Root_Window, w::View, List(w::Arg)) -> tt::Toggleswitch;
+	make_toggleswitchxxx:  (wg::Root_Window, wg::View, List(wg::Arg)) -> tt::Toggleswitch;
 
 	make_toggleswitch_with_click_callback
 	    :
-	    (w::Root_Window, w::View, List(w::Arg))
+	    (wg::Root_Window, wg::View, List(wg::Arg))
 	    ->
 	    (Bool -> Void)			# Callback function invoked when ON/OFF state changes.
 	    ->

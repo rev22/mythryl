@@ -25,19 +25,19 @@
 stipulate
     include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  = widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
-    package pu = popup_menu;				# popup_menu		is from   src/lib/x-kit/widget/menu/popup-menu.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package pu =  popup_menu;				# popup_menu		is from   src/lib/x-kit/widget/menu/popup-menu.pkg
 herein
 
     api Pulldown_Menu_Button {
 
 	make_pulldown_menu_button
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    (String, pu::Popup_Menu(X))
 	    ->
-	    (w::Widget, Mailop(X));
+	    (wg::Widget, Mailop(X));
     };
 end;
 

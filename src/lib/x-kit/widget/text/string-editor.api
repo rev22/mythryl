@@ -46,8 +46,8 @@
 #     src/lib/x-kit/widget/text/string-editor.pkg
 
 stipulate
-    package w  = widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xc = xcore;					# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
     api String_Editor {
@@ -56,7 +56,7 @@ herein
 
 	make_string_editor
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    {
 	      foreground:     Null_Or( xc::Rgb ),		# Black by default.
@@ -71,7 +71,7 @@ herein
 	get_string:    String_Editor -> String;
 	shift_window:  String_Editor -> Int -> Void;		# Shift window over string. (Negative => to left.)
 
-	as_widget:     String_Editor -> w::Widget;
+	as_widget:     String_Editor -> wg::Widget;
     };
 
 end;

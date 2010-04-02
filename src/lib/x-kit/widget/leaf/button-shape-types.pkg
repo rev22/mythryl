@@ -9,7 +9,7 @@
 #     src/lib/x-kit/widget/leaf/button-shape.api
 
 stipulate
-    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package xd =  xdraw;			# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
     package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
 herein
@@ -20,7 +20,7 @@ herein
 	    =
 	    (Int, Null_Or(Int))
             ->
-	    w::Widget_Size_Preference;
+	    wg::Widget_Size_Preference;
 
 	Drawfn
 	    =

@@ -14,7 +14,7 @@ stipulate
     package xg =  xgeometry;						# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;						# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     #
-    package w  =  widget;
+    package wg =  widget;
     #
     package vb =  view_buffer;
     package td =  text_display;
@@ -38,7 +38,7 @@ herein
 	Viewer
 	    =
 	    VIEWER
-	      { widget:        w::Widget,
+	      { widget:        wg::Widget,
 		text_display:  Oneshot_Maildrop( td::Text_Display ),
 		plea_slot:     Mailslot( Plea_Mail )
 	      };
@@ -65,7 +65,7 @@ herein
 
 		widget
 		    =>
-		    w::make_widget
+		    wg::make_widget
 		      {
 			args         =>  (fn ()  = {   background => NULL }),	# Added 2009-12-28 CrT just to get it to compile
 			root_window,
@@ -73,8 +73,8 @@ herein
 
 			size_preference_thunk_of
 			    =>
-			    fn () = { col_preference =>  w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>10, ideal_steps=>80*char_width,  max_steps=>NULL },
-				      row_preference =>  w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>20, ideal_steps=>24*line_high,   max_steps=>NULL }
+			    fn () = { col_preference =>  wg::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>10, ideal_steps=>80*char_width,  max_steps=>NULL },
+				      row_preference =>  wg::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>20, ideal_steps=>24*line_high,   max_steps=>NULL }
 				    }
 		      }
 	    }

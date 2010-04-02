@@ -11,7 +11,7 @@ stipulate
     #
     package dv  =  divider;				# divider			is from   src/lib/x-kit/widget/leaf/divider.pkg
     package lbl =  label;				# label				is from   src/lib/x-kit/widget/leaf/label.pkg
-    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wt  =  widget_types;			# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
     package lw  =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/composite/line-of-widgets.pkg
     package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
@@ -28,7 +28,7 @@ herein
 
 		winv = make_oneshot_maildrop ();
 
-		rf = w::realize_fn  w;
+		rf = wg::realize_fn  w;
 
 		fun realize (arg as { window, ... } )
 		    =
@@ -36,14 +36,14 @@ herein
 			rf arg;
 		    };
 
-		w' =  w::make_widget
+		w' =  wg::make_widget
 			{
-			  root_window      =>  w::root_window_of  w,
+			  root_window      =>  wg::root_window_of  w,
 			  realize,
 
 			  size_preference_thunk_of
 			      =>
-			      w::size_preference_thunk_of  w,
+			      wg::size_preference_thunk_of  w,
 
 			  # I added the following line, cribbed randomly
 			  # from the other examples, to get this to
@@ -94,7 +94,7 @@ herein
 		| RESET
 		;
 
-	Calc = CALC { widget:         w::Widget,
+	Calc = CALC { widget:         wg::Widget,
 		      plea_slot:      Mailslot( Request ),
 		      answer_mailop:  Mailop(   Answer  )
 		    };
@@ -103,9 +103,9 @@ herein
 	    =
 	    {   my  xg::SIZE { high, ... }
 		    =
-		    w::preferred_size  widget;
+		    wg::preferred_size  widget;
 
-		ydim = w::tight_preference  high;
+		ydim = wg::tight_preference  high;
 
 
 		fun size_preference_fn  size_preference_thunk_of
@@ -276,7 +276,7 @@ herein
 	    };					# fun do_input
 
 
-	fun make_calc (root_window: w::Root_Window)
+	fun make_calc (root_window: wg::Root_Window)
 	    =
 	    {
 		plea_slot   =  make_mailslot ();
@@ -353,7 +353,7 @@ herein
 				  ]
 				);
 
-		my (layout, kbd)    =  w::filter_keyboard (lw::as_widget layout);
+		my (layout, kbd)    =  wg::filter_keyboard (lw::as_widget layout);
 		my (layout, window) =  window_of  layout;
 
 		fun reset_ans  ans_1shot

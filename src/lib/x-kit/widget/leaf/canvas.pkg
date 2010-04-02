@@ -24,15 +24,15 @@
 stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package bg  =  background;			# background		is from   src/lib/x-kit/widget/wrapper/background.pkg
-    package w   =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
-    package wa  =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package bg =  background;			# background		is from   src/lib/x-kit/widget/wrapper/background.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     #
-    package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
-    package xd  =  xdraw;			# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
-    package xg  =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xi  =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
-    package xw  =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
+    package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd =  xdraw;			# xdraw			is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
+    package xw =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
 herein
 
     package canvas: (weak)  Canvas {		# Canvas		is from   src/lib/x-kit/widget/leaf/canvas.api
@@ -55,7 +55,7 @@ herein
 	Canvas
 	    =
 	    CANVAS
-	      { widget:         w::Widget,
+	      { widget:         wg::Widget,
 		plea_slot:   Mailslot( Plea_Mail ),
 		window_1shot:   Oneshot_Maildrop( xc::Window )
 	      };
@@ -74,8 +74,8 @@ herein
 		init_size
 		    =
 		    xg::SIZE
-		      { wide => w::preferred_length  constraints.col_preference,
-			high => w::preferred_length  constraints.row_preference
+		      { wide => wg::preferred_length  constraints.col_preference,
+			high => wg::preferred_length  constraints.row_preference
 		      };
 
 		my  { kidplug => canvas_kidplug,
@@ -192,7 +192,7 @@ herein
 			plea_slot,
 			window_1shot,
 
-			widget => w::make_widget
+			widget => wg::make_widget
 				    {
 				      root_window,
 				      args      =>  fn () =  { background => NULL },

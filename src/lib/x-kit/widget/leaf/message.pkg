@@ -21,7 +21,7 @@ stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package d3 =  three_d;			# three_d		is from   src/lib/x-kit/widget/lib/three-d.pkg
-    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wt =  widget_types;			# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
     #
@@ -37,7 +37,7 @@ herein
 	Plea_Mail
 	  = SET_TEXT      String
 	  | GET_TEXT      Oneshot_Maildrop( String )
-	  | GET_SIZE_CONSTRAINT    Oneshot_Maildrop( w::Widget_Size_Preference )
+	  | GET_SIZE_CONSTRAINT    Oneshot_Maildrop( wg::Widget_Size_Preference )
 	  #
 	  | DO_REALIZE  { kidplug:  xi::Kidplug,
 			  window:   xc::Window,
@@ -48,7 +48,7 @@ herein
 	Message
 	    =
 	    MESSAGE 
-	      { widget:     w::Widget,
+	      { widget:     wg::Widget,
 		plea_slot:  Mailslot( Plea_Mail )
 	      };
 
@@ -129,7 +129,7 @@ herein
 
 		my  xg::SIZE { wide=>screen_width, ... }
 		    =
-		    xc::size_of_screen (w::screen_of root);
+		    xc::size_of_screen (wg::screen_of root);
 
 		wi = if (width > 0)
 			 (width, 0);
@@ -227,7 +227,7 @@ herein
 	      (wa::halign,         wa::HALIGN,     wa::HALIGN_VAL  wt::HLEFT),
 	      (wa::padx,           wa::INT,        wa::NO_VAL),
 	      (wa::pady,           wa::INT,        wa::NO_VAL),
-	      (wa::relief,         wa::RELIEF,     wa::RELIEF_VAL w::FLAT),
+	      (wa::relief,         wa::RELIEF,     wa::RELIEF_VAL wg::FLAT),
 	      (wa::text,           wa::STRING,     wa::STRING_VAL " "),
 	      (wa::width,          wa::INT,        wa::INT_VAL 0)
 	    ];
@@ -246,8 +246,8 @@ herein
 		   padx:  Int,
 		   pady:  Int,
 
-		   relief:  w::Relief,
-		   shades:  w::Shades,
+		   relief:  wg::Relief,
+		   shades:  wg::Shades,
 
 		   textinfo:  Ref( Textinfo ),
 		   width:  Int
@@ -292,7 +292,7 @@ herein
 		  pady,
 
 		  relief   => wa::get_relief (attributes wa::relief),
-		  shades   => w::shades root bg,
+		  shades   => wg::shades root bg,
 		  textinfo => REF (make_text_info (root, aspect, text, width, fontinfo,
 				border_width, padx, pady)),
 		  width
@@ -306,8 +306,8 @@ herein
 		x = text_wide + 2*(border_width + padx);
 		y = text_high  + 2*(border_width + pady);
 
-		{ col_preference => w::loose_preference x,
-		  row_preference => w::loose_preference y
+		{ col_preference => wg::loose_preference x,
+		  row_preference => wg::loose_preference y
 		};
 	    };
 
@@ -386,7 +386,7 @@ herein
 
 			      case result.relief
 				  #	
-				   w::FLAT => ();
+				   wg::FLAT => ();
 				   relief  => d3::draw_box d { width=>bw, relief, box=>r } result.shades;
 			      esac;
 			  };
@@ -508,7 +508,7 @@ herein
 
 	fun message (root_window, view, args)
 	    =
-	    {   attributes = w::find_attribute (w::attributes (view, attributes, args));
+	    {   attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		result = get_resources (root_window, attributes);
 
@@ -534,7 +534,7 @@ herein
 
 		    widget
 			=>
-			w::make_widget
+			wg::make_widget
 			  {
 			    #	
 			    root_window,

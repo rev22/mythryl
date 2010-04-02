@@ -16,7 +16,7 @@ stipulate
     package top =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
     package rw  =  root_window;				# root_window			is from   src/lib/x-kit/widget/basic/root-window.pkg
     package rx  =  run_xkit;				# run_xkit			is from   src/lib/x-kit/widget/lib/run-xkit.pkg
-    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa  =  widget_attribute;			# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy  =  widget_style;			# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
     #
@@ -241,7 +241,7 @@ herein
 
 	fun init root_window
 	    =
-	    {   style = w::style_from_strings (root_window, resources);
+	    {   style = wg::style_from_strings (root_window, resources);
 
 		name = wy::make_view
 			 { name    =>   wy::style_name [],

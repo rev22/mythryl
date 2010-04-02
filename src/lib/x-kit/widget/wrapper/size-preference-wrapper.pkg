@@ -15,7 +15,7 @@
 stipulate
     include threadkit;							# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  =  widget;						# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package xg =  xgeometry;						# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;						# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
 herein
@@ -28,7 +28,7 @@ herein
 		    shape_fn		# make_tight_sized_preference_wrapper() or make_loose_sized_preference_wrapper()
 		    widget
 		=
-		shape_fn (widget,  w::preferred_size  widget);
+		shape_fn (widget,  wg::preferred_size  widget);
 
 	    fun dummy x = x;
 
@@ -38,7 +38,7 @@ herein
 		=
 		{   size_preference_thunk_of
 			=
-			w::size_preference_thunk_of  child;
+			wg::size_preference_thunk_of  child;
 
 		    fun realize { kidplug =>  xi::KIDPLUG { from_mouse', from_keyboard', from_other', to_mom }, window, size }
 			=
@@ -72,14 +72,14 @@ herein
 
 			    make_thread "shape" loop;
 
-			    w::realize_fn  child  { kidplug=>ckidplug, window, size };
+			    wg::realize_fn  child  { kidplug=>ckidplug, window, size };
 			};
 
-		    w::make_widget
+		    wg::make_widget
 		      {
-			root_window =>  w::root_window_of  child,
+			root_window =>  wg::root_window_of  child,
 
-			args =>  w::args_fn  child,
+			args =>  wg::args_fn  child,
 
 			size_preference_thunk_of =>   fn () = bnds size_preference_thunk_of,
 
@@ -90,7 +90,7 @@ herein
 
 	    fun make_tight_sized_preference_wrapper (child, xg::SIZE { wide, high } )
 		=
-		{   bounds = w::make_tight_size_preference (wide, high);
+		{   bounds = wg::make_tight_size_preference (wide, high);
 
 		    make_size_preference_wrapper  dummy
 		      {
@@ -103,8 +103,8 @@ herein
 
 	    fun make_loose_sized_preference_wrapper (child, xg::SIZE { wide, high } )
 		=
-		{   col_preference  =  w::INT_PREFERENCE {  start_at => 0,  step_by => 1,  min_steps => 1,  ideal_steps => wide,  max_steps => NULL  };
-		    row_preference  =  w::INT_PREFERENCE {  start_at => 0,  step_by => 1,  min_steps => 1,  ideal_steps => high,  max_steps => NULL  };
+		{   col_preference  =  wg::INT_PREFERENCE {  start_at => 0,  step_by => 1,  min_steps => 1,  ideal_steps => wide,  max_steps => NULL  };
+		    row_preference  =  wg::INT_PREFERENCE {  start_at => 0,  step_by => 1,  min_steps => 1,  ideal_steps => high,  max_steps => NULL  };
 
 		    fun size_preference_fn  _
 			=
@@ -123,7 +123,7 @@ herein
 	    make_tight_size_preference_wrapper =  do_shape  make_tight_sized_preference_wrapper;
 	    make_loose_size_preference_wrapper =  do_shape  make_loose_sized_preference_wrapper;
 
-	    make_size_preference_wrapper =  make_size_preference_wrapper  w::wrap_queue;
+	    make_size_preference_wrapper =  make_size_preference_wrapper  wg::wrap_queue;
 
 	end;					# stipulate
     };						# package size_preference_wrapper

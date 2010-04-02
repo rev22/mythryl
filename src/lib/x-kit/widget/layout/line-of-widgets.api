@@ -113,7 +113,7 @@
 #     src/lib/x-kit/widget/layout/line-of-widgets.pkg
 
 stipulate
-    package w = widget;			# Widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg = widget;			# Widget	is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Line_Of_Widgets {
@@ -130,7 +130,7 @@ herein
 	  | VT_CENTER  List( Layout_Tree )
 	  | VT_RIGHT   List( Layout_Tree )
 	  #
-	  | WIDGET     w::Widget
+	  | WIDGET     wg::Widget
 	  #
 	  | SPACER { min_size:    Int,
                      ideal_size:  Int,
@@ -140,10 +140,10 @@ herein
 
 	Line_Of_Widgets;
 
-	make_line_of_widgets:  w::Root_Window -> Layout_Tree -> Line_Of_Widgets;
-	line_of_widgets:      (w::Root_Window, w::View, List(w::Arg)) -> Layout_Tree -> Line_Of_Widgets;
+	make_line_of_widgets:  wg::Root_Window -> Layout_Tree -> Line_Of_Widgets;
+	line_of_widgets:      (wg::Root_Window, wg::View, List(wg::Arg)) -> Layout_Tree -> Line_Of_Widgets;
 
-	as_widget:  Line_Of_Widgets -> w::Widget;
+	as_widget:  Line_Of_Widgets -> wg::Widget;
 
 	insert:     Line_Of_Widgets -> (Int, List(Layout_Tree)) -> Void;
 	    #

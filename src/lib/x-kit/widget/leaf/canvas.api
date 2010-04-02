@@ -30,7 +30,7 @@ stipulate
     package xg =  xgeometry;		# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;		# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     #
-    package w  =  widget;		# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;		# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Canvas {
@@ -39,24 +39,24 @@ herein
 
 	canvas
 	    :
-	    (w::Root_Window, w::View, List(w::Arg))
+	    (wg::Root_Window, wg::View, List(wg::Arg))
 	    ->
-	    w::Widget_Size_Preference
+	    wg::Widget_Size_Preference
 	    ->
 	    (Canvas, xg::Size, xi::Kidplug);
 
 	make_canvas
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
-	    w::Widget_Size_Preference
+	    wg::Widget_Size_Preference
 	    ->
 	    ( Canvas,					# Canvas on which to draw.
 	      xg::Size,					# Current size of canvas.
 	      xi::Kidplug
 	    );
 
-	as_widget:    Canvas -> w::Widget;
+	as_widget:    Canvas -> wg::Widget;
 
 	size_of:      Canvas -> xg::Size;
 	    # 

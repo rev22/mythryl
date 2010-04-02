@@ -7,7 +7,7 @@
 #     src/lib/x-kit/tut/ml-viewer/graph-view/view-font.pkg
 
 stipulate
-    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
@@ -17,7 +17,7 @@ herein
 
 	Font_Imp;
 
-	make_font_server:  w::Root_Window -> Font_Imp;
+	make_font_server:  wg::Root_Window -> Font_Imp;
 	find_font:         Font_Imp -> Int -> Null_Or( xc::Font );
     };
 

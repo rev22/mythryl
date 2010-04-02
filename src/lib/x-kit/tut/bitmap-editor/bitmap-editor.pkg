@@ -12,7 +12,7 @@ stipulate
     package xg =  xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;				# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     #
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     package bitmap_editor:  Bitmap_Editor {		# Bitmap_Editor		is from   src/lib/x-kit/tut/bitmap-editor/bitmap-editor.api
@@ -24,7 +24,7 @@ herein
 	Bitmap_Editor
 	    =
 	    BITMAP_EDITOR
-	      { widget:  w::Widget,
+	      { widget:  wg::Widget,
 		mailop:  Mailop( Pixel_Change )
 	      };
 
@@ -99,7 +99,7 @@ herein
 		root_window
 		 { horz_cells, vert_cells, cell_size }
 	    =
-	    {   screen =  w::screen_of root_window;
+	    {   screen =  wg::screen_of root_window;
 
 		mailop_slot = make_mailslot ();
 
@@ -114,8 +114,8 @@ herein
 
 		size_preferences
 		    =
-		    { col_preference =>   w::INT_PREFERENCE { start_at=>1, step_by=>cell_size, min_steps=>2, ideal_steps=>horz_cells, max_steps=>THE horz_cells },
-		      row_preference =>   w::INT_PREFERENCE { start_at=>1, step_by=>cell_size, min_steps=>2, ideal_steps=>vert_cells, max_steps=>THE vert_cells }
+		    { col_preference =>   wg::INT_PREFERENCE { start_at=>1, step_by=>cell_size, min_steps=>2, ideal_steps=>horz_cells, max_steps=>THE horz_cells },
+		      row_preference =>   wg::INT_PREFERENCE { start_at=>1, step_by=>cell_size, min_steps=>2, ideal_steps=>vert_cells, max_steps=>THE vert_cells }
 		    };
 
 		max_x = horz_cells - 1;
@@ -309,7 +309,7 @@ herein
 		  {
 		    mailop =>  take'  mailop_slot,
 
-		    widget =>  w::make_widget
+		    widget =>  wg::make_widget
 				 { root_window,
 				   realize,
 				   size_preference_thunk_of =>  fn () = size_preferences,

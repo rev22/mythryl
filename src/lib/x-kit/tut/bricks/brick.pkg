@@ -7,7 +7,7 @@ stipulate
     include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+#    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package bu =  brick_util;			# brick_util	is from   src/lib/x-kit/tut/bricks/brick-util.pkg
     package bv =  brick_view;			# brick_view	is from   src/lib/x-kit/tut/bricks/brickview.pkg
 herein

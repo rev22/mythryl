@@ -16,7 +16,7 @@ stipulate
     package b   =  border;
     package sb  =  scrollbar;			# scrollbar		is from   src/lib/x-kit/widget/leaf/scrollbar.pkg
     package sbl =  widget_with_scrollbars;
-    package w   =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package vf  =  view_font;
     package lw  =  line_of_widgets;		# line_of_widgets	is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
     package xc  =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
@@ -28,7 +28,7 @@ herein
     package graph_view:  Graph_View {		# Graph_View		is from   src/lib/x-kit/tut/ml-viewer/graph-view/graph-view.api
 
 
-	View = VIEW { widget:  w::Widget,
+	View = VIEW { widget:  wg::Widget,
 		      viewer:  v::Graph_Viewer
 		    };
 
@@ -50,7 +50,7 @@ herein
 		hsb = sb::make_horizontal_scrollbar root_window { color=>NULL, size=>scroll_bar_size };	    horizontal_scrollbar_change' = sb::scrollbar_change'_of  hsb;
 		vsb = sb::make_vertical_scrollbar   root_window { color=>NULL, size=>scroll_bar_size };	    vertical_scrollbar_change' = sb::scrollbar_change'_of  vsb;
 
-		screen = w::screen_of root_window;
+		screen = wg::screen_of root_window;
 
 		black  = xc::black;
 

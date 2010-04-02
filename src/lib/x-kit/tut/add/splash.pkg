@@ -8,7 +8,7 @@ stipulate
     package xd =  xdraw;					# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
     package xg =  xgeometry;					# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
     #
-    package w  =  widget;					# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     #
     package im = images;					# images	is from   src/lib/x-kit/tut/add/images.pkg
 herein
@@ -43,7 +43,7 @@ herein
 		=
 		mks
 		where
-		    screen =  w::screen_of  root;
+		    screen =  wg::screen_of  root;
 
 		    water_pen
 			=

@@ -7,7 +7,7 @@ stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package cv =  canvas;				# canvas			is from   src/lib/x-kit/widget/leaf/canvas.pkg
-    package w  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package lw =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
     package sz =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
     package pb =  pushbuttons;				# pushbuttons			is from   src/lib/x-kit/widget/leaf/pushbuttons.pkg
@@ -29,14 +29,14 @@ herein
 	    = 
 	    ANSWERBOX
 	      {
-		root_window:  w::Root_Window,
+		root_window:  wg::Root_Window,
 		font:         xf::Font,
 		lead:         Int
 	      };
 
-	fun make_answer (root_window: w::Root_Window, fontname: String)
+	fun make_answer (root_window: wg::Root_Window, fontname: String)
 	    =
-	    {   font = xf::open_font (w::xsession_of root_window) fontname;
+	    {   font = xf::open_font (wg::xsession_of root_window) fontname;
 
 		my { ascent, descent }
 		    =
@@ -65,8 +65,8 @@ herein
 
 		size_preferences
 		    =
-		    { col_preference =>  w::tight_preference  wd,
-		      row_preference =>  w::tight_preference  (s3y + 4)
+		    { col_preference =>  wg::tight_preference  wd,
+		      row_preference =>  wg::tight_preference  (s3y + 4)
 		    };
 
 		my (canvas, size, kidplug)

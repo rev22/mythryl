@@ -6,14 +6,14 @@
 
 
 stipulate
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;			# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
     package background: (weak)  Background {		# Background		is from   src/lib/x-kit/widget/composite/background.api
 
-	Background = w::Widget;
+	Background = wg::Widget;
 
 	attributes
 	    =
@@ -21,21 +21,21 @@ herein
 
 	fun make_back (root_window, color, widget)
 	    =
-	    w::make_widget
+	    wg::make_widget
               {
 		root_window,
 
 		args      =>  fn () = { background => THE color }, 
-		realize   =>  w::realize_fn widget,
+		realize   =>  wg::realize_fn widget,
 
 		size_preference_thunk_of
 		    =>
-		    w::size_preference_thunk_of  widget
+		    wg::size_preference_thunk_of  widget
 	      };
 
 	fun background (root_window, view, args) widget
 	    =
-	    {   attributes = w::find_attribute (w::attributes (view, attributes, args));
+	    {   attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		color = wa::get_color (attributes wa::background);
 
@@ -44,7 +44,7 @@ herein
 
 	fun make_background { color, widget }
 	    =
-	    {   root_window = w::root_window_of widget;
+	    {   root_window = wg::root_window_of widget;
 
 		color = case color
 			    #

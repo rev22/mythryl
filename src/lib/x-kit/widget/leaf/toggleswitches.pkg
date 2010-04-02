@@ -23,7 +23,7 @@
 
 
 stipulate
-    package w  =  widget;									# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;									# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;								# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy =  widget_style;									# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
     package wt =  widget_types;									# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
@@ -95,7 +95,7 @@ herein
 			   NULL => args;
 		       esac;
 
-		make_rocker_toggleswitch' (root, (name, w::style_of root), args) click_callback;
+		make_rocker_toggleswitch' (root, (name, wg::style_of root), args) click_callback;
 	    };
 
 	fun make_checkbox_toggleswitch root { state, size, click_callback, color }
@@ -112,7 +112,7 @@ herein
 			   NULL => args;
 		       esac;
 
-		make_checkbox_toggleswitch' (root, (name, w::style_of root), args) click_callback;
+		make_checkbox_toggleswitch' (root, (name, wg::style_of root), args) click_callback;
 	    };
 
 
@@ -133,7 +133,7 @@ herein
 			   NULL  => args;
 		       esac;
 
-		make_round_toggleswitch' (root, (name, w::style_of root), args) click_callback;
+		make_round_toggleswitch' (root, (name, wg::style_of root), args) click_callback;
 	    };
 
 	fun make_icon_toggleswitch root { state, icon, click_callback, foreground, background }
@@ -156,7 +156,7 @@ herein
 			   NULL  =>  args;
 		       esac;
 
-		label_button (root, (name, w::style_of root), args) click_callback;
+		label_button (root, (name, wg::style_of root), args) click_callback;
 	    };
 
 	fun make_text_toggleswitch root { state, rounded, label, click_callback, foreground, background }
@@ -181,7 +181,7 @@ herein
 			   NULL  => args;
 		       esac;
 
-		make_text_toggleswitch' (root, (name, w::style_of root), args) click_callback;
+		make_text_toggleswitch' (root, (name, wg::style_of root), args) click_callback;
 	    };
 
     };				# package toggleswitch 

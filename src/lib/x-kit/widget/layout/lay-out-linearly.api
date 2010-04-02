@@ -16,24 +16,24 @@
 stipulate
     package wt =  widget_types;					# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
     package xg =  xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package w  =  widget;					# Widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# Widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Lay_Out_Linearly {
 
 
 	Box_Item
-	    = GEOMETRY  { col_preference:  w::Int_Preference,	# Should be GEOMETRY w::Widget_Size_Preference 	XXX BUGGO FIXME
-			  row_preference:  w::Int_Preference
+	    = GEOMETRY  { col_preference:  wg::Int_Preference,	# Should be GEOMETRY wg::Widget_Size_Preference 	XXX BUGGO FIXME
+			  row_preference:  wg::Int_Preference
 			}
-	    | WIDGET        w::Widget
+	    | WIDGET        wg::Widget
 	    | HB           (wt::Vertical_Alignment, List( Box_Item ))
 	    | NAMED_VALUE  (wt::Vertical_Alignment, List( Box_Item ))
 	    ;
 
-	 comp_layout:  (xg::Box, Box_Item) -> (Bool, List( (w::Widget, xg::Box) ));
+	 comp_layout:  (xg::Box, Box_Item) -> (Bool, List( (wg::Widget, xg::Box) ));
 
-	 comp_size:  Box_Item -> w::Widget_Size_Preference;
+	 comp_size:  Box_Item -> wg::Widget_Size_Preference;
     };
 
 end;

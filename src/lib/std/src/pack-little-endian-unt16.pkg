@@ -11,7 +11,7 @@ stipulate
     package large_unt= large_unt_guts;			# large_unt_guts	is from   src/lib/std/src/bind-largeword-32.pkg
     package unt8= unt8_guts;				# unt8_guts		is from   src/lib/std/src/unt8.pkg
     #
-    package w   = large_unt;				# large_unt		is from   src/lib/std/types-only/bind-largest32.pkg
+    package lun = large_unt;				# large_unt		is from   src/lib/std/types-only/bind-largest32.pkg
     package w8  = unt8;					# unt8			is from   src/lib/std/types-only/basis-structs.pkg
     package w8v = inline_t::unt8_vector;		# inline_t		is from   src/lib/core/init/built-in.pkg
     package w8a = inline_t::rw_unt8_vector;
@@ -33,11 +33,11 @@ package pack_little_endian_unt16: (weak)  Pack_Unt {	# Pack_Unt		is from   src/l
 
     fun mk_word (b1, b2)
         =
-	w::bitwise_or (w::(<<) (unt8::to_large_unt b2, 0u8), unt8::to_large_unt b1);
+	lun::bitwise_or (lun::(<<) (unt8::to_large_unt b2, 0u8), unt8::to_large_unt b1);
 
     fun sign_ext w
         =
-        w::(-) (w::bitwise_xor (0ux8000, w), 0ux8000);
+        lun::(-) (lun::bitwise_xor (0ux8000, w), 0ux8000);
 
     fun get_vec (vec, i)
         =
@@ -77,7 +77,7 @@ package pack_little_endian_unt16: (weak)  Pack_Unt {	# Pack_Unt		is from   src/l
 	    k = i+i;
 	  
 	    w8a::set (arr, k,   w8::from_large_unt w);
-	    w8a::set (arr, k+1, w8::from_large_unt (w::(>>) (w, 0u8)));
+	    w8a::set (arr, k+1, w8::from_large_unt (lun::(>>) (w, 0u8)));
 	};
 
 };

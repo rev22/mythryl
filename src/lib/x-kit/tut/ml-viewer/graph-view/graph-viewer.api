@@ -9,17 +9,17 @@
 stipulate
     include threadkit;
     #
-    package vg  =  planar_subgraph_tree;
-    package w   =  widget;
-    package vf  =  view_font;
+    package vg =  planar_subgraph_tree;
+    package wg =  widget;
+    package vf =  view_font;
 herein
 
     api Graph_Viewer {
 
 	Graph_Viewer;
 
-	make_graph_viewer:  (vf::Font_Imp, w::Root_Window) -> vg::Attributed_Graph -> Graph_Viewer;
-	as_widget:  Graph_Viewer -> w::Widget;
+	make_graph_viewer:  (vf::Font_Imp, wg::Root_Window) -> vg::Attributed_Graph -> Graph_Viewer;
+	as_widget:  Graph_Viewer -> wg::Widget;
 
 	Viewdim
 	    =

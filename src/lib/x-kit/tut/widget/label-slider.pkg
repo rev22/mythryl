@@ -17,7 +17,7 @@ stipulate
     package lbl =  label;			# label			is from   src/lib/x-kit/widget/leaf/label.pkg
     package rx  =  run_xkit;			# run_xkit		is from   src/lib/x-kit/widget/lib/run-xkit.pkg
     package top =  topwindow;			# topwindow		is from   src/lib/x-kit/widget/basic/topwindow.pkg
-    package w   =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa  =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy  =  widget_style;		# widget_style		is from   src/lib/x-kit/widget/lib/widget-style.pkg
     package wt  =  widget_types;		# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
@@ -91,11 +91,11 @@ herein
 	    where
 		fun quit ()
 		    =
-		    {   w::delete_root_window root;
+		    {   wg::delete_root_window root;
 			shut_down_thread_scheduler  winix::process::success;
 		    };
 
-		style = w::style_from_strings (root, resources);
+		style = wg::style_from_strings (root, resources);
 
 		name =  wy::make_view
 			  { name    =>   wy::style_name [],

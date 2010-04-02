@@ -75,7 +75,7 @@ stipulate
     package xs =  xselection;			# xselection	is from   src/lib/x-kit/xclient/xselection.pkg
     package xw =  xwindow;			# xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
     #
-    package w  =  widget;			# Widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# Widget	is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Topwindow {
@@ -100,9 +100,9 @@ herein
 
 	topwindow
 	    :
-	    (w::Root_Window,  w::View,  List( w::Arg ))
+	    (wg::Root_Window,  wg::View,  List( wg::Arg ))
 	    ->
-	    w::Widget
+	    wg::Widget
 		->
 		Topwindow;
 
@@ -121,7 +121,7 @@ herein
 	#
 	make_topwindow
 	    :
-	    ( w::Widget,			# Root of widget-tree for window.
+	    ( wg::Widget,			# Root of widget-tree for window.
 	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )
@@ -132,7 +132,7 @@ herein
 	    :
 	    xg::Box
 	    ->
-	    ( w::Widget,			# Root of widget-tree for window.
+	    ( wg::Widget,			# Root of widget-tree for window.
 	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )
@@ -166,7 +166,7 @@ herein
 	    :
 	    xc::Window				# Main application topwindow; window manager will de/iconify us along with it.
 	    -> 
-	    ( w::Widget,			# Root of widget-tree for window.
+	    ( wg::Widget,			# Root of widget-tree for window.
 	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )
@@ -179,7 +179,7 @@ herein
 	    ->
 	    xc::Window				# Main application topwindow; window manager will de/iconify us along with it.
 	    ->
-	    ( w::Widget,			# Root of widget-tree for window.
+	    ( wg::Widget,			# Root of widget-tree for window.
 	      Null_Or( xc::Rgb ),		# Background color; defaults to white.
 	      Window_And_Icon_Names		# Label strings for window manager.
 	    )

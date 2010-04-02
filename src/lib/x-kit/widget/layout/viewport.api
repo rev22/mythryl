@@ -59,7 +59,7 @@
 stipulate
     include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package xg =  xgeometry;			# xgeometry	is from   src/lib/x-kit/xclient/xgeometry.pkg
 herein
 
@@ -69,13 +69,13 @@ herein
 
 	viewport
 	    :
-	    (w::Root_Window, w::View, List(w::Arg))
+	    (wg::Root_Window, wg::View, List(wg::Arg))
 	    ->
-	    w::Widget
+	    wg::Widget
 	    ->
 	    Viewport;
 
-	make_viewport:  w::Widget -> Viewport;
+	make_viewport:  wg::Widget -> Viewport;
 	    #
 	    # Create a viewport (a classical window) on the virtual graphical
 	    # space provides by the widget.  In the current model, the viewport
@@ -88,7 +88,7 @@ herein
 	    # Return the underlying widget's current size, and the position
 	    # of the viewport rectangle in the widget's coordinates.
 
-	as_widget:  Viewport -> w::Widget;
+	as_widget:  Viewport -> wg::Widget;
 	    #
 	    # Convert a viewport into a widget 
 

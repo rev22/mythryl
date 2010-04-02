@@ -29,7 +29,7 @@
 stipulate
     include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w   =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa  =  widget_attribute;			# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy  =  widget_style;			# widget_style		is from   src/lib/x-kit/widget/lib/widget-style.pkg
     #
@@ -47,7 +47,7 @@ herein
 
 	Scrolled_Widget
 	    =
-	    SCROLLED_WIDGET  { scrolled_widget:  w::Widget };
+	    SCROLLED_WIDGET  { scrolled_widget:  wg::Widget };
 
 	fun monitor (continuous, scrollbar, sw, setview, geometry_mailop) ()
 	    =
@@ -201,7 +201,7 @@ herein
 		(b, THE (hsb, hsw), THE (vsb, vsw))
 		where
 
-		    root_window =  w::root_window_of  w;
+		    root_window =  wg::root_window_of  w;
 
 		    hview = (wy::extend_view (name, "hscrollbar"), style);
 
@@ -216,9 +216,9 @@ herein
 		    vsb   = sb::make_vertical_scrollbar' (root_window, vview,[]);
 		    vfr   = bdr::border (root_window, vview,[]) (sb::as_widget vsb);
 
-		    (w::size_preference_of (bdr::as_widget  hfr))
+		    (wg::size_preference_of (bdr::as_widget  hfr))
 			->
-			{ row_preference => w::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps }, ... };
+			{ row_preference => wg::INT_PREFERENCE { start_at, step_by, min_steps, ideal_steps, max_steps }, ... };
 
 		    g = lw::SPACER
 			  { min_size   => start_at + step_by*min_steps,
@@ -271,7 +271,7 @@ herein
 		(box, THE (hsb, hsw), NULL)
 		where
 
-		    root_window  =  w::root_window_of  w;
+		    root_window  =  wg::root_window_of  w;
 
 		    hview =  (wy::extend_view (name, "hscrollbar"), style);
 
@@ -296,7 +296,7 @@ herein
 		(box, NULL, THE (vsb, vsw))
 		where
 
-		    root_window =  w::root_window_of  w;
+		    root_window =  wg::root_window_of  w;
 
 		    vview = (wy::extend_view (name, "vscrollbar"), style);
 
@@ -318,7 +318,7 @@ herein
 
 	    do_layout (w, NULL, NULL, view)
 		=> 
-		(lw::line_of_widgets (w::root_window_of w, view,[]) (lw::WIDGET w), NULL, NULL);
+		(lw::line_of_widgets (wg::root_window_of w, view,[]) (lw::WIDGET w), NULL, NULL);
 	end;
 
 
@@ -326,8 +326,8 @@ herein
 	    =
 	    {   attributes
 		    =
-		    w::find_attribute
-			(w::attributes (view, attributes, args));
+		    wg::find_attribute
+			(wg::attributes (view, attributes, args));
 
 		color      = wa::get_color (attributes wa::background);
 		continuous = wa::get_bool  (attributes attribute_continuous);
@@ -368,23 +368,23 @@ herein
 			    main (viewport, vf, hf);
 			};
 
-			w::realize_fn (lw::as_widget box) arg;
+			wg::realize_fn (lw::as_widget box) arg;
 		    };
 
 		SCROLLED_WIDGET
 		  {
 		    scrolled_widget
 			=>
-			w::make_widget
+			wg::make_widget
                           {
-                            root_window =>  w::root_window_of  widget, 
+                            root_window =>  wg::root_window_of  widget, 
 			    #	
 			    args        =>  fn () =  { background => THE color },
 			    realize,
 
 			    size_preference_thunk_of
 				=>
-				w::size_preference_thunk_of
+				wg::size_preference_thunk_of
 				    #
 				    (lw::as_widget  box)
 			  }
@@ -394,7 +394,7 @@ herein
 
 	fun make_scrolled_widget { scrolled_widget=>scrolled_widget', smooth_scrolling, color, horizontal_scrollbar, vertical_scrollbar }
 	    =
-	    {   root_window =  w::root_window_of  scrolled_widget';
+	    {   root_window =  wg::root_window_of  scrolled_widget';
 
 		name =  wy::make_view { name     =>  wy::style_name ["scrollport"],
 					 aliases =>  []
@@ -421,7 +421,7 @@ herein
 		scrolled_widget
 		  #
                   ( root_window,
-                    (name,   w::style_of  root_window),
+                    (name,   wg::style_of  root_window),
                     args
                   )
 		  #

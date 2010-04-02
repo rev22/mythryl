@@ -21,7 +21,7 @@
 stipulate
     include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     #
     package xc =  xcore;			# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
     package xd =  xdraw;			# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
@@ -748,7 +748,7 @@ herein
 	    =
 	    TEXT_WINDOW  {
 
-	      root_window:    w::Root_Window,
+	      root_window:    wg::Root_Window,
 
 	      window:  xc::Window,
 	      font:    xc::Font,
@@ -884,7 +884,7 @@ herein
 			      black   =  xc::black;
 			      white   =  xc::white;
 
-			      stipple =  w::ro_pixmap root_window "lightGray";
+			      stipple =  wg::ro_pixmap root_window "lightGray";
 
 			      ( xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb black), xd::BACKGROUND (xc::rgb8_from_rgb  white)],
 				xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb white), xd::BACKGROUND (xc::rgb8_from_rgb  black)],
@@ -1653,7 +1653,7 @@ herein
 	    =
 	    TEXT_WIDGET
 	      {
-		widget:  w::Widget,
+		widget:  wg::Widget,
 		query:   Plea_Mail -> Reply_Mail,
 		cmd:     Plea_Mail -> Void
 	      };
@@ -1674,7 +1674,7 @@ herein
 
 		plea' =  take'  plea_slot;
 
-		font  =  xf::open_font (w::xsession_of root_window) font_name;
+		font  =  xf::open_font (wg::xsession_of root_window) font_name;
 
 		my (char_high, char_wide, _)
 		    =
@@ -1816,15 +1816,15 @@ herein
 		      query  => (fn plea = {  give (plea_slot, plea);   take reply_slot;  }),
 		      cmd    => (fn plea =    give (plea_slot, plea)),
 
-		      widget => w::make_widget
+		      widget => wg::make_widget
 				  {
 				    root_window,
 				    args => fn () = { background => NULL }, 
 
 				    size_preference_thunk_of
 					=>
-					fn () = { col_preference =>  w::INT_PREFERENCE { start_at=>tot_pad, step_by=>char_wide, min_steps=>1, ideal_steps=>cols, max_steps=>NULL },
-						  row_preference =>  w::INT_PREFERENCE { start_at=>tot_pad, step_by=>char_high,  min_steps=>1, ideal_steps=>rows, max_steps=>NULL }
+					fn () = { col_preference =>  wg::INT_PREFERENCE { start_at=>tot_pad, step_by=>char_wide, min_steps=>1, ideal_steps=>cols, max_steps=>NULL },
+						  row_preference =>  wg::INT_PREFERENCE { start_at=>tot_pad, step_by=>char_high,  min_steps=>1, ideal_steps=>rows, max_steps=>NULL }
 						},
 
 				    realize

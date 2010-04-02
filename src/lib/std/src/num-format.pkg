@@ -13,7 +13,7 @@
 
 
 stipulate
-    package w   = inline_t::unt32;	# inline_t	is from   src/lib/core/init/built-in.pkg
+    package u32 = inline_t::unt32;	# inline_t	is from   src/lib/core/init/built-in.pkg
     package i   = inline_t::int31;
     package i32 = inline_t::int32;
 herein
@@ -25,14 +25,14 @@ herein
       }
     {
 
-	my (<)   = w::(<);
-	my (-)   = w::(-);
-	my (*)   = w::(*);
-	my (div) = w::div;
+	my (<)   = u32::(<);
+	my (-)   = u32::(-);
+	my (*)   = u32::(*);
+	my (div) = u32::div;
 
 	fun mk_digit (w:  unt32::Unt)
 	    =
-	    inline_t::char_vector::get ("0123456789ABCDEF", w::to_int w);
+	    inline_t::char_vector::get ("0123456789ABCDEF", u32::to_int w);
 
 	fun word_to_bin w
 	    =
@@ -40,13 +40,13 @@ herein
 	    where
 		fun make_bit w
 		    =
-		    w::bitwise_and (w, 0u1) == 0u0
+		    u32::bitwise_and (w, 0u1) == 0u0
 		      ?? '0'
 		      :: '1';
 
 		fun f (0u0, n, l) =>   (i::(+) (n, 1), '0' ! l);
 		    f (0u1, n, l) =>   (i::(+) (n, 1), '1' ! l);
-		    f (w,   n, l) =>   f (w::rshiftl (w, 0u1), i::(+) (n, 1), (make_bit w) ! l);
+		    f (w,   n, l) =>   f (u32::rshiftl (w, 0u1), i::(+) (n, 1), (make_bit w) ! l);
 		end;
 	    end;
 
@@ -60,7 +60,7 @@ herein
 
 			 (i::(+) (n, 1), (mk_digit w) ! l);
 		    else
-			 f (w::rshiftl (w, 0u3), i::(+) (n, 1), mk_digit (w::bitwise_and (w, 0ux7)) ! l);
+			 f (u32::rshiftl (w, 0u3), i::(+) (n, 1), mk_digit (u32::bitwise_and (w, 0ux7)) ! l);
 		    fi;
 	    end;
 
@@ -90,7 +90,7 @@ herein
 
 			 (i::(+) (n, 1), (mk_digit w) ! l);
 		    else
-			 f (w::rshiftl (w, 0u4), i::(+) (n, 1), mk_digit (w::bitwise_and (w, 0uxf)) ! l);
+			 f (u32::rshiftl (w, 0u4), i::(+) (n, 1), mk_digit (u32::bitwise_and (w, 0uxf)) ! l);
 		    fi;
 	    end;
 
@@ -104,7 +104,7 @@ herein
 	    =
 	    prestring::implode o (format_w radix);
 
-	i2w =  w::from_large_int o i32::to_large;
+	i2w =  u32::from_large_int o i32::to_large;
 
 	fun format_int radix i
 	    = 

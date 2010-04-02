@@ -9,7 +9,7 @@
 
 stipulate
     package s1 =  oneshot_maildrop;			# oneshot_maildrop	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
 herein
 
@@ -19,7 +19,7 @@ herein
 
 	my debug_tracing:  tracing::Trace_Tree_Node;
 
-	my make_answer:  (w::Root_Window, String) -> Answerbox;
+	my make_answer:  (wg::Root_Window, String) -> Answerbox;
 
 	my show_answer
 	    :

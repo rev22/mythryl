@@ -22,35 +22,35 @@
 #     src/lib/x-kit/widget/leaf/divider.pkg
 
 stipulate
-    package w  = widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xc = xcore;				# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;			# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
     api Divider {
 
 
-	horizontal_divider:  (w::Root_Window, w::View, List(w::Arg)) -> w::Widget;
-	vertical_divider:    (w::Root_Window, w::View, List(w::Arg)) -> w::Widget;
+	horizontal_divider:  (wg::Root_Window, wg::View, List(wg::Arg)) -> wg::Widget;
+	vertical_divider:    (wg::Root_Window, wg::View, List(wg::Arg)) -> wg::Widget;
 
 	make_horizontal_divider
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    { color:  Null_Or( xc::Rgb ),
 	      width:  Int 
 	    }
 	    ->
-	    w::Widget;
+	    wg::Widget;
 
 	make_vertical_divider
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    ->
 	    { color:  Null_Or( xc::Rgb ),
 	      width:  Int 
 	    }
 	    ->
-	    w::Widget;
+	    wg::Widget;
     };
 
 end;

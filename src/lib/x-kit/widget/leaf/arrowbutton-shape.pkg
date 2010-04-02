@@ -24,7 +24,7 @@ stipulate
     include xgeometry;							# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
     #
     package d3 =  three_d;						# three_d			is from   src/lib/x-kit/widget/lib/three-d.pkg
-    package w  =  widget;						# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;					# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wt =  widget_types;						# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
 herein
@@ -84,7 +84,7 @@ herein
 				 esac;
 		    esac;
 
-		w::make_tight_size_preference (wide, high);
+		wg::make_tight_size_preference (wide, high);
 	    };
 
 	fun drawfn dir (d, size as SIZE { wide, high }, bwid)

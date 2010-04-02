@@ -21,7 +21,7 @@
 stipulate
     #
     package d3 =  three_d;						# three_d		is from   src/lib/x-kit/widget/lib/three-d.pkg
-    package w  =  widget;						# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package xg =  xgeometry;						# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
 herein
 
@@ -56,7 +56,7 @@ herein
 
 	fun sizefn (wide, high)
 	    =
-	    w::make_tight_size_preference
+	    wg::make_tight_size_preference
 	      (
 		wide,
 

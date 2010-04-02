@@ -30,7 +30,7 @@ stipulate
     package xi =  xinput;				# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     package xw =  xwindow;				# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
     #
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package li =  list_indexing;			# list_indexing		is from   src/lib/x-kit/widget/lib/list-indexing.pkg
     package mr =  xevent_mail_router;			# xevent_mail_router	is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
 herein
@@ -52,7 +52,7 @@ herein
 	  | SHOWING     Mailslot( Null_Or( Int ) )
 	  | CHILD_COUNT Mailslot( Int )
 	  | SHOW        Int
-	  | INSERT     (Int, List( w::Widget ))
+	  | INSERT     (Int, List( wg::Widget ))
 	  | DELETE      List( Int )
 	  ;
 
@@ -64,7 +64,7 @@ herein
 	Choice_Of_Widgets
 	    =
 	    CHOICE_OF_WIDGETS
-	      { widget:      w::Widget, 
+	      { widget:      wg::Widget, 
 		#
 		plea_slot:   Mailslot( Plea_Mail  ),
 		reply_slot:  Mailslot( Reply_Mail )
@@ -73,7 +73,7 @@ herein
 	Child_Widget
 	    =
 	    CHILD_WIDGET
-	      { widget:     w::Widget, 
+	      { widget:     wg::Widget, 
 		window:     xc::Window,
 		to_mom:     Mailop( xi::Mail_To_Mom )
 	      };
@@ -123,7 +123,7 @@ herein
 
 	    default_length_preference
 		=
-		w::INT_PREFERENCE
+		wg::INT_PREFERENCE
 		  {
 		    start_at =>  1,
 		    step_by  =>  1,
@@ -281,7 +281,7 @@ herein
 				xw::c::SIZE        given_size
 			      ];
 
-			    if (not (w::okay_size (widget, given_size)))
+			    if (not (wg::okay_size (widget, given_size)))
 				#
 				do_mailop (to_mom  xi::REQ_RESIZE);
 			    fi;
@@ -308,7 +308,7 @@ herein
 			    size_preference
 				(fn CHILD_WIDGET { widget, ... }
 				    =
-				    w::size_preference_of  widget
+				    wg::size_preference_of  widget
 				);
 
 			fun make_real' size
@@ -317,7 +317,7 @@ herein
 
 				fn widget
 				    =
-				    {   cwin = w::make_child_window (window, box, w::args_of widget); 
+				    {   cwin = wg::make_child_window (window, box, wg::args_of widget); 
 
 					(xi::make_widget_cable ())
 					    ->
@@ -329,7 +329,7 @@ herein
 
 					xw::configure_window  cwin  [xw::c::STACK_MODE  xw::BELOW];
 
-					w::realize_fn widget { kidplug=>ckidplug, window=>cwin, size };
+					wg::realize_fn widget { kidplug=>ckidplug, window=>cwin, size };
 
 					xw::show_window  cwin;
 
@@ -419,7 +419,7 @@ herein
 
 					    xw::configure_window window [xw::c::STACK_MODE xw::ABOVE, xw::c::SIZE given_size];
 
-					    if (not (w::okay_size (widget, given_size)))
+					    if (not (wg::okay_size (widget, given_size)))
 						#
 						do_mailop (to_mom  xi::REQ_RESIZE);
 					    fi;
@@ -451,7 +451,7 @@ herein
 
 						    xw::configure_window window' [xw::c::STACK_MODE xw::ABOVE, xw::c::SIZE given_size];
 
-						    if (not (w::okay_size (widget, given_size)))
+						    if (not (wg::okay_size (widget, given_size)))
 							#
 							do_mailop (to_mom  xi::REQ_RESIZE);
 						    fi;
@@ -473,7 +473,7 @@ herein
 					    case (top_index me)   
 						#
 						NULL =>
-						    {   size' =  w::preferred_size  (head wl);
+						    {   size' =  wg::preferred_size  (head wl);
 
 							me'   = insert_w (me, index, map (make_real' size') wl);
 
@@ -515,7 +515,7 @@ herein
 		    size_preference
 			(fn widget
 			    =
-			    w::size_preference_of  widget
+			    wg::size_preference_of  widget
 			);
 
 
@@ -577,7 +577,7 @@ herein
 		      #	
 		      widget
 			  =>
-			  w::make_widget {
+			  wg::make_widget {
 			      root_window,
 			      args                     =>  fn ()  = { background => NULL },
 			      size_preference_thunk_of =>  fn ()  = { give (plea_slot, SIZE_PREFERENCE);  take size_slot;},

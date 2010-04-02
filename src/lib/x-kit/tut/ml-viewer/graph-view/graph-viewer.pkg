@@ -8,19 +8,19 @@
 
 stipulate
     include threadkit;						# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
-
-    package xc  =  xcore;					# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
-    package xd  =  xdraw;					# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
-    package xf  =  xfont;					# xfont				is from   src/lib/x-kit/xclient/xfont.pkg
-    package xg  =  xgeometry;					# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xi  =  xinput;					# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
-
-    package w   =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
-    package gf  =  xgeometry_float;				# xgeometry_float		is from   src/lib/x-kit/tut/ml-viewer/graph-view/geometry-2d-float.pkg
-    package gm  =  get_mouse_selection;				# get_mouse_selection		is from   src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
-    package pu  =  popup_menu;					# popup_menu			is from   src/lib/x-kit/widget/menu/popup-menu.pkg
-    package pg  =  planar_subgraph_tree;
-
+    #
+    package xc =  xcore;					# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd =  xdraw;					# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xf =  xfont;					# xfont				is from   src/lib/x-kit/xclient/xfont.pkg
+    package xg =  xgeometry;					# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi =  xinput;					# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+    #
+    package wg =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package gf =  xgeometry_float;				# xgeometry_float		is from   src/lib/x-kit/tut/ml-viewer/graph-view/geometry-2d-float.pkg
+    package gm =  get_mouse_selection;				# get_mouse_selection		is from   src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
+    package pu =  popup_menu;					# popup_menu			is from   src/lib/x-kit/widget/menu/popup-menu.pkg
+    package pg =  planar_subgraph_tree;
+    #
 #    include planar_subgraph_tree;
 herein
 
@@ -58,7 +58,7 @@ herein
 	Graph_Viewer
 	    =
 	    GRAPH_VIEWER
-	      { widget:    w::Widget,
+	      { widget:    wg::Widget,
 		graph:     pg::Attributed_Graph,
 		view_slot: Mailslot { horz:  Viewdim,
 				      vert:  Viewdim
@@ -709,7 +709,7 @@ herein
 		    =
 		    pg::info_of_graph  vg;
 
-		screen =  w::screen_of  root_window;
+		screen =  wg::screen_of  root_window;
 
 		# Drawing pens:
 		#
@@ -731,8 +731,8 @@ herein
 
 		size_preferences
 		    =
-		    { col_preference =>   w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>minsz, ideal_steps=>max (minsz, floor wide), max_steps=>NULL },
-		      row_preference =>   w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>minsz, ideal_steps=>max (minsz, floor high), max_steps=>NULL }
+		    { col_preference =>   wg::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>minsz, ideal_steps=>max (minsz, floor wide), max_steps=>NULL },
+		      row_preference =>   wg::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>minsz, ideal_steps=>max (minsz, floor high), max_steps=>NULL }
 		    };
 
 		get_visible_nodes_list = find_visible_nodes vg;
@@ -741,8 +741,8 @@ herein
 
 		pix2pts
 		    =
-		    {   my xg::SIZE { high=>htpx, ... } =  w::size_of_screen     root_window;
-			my xg::SIZE { high=>htmm, ... } =  w::mm_size_of_screen  root_window;
+		    {   my xg::SIZE { high=>htpx, ... } =  wg::size_of_screen     root_window;
+			my xg::SIZE { high=>htmm, ... } =  wg::mm_size_of_screen  root_window;
 
 			fact = (((float::from_int htmm)//(float::from_int htpx))//25.4) * 72.0;
 
@@ -1058,7 +1058,7 @@ herein
 
 		      end;
 
-		w =  w::make_widget
+		w =  wg::make_widget
 		      {
 			root_window,
 			args      =>  (fn ()  = {   background => NULL }),	# Added 2009-12-28 CrT just to get it to compile

@@ -86,7 +86,7 @@
 stipulate
     include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package wt =  widget_types;			# widget_types	is from   src/lib/x-kit/widget/basic/widget-types.pkg
 herein
 
@@ -101,7 +101,7 @@ herein
 	    | UNSET(X)
 	    ;
 
-	Textlist_Item(X);      #  = (String, X, w::Button_State) 
+	Textlist_Item(X);      #  = (String, X, wg::Button_State) 
 
 	make_textlist_item
 	    :
@@ -113,12 +113,12 @@ herein
             Textlist_Item(X);
 
 	make_textlist
-	    :  (w::Root_Window, w::View, List( w::Arg ))
+	    :  (wg::Root_Window, wg::View, List( wg::Arg ))
 	    -> List( Textlist_Item(X) )
 	    -> Textlist(X)
 	    ;
 
-	as_widget:   Textlist(X) -> w::Widget;
+	as_widget:   Textlist(X) -> wg::Widget;
 
 	set_textlist_selections:     Textlist(X) -> List( (Int, Bool) ) -> Void;
 	set_textlist_active_items:   Textlist(X) -> List( (Int, Bool) ) -> Void;
@@ -132,12 +132,12 @@ herein
 	delete:  Textlist(X) ->       List( Int         )  -> Void;
 
     /*
-	my setOrigin:   Textlist(X) -> w::G.point -> Void
+	my setOrigin:   Textlist(X) -> wg::G.point -> Void
 	my setHorz:     Textlist(X) -> Int        -> Void
 	my setVert:     Textlist(X) -> Int        -> Void
 
-	my getGeometry:  viewport -> { box:  w::G.box, childSz:  w::G.size }
-	my geomEvtOf:   text_list(X) ->  Mailop { box:  w::G.box, childSz:  w::G.size }
+	my getGeometry:  viewport -> { box:  wg::G.box, childSz:  wg::G.size }
+	my geomEvtOf:   text_list(X) ->  Mailop { box:  wg::G.box, childSz:  wg::G.size }
 
     */
     };

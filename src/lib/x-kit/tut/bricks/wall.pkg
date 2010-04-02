@@ -14,7 +14,7 @@ stipulate
     package bg  =  background;			# background		is from   src/lib/x-kit/widget/wrapper/background.pkg
     package lbl =  label;			# label			is from   src/lib/x-kit/widget/leaf/label.pkg
     package low =  line_of_widgets;		# line_of_widgets	is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
-    package w   =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wt  =  widget_types;		# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
     #
     package bu  =  brick_util;			# brick_util		is from   src/lib/x-kit/tut/bricks/brick-util.pkg
@@ -52,7 +52,7 @@ herein
 		;
 
 	Wall = WALL { plea_slot:  Mailslot( Request ),
-		      widget:     w::Widget
+		      widget:     wg::Widget
 		    };
 
 
@@ -109,7 +109,7 @@ herein
 
 	fun make_wall root_window (x_size, y_size)
 	    =
-	    {   screen =  w::screen_of  root_window;
+	    {   screen =  wg::screen_of  root_window;
 
 		plea_slot  =  make_mailslot ();
 		brick_slot =  make_mailslot ();

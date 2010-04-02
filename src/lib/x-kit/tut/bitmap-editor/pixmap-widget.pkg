@@ -4,12 +4,9 @@
 # Compiled by:
 #     src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6
 
-
-
-package pixmap_widget:  Pixmap_Widget {		# Pixmap_Widget		is from   src/lib/x-kit/tut/bitmap-editor/pixmap-widget.api
-
-#    package w = widget
-
+stipulate
+#    package wg = widget;
+    #
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     include geometry;
     include xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
@@ -17,272 +14,277 @@ package pixmap_widget:  Pixmap_Widget {		# Pixmap_Widget		is from   src/lib/x-ki
     include interact;
     include drawing;
     include widget;
+herein
 
-    exception BAD_PARAMETER;
-
-    Cell_Change
-      #
-      = DRAW    Point
-      | UNDRAW  Point
-      | FLIP    Point
-      ;
-
-    fun mse_reader (m, trans_fn, m_slot)
-	=
-	loop () 
-	where
-
-	    fun track msg pt
-	      =
-	      loop p
-	      where
-
-		  p = trans_fn  pt;
-
-		  fun next ()
-		      = 
-		      case  (envelope_contents (do_mailop  m))
-			  #
-			  MOUSE_MOTION  { pt, ... } =>  (trans_fn pt, FALSE);
-			  MOUSE_LAST_UP { pt, ... } =>  (trans_fn pt, TRUE );
-			  MOUSE_DOWN    { pt, ... } =>  (trans_fn pt, FALSE);
-			  MOUSE_UP      { pt, ... } =>  (trans_fn pt, FALSE);
-			  _                         =>  next ();
-		      esac;
-
-		  fun loop p
-		      =
-		      {   my (p', done)
-			      =
-			      next ();
-
-			  if (p != p')
-			      give (m_slot, msg p');
-			  fi; 
-
-			  if (not done)  loop p';   fi;
-		      };
+    package pixmap_widget:  Pixmap_Widget {		# Pixmap_Widget		is from   src/lib/x-kit/tut/bitmap-editor/pixmap-widget.api
 
 
-		  give (m_slot, msg p);
-	      end;
+	exception BAD_PARAMETER;
 
-	    fun handle_mse (MOUSE_FIRST_DOWN { but, pt, ... } )
-		    =>
-		    case but of
-			#
-			MOUSEBUTTON 1 =>  track DRAW    pt;
-			MOUSEBUTTON 2 =>  track UNDRAW  pt;
-			_         =>  track FLIP    pt;
-		    esac;
+	Cell_Change
+	  #
+	  = DRAW    Point
+	  | UNDRAW  Point
+	  | FLIP    Point
+	  ;
 
-		handle_mse(_)
-		    =>
-		    ();
+	fun mse_reader (m, trans_fn, m_slot)
+	    =
+	    loop () 
+	    where
+
+		fun track msg pt
+		  =
+		  loop p
+		  where
+
+		      p = trans_fn  pt;
+
+		      fun next ()
+			  = 
+			  case  (envelope_contents (do_mailop  m))
+			      #
+			      MOUSE_MOTION  { pt, ... } =>  (trans_fn pt, FALSE);
+			      MOUSE_LAST_UP { pt, ... } =>  (trans_fn pt, TRUE );
+			      MOUSE_DOWN    { pt, ... } =>  (trans_fn pt, FALSE);
+			      MOUSE_UP      { pt, ... } =>  (trans_fn pt, FALSE);
+			      _                         =>  next ();
+			  esac;
+
+		      fun loop p
+			  =
+			  {   my (p', done)
+				  =
+				  next ();
+
+			      if (p != p')
+				  give (m_slot, msg p');
+			      fi; 
+
+			      if (not done)  loop p';   fi;
+			  };
+
+
+		      give (m_slot, msg p);
+		  end;
+
+		fun handle_mse (MOUSE_FIRST_DOWN { but, pt, ... } )
+			=>
+			case but of
+			    #
+			    MOUSEBUTTON 1 =>  track DRAW    pt;
+			    MOUSEBUTTON 2 =>  track UNDRAW  pt;
+			    _         =>  track FLIP    pt;
+			esac;
+
+		    handle_mse(_)
+			=>
+			();
+		end;
+
+		fun loop ()
+		    = 
+		    for (;;) {
+
+			handle_mse
+			    (envelope_contents  (do_mailopc  m));
+		    };
+
 	    end;
 
-	    fun loop ()
-		= 
-		for (;;) {
 
-	            handle_mse
-			(envelope_contents  (do_mailopc  m));
-		};
+	fun make_pixmap_widget
+		root
+		{ horz_cells, vert_cells, cell_size }
+	    =
+	    {   screen = screen_of root;
 
-	end;
+		pix_wide = horz_cells*cell_size + 1;
+		pix_high = vert_cells*cell_size + 1;
 
+		pixmap = make_pixmap screen (SIZE { wide=>pix_wide, high=>pix_high }, 1);
 
-    fun make_pixmap_widget
-            root
-            { horz_cells, vert_cells, cell_size }
-	=
-        {   screen = screen_of root;
+		pm = drawable_of_pixmap  pixmap;
 
-	    pix_wide = horz_cells*cell_size + 1;
-	    pix_high = vert_cells*cell_size + 1;
+		cell_map = rw_vector::rw_vector (horz_cells*vert_cells, FALSE);
 
-	    pixmap = make_pixmap screen (SIZE { wide=>pix_wide, high=>pix_high }, 1);
+		size = { x_dim => DIM { base=>1, incr=>cell_size, min=>2, nat=>horz_cells, max=>THE horz_cells },
+			 y_dim => DIM { base=>1, incr=>cell_size, min=>2, nat=>vert_cells, max=>THE vert_cells }
+		       };
 
-	    pm = drawable_of_pixmap  pixmap;
+		max_x = horz_cells - 1;
+		max_y = vert_cells - 1;
 
-	    cell_map = rw_vector::rw_vector (horz_cells*vert_cells, FALSE);
+		draw_sz = cell_size - 3;
 
-	    size = { x_dim => DIM { base=>1, incr=>cell_size, min=>2, nat=>horz_cells, max=>THE horz_cells },
-		     y_dim => DIM { base=>1, incr=>cell_size, min=>2, nat=>vert_cells, max=>THE vert_cells }
-	           };
+		on_pen = make_pen [ FOREGROUND pixel1,
+				    LINE_STYLE_ON_OFF_DASH,
+				    DASH_OFFSET 0,
+				    DASH_FIXED  1
+				  ];
 
-	    max_x = horz_cells - 1;
-	    max_y = vert_cells - 1;
+		off_pen  = make_pen [ FOREGROUND pixel0 ];
 
-	    draw_sz = cell_size - 3;
+		copy_pen = make_pen [ FOREGROUND (black_rgb8_of screen),
+				      BACKGROUND (white_rgb8_of screen)
+				    ];
 
-	    on_pen = make_pen [ FOREGROUND pixel1,
-                                LINE_STYLE_ON_OFF_DASH,
-	                        DASH_OFFSET 0,
-                                DASH_FIXED  1
-                              ];
+		fun fill_pix_map  pm
+		    =
+		    {   pwid = pix_wid - 1;
+			pht  = pix_ht  - 1;
 
-	    off_pen  = make_pen [ FOREGROUND pixel0 ];
+			fun make_horizontal_seg i =   {   y = i*cell_size;   LINE (POINT { x=>0, y=>y }, POINT { x=>pwid, y=>y   } );   };
+			fun make_vertical_seg i =   {   x = i*cell_size;   LINE (POINT { x=>x, y=>0 }, POINT { x=>x,    y=>pht } );   };
 
-	    copy_pen = make_pen [ FOREGROUND (black_rgb8_of screen),
-                                  BACKGROUND (white_rgb8_of screen)
-                                ];
+			fun make_segs seg_fn (i, bnd, l)
+			    =
+			    if (i == bnd)
+				#
+				seg_fn i   !   l;
+			    else
+				make_segs seg_fn (i+1, bnd, (seg_fn i) ! l);
+			    fi; 
 
-	    fun fill_pix_map  pm
-		=
-		{   pwid = pix_wid - 1;
-		    pht  = pix_ht  - 1;
+			clear_drawable pm;
 
-		    fun make_horizontal_seg i =   {   y = i*cell_size;   LINE (POINT { x=>0, y=>y }, POINT { x=>pwid, y=>y   } );   };
-		    fun make_vertical_seg i =   {   x = i*cell_size;   LINE (POINT { x=>x, y=>0 }, POINT { x=>x,    y=>pht } );   };
+			draw_segs pm on_pen (make_segs make_vertical_seg (0, horz_cells+1, (make_segs make_horizontal_seg (0, vert_cells+1,[]))));
+		    };
 
-		    fun make_segs seg_fn (i, bnd, l)
-			=
-			if (i == bnd)
-			    #
-			    seg_fn i   !   l;
-			else
-			    make_segs seg_fn (i+1, bnd, (seg_fn i) ! l);
-			fi; 
+		fun trans_fn (POINT { x, y } )
+		    =
+		    POINT { x => min (x / cell_size, max_x),
+			    y => min (y / cell_size, max_y)
+			  };
 
-		    clear_drawable pm;
+		fun index (POINT { x, y } )
+		    =
+		    x + y * horz_cells;
 
-		    draw_segs pm on_pen (make_segs make_vertical_seg (0, horz_cells+1, (make_segs make_horizontal_seg (0, vert_cells+1,[]))));
-		};
+		fun pt_to_rectangle (POINT { x, y } )
+		    =
+		    BOX { x => 2 + x*cell_size,
+			   y => 2 + y*cell_size,
+			   #
+			   wide => draw_sz,
+			   high => draw_sz
+			 };
 
-	    fun trans_fn (POINT { x, y } )
-		=
-		POINT { x => min (x / cell_size, max_x),
-			y => min (y / cell_size, max_y)
+		fun blt dw r
+		    =
+		    bitblt dw copy_pen
+		      {
+			src      => FROM_PIXMAP pixmap,
+			src_rectangle => r,
+			to_pos  => origin_of_rectangle r
 		      };
 
-	    fun index (POINT { x, y } )
-		=
-		x + y * horz_cells;
+		fun redraw (dw, rlist)
+		    =
+		    apply (blt dw) rlist;
 
-	    fun pt_to_rectangle (POINT { x, y } )
-		=
-		BOX { x => 2 + x*cell_size,
-		       y => 2 + y*cell_size,
-		       #
-		       wide => draw_sz,
-		       high => draw_sz
-		     };
+		fun draw_cell (dw, pt, turn_on, pen)
+		    =
+		    {   index = index pt;
 
-	    fun blt dw r
-		=
-		bitblt dw copy_pen
-		  {
-		    src      => FROM_PIXMAP pixmap,
-		    src_rectangle => r,
-		    to_pos  => origin_of_rectangle r
-		  };
+			if (turn_on != rw_vector::get (cell_map, index))
 
-	    fun redraw (dw, rlist)
-		=
-		apply (blt dw) rlist;
+			    rw_vector::set (cell_map, index, turn_on);
 
-	    fun draw_cell (dw, pt, turn_on, pen)
-		=
-		{   index = index pt;
+			    r = pt_to_rectangle pt;
 
-		    if (turn_on != rw_vector::get (cell_map, index))
+			    fill_box pm pen r;
 
-			rw_vector::set (cell_map, index, turn_on);
+			    redraw (dw,[r]);
+			fi;
+		    };
 
-			r = pt_to_rectangle pt;
+		fun realize { kidplug, window, size }
+		    =
+		    {
+			my KIDPLUG { ci, m, ... }
+			    =
+			    ignore_keyboard  kidplug;
 
-			fill_box pm pen r;
+			m_slot = make_mailslot ();
 
-			redraw (dw,[r]);
-		    fi;
-		};
-
-	    fun realize { kidplug, window, size }
-		=
-		{
-		    my KIDPLUG { ci, m, ... }
-			=
-			ignore_keyboard  kidplug;
-
-		    m_slot = make_mailslot ();
-
-		    dw = drawable_of_window  window;
+			dw = drawable_of_window  window;
 
 
-		    fun handle_ci (ETC_RESIZE (BOX { x, y, wide, high } ))
-			    =>
-			    ();
-
-			handle_ci (ETC_REDRAW  rlist)
-			    =>
-			    {   redraw (dw, rlist);
+			fun handle_ci (ETC_RESIZE (BOX { x, y, wide, high } ))
+				=>
 				();
+
+			    handle_ci (ETC_REDRAW  rlist)
+				=>
+				{   redraw (dw, rlist);
+				    ();
+				};
+
+			    handle_ci  ETC_OWN_DEATH
+				=>
+				();
+
+			    handle_ci _
+				=>
+				();
+			end;
+
+
+			fun handle_mse (DRAW   pt) =>  draw_cell (dw, pt, TRUE,   on_pen);
+			    handle_mse (UNDRAW pt) =>  draw_cell (dw, pt, FALSE, off_pen);
+
+			    handle_mse (FLIP pt)
+				=>
+				case (rw_vector::get (cell_map, index pt))
+				    #
+				    TRUE =>  draw_cell (dw, pt, FALSE, off_pen);
+				    _    =>  draw_cell (dw, pt, TRUE,   on_pen);
+				esac;
+			end;
+
+
+			fun loop ()
+			    =
+			    for (;;) {
+
+				select [
+				    #
+				    ci  ==>
+					(fn mailop =  handle_ci  (envelope_contents  mailop)),
+
+				    take' m_slot
+					==>
+					handle_mse
+				];
 			    };
 
-			handle_ci  ETC_OWN_DEATH
-			    =>
-			    ();
-
-			handle_ci _
-			    =>
-			    ();
-		    end;
-
-
-		    fun handle_mse (DRAW   pt) =>  draw_cell (dw, pt, TRUE,   on_pen);
-			handle_mse (UNDRAW pt) =>  draw_cell (dw, pt, FALSE, off_pen);
-
-			handle_mse (FLIP pt)
-			    =>
-			    case (rw_vector::get (cell_map, index pt))
-				#
-				TRUE =>  draw_cell (dw, pt, FALSE, off_pen);
-				_    =>  draw_cell (dw, pt, TRUE,   on_pen);
-			    esac;
-		    end;
-
-
-		    fun loop ()
-			=
-			for (;;) {
-
-			    select [
-				#
-				ci  ==>
-				    (fn mailop =  handle_ci  (envelope_contents  mailop)),
-
-				take' m_slot
-				    ==>
-				    handle_mse
-			    ];
+			make_thread  "pixmap_widget mouse"  .{
+			    #
+			    mse_reader  (m,  trans_fn,  m_slot);
 			};
 
-		    make_thread  "pixmap_widget mouse"  .{
-			#
-			mse_reader  (m,  trans_fn,  m_slot);
-		    };
+			make_thread  "pixmap_widget"  .{
+			    #
+			    loop ();
+			};
 
-		    make_thread  "pixmap_widget"  .{
-			#
-			loop ();
-		    };
+			();
+		    };      
 
-		    ();
-		};      
+		fill_pix_map  pm;
 
-	    fill_pix_map  pm;
-
-	    WIDGET
-              {
-	        root,
-	        realize,
-		#
-	        attributes =>  fn () = [],
-	        size_preference_thunk_of  =>  fn () = size
-	      };
-	};
-};							# package pixmap_widget
+		WIDGET
+		  {
+		    root,
+		    realize,
+		    #
+		    attributes =>  fn () = [],
+		    size_preference_thunk_of  =>  fn () = size
+		  };
+	    };
+    };							# package pixmap_widget
+end;
 
 
 ##########################################################################

@@ -75,7 +75,7 @@
 stipulate
     include threadkit;					# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package w  = widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg = widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc = xcore;					# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
@@ -92,13 +92,13 @@ herein
 
 	Scrollbar;
 
-	make_horizontal_scrollbar':  (w::Root_Window, w::View, List(w::Arg)) -> Scrollbar;
-	make_vertical_scrollbar':    (w::Root_Window, w::View, List(w::Arg)) -> Scrollbar;
+	make_horizontal_scrollbar':  (wg::Root_Window, wg::View, List(wg::Arg)) -> Scrollbar;
+	make_vertical_scrollbar':    (wg::Root_Window, wg::View, List(wg::Arg)) -> Scrollbar;
 
-	make_horizontal_scrollbar:  w::Root_Window -> { color:  Null_Or( xc::Rgb ), size: Int } -> Scrollbar;
-	make_vertical_scrollbar:    w::Root_Window -> { color:  Null_Or( xc::Rgb ), size: Int } -> Scrollbar;
+	make_horizontal_scrollbar:  wg::Root_Window -> { color:  Null_Or( xc::Rgb ), size: Int } -> Scrollbar;
+	make_vertical_scrollbar:    wg::Root_Window -> { color:  Null_Or( xc::Rgb ), size: Int } -> Scrollbar;
 
-	as_widget:   Scrollbar -> w::Widget;
+	as_widget:   Scrollbar -> wg::Widget;
 
 	scrollbar_change'_of:   Scrollbar -> Mailop( Scroll_Event );
 

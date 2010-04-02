@@ -20,7 +20,7 @@
 
 stipulate
     package bst =  button_shape_types;				# button_shape_types	is from   src/lib/x-kit/widget/leaf/button-shape-types.pkg
-    package w   =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa  =  widget_attribute;				# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wt  =  widget_types;				# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
     package xc  =  xcore;					# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
@@ -51,8 +51,8 @@ herein
 	       {
 		 bw:  Int,
 
-		 shades:   w::Shades,
-		 rshades:  w::Shades,
+		 shades:   wg::Shades,
+		 rshades:  wg::Shades,
 
 		 stipple:  xc::Ro_Pixmap,
 		 drawfn:   bst::Drawfn,
@@ -60,20 +60,20 @@ herein
 		 fg:  Null_Or( xc::Rgb ),
 		 bg:           xc::Rgb,
 
-		 size:  w::Widget_Size_Preference
+		 size:  wg::Widget_Size_Preference
 	       };
 
 	fun make_button_appearance (root, view, args)
 	    =
 	    {   attributes
 		    =
-		    w::find_attribute (w::attributes (view, attributes, args));
+		    wg::find_attribute (wg::attributes (view, attributes, args));
 
 		my (sizefn, drawfn)
 		    =
 		    s::config attributes;
 
-		stipple = w::ro_pixmap root "gray";
+		stipple = wg::ro_pixmap root "gray";
 
 		wide =  wa::get_int     (attributes wa::width);
 		high =  wa::get_int_opt (attributes wa::height);
@@ -95,7 +95,7 @@ herein
 
 		bwid = wa::get_int (attributes wa::border_width);
 
-		shades = w::shades root color;
+		shades = wg::shades root color;
 
 		BUTTON_APPEARANCE
 		  {
@@ -108,7 +108,7 @@ herein
 
 		    rshades => (xc::same_rgb (color, readyc))
 				 ?? shades
-				 :: w::shades root readyc,
+				 :: wg::shades root readyc,
 		    drawfn,
 		    size => sizefn (wide, high)
 		  };

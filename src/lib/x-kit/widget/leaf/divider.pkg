@@ -19,7 +19,7 @@
 
 
 stipulate
-    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package bx =  colorbox;			# colorbox		is from   src/lib/x-kit/widget/leaf/colorbox.pkg
 herein
@@ -33,8 +33,8 @@ herein
 		    lib_base::failure { module=>"Divider", func=>"mkSize", msg=>"width < 0"};
 		fi;
 
-		tight_dim = w::tight_preference width;
-		loose_dim = w::INT_PREFERENCE { start_at=>1, step_by=>1, min_steps=>0, ideal_steps=>0, max_steps=>NULL };
+		tight_dim = wg::tight_preference width;
+		loose_dim = wg::INT_PREFERENCE { start_at=>1, step_by=>1, min_steps=>0, ideal_steps=>0, max_steps=>NULL };
 
 		size_preferences
 		    =
@@ -59,7 +59,7 @@ herein
 
 	fun divider is_horizontal (root, view, args)
 	    =
-	    {   attribute_def =  w::find_attribute (w::attributes (view, attributes, args));
+	    {   attribute_def =  wg::find_attribute (wg::attributes (view, attributes, args));
 
 		width    =  wa::get_int (attribute_def wa::width);
 

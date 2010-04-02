@@ -18,7 +18,7 @@ stipulate
 
     include xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
 
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wb =  widget_base;				# widget_base		is from   src/lib/x-kit/widget/basic/widget-base.pkg
     package bb =  button_base;				# button_base		is from   src/lib/x-kit/widget/leaf/button-base.pkg
     package bt =  button_type;				# button_type		is from   src/lib/x-kit/widget/leaf/button-type.pkg
@@ -300,7 +300,7 @@ herein
 	    =
 	    {   attributes
 		    =
-		    w::find_attribute (w::attributes (view, attributes, args));
+		    wg::find_attribute (wg::attributes (view, attributes, args));
 
 		event_slot   =  make_mailslot ();
 		plea_slot =  make_mailslot ();
@@ -346,7 +346,7 @@ herein
 			=>
 			wb::wrap_queue  (take'  event_slot),
 		    #
-		    widget => w::make_widget
+		    widget => wg::make_widget
 				{
 				  root_window,
 				  #

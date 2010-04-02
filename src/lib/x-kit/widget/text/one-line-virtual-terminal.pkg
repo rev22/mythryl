@@ -25,7 +25,7 @@ stipulate
     include threadkit;								# threadkit				is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package vc = rw_char_vector;						# rw_char_vector			is from   src/lib/std/rw-char-vector.pkg
-    package w  = widget;							# widget				is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg = widget;							# widget				is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc =  xcore;							# xcore					is from   src/lib/x-kit/xclient/xcore.pkg
     package xd =  xdraw;							# xdraw					is from   src/lib/x-kit/xclient/xdraw.pkg
     package xf =  xfont;							# xfont					is from   src/lib/x-kit/xclient/xfont.pkg
@@ -71,7 +71,7 @@ herein
 		#
 		(foreground, background)
 	    =
-	    {   screen =  w::screen_of  root;
+	    {   screen =  wg::screen_of  root;
 
 		default_background_color =  xc::white;
 		default_foreground_color =  xc::black;
@@ -86,7 +86,7 @@ herein
 		bltpen =  xd::make_pen [];		#  workaround for blt op bug.  XXX BUGGO FIXME
 
 		font_name = "9x15";
-		font = w::open_font root font_name;
+		font = wg::open_font root font_name;
 
 		my { ascent=>font_ascent, descent => font_descent }
 		    =

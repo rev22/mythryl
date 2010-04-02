@@ -13,7 +13,7 @@ stipulate
     package xi  =  xinput;			# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
 
     package top =  topwindow;			# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
-    package w   =  widget;			# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;			# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa  =  widget_attribute;		# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy  =  widget_style;		# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
 
@@ -96,10 +96,10 @@ herein
 
 	fun make_plaid root_window
 	    =
-	    {   bounds = w::make_tight_size_preference (300, 200);
+	    {   bounds = wg::make_tight_size_preference (300, 200);
 
 		sz::make_loose_size_preference_wrapper
-		    (w::make_widget
+		    (wg::make_widget
 		      {
 			size_preference_thunk_of =>  .{ bounds; },
 			args      =>  .{ { background => NULL }; },
@@ -109,7 +109,7 @@ herein
 		    );
 	    }
 	    where
-		screen = w::screen_of root_window;
+		screen = wg::screen_of root_window;
 
 		pen = xd::make_pen [ xd::FOREGROUND xc::rgb8_color1,
 				     xd::FUNCTION   xd::OP_XOR
@@ -330,7 +330,7 @@ herein
 			   aliases => [ wy::style_name [] ]
 			 };
 
-		style = w::style_from_strings (root_window, []);
+		style = wg::style_from_strings (root_window, []);
 
 		view = (name, style);
 

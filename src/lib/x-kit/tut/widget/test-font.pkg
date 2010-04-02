@@ -7,9 +7,9 @@
 stipulate
     include threadkit;					# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package rx  =  run_xkit;				# run_xkit	is from   src/lib/x-kit/widget/lib/run-xkit.pkg
-    package xf  =  xfont;				# xfont		is from   src/lib/x-kit/xclient/xfont.pkg
-    package w   =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package rx =  run_xkit;				# run_xkit	is from   src/lib/x-kit/widget/lib/run-xkit.pkg
+    package xf =  xfont;				# xfont		is from   src/lib/x-kit/xclient/xfont.pkg
+    package wg =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     package test_font:  api {
@@ -73,11 +73,11 @@ herein
 	    =
 	    {   fun quit ()
 		    =
-		    {   w::delete_root_window root;
+		    {   wg::delete_root_window root;
 			shut_down_thread_scheduler 0;
 		    };
 
-		font = w::open_font root fname;
+		font = wg::open_font root fname;
 
 		font_info font;
 		quit ();

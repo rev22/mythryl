@@ -27,7 +27,7 @@
 stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
 
-    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package mr =  xevent_mail_router;		# xevent_mail_router	is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
     package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
@@ -63,7 +63,7 @@ herein
 	Viewport
 	    =
 	    VIEWPORT
-	      { child:                    w::Widget,
+	      { child:                    wg::Widget,
 		configuration_change':    Mailop( Geometry  ),
 		#
 		plea_slot:                Mailslot(  Plea_Mail   ),
@@ -73,8 +73,8 @@ herein
 	fun preferred_size { col_preference, row_preference }
 	    =
 	    xg::SIZE
-	      { wide =>  w::preferred_length  col_preference,
-		high =>  w::preferred_length  row_preference
+	      { wide =>  wg::preferred_length  col_preference,
+		high =>  wg::preferred_length  row_preference
 	      };
 
 
@@ -89,7 +89,7 @@ herein
 	    where
 		fun loose_preference v
 		    =
-		    w::INT_PREFERENCE
+		    wg::INT_PREFERENCE
 		      { start_at => 0,
 			step_by  => 1,
 			#
@@ -104,8 +104,8 @@ herein
 			    =
 			    child_size_preference ();
 
-			cols =  case wide      NULL => w::preferred_length  col_preference;   THE cols => cols;   esac;
-			rows =  case high      NULL => w::preferred_length  row_preference;   THE rows => rows;   esac;
+			cols =  case wide      NULL => wg::preferred_length  col_preference;   THE cols => cols;   esac;
+			rows =  case high      NULL => wg::preferred_length  row_preference;   THE rows => rows;   esac;
 
 			{ col_preference =>  loose_preference  cols,
 			  row_preference =>  loose_preference  rows
@@ -212,9 +212,9 @@ herein
 
 	fun make_viewport' (wide, high, child)
 	    =
-	    {   root_window =  w::root_window_of  child;
+	    {   root_window =  wg::root_window_of  child;
 
-		screen      =  w::screen_of  root_window;
+		screen      =  wg::screen_of  root_window;
 
 		plea_slot   =  make_mailslot (); 
 		reply_slot  =  make_mailslot ();
@@ -246,9 +246,9 @@ herein
 					   ...
 					 };
 
-			child_box    =  preferred_size_box (w::size_preference_of  child);
+			child_box    =  preferred_size_box (wg::size_preference_of  child);
 
-			child_window =  w::make_child_window  (my_window,  child_box,  w::args_of child);
+			child_window =  wg::make_child_window  (my_window,  child_box,  wg::args_of child);
 
 
 			(xi::make_widget_cable ())
@@ -277,7 +277,7 @@ herein
 				      =>
 				      xg::size_of_box
 					  (preferred_size_box
-					      (w::size_preference_of  child)
+					      (wg::size_preference_of  child)
 					  )
 				};
 
@@ -414,7 +414,7 @@ herein
 
 			xw::move_window  child_window  (xg::POINT { col=> -x, row=> -y } );
 
-			w::realize_fn  child
+			wg::realize_fn  child
 			  {
 			    kidplug =>  ckidplug, 
 			    window  =>  child_window,
@@ -437,7 +437,7 @@ herein
 		    =
 		    {   my  xg::SIZE { wide => cwid, high => cht }
 			    =
-			    preferred_size (w::size_preference_of  child);
+			    preferred_size (wg::size_preference_of  child);
 
 			wide = case wide    NULL => cwid;  THE w => w;  esac;
 			high = case high    NULL => cht;   THE h => h;  esac;
@@ -458,7 +458,7 @@ herein
 
 				my  xg::SIZE { wide=>cwid, high=>cht }
 				    =
-				    preferred_size (w::size_preference_of  child);
+				    preferred_size (wg::size_preference_of  child);
 
 				{ box        => xg::BOX { col=>x', row=>y', wide, high },
 				  child_size => xg::SIZE { wide=>cwid, high=>cht }
@@ -487,10 +487,10 @@ herein
 
 		    child
 			=>
-			w::make_widget
+			wg::make_widget
 			    {
 			      root_window, 
-			      args      =>  w::args_fn  child,
+			      args      =>  wg::args_fn  child,
 			      realize   =>  fn arg =  give (plea_slot, REALIZE arg),
 
 			      size_preference_thunk_of
@@ -498,7 +498,7 @@ herein
 				  view_size_preference
 				    ( wide,
 				      high,
-				      w::size_preference_thunk_of  child
+				      wg::size_preference_thunk_of  child
 				    )
 			    }
 		  };
@@ -517,7 +517,7 @@ herein
 
 	fun viewport (root_window, view, args) child
 	    =
-	    {   attributes = w::find_attribute (w::attributes (view, attributes, args));
+	    {   attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		wide  = wa::get_int_opt (attributes wa::width);
 		high  = wa::get_int_opt (attributes wa::height);

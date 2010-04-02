@@ -16,7 +16,7 @@ stipulate
     include widget;
 
 
-    package w  =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
 
     package xc =  xcore;				# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
     package xd =  xdraw;				# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
@@ -37,7 +37,7 @@ herein
 	  | IMAGE_OF      Oneshot_Mailslot( Image )
 	  | DO_REALIZE
 	      { kidplug:  xi::Kidplug,
-		window:   w::Window,
+		window:   wg::Window,
 		size:     Size
 	      }
 	  ;
@@ -45,7 +45,7 @@ herein
 	Bitmap_Widget
 	    =
 	   BITMAP_WIDGET
-	      { widget:     w::Widget,
+	      { widget:     wg::Widget,
 		plea_slot:  Mailslot( Plea_Mail )
 	      };
 

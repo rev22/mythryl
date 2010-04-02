@@ -24,7 +24,7 @@ stipulate
     package sox =  socket_stuff;				# socket_stuff			is from   src/lib/internet/socket-stuff.pkg
     package xc  =  xcore;					# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
     package xau =  xauthentication;				# xauthentication		is from   src/lib/x-kit/xclient/src/stuff/xauthentication.pkg
-    package w   =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;					# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     #
     tracefile   =  "widget-unit-test.trace.log";
 herein
@@ -51,9 +51,9 @@ herein
 
 		trace .{ sprintf "widget_unit_test: DISPLAY variable is set to '%s'" xdisplay; };
 
-		trace .{ sprintf "widget_unit_test: Now  calling w::make_root_window"; };
+		trace .{ sprintf "widget_unit_test: Now  calling wg::make_root_window"; };
 
-		THE (w::make_root_window (xdisplay, xauthentication))
+		THE (wg::make_root_window (xdisplay, xauthentication))
 		except
 		    xcore::XSERVER_CONNECT_ERROR s
 			=
@@ -105,8 +105,8 @@ herein
 				=>
 				{   trace .{ sprintf "widget_unit_test: run: Successfully constructed root window"; };
 
-				    xsession = w::xsession_of root_window;
-				    screen   = w::screen_of   root_window;
+				    xsession = wg::xsession_of root_window;
+				    screen   = wg::screen_of   root_window;
 
 				    assert TRUE;
 				};

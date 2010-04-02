@@ -15,7 +15,7 @@ stipulate
     package low =  line_of_widgets;		# line_of_widgets	is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
     package sb  =  scrollbar;
     package sl  =  widget_with_scrollbars;
-    package w   =  widget;
+    package wg  =  widget;
     #
     package v   =  ml_source_code_viewer;
 herein
@@ -27,7 +27,7 @@ herein
 		(view, init_loc)
 	    =
 	    {
-		is_bw = case (xc::display_class_of_screen (w::screen_of root))
+		is_bw = case (xc::display_class_of_screen (wg::screen_of root))
 			    #	
 			    xc::STATIC_GRAY =>  TRUE;
 			    xc::GRAY_SCALE  =>  TRUE;

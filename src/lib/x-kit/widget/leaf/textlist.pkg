@@ -39,7 +39,7 @@ stipulate
     package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     #
-    package w  =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wt =  widget_types;			# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
     #
@@ -110,7 +110,7 @@ herein
 	    end;
 
 	 Plea_Mail(X)
-	   = GET_SIZE_CONSTRAINT  Oneshot_Maildrop( w::Widget_Size_Preference )
+	   = GET_SIZE_CONSTRAINT  Oneshot_Maildrop( wg::Widget_Size_Preference )
 	   #
 	   | SET_CHOSEN  (List ((Int, Bool)), Oneshot_Maildrop( Result ))
 	   | SET_ACTIVE  (List ((Int, Bool)), Oneshot_Maildrop( Result ))
@@ -138,7 +138,7 @@ herein
 	 Textlist(X)
 	     =
 	     TEXTLIST
-	       { widget:            w::Widget,
+	       { widget:            wg::Widget,
 		 plea_slot:         Mailslot( Plea_Mail(X) ),
 		 textlist_change':  Mailop(  List_Event(X) )
 	       };
@@ -176,11 +176,11 @@ herein
 	    [
     #         (wa::attribute_multiset,  wa::BOOL,    wa::BOOL_VAL FALSE), 
     #         (wa::attribute_isVertical,wa::BOOL,    wa::BOOL_VAL TRUE), 
-    #         (wa::halign,              wa::HALIGN,  wa::HALIGN_VAL w::HLeft), 
+    #         (wa::halign,              wa::HALIGN,  wa::HALIGN_VAL wg::HLeft), 
 	      (wa::border_width,        wa::INT,     wa::INT_VAL 2),
 	      (wa::font,                wa::FONT,    wa::STRING_VAL default_font),
 	      (wa::color,               wa::COLOR,   wa::NO_VAL),
-	      (wa::relief,              wa::RELIEF,  wa::RELIEF_VAL w::FLAT),
+	      (wa::relief,              wa::RELIEF,  wa::RELIEF_VAL wg::FLAT),
 	      (wa::width,               wa::INT,     wa::INT_VAL 0),
 	      (wa::height,              wa::INT,     wa::INT_VAL 0),
 	      (wa::background,          wa::COLOR,   wa::STRING_VAL "white"),
@@ -205,14 +205,14 @@ herein
 	Result
 	    =
 	    { multi:    Bool,
-	      shades:   w::Shades,
+	      shades:   wg::Shades,
 	      fontinfo:  (xc::Font, Int, Int),
 	      #	
 	      fg:      xc::Rgb,
 	      bg:      xc::Rgb,
 	      sel_fg:  xc::Rgb,
 	      #	
-	      relief:  w::Relief,
+	      relief:  wg::Relief,
 	      border_width:  Int,
 	      maxslen:  Ref( Int ),
 	      stipple:  xc::Ro_Pixmap,
@@ -222,7 +222,7 @@ herein
 	      width:   Int,
 	      height:  Int,
 	      #	
-	      sel_shades:  w::Shades,
+	      sel_shades:  wg::Shades,
 	      sel_border_width:  Int
 	    };
 
@@ -237,13 +237,13 @@ herein
 	    =
 	    {   attributes
 		    =
-		   (w::is_monochrome root)
+		   (wg::is_monochrome root)
 		     ??  mono_attributes @ attributes
 		     ::  color_attributes @ attributes;
 
 		attributes
 		    =
-		    w::find_attribute (w::attributes (view, attributes, args));
+		    wg::find_attribute (wg::attributes (view, attributes, args));
 
 		my fontinfo as (f, _, _)
 		    =
@@ -265,7 +265,7 @@ herein
 		  height => int::max (0, wa::get_int (attributes wa::height)),
 		  width  => int::max (0, wa::get_int (attributes wa::width)),
 		  maxslen => REF 0,
-		  stipple => w::ro_pixmap root "gray",
+		  stipple => wg::ro_pixmap root "gray",
 
 		  xincr => set_xincr (#1 fontinfo),
 		  yincr => set_yincr (fontinfo, sborder_width),
@@ -273,10 +273,10 @@ herein
 		  fg => forec,
 		  bg => backc,
 
-		  shades => w::shades root backc,
+		  shades => wg::shades root backc,
 		  border_width => int::max (border_width, 0),
 
-		  sel_shades => w::shades root sbackc,
+		  sel_shades => wg::shades root sbackc,
 		  sel_fg => sforec,
 		  sel_border_width => int::max (sborder_width, 0),
 
@@ -355,7 +355,7 @@ herein
 
 		col_preference
 		    =
-		    w::INT_PREFERENCE { start_at=>xbase, step_by=>xincr, min_steps=>xmin, ideal_steps=>xnat, max_steps=>xmax };
+		    wg::INT_PREFERENCE { start_at=>xbase, step_by=>xincr, min_steps=>xmin, ideal_steps=>xnat, max_steps=>xmax };
 
 		ybase = 2*result.border_width;
 
@@ -371,7 +371,7 @@ herein
 
 		row_preference
 		    =
-		    w::INT_PREFERENCE { start_at=>ybase, step_by=>yincr, min_steps=>ymin, ideal_steps=>ynat, max_steps=>ymax };
+		    wg::INT_PREFERENCE { start_at=>ybase, step_by=>yincr, min_steps=>ymin, ideal_steps=>ynat, max_steps=>ymax };
 
 		{ col_preference, row_preference };
 	    };
@@ -917,7 +917,7 @@ herein
 			get reply_1shot;
 		    };
 
-		w = w::make_widget
+		w = wg::make_widget
 		      {
 			root_window,
 			size_preference_thunk_of,

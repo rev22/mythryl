@@ -37,7 +37,7 @@ stipulate
     package li =  list_indexing;			# list_indexing		is from   src/lib/x-kit/widget/lib/list-indexing.pkg
     package lo =  lay_out_linearly;			# lay_out_linearly	is from   src/lib/x-kit/widget/layout/lay-out-linearly.pkg
     package mr =  xevent_mail_router;			# xevent_mail_router	is from   src/lib/x-kit/widget/basic/xevent-mail-router.pkg
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wt =  widget_types;				# widget_types		is from   src/lib/x-kit/widget/basic/widget-types.pkg
     package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
     package xg =  xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
@@ -67,7 +67,7 @@ herein
 	  | VT_CENTER  List( Layout_Tree )
 	  | VT_RIGHT   List( Layout_Tree )
 	  #
-	  | WIDGET     w::Widget
+	  | WIDGET     wg::Widget
 	  #
 	  | SPACER { min_size:    Int,
 		     ideal_size:  Int,
@@ -98,12 +98,12 @@ herein
 	      {
 		plea_slot:   Mailslot( Plea_Mail  ),
 		reply_slot:  Mailslot( Reply_Mail ),
-		widget:      w::Widget
+		widget:      wg::Widget
 	      };
 
 	Box_Rep
 	    =
-	    { widget:     w::Widget,
+	    { widget:     wg::Widget,
 	      window:     xc::Window,
 
 	      box:        xg::Box,
@@ -118,20 +118,20 @@ herein
 
 	loose_preference
 	    =
-	    w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>0, ideal_steps=>0, max_steps=>NULL };
+	    wg::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>0, ideal_steps=>0, max_steps=>NULL };
 
 	fun make_vertical_glue { min_size, ideal_size, max_size }
 	    =
 	    lo::GEOMETRY {
 	      col_preference =>  loose_preference,
-	      row_preference =>  w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>min_size, ideal_steps=>ideal_size, max_steps=>max_size }
+	      row_preference =>  wg::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>min_size, ideal_steps=>ideal_size, max_steps=>max_size }
 	    };
 
 	fun make_horizontal_glue { min_size, ideal_size, max_size }
 	    =
 	    lo::GEOMETRY
 	      { row_preference =>  loose_preference,
-		col_preference =>  w::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>min_size, ideal_steps=>ideal_size, max_steps=>max_size }
+		col_preference =>  wg::INT_PREFERENCE { start_at=>0, step_by=>1, min_steps=>min_size, ideal_steps=>ideal_size, max_steps=>max_size }
 	      };
 
 	fun make_item glue_fn box
@@ -139,7 +139,7 @@ herein
 	    (b, *wl)
 	    where 
 
-		my wl:  Ref( List( w::Widget ) )
+		my wl:  Ref( List( wg::Widget ) )
 		     =  REF [];
 
 		fun convert (HZ_TOP boxes)    =>  lo::HB (wt::VTOP, map hcvt boxes);
@@ -240,7 +240,7 @@ herein
 
 	fun preferred_size_box w
 	    =
-	    xg::make_box (xg::point_00, w::preferred_size w);
+	    xg::make_box (xg::point_00, wg::preferred_size w);
 
 
 	fun update_box (w as { box, window, widget, from_kid' }, nrect)
@@ -273,7 +273,7 @@ herein
 			=
 			gen_fns boxes;
 
-		    screen =  w::screen_of  root_window;
+		    screen =  wg::screen_of  root_window;
 
 		    fun getvis l
 			=
@@ -346,7 +346,7 @@ herein
 				where 
 
 				    to_child' =  make_co  me.clist;
-				    bounds    =  w::make_tight_size_preference (1, 1);
+				    bounds    =  wg::make_tight_size_preference (1, 1);
 
 				    fun do_plea GET_SIZE =>  give (size_slot, bounds);
 					do_plea _        =>  ();
@@ -375,9 +375,9 @@ herein
 					=
 					make_widget_cable ();
 
-				    cwin =  w::make_child_window (window, box, w::args_of widget);
+				    cwin =  wg::make_child_window (window, box, wg::args_of widget);
 
-				    from_kid' =  w::wrap_queue  from_kid';
+				    from_kid' =  wg::wrap_queue  from_kid';
 
 				    rep = { widget,
 					    window => cwin,
@@ -387,7 +387,7 @@ herein
 
 				    mr::add_child router (cwin, momplug);
 
-				    w::realize_fn widget { kidplug, window=>cwin, size };
+				    wg::realize_fn widget { kidplug, window=>cwin, size };
 
 				    rep;
 				};
@@ -635,7 +635,7 @@ herein
 
 			widget
 			    =>
-			    w::make_widget {
+			    wg::make_widget {
 			      root_window,
 			      args      =>  (fn ()  = {   background => NULL }),
 			      size_preference_thunk_of =>  (fn ()  = {   give (plea_slot, GET_SIZE);   take size_slot;   }),

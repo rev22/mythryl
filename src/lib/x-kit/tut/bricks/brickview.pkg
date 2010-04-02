@@ -13,7 +13,7 @@ stipulate
     package bdr =  border;				# border			is from   src/lib/x-kit/widget/wrapper/border.pkg
     package lbl =  label;				# label				is from   src/lib/x-kit/widget/leaf/label.pkg
     package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
-    package w   =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wt  =  widget_types;			# widget_types			is from   src/lib/x-kit/widget/basic/widget-types.pkg
     #
     package bu  =  brick_util;				# brick_util			is from   src/lib/x-kit/tut/bricks/brick-util.pkg
@@ -26,7 +26,7 @@ herein
 	    =
 	    BRICK_VIEW
 	      {
-		widget:        w::Widget,
+		widget:        wg::Widget,
 		#
 		highlight:     Bool -> Void,
 		#
@@ -78,7 +78,7 @@ herein
 
 		my (widget, revt)
 		    =
-		    w::filter_mouse (bdr::as_widget border);
+		    wg::filter_mouse (bdr::as_widget border);
 
 		plea_slot
 		    =

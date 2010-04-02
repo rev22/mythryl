@@ -17,29 +17,29 @@
 #     src/lib/x-kit/widget/leaf/colorbox.pkg
 
 stipulate
-    package w  = widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xc = xcore;				# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package wg =  widget;			# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;			# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
     api Colorbox {
 
 	colorbox
 	    :
-	    (w::Root_Window, w::View, List(w::Arg))
+	    (wg::Root_Window, wg::View, List(wg::Arg))
 	    -> 
-	    (Void -> w::Widget_Size_Preference)
+	    (Void -> wg::Widget_Size_Preference)
 	    ->
-	    w::Widget;
+	    wg::Widget;
 
 	make_colorbox
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    -> 
 	    ( Null_Or(xc::Rgb),
-	      Void -> w::Widget_Size_Preference
+	      Void -> wg::Widget_Size_Preference
 	    )
 	    ->
-	    w::Widget;
+	    wg::Widget;
     };
 
 end;

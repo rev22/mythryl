@@ -9,7 +9,7 @@ stipulate
     package xc =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
     package xf =  xfont;				# xfont			is from   src/lib/x-kit/xclient/xfont.pkg
     #
-    package w  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     package view_font:  View_Font {			# View_Font		is from   src/lib/x-kit/tut/ml-viewer/graph-view/view-font.api
@@ -36,7 +36,7 @@ herein
 
 		open_font
 		    =
-		    xf::open_font  (w::xsession_of  root_window);
+		    xf::open_font  (wg::xsession_of  root_window);
 								    # Sfprintf	is from   src/lib/src/sfprintf.api
 								    # sfprintf	is from   src/lib/src/sfprintf.pkg
 		fmt_font_name

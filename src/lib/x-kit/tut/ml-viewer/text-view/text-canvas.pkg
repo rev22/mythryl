@@ -10,8 +10,8 @@
 #     src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6
 
 stipulate
-    package w : (weak)  Widget = widget;
-
+#    package wg : (weak)  Widget = widget;
+    #
     package xc =  xcore;			# xcore		is from   src/lib/x-kit/xclient/xcore.pkg
     package xd =  xdraw;			# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
     package xf =  xfont;			# xfont		is from   src/lib/x-kit/xclient/xfont.pkg

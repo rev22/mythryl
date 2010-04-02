@@ -11,8 +11,8 @@
 #     src/lib/x-kit/widget/text/one-line-virtual-terminal.pkg
 
 stipulate
-    package w  = widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
-    package xc = xcore;				# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
+    package wg =  widget;			# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
 herein
 
     api One_Line_Virtual_Terminal {
@@ -21,7 +21,7 @@ herein
 
 	make_one_line_virtual_terminal
 	   :
-	   w::Root_Window
+	   wg::Root_Window
 	   ->
 	   ( Null_Or( xc::Rgb ),
 	     Null_Or( xc::Rgb )

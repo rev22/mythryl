@@ -17,7 +17,7 @@ stipulate
     package xg =  xgeometry;					# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi =  xinput;					# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     #
-    package w  =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;					# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
     api Popup_Menu {
@@ -62,12 +62,12 @@ herein
 	#
 	attach_menu_to_widget
 	    :
-            ( w::Widget,						# Parent widget for the menu.
+            ( wg::Widget,						# Parent widget for the menu.
               List(xi::Mousebutton),					# Pop up menu if any of these buttons are pressed.
               Popup_Menu(X)						# Menu to pop up.
             )	
 	    ->
-            ( w::Widget,						# Resulting combined widget.
+            ( wg::Widget,						# Resulting combined widget.
               Mailop(X)							# 'select' on this to get user menu selections.
             );
 
@@ -75,13 +75,13 @@ herein
 	# 
 	attach_labeled_menu_to_widget
 	    :
-            ( w::Widget,						# Parent widget for the menu.
+            ( wg::Widget,						# Parent widget for the menu.
               List(xi::Mousebutton),					# Pop up menu if any of these buttons are pressed.
               String,							# Label for menu.
               Popup_Menu(X)						# Menu to pop up.
             )
 	    ->
-            ( w::Widget,						# Resulting combined widget.
+            ( wg::Widget,						# Resulting combined widget.
               Mailop(X)							# 'select' on this to get user menu selections.
             );
 
@@ -90,13 +90,13 @@ herein
 	#
 	attach_positioned_menu_to_widget
 	    :
-            ( w::Widget,						# Parent widget for the menu.
+            ( wg::Widget,						# Parent widget for the menu.
               List(xi::Mousebutton),					# Pop up menu if any of these buttons are pressed.
               Popup_Menu(X),						# Menu to pop up.
               Where_Info -> Popup_Menu_Position				# User function to position the menu at pop-up time.
             )
 	    ->
-            ( w::Widget,						# Resulting combined widget.
+            ( wg::Widget,						# Resulting combined widget.
               Mailop(X)							# 'select' on this to get user menu selections.
             );
 
@@ -104,7 +104,7 @@ herein
 	#
 	make_lowlevel_popup_menu
 	    :
-            ( w::Root_Window,
+            ( wg::Root_Window,
               Popup_Menu(X),
               Null_Or(String)
             )

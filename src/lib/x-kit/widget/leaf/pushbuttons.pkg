@@ -20,7 +20,7 @@
 
 
 stipulate
-    package w  =  widget;								# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;								# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa =  widget_attribute;							# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy =  widget_style;								# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
 herein
@@ -80,7 +80,7 @@ herein
 			    NULL  => args;
 		       esac;
 
-		make_text_pushbutton' (root, (name, w::style_of root), args);
+		make_text_pushbutton' (root, (name, wg::style_of root), args);
 	    };
 
 	fun make_text_pushbutton_with_click_callback root { click_callback, rounded, label, foreground, background }
@@ -103,7 +103,7 @@ herein
 			   NULL  =>  args;
 		       esac;
 
-		make_text_pushbutton_with_click_callback' (root, (name, w::style_of root), args) click_callback;
+		make_text_pushbutton_with_click_callback' (root, (name, wg::style_of root), args) click_callback;
 	      };
 
 
@@ -128,7 +128,7 @@ herein
 			    NULL  => args;
 			esac;
 
-		make_arrow_pushbutton' (root, (name, w::style_of root), args);
+		make_arrow_pushbutton' (root, (name, wg::style_of root), args);
 	    };
 
 	fun make_arrow_pushbutton_with_click_callback root { click_callback, direction, size, foreground, background }
@@ -153,7 +153,7 @@ herein
 			    NULL  => args;
 			esac;
 
-		make_arrow_pushbutton_with_click_callback' (root, (name, w::style_of root), args) click_callback;
+		make_arrow_pushbutton_with_click_callback' (root, (name, wg::style_of root), args) click_callback;
 	    };
     };						# package pushbuttons
 end;

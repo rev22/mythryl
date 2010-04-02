@@ -40,7 +40,7 @@
 #     src/lib/x-kit/widget/xkit-widget.make6
 
 stipulate
-    package w  =  widget;						# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wg =  widget;						# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
     package xc =  xcore;						# xcore		is from   src/lib/x-kit/xclient/src/api/xkit-lib-external-interface.pkg
     package wt =  widget_types;						# widget_types	is from   src/lib/x-kit/widget/basic/widget-types.pkg
 herein
@@ -50,7 +50,7 @@ herein
 
 	Toggleswitch = toggle_type::Toggleswitch;
 
-	as_widget:  Toggleswitch -> w::Widget;
+	as_widget:  Toggleswitch -> wg::Widget;
 
 	get_button_on_off_flag:  Toggleswitch -> Bool;
 	set_button_on_off_flag: (Toggleswitch, Bool) -> Void;
@@ -58,20 +58,20 @@ herein
 	get_button_active_flag:  Toggleswitch -> Bool;
 	set_button_active_flag: (Toggleswitch, Bool) -> Void;
 
-	radio_button:   (w::Root_Window, w::View, List(w::Arg)) -> (Bool -> Void) -> Toggleswitch;
-	check_button:   (w::Root_Window, w::View, List(w::Arg)) -> (Bool -> Void) -> Toggleswitch;
-	label_button:   (w::Root_Window, w::View, List(w::Arg)) -> (Bool -> Void) -> Toggleswitch;
+	radio_button:   (wg::Root_Window, wg::View, List(wg::Arg)) -> (Bool -> Void) -> Toggleswitch;
+	check_button:   (wg::Root_Window, wg::View, List(wg::Arg)) -> (Bool -> Void) -> Toggleswitch;
+	label_button:   (wg::Root_Window, wg::View, List(wg::Arg)) -> (Bool -> Void) -> Toggleswitch;
 
-	make_checkbox_toggleswitch': (w::Root_Window, w::View, List(w::Arg)) -> (Bool -> Void) -> Toggleswitch;
-	make_text_toggleswitch':     (w::Root_Window, w::View, List(w::Arg)) -> (Bool -> Void) -> Toggleswitch;
-	make_rocker_toggleswitch':   (w::Root_Window, w::View, List(w::Arg)) -> (Bool -> Void) -> Toggleswitch;
-	make_round_toggleswitch':    (w::Root_Window, w::View, List(w::Arg)) -> (Bool -> Void) -> Toggleswitch;
+	make_checkbox_toggleswitch': (wg::Root_Window, wg::View, List(wg::Arg)) -> (Bool -> Void) -> Toggleswitch;
+	make_text_toggleswitch':     (wg::Root_Window, wg::View, List(wg::Arg)) -> (Bool -> Void) -> Toggleswitch;
+	make_rocker_toggleswitch':   (wg::Root_Window, wg::View, List(wg::Arg)) -> (Bool -> Void) -> Toggleswitch;
+	make_round_toggleswitch':    (wg::Root_Window, wg::View, List(wg::Arg)) -> (Bool -> Void) -> Toggleswitch;
 
 	# Make a checkmark toggle within a square widget,
 	# with pixel dimensions given by 'size'.
 	#
 	make_checkbox_toggleswitch
-	    :  w::Root_Window
+	    :  wg::Root_Window
 	    -> { state:          wt::Button_State,
 		 click_callback: Bool -> Void,
 		 color:          Null_Or( xc::Rgb ),	# Toggle color, defaults to black. Background color is from parent.
@@ -81,7 +81,7 @@ herein
 
 	make_text_toggleswitch
 	    :
-	    w::Root_Window
+	    wg::Root_Window
 	    -> { state:           wt::Button_State,
 		 rounded:         Bool,
 		 click_callback:  Bool -> Void,
@@ -92,7 +92,7 @@ herein
 	    -> Toggleswitch;
 
 	make_rocker_toggleswitch
-	    :  w::Root_Window
+	    :  wg::Root_Window
 	    -> { state:           wt::Button_State,
 		 click_callback:  Bool -> Void,
 		 background:      Null_Or( xc::Rgb ),	# White by default.
@@ -101,7 +101,7 @@ herein
 	    -> Toggleswitch;
 
 	make_round_toggleswitch
-	    :  w::Root_Window
+	    :  wg::Root_Window
 	    -> { state:           wt::Button_State,
 		 click_callback:  Bool -> Void,
 		 background:      Null_Or( xc::Rgb ),	# White by default.
@@ -111,7 +111,7 @@ herein
 	    -> Toggleswitch;
 
 	 make_icon_toggleswitch
-	     :  w::Root_Window
+	     :  wg::Root_Window
 	     -> { state:          wt::Button_State,
 		  click_callback: Bool -> Void,
 		  background:     Null_Or( xc::Rgb ),	# White by default.
