@@ -69,12 +69,15 @@ herein
 
 	stipulate
 
-	    Plea_Mail
-	      = PLEA_NEW       xt::Window_Id
-	      | PLEA_LOCK      xt::Window_Id
-	      | PLEA_UNLOCK    xt::Window_Id
-	      | PLEA_ISLOCKED  xt::Window_Id
-	      ;
+	    package plea {
+		#
+		Mail
+		  = NOTE_WINDOW       xt::Window_Id
+		  | LOCK_WINDOW       xt::Window_Id
+		  | UNLOCK_WINDOW     xt::Window_Id
+		  | WINDOW_IS_LOCKED  xt::Window_Id
+		  ;
+	    };
 
 	    # * NOTE: could bundle this all into a couple of functions *
 	    #
@@ -88,7 +91,7 @@ herein
 		    children:    Ref(  List(  Window_Desc ) ),
 		    lock:        Ref( Bool ),
 
-		    event_strm:  Mailslot( (Envelope_Route, et::x::Event) )
+		    event_slot:  Mailslot( (Envelope_Route, et::x::Event) )
 		  };
 
 	    Xevent_Dst
@@ -189,9 +192,9 @@ herein
 		extract_dst (et::x::COLORMAP_NOTIFY { window_id, ... } ) => TO_WINDOW window_id;
 		extract_dst (et::x::CLIENT_MESSAGE  { window_id, ... } ) => TO_WINDOW window_id;
 
-		extract_dst  et::x::MODIFIER_MAPPING_NOTIFY      => TO_ALL;
+		extract_dst  et::x::MODIFIER_MAPPING_NOTIFY     => TO_ALL;
 		extract_dst (et::x::KEYBOARD_MAPPING_NOTIFY _)  => TO_ALL;
-		extract_dst  et::x::POINTER_MAPPING_NOTIFY       => TO_ALL;
+		extract_dst  et::x::POINTER_MAPPING_NOTIFY      => TO_ALL;
 
 		extract_dst e => {
 		   xgripe::warning (string::cat [
@@ -215,12 +218,12 @@ herein
 		     xid_to_string new_window, "}"
 		   ];
 
-		dst2s (DESTROY_WINDOW w) => ("DestroyWin(" + xid_to_string w + ")");
-		dst2s TO_KEYMAP_IMP => "ToKeymapServer";
+		dst2s (DESTROY_WINDOW w)     => ("DestroyWin(" + xid_to_string w + ")");
+		dst2s TO_KEYMAP_IMP          => "ToKeymapServer";
 		dst2s TO_WINDOW_PROPERTY_IMP => "ToPropertyServer";
-		dst2s TO_SELECTION_IMP => "ToSelectionServer";
-		dst2s TO_ALL => "ToAll";
-		dst2s TO_TRASH => "ToTrash";
+		dst2s TO_SELECTION_IMP       => "ToSelectionServer";
+		dst2s TO_ALL                 => "ToAll";
+		dst2s TO_TRASH               => "ToTrash";
 	    end;
 
 	herein
@@ -246,7 +249,7 @@ herein
 		=
 		XSOCKET_TO_TOPWINDOW_ROUTER 
 		  {
-		    plea_slot:    Mailslot( Plea_Mail ),
+		    plea_slot:    Mailslot( plea::Mail ),
 		    reply_slot:   Mailslot( Mailop( (Envelope_Route, et::x::Event) ) ),
 		    lock_slot:    Mailslot( Bool )
 		  };
@@ -312,12 +315,13 @@ herein
 
 		    lock_reply_slot     =   make_mailslot ();
 								    # hash_xid	is from   src/lib/x-kit/xclient/src/stuff/hash-xid.pkg
-		    id_map = hash_xid::make_map ();
-		    find   = hash_xid::get id_map;
-		    insert = hash_xid::set id_map;
-		    remove = hash_xid::remove id_map;
+		    id_map =  hash_xid::make_map ();
+		    #
+		    find   =  hash_xid::get    id_map;
+		    insert =  hash_xid::set    id_map;
+		    remove =  hash_xid::remove id_map;
 
-		    fun do_plea (PLEA_NEW window)
+		    fun do_plea (plea::NOTE_WINDOW window)
 			    =>
 			    {   # Log a new top-level window:
 
@@ -332,17 +336,17 @@ herein
 					parent => NULL,
 					children => REF [],
 					lock => REF FALSE,
-					event_strm => event_slot
+					event_slot => event_slot
 				      }
 				  );
 
 				give  (register_reply_slot,  take'  event_slot);
 			    };
 
-		       do_plea (PLEA_LOCK   window) =>   lock_tree (find window);
-		       do_plea (PLEA_UNLOCK window) => unlock_tree (find window);
+		       do_plea (plea::LOCK_WINDOW   window) =>   lock_tree (find window);
+		       do_plea (plea::UNLOCK_WINDOW window) => unlock_tree (find window);
 
-		       do_plea (PLEA_ISLOCKED window)
+		       do_plea (plea::WINDOW_IS_LOCKED window)
 			   =>
 			   {   my WINDOW_DESC { lock, ... }
 				   =
@@ -357,7 +361,7 @@ herein
 			{
 			    (find parent)
 				-> 
-				parent_desc as WINDOW_DESC { route, event_strm, children, lock, ... };
+				parent_desc as WINDOW_DESC { route, event_slot, children, lock, ... };
 
 			    fun extend_route (ENVELOPE_ROUTE_END w)      =>  ENVELOPE_ROUTE (w, ENVELOPE_ROUTE_END child_id);
 				extend_route (ENVELOPE_ROUTE (w, route)) =>  ENVELOPE_ROUTE (w, extend_route route);
@@ -374,7 +378,7 @@ herein
 				    parent => THE parent_desc,
 				    children => REF [],
 				    lock => REF *lock,
-				    event_strm
+				    event_slot
 				  };
 
 			    children := child ! *children;
@@ -384,9 +388,9 @@ herein
 		    # ddeboer, test, fall 2004 
 		    # cref = REF 0
 
-		    fun push_event (e, WINDOW_DESC { route, event_strm, ... } )
+		    fun push_event (e, WINDOW_DESC { route, event_slot, ... } )
 			= 
-			give  (event_strm, (route, e));
+			give  (event_slot, (route, e));
 
 
 		    fun push_event_to_window (e, window_id)
@@ -485,7 +489,7 @@ herein
 
 	    fun note_toplevel_window (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
 		=
-		{   give  (plea_slot,  PLEA_NEW window);
+		{   give  (plea_slot,  plea::NOTE_WINDOW window);
 		    take   reply_slot;
 		};
 
@@ -493,9 +497,9 @@ herein
 	    #
 	    fun lock_window_tree (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
 		=
-		{   give (plea_slot, PLEA_LOCK window);
+		{   give (plea_slot, plea::LOCK_WINDOW window);
 
-		    .{  give (plea_slot, PLEA_UNLOCK window);  };
+		    .{  give (plea_slot, plea::UNLOCK_WINDOW window);  };
 		};
 
 	    # This gets called exactly one place, in
@@ -504,7 +508,7 @@ herein
 	    #
 	    fun window_is_locked (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, lock_slot, ... }, window)
 		=
-		{   give (plea_slot, PLEA_ISLOCKED window);
+		{   give (plea_slot, plea::WINDOW_IS_LOCKED window);
 		    take lock_slot;
 		};
 	end;					# stipulate
