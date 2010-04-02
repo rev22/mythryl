@@ -32,7 +32,7 @@ herein
               io_class:		xt::Io_Class,
               depth:		Int,
               site:		ge::Window_Site,
-              attributes:	List( xt::wa::Window_Attribute )
+              attributes:	List( xt::a::Window_Attribute )
             }
 	    =
 	    xok::request  xsocket  msg

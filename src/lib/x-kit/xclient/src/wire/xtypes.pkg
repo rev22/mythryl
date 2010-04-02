@@ -611,7 +611,7 @@ herein
         #     value_to_wire::encode_create_window
 	#     value_to_wire::encode_change_window_attributes
 	#
-	package wa {
+	package a {
 
 	    Window_Attribute
 	      #

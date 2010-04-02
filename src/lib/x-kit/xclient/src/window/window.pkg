@@ -108,55 +108,55 @@ herein
 	#
 	fun user_window_attribute_to_internal_window_attribute (a::BACKGROUND_NONE)
 		=>
-		xt::wa::BACKGROUND_PIXMAP_NONE;
+		xt::a::BACKGROUND_PIXMAP_NONE;
 
 	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_PARENT_RELATIVE)
 		=>
-		xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
+		xt::a::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 
 	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
-		xt::wa::BACKGROUND_PIXMAP id;
+		xt::a::BACKGROUND_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } ))) 
 	       => 
-		xt::wa::BACKGROUND_PIXMAP id;
+		xt::a::BACKGROUND_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_COLOR color)
 		=>
-		xt::wa::BACKGROUND_PIXEL (rgb8_of color);
+		xt::a::BACKGROUND_PIXEL (rgb8_of color);
 
 	    user_window_attribute_to_internal_window_attribute (a::BORDER_COPY_FROM_PARENT)
 		=>
-		xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT;
+		xt::a::BORDER_PIXMAP_COPY_FROM_PARENT;
 
 	    user_window_attribute_to_internal_window_attribute (a::BORDER_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
-		xt::wa::BORDER_PIXMAP id;
+		xt::a::BORDER_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (a::BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } )))
 		=>
-		xt::wa::BORDER_PIXMAP id;
+		xt::a::BORDER_PIXMAP id;
 
 	    user_window_attribute_to_internal_window_attribute (a::BORDER_COLOR color)
 		=>
-		xt::wa::BORDER_PIXEL (rgb8_of color);
+		xt::a::BORDER_PIXEL (rgb8_of color);
 
 	    user_window_attribute_to_internal_window_attribute (a::BIT_GRAVITY g)
 		=>
-		xt::wa::BIT_GRAVITY g;
+		xt::a::BIT_GRAVITY g;
 
 	    user_window_attribute_to_internal_window_attribute (a::WINDOW_GRAVITY g)
 		=>
-		xt::wa::WINDOW_GRAVITY g;
+		xt::a::WINDOW_GRAVITY g;
 
 	    user_window_attribute_to_internal_window_attribute (a::CURSOR_NONE)
 		=>
-		xt::wa::CURSOR_NONE;
+		xt::a::CURSOR_NONE;
 
 	    user_window_attribute_to_internal_window_attribute (a::CURSOR (cs::XCURSOR { id, ... } ))
 		=>
-		xt::wa::CURSOR id;
+		xt::a::CURSOR id;
 	end;
 
 
@@ -231,9 +231,9 @@ herein
 			    #
 			    attributes
 				=>
-				[ xt::wa::BORDER_PIXEL     (rgb8_of  border_color),
-				  xt::wa::BACKGROUND_PIXEL  background_color,
-				  xt::wa::EVENT_MASK        standard_xevent_mask
+				[ xt::a::BORDER_PIXEL     (rgb8_of  border_color),
+				  xt::a::BACKGROUND_PIXEL  background_color,
+				  xt::a::EVENT_MASK        standard_xevent_mask
 				]
 			  };
 
@@ -269,8 +269,8 @@ herein
 			    =
 			    case border_color
 				#
-				NULL  =>   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT;
-				THE c =>   xt::wa::BORDER_PIXEL (rgb8_of c);
+				NULL  =>   xt::a::BORDER_PIXMAP_COPY_FROM_PARENT;
+				THE c =>   xt::a::BORDER_PIXEL (rgb8_of c);
 			    esac;
 
 
@@ -278,8 +278,8 @@ herein
 			    =
 			    case background_color
 				#
-				NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
-				THE c =>   xt::wa::BACKGROUND_PIXEL c;
+				NULL  =>   xt::a::BACKGROUND_PIXMAP_PARENT_RELATIVE;
+				THE c =>   xt::a::BACKGROUND_PIXEL c;
 			    esac;
 
 
@@ -297,7 +297,7 @@ herein
 			      attributes => [
 				  border_pixel,
 				  background_pixel,
-				  xt::wa::EVENT_MASK standard_xevent_mask
+				  xt::a::EVENT_MASK standard_xevent_mask
 				]
 			    };
 
@@ -349,11 +349,11 @@ herein
 		    site       => check_site  site,
 		    #
 		    attributes => [
-			xt::wa::OVERRIDE_REDIRECT TRUE,
-			xt::wa::SAVE_UNDER TRUE,
-			xt::wa::BORDER_PIXEL      (rgb8_of  border_color),
-			xt::wa::BACKGROUND_PIXEL  background_color,
-			xt::wa::EVENT_MASK        popup_xevent_mask
+			xt::a::OVERRIDE_REDIRECT TRUE,
+			xt::a::SAVE_UNDER TRUE,
+			xt::a::BORDER_PIXEL      (rgb8_of  border_color),
+			xt::a::BACKGROUND_PIXEL  background_color,
+			xt::a::EVENT_MASK        popup_xevent_mask
 		      ]
 		  };
 	    end;
@@ -392,9 +392,9 @@ herein
 		    site       => check_site  site,
 		    #
 		    attributes => [
-			xt::wa::BORDER_PIXEL     (rgb8_of  border_color),
-			xt::wa::BACKGROUND_PIXEL background_color,
-			xt::wa::EVENT_MASK       standard_xevent_mask
+			xt::a::BORDER_PIXEL     (rgb8_of  border_color),
+			xt::a::BACKGROUND_PIXEL background_color,
+			xt::a::EVENT_MASK       standard_xevent_mask
 		      ]
 		};
 
@@ -442,7 +442,7 @@ herein
 		    depth      => 0,
 		    #	
 		    visual_id  => xt::SAME_VISUAL_AS_PARENT,
-		    attributes => [xt::wa::EVENT_MASK standard_xevent_mask],
+		    attributes => [xt::a::EVENT_MASK standard_xevent_mask],
 		    #
 		    site => check_site
 				(ge::WINDOW_SITE
@@ -682,8 +682,8 @@ herein
 
 		cur =  case c
 			   #		              
-			   THE (cs::XCURSOR { id, ... } ) =>   xt::wa::CURSOR id;
-			   NULL                           =>   xt::wa::CURSOR_NONE;
+			   THE (cs::XCURSOR { id, ... } ) =>   xt::a::CURSOR id;
+			   NULL                           =>   xt::a::CURSOR_NONE;
 		       esac;
 
 		wio::change_window_attributes  xsocket  (window_id, [cur]);
@@ -707,8 +707,8 @@ herein
 		    =
 		    case color
 			#	         
-			THE c =>   xt::wa::BACKGROUND_PIXEL (rgb8_of c);
-			NULL  =>   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
+			THE c =>   xt::a::BACKGROUND_PIXEL (rgb8_of c);
+			NULL  =>   xt::a::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 		    esac;
 	    end;
 

@@ -111,9 +111,9 @@ herein
 
 				attributes
 				    =>
-				    [ xt::wa::BORDER_PIXEL     border_pixel,
-				      xt::wa::BACKGROUND_PIXEL background_pixel,
-				      xt::wa::EVENT_MASK       wi::standard_xevent_mask
+				    [ xt::a::BORDER_PIXEL     border_pixel,
+				      xt::a::BACKGROUND_PIXEL background_pixel,
+				      xt::a::EVENT_MASK       wi::standard_xevent_mask
 				    ]
 			      };
 

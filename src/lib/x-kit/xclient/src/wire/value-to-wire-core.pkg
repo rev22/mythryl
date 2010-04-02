@@ -149,7 +149,7 @@ herein
 	#     encode_create_window
 	#     encode_change_window_attributes
 	#
-	my  make_window_attribute_list:   List( xt::wa::Window_Attribute ) -> xt::Value_List
+	my  make_window_attribute_list:   List( xt::a::Window_Attribute ) -> xt::Value_List
 	    =
 	    do_val_list  15  set_window_attribute
             where
@@ -159,37 +159,37 @@ herein
 			    =
 			    rw_vector::set (rw_vec, i, THE x);
 
-			fn xt::wa::BACKGROUND_PIXMAP_NONE			=> update (0, 0u0);
-			   xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE		=> update (0, 0u1);
-			   xt::wa::BACKGROUND_PIXMAP (xt::XID p)		=> update (0, p);
+			fn xt::a::BACKGROUND_PIXMAP_NONE			=> update (0, 0u0);
+			   xt::a::BACKGROUND_PIXMAP_PARENT_RELATIVE		=> update (0, 0u1);
+			   xt::a::BACKGROUND_PIXMAP (xt::XID p)			=> update (0, p);
 
-			   xt::wa::BACKGROUND_PIXEL  rgb8			=> update (1, unt::from_int (rgb8::to_int rgb8));
+			   xt::a::BACKGROUND_PIXEL  rgb8			=> update (1, unt::from_int (rgb8::to_int rgb8));
 
-			   xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
-			   xt::wa::BORDER_PIXMAP (xt::XID p)			=> update (2, p);
+			   xt::a::BORDER_PIXMAP_COPY_FROM_PARENT		=> update (2, 0u0);
+			   xt::a::BORDER_PIXMAP (xt::XID p)			=> update (2, p);
 
-			   xt::wa::BORDER_PIXEL  rgb8				=> update (3, unt::from_int (rgb8::to_int rgb8));
-			   xt::wa::BIT_GRAVITY g				=> update (4, gravity_to_wire g);
-			   xt::wa::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
+			   xt::a::BORDER_PIXEL  rgb8				=> update (3, unt::from_int (rgb8::to_int rgb8));
+			   xt::a::BIT_GRAVITY g					=> update (4, gravity_to_wire g);
+			   xt::a::WINDOW_GRAVITY g				=> update (5, gravity_to_wire g);
 
-			   xt::wa::BACKING_STORE xt::BS_NOT_USEFUL		=> update (6, 0u0);
-			   xt::wa::BACKING_STORE xt::BS_WHEN_MAPPED		=> update (6, 0u1);
-			   xt::wa::BACKING_STORE xt::BS_ALWAYS			=> update (6, 0u2);
+			   xt::a::BACKING_STORE xt::BS_NOT_USEFUL		=> update (6, 0u0);
+			   xt::a::BACKING_STORE xt::BS_WHEN_MAPPED		=> update (6, 0u1);
+			   xt::a::BACKING_STORE xt::BS_ALWAYS			=> update (6, 0u2);
 
-			   xt::wa::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
-			   xt::wa::BACKING_PIXEL   rgb8				=> update (8, unt::from_int (rgb8::to_int  rgb8));
+			   xt::a::BACKING_PLANES (xt::PLANEMASK m)		=> update (7, m);
+			   xt::a::BACKING_PIXEL   rgb8				=> update (8, unt::from_int (rgb8::to_int  rgb8));
 
-			   xt::wa::OVERRIDE_REDIRECT b				=> update ( 9, bool_to_wire b);
-			   xt::wa::SAVE_UNDER b					=> update (10, bool_to_wire b);
+			   xt::a::OVERRIDE_REDIRECT b				=> update ( 9, bool_to_wire b);
+			   xt::a::SAVE_UNDER b					=> update (10, bool_to_wire b);
 
-			   xt::wa::EVENT_MASK            (xt::EVENT_MASK m)	=> update (11, m);
-			   xt::wa::DO_NOT_PROPAGATE_MASK (xt::EVENT_MASK m)	=> update (12, m);
+			   xt::a::EVENT_MASK            (xt::EVENT_MASK m)	=> update (11, m);
+			   xt::a::DO_NOT_PROPAGATE_MASK (xt::EVENT_MASK m)	=> update (12, m);
 
-			   xt::wa::COLOR_MAP_COPY_FROM_PARENT			=> update (13, 0u0);
-			   xt::wa::COLOR_MAP (xt::XID x) 			=> update (13, x);
+			   xt::a::COLOR_MAP_COPY_FROM_PARENT			=> update (13, 0u0);
+			   xt::a::COLOR_MAP (xt::XID x) 			=> update (13, x);
 
-			   xt::wa::CURSOR_NONE					=> update (14, 0u0);
-			   xt::wa::CURSOR (xt::XID x)				=> update (14, x);
+			   xt::a::CURSOR_NONE					=> update (14, 0u0);
+			   xt::a::CURSOR (xt::XID x)				=> update (14, x);
 			end;
 		    };
 	    end;
@@ -658,7 +658,7 @@ herein
 		  io_class:	xt::Io_Class,
 		  depth:	Int,
                   site:         ge::Window_Site,
-                  attributes:   List( xt::wa::Window_Attribute )
+                  attributes:   List( xt::a::Window_Attribute )
                 }
 		=
 		{   my (attribute_count, mask, attributes)
@@ -697,7 +697,7 @@ herein
 	    fun encode_change_window_attributes
                 {
                   window_id:   xt::Xid,
-                  attributes:  List( xt::wa::Window_Attribute )
+                  attributes:  List( xt::a::Window_Attribute )
                 }
 		=
 		{   my (attribute_count, mask, attributes)

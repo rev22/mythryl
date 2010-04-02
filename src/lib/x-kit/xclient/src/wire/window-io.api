@@ -34,7 +34,7 @@ herein
 	       visual_id:		xt::Visual_Id_Choice,
 	       #
 	       site:			ge::Window_Site,
-	       attributes:		List( xt::wa::Window_Attribute )
+	       attributes:		List( xt::a::Window_Attribute )
 	     }
 	    ->
 	    Void;
@@ -47,7 +47,7 @@ herein
 
 	change_window_attributes
 	    :  xok::Xsocket
-	    -> (xt::Window_Id, List(xt::wa::Window_Attribute))
+	    -> (xt::Window_Id, List(xt::a::Window_Attribute))
 	    -> Void;
 	    #
 	    # Change window attributes.

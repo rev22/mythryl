@@ -70,7 +70,7 @@ herein
 	encode_change_window_attributes
 	    :
             { window_id:   xt::Xid,
-              attributes:  List( xt::wa::Window_Attribute )
+              attributes:  List( xt::a::Window_Attribute )
             }
             ->
             v8::Vector;
@@ -181,7 +181,7 @@ herein
 				depth:      Int,
                                 site:       ge::Window_Site, 
 				io_class:   xt::Io_Class,
-				attributes: List( xt::wa::Window_Attribute )
+				attributes: List( xt::a::Window_Attribute )
                               }
 			      -> v8::Vector;
 
