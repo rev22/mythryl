@@ -21,7 +21,7 @@ api  Xwindow {
 
     # User-level window attributes 
     #
-    package wa: api {
+    package a: api {
 	Window_Attribute
 	  #
 	  = BACKGROUND_NONE
@@ -54,7 +54,7 @@ api  Xwindow {
 
     # Window configuration values 
     #
-    package cfg: api {
+    package c: api {
 
 	Window_Config
 	  #
@@ -160,7 +160,7 @@ api  Xwindow {
 
     # Various routines to reconfigure window layout: 
     #
-    configure_window:        Window -> List( cfg::Window_Config ) -> Void;
+    configure_window:        Window -> List( c::Window_Config ) -> Void;
     move_window:             Window -> xg::Point -> Void;
     resize_window:           Window -> xg::Size  -> Void;
     move_and_resize_window:  Window -> xg::Box   -> Void;
@@ -183,7 +183,7 @@ api  Xwindow {
         # will come up with the right color.
 
 
-    change_window_attributes:  Window -> List( wa::Window_Attribute ) -> Void;
+    change_window_attributes:  Window -> List( a::Window_Attribute ) -> Void;
 	#
         # Set various window attributes.
 

@@ -32,7 +32,7 @@ stipulate
     #
     package dt =  draw_types;			# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
     package xt =  xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    package g  =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xr =  cursors;			# cursors		is from   src/lib/x-kit/xclient/src/window/cursors.pkg
     package sn =  xsession;			# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
     package ip =  iccc_property;		# iccc_property		is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
@@ -47,7 +47,7 @@ herein
 
 	# User-level window attributes:
 	#
-	package wa: api {
+	package a: api {
 
 	    Window_Attribute
 	      #
@@ -72,12 +72,12 @@ herein
 
 	# Window configuration values:
 	#
-	package cfg: api {
+	package c: api {
 
 	    Window_Config
 	      #	
-	      = ORIGIN      g::Point
-	      | SIZE        g::Size
+	      = ORIGIN      ge::Point
+	      | SIZE        ge::Size
 	      | BORDER_WID  Int
 	      | STACK_MODE               xt::Stack_Mode
 	      | REL_STACK_MODE  (Window, xt::Stack_Mode)
@@ -93,7 +93,7 @@ herein
 	    :
 	    sn::Screen
 	    ->
-	    { site:             g::Window_Site,
+	    { site:             ge::Window_Site,
 	      border_color:     rgb::Rgb,
 	      background_color: rgb8::Rgb8
 	    }
@@ -107,7 +107,7 @@ herein
 	    :
 	    Window
 	    ->
-	    { site:             g::Window_Site,
+	    { site:             ge::Window_Site,
 	      border_color:     Null_Or( rgb::Rgb ),
 	      background_color: Null_Or( rgb8::Rgb8 )
 	    }
@@ -118,7 +118,7 @@ herein
 	    :
 	    Window
 	    ->
-	    { site:              g::Window_Site,
+	    { site:              ge::Window_Site,
 	      border_color:      rgb::Rgb,
 	      background_color:  rgb8::Rgb8
 	    }
@@ -129,7 +129,7 @@ herein
 	    :
 	    sn::Screen
 	    ->
-	    { site:              g::Window_Site,
+	    { site:              ge::Window_Site,
 	      border_color:      rgb::Rgb,
 	      background_color:  rgb8::Rgb8
 	    }
@@ -138,7 +138,7 @@ herein
 
 	make_input_only_window
 	    :
-	    Window -> g::Box -> Window;
+	    Window -> ge::Box -> Window;
 
 	# raise this exception on operations, such as drawing, that are illegal for
 	# InputOnly windows.
@@ -176,16 +176,16 @@ herein
 
 	# Various routines to reconfigure window layout 
 	#
-	configure_window:        Window -> List(cfg::Window_Config) -> Void;
+	configure_window:        Window -> List(c::Window_Config) -> Void;
 	#
-	move_window:             Window -> g::Point     -> Void;
-	resize_window:           Window -> g::Size      -> Void;
-	move_and_resize_window:  Window -> g::Box -> Void;
+	move_window:             Window -> ge::Point     -> Void;
+	resize_window:           Window -> ge::Size      -> Void;
+	move_and_resize_window:  Window -> ge::Box -> Void;
 
 	# Map a point in the window's coordinate system
 	# to the screen's coordinate system
 	#
-	window_pt_to_screen_pt:  Window -> g::Point -> g::Point;
+	window_pt_to_screen_pt:  Window -> ge::Point -> ge::Point;
 
 	set_cursor:  Window ->  Null_Or( xr::Xcursor ) -> Void;
 
@@ -198,7 +198,7 @@ herein
 	    # with the right color.
 
 
-	change_window_attributes:  Window -> List( wa::Window_Attribute ) -> Void;
+	change_window_attributes:  Window -> List( a::Window_Attribute ) -> Void;
 	    #
 	    # Set various window attributes.
 

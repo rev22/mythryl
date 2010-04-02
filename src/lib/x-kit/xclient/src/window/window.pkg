@@ -19,14 +19,14 @@
 stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package a   =  atom;				# atom				is from   src/lib/x-kit/xclient/src/iccc/atom.pkg
+    package at  =  atom;				# atom				is from   src/lib/x-kit/xclient/src/iccc/atom.pkg
     package cs  =  cursors;				# cursors			is from   src/lib/x-kit/xclient/src/window/cursors.pkg
     package di  =  draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package dt  =  draw_types;				# draw_types			is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
     package dy  =  display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package e2s =  xerror_to_string;			# xerror_to_string		is from   src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
     package et  =  event_types;				# event_types			is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
-    package g   =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package ip  =  iccc_property;			# iccc_property			is from   src/lib/x-kit/xclient/src/iccc/iccc-property.pkg
     package s2w =  sendevent_to_wire;			# sendevent_to_wire		is from   src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
     package sa  =  standard_x11_atoms;			# standard_x11_atoms		is from   src/lib/x-kit/xclient/src/iccc/standard-x11-atoms.pkg
@@ -60,7 +60,7 @@ herein
 
 	# User-level window attributes:
 	#
-	package wa {
+	package a {
 
 	    Window_Attribute
 	      #
@@ -85,12 +85,12 @@ herein
 
 	# Window configuration values:
 	#
-	package cfg {
+	package c {
 
 	    Window_Config
 	      #
-	      = ORIGIN      g::Point
-	      | SIZE        g::Size
+	      = ORIGIN      ge::Point
+	      | SIZE        ge::Size
 	      | BORDER_WID  Int
 	      | STACK_MODE                   xt::Stack_Mode
 	      | REL_STACK_MODE  (dt::Window, xt::Stack_Mode)
@@ -106,55 +106,55 @@ herein
 	# Map user-level window attributes
 	# to internal x-window attributes: 
 	#
-	fun user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_NONE)
+	fun user_window_attribute_to_internal_window_attribute (a::BACKGROUND_NONE)
 		=>
 		xt::wa::BACKGROUND_PIXMAP_NONE;
 
-	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_PARENT_RELATIVE)
+	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_PARENT_RELATIVE)
 		=>
 		xt::wa::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 
-	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
 		xt::wa::BACKGROUND_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } ))) 
+	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } ))) 
 	       => 
 		xt::wa::BACKGROUND_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (wa::BACKGROUND_COLOR color)
+	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_COLOR color)
 		=>
 		xt::wa::BACKGROUND_PIXEL (rgb8_of color);
 
-	    user_window_attribute_to_internal_window_attribute (wa::BORDER_COPY_FROM_PARENT)
+	    user_window_attribute_to_internal_window_attribute (a::BORDER_COPY_FROM_PARENT)
 		=>
 		xt::wa::BORDER_PIXMAP_COPY_FROM_PARENT;
 
-	    user_window_attribute_to_internal_window_attribute (wa::BORDER_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (a::BORDER_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
 		=>
 		xt::wa::BORDER_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (wa::BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } )))
+	    user_window_attribute_to_internal_window_attribute (a::BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } )))
 		=>
 		xt::wa::BORDER_PIXMAP id;
 
-	    user_window_attribute_to_internal_window_attribute (wa::BORDER_COLOR color)
+	    user_window_attribute_to_internal_window_attribute (a::BORDER_COLOR color)
 		=>
 		xt::wa::BORDER_PIXEL (rgb8_of color);
 
-	    user_window_attribute_to_internal_window_attribute (wa::BIT_GRAVITY g)
+	    user_window_attribute_to_internal_window_attribute (a::BIT_GRAVITY g)
 		=>
 		xt::wa::BIT_GRAVITY g;
 
-	    user_window_attribute_to_internal_window_attribute (wa::WINDOW_GRAVITY g)
+	    user_window_attribute_to_internal_window_attribute (a::WINDOW_GRAVITY g)
 		=>
 		xt::wa::WINDOW_GRAVITY g;
 
-	    user_window_attribute_to_internal_window_attribute (wa::CURSOR_NONE)
+	    user_window_attribute_to_internal_window_attribute (a::CURSOR_NONE)
 		=>
 		xt::wa::CURSOR_NONE;
 
-	    user_window_attribute_to_internal_window_attribute (wa::CURSOR (cs::XCURSOR { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (a::CURSOR (cs::XCURSOR { id, ... } ))
 		=>
 		xt::wa::CURSOR id;
 	end;
@@ -194,8 +194,8 @@ herein
 
 	fun check_site g
 	    =
-	    if (g::valid_site g)   g;
-	    else                   raise  exception  BAD_WINDOW_SITE;
+	    if (ge::valid_site g)   g;
+	    else                   raise exception  BAD_WINDOW_SITE;
 	    fi;
 
 	fun make_simple_top_window (screen as sn::SCREEN { screen=>screen_info, xsession } )
@@ -404,7 +404,7 @@ herein
 
 	exception INPUT_ONLY;
 
-	fun make_input_only_window  window  (g::BOX { col, row, wide, high } )
+	fun make_input_only_window  window  (ge::BOX { col, row, wide, high } )
 	    =
 	    window
 	    where  
@@ -445,9 +445,9 @@ herein
 		    attributes => [xt::wa::EVENT_MASK standard_xevent_mask],
 		    #
 		    site => check_site
-				(g::WINDOW_SITE
-				  { upperleft    => g::POINT { col, row },
-				    size         => g::SIZE { wide, high },
+				(ge::WINDOW_SITE
+				  { upperleft    => ge::POINT { col, row },
+				    size         => ge::SIZE { wide, high },
 				    border_width => 0
 				  }
 				)
@@ -523,7 +523,7 @@ herein
 		    =
 		    set_property (xsession, window_id, n, ip::make_atom_property a);
 
-		case (a::find_atom  xsession  "WM_PROTOCOLS")
+		case (at::find_atom  xsession  "WM_PROTOCOLS")
 		    #
 		    NULL => FALSE;
 		    THE protocols_atom => { apply (put_property protocols_atom) atoml; TRUE;};
@@ -539,29 +539,29 @@ herein
 		    rw_vector::set (arr, i, THE v);
 
 
-		fn (cfg::ORIGIN (g::POINT { col, row } ))
+		fn (c::ORIGIN (ge::POINT { col, row } ))
 			=>
 			{   upd (0, unt::from_int col);
 			    upd (1, unt::from_int row);
 			};
 
-		   (cfg::SIZE (g::SIZE { wide, high } ))
+		   (c::SIZE (ge::SIZE { wide, high } ))
 			=>
 			{   upd (2, unt::from_int wide);
 			    upd (3, unt::from_int high);
 			};
 
-		   (cfg::BORDER_WID wide)
+		   (c::BORDER_WID wide)
 		       =>
 		       upd (4, unt::from_int wide);
 
-		   (cfg::STACK_MODE mode)
+		   (c::STACK_MODE mode)
 			=>
 			{   rw_vector::set (arr, 5, NULL);
 			    upd (6, v2w::stack_mode_to_wire mode);
 			};
 
-		   (cfg::REL_STACK_MODE (dt::WINDOW { window_id => xt::XID x, ... }, mode))
+		   (c::REL_STACK_MODE (dt::WINDOW { window_id => xt::XID x, ... }, mode))
 			=>
 			{   upd (5, x);
 			    upd (6, v2w::stack_mode_to_wire mode);
@@ -583,14 +583,14 @@ herein
 		  }
 	      );
 
-	fun move_window   window pt   =   configure_window window [cfg::ORIGIN pt];
-	fun resize_window window size =   configure_window window [cfg::SIZE size];
+	fun move_window   window pt   =   configure_window window [c::ORIGIN pt];
+	fun resize_window window size =   configure_window window [c::SIZE size];
 
-	fun move_and_resize_window window (g::BOX { col, row, wide, high } )
+	fun move_and_resize_window window (ge::BOX { col, row, wide, high } )
 	    =
 	    configure_window window
-	      [ cfg::ORIGIN (g::POINT { col,  row  } ),
-		cfg::SIZE   (g::SIZE  { wide, high } )
+	      [ c::ORIGIN (ge::POINT { col,  row  } ),
+		c::SIZE   (ge::SIZE  { wide, high } )
 	      ];
 
 	# Show ("map") a window:
