@@ -168,7 +168,7 @@ api  Xwindow {
     # Map a point in the window's coordinate
     # system to the screen's coordinate system:
     #
-    window_pt_to_screen_pt
+    window_point_to_screen_point
 	:
 	Window -> xg::Point -> xg::Point;
 

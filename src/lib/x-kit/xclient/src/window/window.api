@@ -185,7 +185,7 @@ herein
 	# Map a point in the window's coordinate system
 	# to the screen's coordinate system
 	#
-	window_pt_to_screen_pt:  Window -> ge::Point -> ge::Point;
+	window_point_to_screen_point:  Window -> ge::Point -> ge::Point;
 
 	set_cursor:  Window ->  Null_Or( xr::Xcursor ) -> Void;
 

@@ -655,7 +655,7 @@ herein
 	# Map a point in the window's coordinate
 	# system to the screen's coordinate system
 	#
-	fun window_pt_to_screen_pt (dt::WINDOW { window_id, screen, ... } ) pt
+	fun window_point_to_screen_point (dt::WINDOW { window_id, screen, ... } ) pt
 	    =
 	    {   screen ->  sn::SCREEN { xsession, screen=> sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... };
 

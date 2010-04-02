@@ -205,7 +205,7 @@ herein
 
 			    win_origin
 				=
-				xw::window_pt_to_screen_pt  window  xg::point_00;
+				xw::window_point_to_screen_point  window  xg::point_00;
 
 
 			    reply_slot

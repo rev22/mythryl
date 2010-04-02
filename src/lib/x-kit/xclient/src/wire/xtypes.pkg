@@ -160,29 +160,39 @@ herein
 	  | ANY_MODIFIER
 	  ;
 
-	Mousebutton
-	    =
-	    MOUSEBUTTON  Int;			# We use the X protocol "BUTTON" wire encoding.
-
-	# I can't find where the X protocol docs specify
-	# the button encodings, but /usr/include/X11/X.h
-	# on my system gives
-	#
-	#     /* button names. Used as arguments to GrabButton and as detail in ButtonPress
-	#	 and ButtonRelease events.  Not to be confused with button masks above.
-	#	 Note that 0 is already defined above as "AnyButton".  */
-	#
-	#     #define Button1			1
-	#     #define Button2			2
-	#     #define Button3			3
-	#     #define Button4			4
-	#     #define Button5			5
+	Mousebutton =  MOUSEBUTTON Int;			# We use the X protocol "BUTTON" wire encoding.
 	#
 	button1 =  MOUSEBUTTON 1;
 	button2 =  MOUSEBUTTON 2;
 	button3 =  MOUSEBUTTON 3;
 	button4 =  MOUSEBUTTON 4;
 	button5 =  MOUSEBUTTON 5;
+	    #
+	    # The X protocol docs are not overly specific
+	    # about mouse button encodings.  p7 of
+	    #
+	    #     http://mythryl.org/pub/exene/X-protocol-R6.pdf
+	    #
+	    # says laconically
+	    #
+	    #     6. Pointers
+	    #     Buttons are always numbered starting with one.
+	    #
+	    # On my system
+	    #
+	    #     /usr/include/X11/X.h
+	    #
+	    # is more explicit:
+	    #
+	    #     /* button names. Used as arguments to GrabButton and as detail in ButtonPress
+	    #	 and ButtonRelease events.  Not to be confused with button masks above.
+	    #	 Note that 0 is already defined above as "AnyButton".  */
+	    #
+	    #     #define Button1			1
+	    #     #define Button2			2
+	    #     #define Button3			3
+	    #     #define Button4			4
+	    #     #define Button5			5
 
 
 	# A modifier key (shift, ctrl...) state vector:

@@ -1,3 +1,4 @@
+2010-04-02-02.10.27: Globally renamed translate_coords -> translate_coordinates. Remember, every time you mangle a word, God kills a kitten. Think of the kittens.
 2010-04-02-01.50.42: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Renamed subpackage wa -> a per new package naming convention.
 2010-04-02-01.29.18: src/lib/x-kit/: Pervasively changed 'package w = widget;' -> 'package wg = widget;' in support of below package-name convention.
 2010-04-02-00.44.29: src/lib/x-kit/: Pervasively changed 'package g = geometry;' -> 'package ge = geometry;' in support of below package-name convention.
