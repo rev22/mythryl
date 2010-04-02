@@ -60,9 +60,9 @@
 
 
 stipulate
-    package xt  = xtypes;						# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    package xok = xsocket;			    			# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package g   = geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xt  =  xtypes;						# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package xok =  xsocket;			    			# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package ge  =  geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
 herein
 
     api Display {
@@ -115,8 +115,8 @@ herein
 		visuals:          List( xt::Visual ),
 		save_unders:      Bool,
 
-		size_in_pixels:   g::Size,				# Width and height in pixels.
-		size_in_mm:       g::Size,				# Width and height in millimeters.
+		size_in_pixels:   ge::Size,				# Width and height in pixels.
+		size_in_mm:       ge::Size,				# Width and height in millimeters.
 
 		min_installed_cmaps:  Int,
 		max_installed_cmaps:  Int

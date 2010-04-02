@@ -23,7 +23,7 @@ stipulate
 	#
 	package s2t =  xsocket_to_topwindow_router;	# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
 	package dt  =  draw_types;			# draw_types			is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
-	package g   =  geometry;			# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+	package ge  =  geometry;			# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
 	package hw  =  hash_window;			# hash_window			is from   src/lib/x-kit/xclient/src/window/hash-window.pkg
 	package kb  =  keys_and_buttons;		# keys_and_buttons		is from   src/lib/x-kit/xclient/src/wire/keys-and-buttons.pkg
 	package ks  =  keysym;				# keysym			is from   src/lib/x-kit/xclient/src/window/keysym.pkg
@@ -36,8 +36,8 @@ herein
 
 	    Motion_Transition
 		=
-		{ window_point:  g::Point,		# Mouse position in window coords.
-		  screen_point:  g::Point,		# Mouse position in screen coords. XXX BUGGO FIXME shouldn't window and screen points be different types?
+		{ window_point:  ge::Point,		# Mouse position in window coords.
+		  screen_point:  ge::Point,		# Mouse position in screen coords. XXX BUGGO FIXME shouldn't window and screen points be different types?
 		  timestamp:     ts::Xserver_Timestamp
 		};
 
@@ -45,8 +45,8 @@ herein
 		=
 		{
 		  button:	 xt::Mousebutton,	# Button that is in transition.
-		  window_point:	 g::Point,		# Mouse position in window coords.
-		  screen_point:  g::Point,		# Mouse position in screen coords.
+		  window_point:	 ge::Point,		# Mouse position in window coords.
+		  screen_point:  ge::Point,		# Mouse position in screen coords.
 							# NOTE: We may also want the modifier-key state.
 		  timestamp:	 ts::Xserver_Timestamp
 		};
@@ -55,8 +55,8 @@ herein
 		=
 		{
 		  button:  	 xt::Mousebutton,	# Button that is in transition.
-		  window_point:  g::Point,		# Mouse position in window coords.
-		  screen_point:  g::Point,		# Mouse position in screen coords. 
+		  window_point:  ge::Point,		# Mouse position in window coords.
+		  screen_point:  ge::Point,		# Mouse position in screen coords. 
 		  state:   	 xt::Mousebuttons_State,	# List of buttons that are pressed. 
 							# NOTE: We may also want the modifier-key state.
 		  timestamp:	 ts::Xserver_Timestamp
@@ -161,8 +161,8 @@ herein
 	#     Our X server window no longer exists.
 	#
 	Other_Mail
-	  = ETC_REDRAW      List( g::Box )
-	  | ETC_RESIZE            g::Box
+	  = ETC_REDRAW      List( ge::Box )
+	  | ETC_RESIZE            ge::Box
 	  #
 	  | ETC_CHILD_BIRTH       dt::Window
 	  | ETC_CHILD_DEATH       dt::Window

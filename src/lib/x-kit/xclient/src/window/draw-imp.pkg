@@ -15,7 +15,7 @@ stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
-    package g   =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package gi  =  graphics_context_imp;		# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
     package m1  =  oneshot_maildrop;			# oneshot_maildrop		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
     package pg  =  pen_guts;				# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
@@ -39,40 +39,40 @@ herein
 	  ;
 
 	Draw_Op
-	  = DOP_POLY_POINT     (Bool, List( g::Point ))
-	  | DOP_POLY_LINE      (Bool, List( g::Point ))
-	  | DOP_FILL_POLY      (xt::Shape, Bool, List( g::Point ))
-	  | DOP_POLY_SEG       List( g::Line )
-	  | DOP_POLY_BOX       List( g::Box )
-	  | DOP_POLY_FILL_BOX  List( g::Box )
-	  | DOP_POLY_ARC       List( g::Arc  )
-	  | DOP_POLY_FILL_ARC  List( g::Arc  )
+	  = DOP_POLY_POINT     (Bool, List( ge::Point ))
+	  | DOP_POLY_LINE      (Bool, List( ge::Point ))
+	  | DOP_FILL_POLY      (xt::Shape, Bool, List( ge::Point ))
+	  | DOP_POLY_SEG       List( ge::Line )
+	  | DOP_POLY_BOX       List( ge::Box )
+	  | DOP_POLY_FILL_BOX  List( ge::Box )
+	  | DOP_POLY_ARC       List( ge::Arc  )
+	  | DOP_POLY_FILL_ARC  List( ge::Arc  )
 	  | DOP_COPY_AREA
-		( g::Point,
+		( ge::Point,
 		  xt::Xid,
-		  g::Box,
-		  Oneshot_Maildrop( Void -> List( g::Box ) )
+		  ge::Box,
+		  Oneshot_Maildrop( Void -> List( ge::Box ) )
 		)
 	  | DOP_COPY_PLANE
-		( g::Point,
+		( ge::Point,
 		  xt::Xid,
-		  g::Box,
+		  ge::Box,
 		  Int,
-		  Oneshot_Maildrop (Void -> List( g::Box ) )
+		  Oneshot_Maildrop (Void -> List( ge::Box ) )
 		)
-	  | DOP_COPY_PMAREA    (g::Point, xt::Xid, g::Box)
-	  | DOP_COPY_PMPLANE   (g::Point, xt::Xid, g::Box, Int)
-	  | DOP_CLEAR_AREA      g::Box
+	  | DOP_COPY_PMAREA    (ge::Point, xt::Xid, ge::Box)
+	  | DOP_COPY_PMPLANE   (ge::Point, xt::Xid, ge::Box, Int)
+	  | DOP_CLEAR_AREA      ge::Box
 	  | DOP_PUT_IMAGE  {
-		to_point: g::Point,
-		size:     g::Size,
+		to_point: ge::Point,
+		size:     ge::Size,
 		depth:    Int,
 		lpad:     Int,
 		format:   xt::Image_Format,
 		data:     vu8::Vector
 	      }
-	  | DOP_POLY_TEXT8   (xt::Font_Id, g::Point, List( Poly_Text ))
-	  | DOP_IMAGE_TEXT8  (xt::Font_Id, g::Point, String)
+	  | DOP_POLY_TEXT8   (xt::Font_Id, ge::Point, List( Poly_Text ))
+	  | DOP_IMAGE_TEXT8  (xt::Font_Id, ge::Point, String)
 	  ;
 
 	Destroy_Item
@@ -256,7 +256,7 @@ herein
 			    =>
 			    {   my (p, size)
 				    =
-				    g::upperleft_and_size_of_box box;
+				    ge::upperleft_and_size_of_box box;
 
 				request_with_exposures (
 				  v2w::encode_copy_area {
@@ -268,7 +268,7 @@ herein
 			(to, gc, _, DOP_COPY_PLANE (pt, from, box, plane, sync_v))
 			    =>
 			    {
-				my (p, size) = g::upperleft_and_size_of_box box;
+				my (p, size) = ge::upperleft_and_size_of_box box;
 
 				request_with_exposures (
 				  v2w::encode_copy_plane {
@@ -282,7 +282,7 @@ herein
 			    =>
 			    {   my (p, size)
 				    =
-				    g::upperleft_and_size_of_box box;
+				    ge::upperleft_and_size_of_box box;
 
 				request (v2w::encode_copy_area {
 				    gc, from, to, from_point=>p, size, to_point=>pt
@@ -292,7 +292,7 @@ herein
 			(to, gc, _, DOP_COPY_PMPLANE (pt, from, box, plane))
 			    =>
 			    {
-				my (p, size) = g::upperleft_and_size_of_box box;
+				my (p, size) = ge::upperleft_and_size_of_box box;
 
 				request (v2w::encode_copy_plane {
 				      gc, from, to, from_point=>p, size, to_point=>pt, plane

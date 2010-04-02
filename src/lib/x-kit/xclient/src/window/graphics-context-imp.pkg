@@ -25,7 +25,7 @@ stipulate
     include threadkit;							# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package dy  =  display;						# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
-    package g   =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package pg  =  pen_guts;						# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
     package x2w =  value_to_wire;					# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
@@ -307,7 +307,7 @@ herein
 				    =>
 				    update_w (vector::get (pen_slot_to_gcslot, i), v);
 
-				init_val (i, pg::IS_POINT (g::POINT { col, row } ))
+				init_val (i, pg::IS_POINT (ge::POINT { col, row } ))
 				    =>
 				    {   j = vector::get (pen_slot_to_gcslot, i);
 
@@ -417,7 +417,7 @@ herein
 			    =>
 			    request
 			      ( x2w::encode_set_clip_boxes
-				  { gc => id, clip_origin => g::point_00, ordering => order, boxes }
+				  { gc => id, clip_origin => ge::point_00, ordering => order, boxes }
 			      );
 		    end;
 

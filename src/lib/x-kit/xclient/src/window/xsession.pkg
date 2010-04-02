@@ -143,7 +143,7 @@ stipulate
     #
     package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     #
-    package g   =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xok =  xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package dy  =  display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package ai  =  atom_imp;				# atom_imp			is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
@@ -330,7 +330,7 @@ herein
 					      ( value_to_wire::encode_create_pixmap
 						  { pixmap => xid,
 						    drawable => root_window_id,
-						    size => g::SIZE { wide=>1, high=>1 },
+						    size => ge::SIZE { wide=>1, high=>1 },
 						    depth => d
 				                  }
                                               );
@@ -460,7 +460,7 @@ herein
 	    =
 	    {   # This is an ignored dummy value:
 		#	
-	        from_box =  g::BOX { col => 0, row => 0, wide => 0, high => 0 };
+	        from_box =  ge::BOX { col => 0, row => 0, wide => 0, high => 0 };
 
 		command
 		    =
@@ -486,7 +486,7 @@ herein
 	    )
 	    { window =>  WINDOW { window_id, ... },			# Window handling the mouse-button click event.
 	      button,							# Mouse button just "clicked" down.
-	      point  =>  g::POINT { row, col }				# Click location in local window coordinates.
+	      point  =>  ge::POINT { row, col }				# Click location in local window coordinates.
 	    }
 	    =
 	    {   # For the semantics of these three fields see
@@ -527,7 +527,7 @@ herein
 	    )
 	    { window =>  WINDOW { window_id, ... },			# Window handling the mouse-button click event.
 	      button,							# Mouse button just "clicked" down.
-	      point  =>  g::POINT { row, col }				# Click location in local window coordinates.
+	      point  =>  ge::POINT { row, col }				# Click location in local window coordinates.
 	    }
 	    =
 	    {   # For the semantics of these three fields see

@@ -19,9 +19,9 @@
 
 stipulate
     package cw =  cs_pixmap;
-    package d  =  draw;						# draw		is from   src/lib/x-kit/xclient/src/window/draw.pkg
+    package dr =  draw;						# draw		is from   src/lib/x-kit/xclient/src/window/draw.pkg
     package dt =  draw_types;					# draw_types	is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
-    package g  =  geometry;					# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge =  geometry;					# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package wp =  rw_pixmap;					# rw_pixmap	is from   src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
     package sn =  xsession;					# xsession	is from   src/lib/x-kit/xclient/src/window/xsession.pkg
 herein
@@ -59,15 +59,15 @@ herein
 			screen
 			(size, depth);
 
-		d::pixel_blt
+		dr::pixel_blt
 		    #
 		    (dt::drawable_of_rw_pixmap  new_pixmap)
 		    #
 		    pen::default_pen
 		    #
 		    { from     =>  dt::FROM_RW_PIXMAP pm,
-		      from_box =>  g::make_box (g::point_00, size),
-		      to_pos   =>  g::point_00
+		      from_box =>  ge::make_box (ge::point_00, size),
+		      to_pos   =>  ge::point_00
 		    };
 
 		dt::RO_PIXMAP new_pixmap;

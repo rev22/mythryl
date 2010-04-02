@@ -23,7 +23,7 @@
 stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package g  =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xt =  xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package sn =  xsession;			# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
     package di =  draw_imp;			# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
@@ -55,7 +55,7 @@ herein
 	      {  
 		id:            xt::Pixmap_Id,
 		screen:        sn::Screen,
-		size:          g::Size,
+		size:          ge::Size,
 		screen_depth:  sn::Screen_Depth_Imps
 	      };
 
@@ -110,7 +110,7 @@ herein
 				(encode_get_geometry { drawable=>window_id } )
 			    );
 
-		my { depth, geometry=>g::WINDOW_SITE { upperleft, size, border_width }, ... }
+		my { depth, geometry=>ge::WINDOW_SITE { upperleft, size, border_width }, ... }
 		    =
 		    decode_get_geometry_reply reply;
 
@@ -119,7 +119,7 @@ herein
 
 	fun shape_of_rw_pixmap (RW_PIXMAP { size, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )
 	    =
-	    { upperleft => g::point_00,
+	    { upperleft => ge::point_00,
 	      size,
 	      depth,
 	      border_width => 0
@@ -187,13 +187,13 @@ herein
 	    DRAWABLE_WINDOW { root => DPM pm, draw_fn=>draw_command' }
 	    where 
 
-		fun draw_command' (di::DMSG { to, pen, op => di::DOP_CLEAR_AREA (g::BOX { col, row, wide, high } ) } )
+		fun draw_command' (di::DMSG { to, pen, op => di::DOP_CLEAR_AREA (ge::BOX { col, row, wide, high } ) } )
 			=>
 			{   fun clip (z, 0, max) =>   max - z;
 				clip (z, w, max) =>   if  ( (z + w) > max   )   max - z;   else   w;   fi;
 			    end;
 
-			    my g::SIZE { wide => pm_wide,
+			    my ge::SIZE { wide => pm_wide,
 					 high => pm_high
 				       }
 				=
@@ -201,7 +201,7 @@ herein
 
 			    to_box
 				=
-				g::BOX
+				ge::BOX
 				  { col,
 				    row,
 				    wide => clip (col, wide, pm_wide),

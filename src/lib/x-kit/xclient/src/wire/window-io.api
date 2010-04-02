@@ -13,9 +13,9 @@
 #     src/lib/x-kit/xclient/src/wire/window-io.pkg
 
 stipulate
-    package xok = xsocket;				# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package xt  = xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xok =  xsocket;				# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
+    package xt  =  xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ge  =  geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
 herein
 
     api Window_Io {
@@ -33,7 +33,7 @@ herein
 	       depth:			Int,
 	       visual_id:		xt::Visual_Id_Choice,
 	       #
-	       site:			g::Window_Site,
+	       site:			ge::Window_Site,
 	       attributes:		List( xt::wa::Window_Attribute )
 	     }
 	    ->

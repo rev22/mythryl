@@ -11,10 +11,10 @@
 #     src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
 
 stipulate
-    package g   = geometry;			# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package v  =  rw_vector;			# rw_vector	is from   src/lib/std/src/rw-vector.pkg
-    package v8  = unt8_vector;			# unt8_vector	is from   src/lib/std/src/unt8-vector.pkg
-    package xt  = xtypes;			# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ge  =  geometry;			# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package rwv =  rw_vector;			# rw_vector	is from   src/lib/std/src/rw-vector.pkg
+    package v8  =  unt8_vector;			# unt8_vector	is from   src/lib/std/src/unt8-vector.pkg
+    package xt  =  xtypes;			# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
     api Value_To_Wire {
 
@@ -25,7 +25,7 @@ herein
 
 	do_val_list
 	    :  Int
-	    -> (v::Rw_Vector( Null_Or(Unt) ) -> X -> Void)
+	    -> (rwv::Rw_Vector( Null_Or(Unt) ) -> X -> Void)
 	    -> List( X )
 	    -> xt::Value_List
             ;
@@ -85,7 +85,7 @@ herein
             ->
             v8::Vector;
 
-	encode_clear_area:       { box: g::Box,  exposures: Bool, window_id: xt::Xid }       -> v8::Vector;
+	encode_clear_area:       { box: ge::Box,  exposures: Bool, window_id: xt::Xid }       -> v8::Vector;
 	encode_close_font:       { font: xt::Xid }                                           -> v8::Vector;
 	encode_configure_window: { vals: xt::Value_List,  window_id: xt::Xid }               -> v8::Vector;
 
@@ -108,11 +108,11 @@ herein
 	encode_copy_area: { from:       xt::Xid,
 			    to:         xt::Xid,
 			    #
-                            from_point: g::Point, 
-                            to_point:   g::Point,
+                            from_point: ge::Point, 
+                            to_point:   ge::Point,
 			    #
 			    gc:         xt::Xid,
-                            size:       g::Size
+                            size:       ge::Size
                           }
 			  -> v8::Vector;
 
@@ -124,12 +124,12 @@ herein
                         }
 			-> v8::Vector;
 
-	encode_copy_plane: { from: xt::Xid,  from_point: g::Point, 
-			     to:   xt::Xid,  to_point:   g::Point,
+	encode_copy_plane: { from: xt::Xid,  from_point: ge::Point, 
+			     to:   xt::Xid,  to_point:   ge::Point,
 			     #
 			     gc:    xt::Xid,
                              plane: Int,
-                             size:  g::Size
+                             size:  ge::Size
                            }
 			   -> v8::Vector;
 
@@ -144,7 +144,7 @@ herein
 				foreground_rgb: rgb::Rgb,
                                 cursor:         xt::Xid, 
                                 from:           xt::Xid, 
-				hot_spot:       g::Point, 
+				hot_spot:       ge::Point, 
 				mask:           Null_Or(xt::Xid)
                               }
 			      -> v8::Vector;
@@ -170,7 +170,7 @@ herein
 	encode_create_pixmap: { depth:    Int,
                                 drawable: xt::Xid, 
 				pixmap:   xt::Xid,
-                                size:     g::Size
+                                size:     ge::Size
                               }
 			      -> v8::Vector;
 
@@ -179,7 +179,7 @@ herein
 				#
 				visual_id:  xt::Visual_Id_Choice,
 				depth:      Int,
-                                site:       g::Window_Site, 
+                                site:       ge::Window_Site, 
 				io_class:   xt::Io_Class,
 				attributes: List( xt::wa::Window_Attribute )
                               }
@@ -191,7 +191,7 @@ herein
 
 	encode_fill_poly: { drawable:  xt::Xid,
                             gc:        xt::Xid, 
-			    pts:       List(g::Point),
+			    pts:       List(ge::Point),
                             relative:  Bool, 
 			    shape:     xt::Shape
                           }
@@ -213,7 +213,7 @@ herein
 	encode_get_atom_name: { atom:     xt::Atom } -> v8::Vector;
 	encode_get_geometry:  { drawable: xt::Xid  } -> v8::Vector;
 
-	encode_get_image: { box:        g::Box,
+	encode_get_image: { box:        ge::Box,
                             drawable:   xt::Xid, 
 			    format:     xt::Image_Format, 
 			    plane_mask: xt::Plane_Mask
@@ -290,14 +290,14 @@ herein
 
 	encode_image_text16: { drawable: xt::Xid,
                                gc:       xt::Xid, 
-			       pt:       g::Point,
+			       pt:       ge::Point,
                                str:      String
                              }
 			     -> v8::Vector;
 
 	encode_image_text8: { drawable: xt::Xid,
                               gc:       xt::Xid, 
-			      pt:       g::Point,
+			      pt:       ge::Point,
                               str:      String
                             }
 			    -> v8::Vector;
@@ -324,57 +324,57 @@ herein
 
 	encode_poly_arc: { drawable: xt::Xid,
                            gc:       xt::Xid, 
-			   items:    List(g::Arc)
+			   items:    List(ge::Arc)
                          }
 			 -> v8::Vector;
 
 	encode_poly_box: { drawable: xt::Xid,
                            gc:       xt::Xid, 
-			   items:    List(g::Box)
+			   items:    List(ge::Box)
                          }
 			 -> v8::Vector;
 
 	encode_poly_fill_arc: { drawable: xt::Xid,
                                 gc:       xt::Xid, 
-				items:    List(g::Arc)
+				items:    List(ge::Arc)
                               }
 			      -> v8::Vector;
 
 	encode_poly_fill_box: { drawable: xt::Xid,
                                 gc:       xt::Xid, 
-				items:    List(g::Box)
+				items:    List(ge::Box)
                               }
 			      -> v8::Vector;
 
 	encode_poly_line:  { drawable: xt::Xid,
                              gc:       xt::Xid, 
-			     items:    List(g::Point),
+			     items:    List(ge::Point),
                              relative: Bool
                            }
 			   -> v8::Vector;
 
 	encode_poly_point: { drawable: xt::Xid,
                              gc: xt::Xid, 
-			     items: List(g::Point),
+			     items: List(ge::Point),
                              relative: Bool
                            }
 			   -> v8::Vector;
 
 	encode_poly_segment: { drawable: xt::Xid,
                                gc: xt::Xid, 
-			       items: List(g::Line)
+			       items: List(ge::Line)
                              }
 			     -> v8::Vector;
 
 	encode_poly_text16:  { drawable: xt::Xid,  gc: xt::Xid, 
-			       items: List(xt::Text_Font),  pt: g::Point
+			       items: List(xt::Text_Font),  pt: ge::Point
                              }
 			     -> v8::Vector;
 
 	encode_poly_text8: { drawable: xt::Xid,
                              gc: xt::Xid, 
 			     items: List(xt::Text_Font),
-                             pt: g::Point
+                             pt: ge::Point
                            }
 			   -> v8::Vector;
 
@@ -390,14 +390,14 @@ herein
                             format:   xt::Image_Format, 
 			    gc:       xt::Xid,
                             lpad:     Int,
-                            size:     g::Size, 
-			    to:       g::Point
+                            size:     ge::Size, 
+			    to:       ge::Point
                           }
 			  -> v8::Vector;
 
 	encode_query_best_size: { drawable: xt::Xid,
                                   ilk:      xt::Best_Size_Ilk, 
-				  size:     g::Size
+				  size:     ge::Size
                                 }
 				-> v8::Vector;
 
@@ -418,7 +418,7 @@ herein
 
 	encode_reparent_window: { parent_id:  xt::Xid,
 				  window_id:  xt::Xid,
-                                  pos:        g::Point
+                                  pos:        ge::Point
                                 }
 				-> v8::Vector;
 
@@ -430,8 +430,8 @@ herein
 
 	encode_set_access_control: { enable: Bool } -> v8::Vector;
 
-	encode_set_clip_boxes:  { boxes:       List(g::Box), 
-				  clip_origin: g::Point,
+	encode_set_clip_boxes:  { boxes:       List(ge::Box), 
+				  clip_origin: ge::Point,
                                   gc:          xt::Xid, 
 				  ordering:    xt::Box_Order
                                 }
@@ -484,7 +484,7 @@ herein
                                   }
 				  -> v8::Vector;
 
-	encode_translate_coords:  { from_point:  g::Point, 
+	encode_translate_coords:  { from_point:  ge::Point, 
 				    from_window: xt::Xid,
                                     to_window:   xt::Xid
                                   }
@@ -514,8 +514,8 @@ herein
 	    { from:     Null_Or(xt::Xid),
 	      to:       Null_Or(xt::Xid), 
 	      #
-	      from_box: g::Box,
-	      to_point: g::Point
+	      from_box: ge::Box,
+	      to_point: ge::Point
 	    }
 	    ->
 	    v8::Vector;

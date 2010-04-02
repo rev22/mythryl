@@ -22,9 +22,9 @@
 
 
 stipulate
-    package dt   = draw_types;		# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
-    package g    = geometry;		# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package sn   = xsession;		# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
+    package dt =  draw_types;		# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
+    package ge =  geometry;		# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package sn =  xsession;		# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
 herein
 
     api Cs_Pixmap {
@@ -44,7 +44,7 @@ herein
 	Cs_Pixmap
 	    =
 	    CS_PIXMAP
-	      { size:  g::Size,
+	      { size:  ge::Size,
 		data:  List(  List(  unt8_vector::Vector ) )
 	      };
 
@@ -54,8 +54,8 @@ herein
 	    ->
 	    { from:      Cs_Pixmap,
 	      #
-	      from_box:  g::Box,
-	      to_point:  g::Point
+	      from_box:  ge::Box,
+	      to_point:  ge::Point
 	    }
 	    ->
 	    Void;
@@ -74,7 +74,7 @@ herein
 	    # Example: the "tic-tac-toe" pattern result
 	    #
 	    #     RW_PIXMAP
-	    #       { size => g::SIZE { wide => 8, high => 8 },
+	    #       { size => ge::SIZE { wide => 8, high => 8 },
 	    #         data => [ [ "\002\004", "\002\004", "\255\255", "\002\004",
 	    #                     "\002\004", "\255\255", "\002\004", "\002\004"
 	    #                 ] ]

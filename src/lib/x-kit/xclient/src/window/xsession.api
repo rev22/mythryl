@@ -14,7 +14,7 @@ stipulate
     #
     package s2t = xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     #
-    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package ge  = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package ai  = atom_imp;				# atom_imp		is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
     package cs  = color_spec;				# color_spec		is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
@@ -201,8 +201,8 @@ herein
 	# Get/set location of mouse pointer
 	# relative to root window:
 	#
-	get_mouse_location:  Xsession -> g::Point;	
-	set_mouse_location:  Xsession -> g::Point -> Void;
+	get_mouse_location:  Xsession -> ge::Point;	
+	set_mouse_location:  Xsession -> ge::Point -> Void;
 
 	query_colors
 	    :
@@ -221,7 +221,7 @@ herein
 	    ->
             { drawable: xt::Xid,
               ilk:      xt::Best_Size_Ilk, 
-	      size:     g::Size
+	      size:     ge::Size
             }
 	    ->
 	    { high:	Int,
@@ -277,7 +277,7 @@ herein
 	    ->
 	    { window:		Window,				# Window handling the mouse-button click event.
 	      button:		xt::Mousebutton,		# Mouse button just clicked down.
-	      point:		g::Point
+	      point:		ge::Point
 	    }
 	    ->
 	    Void
@@ -293,7 +293,7 @@ herein
 	    ->
 	    { window:		Window,				# Window handling the mouse-button release event.
 	      button:		xt::Mousebutton,		# Mouse button just released.
-	      point:		g::Point
+	      point:		ge::Point
 	    }
 	    ->
 	    Void
@@ -344,8 +344,8 @@ herein
 	xsession_of_screen:       Screen -> Xsession;
 	root_window_of_screen:    Screen -> xt::Window_Id;
 
-	   size_of_screen:        Screen -> g::Size;
-	mm_size_of_screen:        Screen -> g::Size;
+	   size_of_screen:        Screen -> ge::Size;
+	mm_size_of_screen:        Screen -> ge::Size;
 
 	depth_of_screen:          Screen -> Int;
 

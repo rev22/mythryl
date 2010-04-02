@@ -13,7 +13,7 @@
 # The internal representation of pen values.
 
 stipulate
-    package g  = geometry;					# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge = geometry;					# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xt = xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
@@ -28,8 +28,8 @@ herein
 	  = IS_DEFAULT
 	  | IS_WIRE    Unt						# A trait's wire representation.
 	  | IS_PIXMAP  xt::Pixmap_Id
-	  | IS_POINT   g::Point
-	  | IS_BOXES   (xt::Box_Order, List( g::Box ))
+	  | IS_POINT   ge::Point
+	  | IS_BOXES   (xt::Box_Order, List( ge::Box ))
 	  | IS_DASHES  List( Int )
 	  ;
 
@@ -83,7 +83,7 @@ herein
 				(o1 == o2) and eq (rl1, rl2)
 				where
 				    fun eq ([], []) => TRUE;
-					eq ((a:  g::Box) ! ra, b ! rb) => (a==b) and eq (ra, rb);
+					eq ((a:  ge::Box) ! ra, b ! rb) => (a==b) and eq (ra, rb);
 					eq _ => FALSE;
 				    end;
 				end;

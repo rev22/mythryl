@@ -10,7 +10,7 @@
 #     src/lib/x-kit/xclient/src/window/draw-types.pkg
 
 stipulate
-    package g   = geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge = geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xt =  xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package sn =  xsession;				# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
     package di =  draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
@@ -37,7 +37,7 @@ herein
 	    RW_PIXMAP
 	      { id:           xt::Pixmap_Id,
 		screen:       sn::Screen,
-		size:         g::Size,
+		size:         ge::Size,
 		screen_depth: sn::Screen_Depth_Imps
 	      };
 
@@ -68,8 +68,8 @@ herein
 	    :
 	    Window
 	    ->
-	    { upperleft:     g::Point,		# Pixel location of window upper-left corner relative to parent.
-	      size:          g::Size,		# Pixel size of window.	
+	    { upperleft:     ge::Point,		# Pixel location of window upper-left corner relative to parent.
+	      size:          ge::Size,		# Pixel size of window.	
 	      #
 	      depth:         Int,				# Pixel depth in bits.
 	      border_width:  Int				# Window border in pixels.
@@ -79,8 +79,8 @@ herein
 	    :
 	    Rw_Pixmap
 	    ->
-	    { upperleft:     g::Point,		# Present only for uniformity;  these have no actual position.  Always (0,0).
-	      size:          g::Size,
+	    { upperleft:     ge::Point,		# Present only for uniformity;  these have no actual position.  Always (0,0).
+	      size:          ge::Size,
 	      #
 	      depth:         Int,
 	      border_width:  Int				# Present only for uniformity;  these have no actual border.    Always 0.
@@ -90,8 +90,8 @@ herein
 	    :
 	    Ro_Pixmap
 	    ->
-	    { upperleft:     g::Point,		# Present only for uniformity;  these have no actual position.  Always (0,0).
-	      size:          g::Size,
+	    { upperleft:     ge::Point,		# Present only for uniformity;  these have no actual position.  Always (0,0).
+	      size:          ge::Size,
 	      #
 	      depth:         Int,
 	      border_width:  Int				# Present only for uniformity;  these have no actual border.    Always 0.
@@ -101,16 +101,16 @@ herein
 	    :
 	    Draw_From
 	    ->
-	    { upperleft:     g::Point,
-	      size:          g::Size,
+	    { upperleft:     ge::Point,
+	      size:          ge::Size,
 	      #
 	      depth:         Int,
 	      border_width:  Int
 	    };
 
-	size_of_window:	        Window -> g::Size;
-	size_of_rw_pixmap:   Rw_Pixmap -> g::Size;
-	size_of_ro_pixmap:   Ro_Pixmap -> g::Size;
+	size_of_window:	        Window -> ge::Size;
+	size_of_rw_pixmap:   Rw_Pixmap -> ge::Size;
+	size_of_ro_pixmap:   Ro_Pixmap -> ge::Size;
 
 	Draw_Root = DWIN  Window
 		  | DPM   Rw_Pixmap

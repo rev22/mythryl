@@ -30,7 +30,7 @@ stipulate
     package di  =  draw_imp;					# draw_imp	is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package dt  =  draw_types;					# draw_types	is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
     package dy  =  display;					# display	is from   src/lib/x-kit/xclient/src/wire/display.pkg
-    package g   =  geometry;					# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;					# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package sn  =  xsession;					# xsession	is from   src/lib/x-kit/xclient/src/window/xsession.pkg
     package xok =  xsocket;					# xsocket	is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
 herein
@@ -55,7 +55,7 @@ herein
 
 		id =  next_xid ();
 
-		if (not (g::valid_size  size))
+		if (not (ge::valid_size  size))
 		    #
                     raise exception BAD_PIXMAP_PARAMETER;
                 fi;

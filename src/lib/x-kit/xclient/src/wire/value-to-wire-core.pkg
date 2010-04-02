@@ -60,7 +60,7 @@
 #     src/lib/x-kit/xclient/src/iccc/atom.pkg
 
 stipulate
-    package g   =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;			# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xt  =  xtypes;			# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package ts  =  xserver_timestamp;		# xserver_timestamp	is from   src/lib/x-kit/xclient/src/wire/xserver-timestamp.pkg
     package kb  =  keys_and_buttons;		# keys_and_buttons	is from   src/lib/x-kit/xclient/src/wire/keys-and-buttons.pkg
@@ -268,19 +268,19 @@ herein
 	    fun put_event_mask     (buf, i, xt::EVENT_MASK  m) =  put_word32   (buf, i, m);
 	    fun put_ptr_event_mask (buf, i, xt::EVENT_MASK  m) =  put_word16   (buf, i, m);
 
-	    fun put_pt (buf, i, g::POINT { col, row } )
+	    fun put_pt (buf, i, ge::POINT { col, row } )
 		=
 		{   put_signed16 (buf, i,   col);
 		    put_signed16 (buf, i+2, row);
 		};
 
-	    fun put_size (buf, i, g::SIZE { wide, high } )
+	    fun put_size (buf, i, ge::SIZE { wide, high } )
 	       =
 	       {   put_signed16 (buf, i,   wide);
 		   put_signed16 (buf, i+2, high);
 	       };
 
-	    fun put_box (buf, i, g::BOX { col, row, wide, high } )
+	    fun put_box (buf, i, ge::BOX { col, row, wide, high } )
 		=
 		{   put_signed16 (buf, i,   col );
 		    put_signed16 (buf, i+2, row );
@@ -288,7 +288,7 @@ herein
 		    put_signed16 (buf, i+6, high);
 		};
 
-	    fun put_arc (buf, i, g::ARC { col, row, wide, high, angle1, angle2 } )
+	    fun put_arc (buf, i, ge::ARC { col, row, wide, high, angle1, angle2 } )
 		=
 		{   put_signed16 (buf, i,    col   );
 		    put_signed16 (buf, i+2,  row   );
@@ -298,7 +298,7 @@ herein
 		    put_signed16 (buf, i+10, angle2);
 		};
 
-	    fun put_wgeom (buf, i, g::WINDOW_SITE { upperleft, size, border_width } )
+	    fun put_wgeom (buf, i, ge::WINDOW_SITE { upperleft, size, border_width } )
 		=
 		{   put_pt       (buf, i,   upperleft   );
 		    put_size     (buf, i+4, size        );
@@ -657,7 +657,7 @@ herein
                   visual_id:	xt::Visual_Id_Choice,
 		  io_class:	xt::Io_Class,
 		  depth:	Int,
-                  site:         g::Window_Site,
+                  site:         ge::Window_Site,
                   attributes:   List( xt::wa::Window_Attribute )
                 }
 		=
@@ -1394,7 +1394,7 @@ herein
 		put_segs
 		    =
 		    put_list
-			(  fn (buf, i, g::LINE (p1, p2))
+			(  fn (buf, i, ge::LINE (p1, p2))
 			       =
 			       {   put_pt (buf, i,   p1);
 				   put_pt (buf, i+4, p2);

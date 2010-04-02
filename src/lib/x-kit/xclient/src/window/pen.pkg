@@ -19,9 +19,9 @@ stipulate
     package dt  =  draw_types;					# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
     package xt  =  xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package v2w =  value_to_wire;				# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
-    package g   =  geometry;					# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;					# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package rwv =  rw_vector;					# rw_vector		is from   src/lib/std/src/rw-vector.pkg
-    package v   =  vector;					# vector		is from   src/lib/std/src/vector.pkg
+    package vec =  vector;					# vector		is from   src/lib/std/src/vector.pkg
 herein
     package pen {
 
@@ -101,8 +101,8 @@ herein
 	    check_card16 =  unt::from_int  o  (check_item  rc::valid16);
 	    check_card8  =  unt::from_int  o  (check_item  rc::valid8);
 
-	    check_point =  check_item  g::valid_point;
-	    check_box   =  check_item  g::valid_box;
+	    check_point =  check_item  ge::valid_point;
+	    check_box   =  check_item  ge::valid_box;
 
 	    check_boxes  =  check_list  check_box;
 	    check_card8s =  check_list  check_card8;
@@ -223,7 +223,7 @@ herein
 		    apply (fn trait = update (trait_to_rep  trait))
 			  trait_list;
 
-		    PEN { traits  =>  v::tabulate (pen_slot_count, fn i = rwv::get (vec, i)),
+		    PEN { traits  =>  vec::tabulate (pen_slot_count, fn i = rwv::get (vec, i)),
 			  bitmask =>  extract_mask vec
 			};
 		};
@@ -248,7 +248,7 @@ herein
 	    #
 	    fun clone_pen (PEN { traits, ... }, new_traits)
 		=
-		make_pen' (rwv::tabulate (pen_slot_count, fn i = v::get (traits, i)), new_traits);
+		make_pen' (rwv::tabulate (pen_slot_count, fn i = vec::get (traits, i)), new_traits);
 
 	end;	# stipulate
     };		# package pen 

@@ -15,8 +15,8 @@
 stipulate
     include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package g   =  geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ge =  geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xt =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     api Xsocket {
@@ -47,7 +47,7 @@ herein
 	    :
 	    Xsocket
 	    ->
-	    (unt8_vector::Vector,  oneshot_maildrop::Oneshot_Maildrop( Void -> List( g::Box )))
+	    (unt8_vector::Vector,  oneshot_maildrop::Oneshot_Maildrop( Void -> List( ge::Box )))
 	    ->
 	    Void;
 
@@ -129,8 +129,8 @@ herein
 	      #
 	      root:			xt::Xid,			# Root window containing the mouse pointer.
 	      #
-	      root_point:		g::Point,			# Mouse position in root  window coordinates.
-	      window_point:		g::Point,			# Mouse position in local window coordinates.
+	      root_point:		ge::Point,			# Mouse position in root  window coordinates.
+	      window_point:		ge::Point,			# Mouse position in local window coordinates.
 	      #
 	      same_screen: 		Bool				# Normally TRUE; FALSE if mouse pointer is not on this screen.
 	    }
@@ -153,7 +153,7 @@ herein
 	    ->
             { drawable: xt::Xid,
               ilk:      xt::Best_Size_Ilk, 
-	      size:     g::Size
+	      size:     ge::Size
             }
 	    ->
 	    { high:	Int,

@@ -15,7 +15,7 @@
 stipulate
     package xok =  xsocket;				# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package xt  =  xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    package g   =  geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package v2w =  value_to_wire;			# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
 herein
 
@@ -31,7 +31,7 @@ herein
 	      #	
               io_class:		xt::Io_Class,
               depth:		Int,
-              site:		g::Window_Site,
+              site:		ge::Window_Site,
               attributes:	List( xt::wa::Window_Attribute )
             }
 	    =

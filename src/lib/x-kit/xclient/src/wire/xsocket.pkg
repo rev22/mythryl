@@ -121,7 +121,7 @@
 stipulate
     include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package u   =  unt;					# unt				is from   src/lib/std/unt.pkg
+    package un  =  unt;					# unt				is from   src/lib/std/unt.pkg
 #   package wv8 =  rw_unt8_vector;			# rw_unt8_vector		is from   src/lib/std/src/rw-unt8-vector.pkg
     package e2s =  xerror_to_string;			# xerror_to_string		is from   src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
     package v8  =  unt8_vector;				# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
@@ -129,7 +129,7 @@ stipulate
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     #
-    package g   = geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  = geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     #
     trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
@@ -151,7 +151,7 @@ herein
 	  | PLEA_AND_CHECK  (v8::Vector, Mailslot( Reply_Mail ))
 	  | PLEA_REPLY      (v8::Vector, Mailslot( Reply_Mail ))
 	  | PLEA_REPLIES    (v8::Vector, Mailslot( Reply_Mail ), (v8::Vector -> Int))
-	  | PLEA_EXPOSURES  (v8::Vector, Oneshot_Maildrop (Void -> List( g::Box ) ))
+	  | PLEA_EXPOSURES  (v8::Vector, Oneshot_Maildrop (Void -> List( ge::Box ) ))
 
 
 	# Replies from the sequencer to client requests 
@@ -179,7 +179,7 @@ herein
 									# nothing else, hence work fine as unique identifiers.
 		xevent_slot:    Mailslot( event_types::x::Event ),
 		plea_slot:      Mailslot( Plea_Mail ),
-		xerror_slot:    Mailslot( (u::Unt, v8::Vector) ),
+		xerror_slot:    Mailslot( (un::Unt, v8::Vector) ),
 
 		flush:    Void -> Void,
 		close:    Void -> Void
@@ -582,10 +582,10 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 
 	    Pending_Reply
 	      #
-	      = ERROR_CHECK     (u::Unt, Mailslot( Reply_Mail ))
-	      | ONE_REPLY       (u::Unt, Mailslot( Reply_Mail ))
-	      | MULTI_REPLY     (u::Unt, Mailslot( Reply_Mail ), (v8::Vector -> Int), List( v8::Vector ))
-	      | EXPOSURE_REPLY  (u::Unt, Oneshot_Maildrop( Void -> List( g::Box ) ))
+	      = ERROR_CHECK     (un::Unt, Mailslot( Reply_Mail ))
+	      | ONE_REPLY       (un::Unt, Mailslot( Reply_Mail ))
+	      | MULTI_REPLY     (un::Unt, Mailslot( Reply_Mail ), (v8::Vector -> Int), List( v8::Vector ))
+	      | EXPOSURE_REPLY  (un::Unt, Oneshot_Maildrop( Void -> List( ge::Box ) ))
 	      ;
 		#
 		# The kind of reply that is pending
@@ -607,7 +607,7 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
     #  +DEBUG 
 	    fun seqn_to_string  n					# "seqn" == "sequence number"
 		=
-		u::format  number_string::DECIMAL  n;
+		un::format  number_string::DECIMAL  n;
 
 
 	    fun queue_element_to_string (ERROR_CHECK       (n, _)) => "  ERROR_CHECK #"    + (seqn_to_string n);
@@ -1071,10 +1071,10 @@ trace  .{ "xsocket::sequencer_imp: do_from_x/TOP"; };
 					=
 					{   short_seq_n
 						=
-						u::from_large_unt (pack_big_endian_unt16::get_vec (msg, 1));
+						un::from_large_unt (pack_big_endian_unt16::get_vec (msg, 1));
 
-					    seqn' = u::bitwise_or
-						      ( u::bitwise_and (last_seqn_read, u::bitwise_not 0uxffff),
+					    seqn' = un::bitwise_or
+						      ( un::bitwise_and (last_seqn_read, un::bitwise_not 0uxffff),
 							short_seq_n
 						      );
 

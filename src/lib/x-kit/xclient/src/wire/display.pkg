@@ -16,7 +16,7 @@ stipulate
     package i2s =  xserver_info_to_string;				# xserver_info_to_string	is from   src/lib/x-kit/xclient/src/to-string/xserver-info-to-string.pkg
     package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package xok =  xsocket;			    			# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-    package g   =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package cxa =  crack_xserver_address;				# crack_xserver_address		is from   src/lib/x-kit/xclient/src/wire/crack-xserver-address.pkg
     package v8s =  unt8_vector_slice;					# unt8_vector_slice		is from   src/lib/std/src/unt8-vector-slice.pkg
     package v2w =  value_to_wire;					# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
@@ -76,8 +76,8 @@ herein
 
 		root_input_mask:	xt::Event_Mask,		# Initial root input mask.
 
-		size_in_pixels:		g::Size,		# Width and height in pixels.
-		size_in_mm:		g::Size,		# Width and height in millimeters.
+		size_in_pixels:		ge::Size,		# Width and height in pixels.
+		size_in_mm:		ge::Size,		# Width and height in millimeters.
 
 		root_visual:		xt::Visual,
 		backing_store:		xt::Backing_Store,
@@ -428,10 +428,10 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 		    white_rgb8,
 		    black_rgb8,
 		    root_input_mask => input_masks,
-
-		    size_in_pixels => g::SIZE { wide => pixels_wide,      high => pixels_high      },
-		    size_in_mm     => g::SIZE { wide => millimeters_wide, high => millimeters_high },
-
+		    #
+		    size_in_pixels => ge::SIZE { wide => pixels_wide,      high => pixels_high      },
+		    size_in_mm     => ge::SIZE { wide => millimeters_wide, high => millimeters_high },
+		    #
 		    min_installed_cmaps => min,
 		    max_installed_cmaps => max,
 

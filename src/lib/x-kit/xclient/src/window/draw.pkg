@@ -27,7 +27,7 @@ stipulate
     include threadkit;					# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package sn = xsession;				# xsession	is from   src/lib/x-kit/xclient/src/window/xsession.pkg
-    package g  = geometry;				# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge = geometry;				# geometry	is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package fb = font_base;				# font_base	is from   src/lib/x-kit/xclient/src/window/font-base.pkg
     package di = draw_imp;				# draw_imp	is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package dt = draw_types;				# draw_types	is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
@@ -116,10 +116,10 @@ herein
 			fi
 		);
 
-	    check_point =  check_item  g::valid_point;
-	    check_box   =  check_item  g::valid_box;
-	    check_line  =  check_item  g::valid_line;
-	    check_arc   =  check_item  g::valid_arc;
+	    check_point =  check_item  ge::valid_point;
+	    check_box   =  check_item  ge::valid_box;
+	    check_line  =  check_item  ge::valid_line;
+	    check_arc   =  check_item  ge::valid_arc;
 
 	    check_pts   =  check_list  check_point;
 	    check_boxes =  check_list  check_box;
@@ -163,11 +163,11 @@ herein
 
 	    # Circles:
 	    #
-	    fun circle_to_arc { center => g::POINT { col, row }, rad }
+	    fun circle_to_arc { center => ge::POINT { col, row }, rad }
 		=
 		{   diam = rad + rad;
 
-		    g::ARC {
+		    ge::ARC {
 			col => col-rad, row => row-rad,
 			wide => diam, high => diam,
 			angle1 => 0, angle2 => 64*360
@@ -459,11 +459,11 @@ herein
 
 		fun texture_blt to pen { from, to_pos }
 		    =
-		    {   my g::SIZE { wide, high }
+		    {   my ge::SIZE { wide, high }
 			    =
 			    dt::size_of_ro_pixmap  from;
 
-			box = g::BOX { col=>0, row=>0, wide, high };
+			box = ge::BOX { col=>0, row=>0, wide, high };
 
 			plane_blt  to pen { from=>dt::FROM_RO_PIXMAP from, from_box=>box, to_pos, plane=>0 };
 
@@ -472,11 +472,11 @@ herein
 
 		fun tile_blt to pen { from, to_pos }
 		    =
-		    {   my g::SIZE { wide, high }
+		    {   my ge::SIZE { wide, high }
 			    =
 			    dt::size_of_ro_pixmap  from;
 
-			box = g::BOX { col=>0, row=>0, wide, high };
+			box = ge::BOX { col=>0, row=>0, wide, high };
 
 			pixel_blt  to pen { from=>dt::FROM_RO_PIXMAP from, from_box=>box, to_pos };
 
@@ -549,7 +549,7 @@ herein
 	    #
 	    fun clear_drawable  to
 		=
-		clear_box  to  (g::BOX { col=>0, row=>0, wide=>0, high=>0 } );
+		clear_box  to  (ge::BOX { col=>0, row=>0, wide=>0, high=>0 } );
 
 	end;		# stipulate
     };			# package draw 

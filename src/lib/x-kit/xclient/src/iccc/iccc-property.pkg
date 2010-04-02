@@ -11,8 +11,8 @@
 
 
 stipulate
-    package g   =  geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package a   =  standard_x11_atoms;			# standard_x11_atoms	is from   src/lib/x-kit/xclient/src/iccc/standard-x11-atoms.pkg
+    package ge  =  geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package at  =  standard_x11_atoms;			# standard_x11_atoms	is from   src/lib/x-kit/xclient/src/iccc/standard-x11-atoms.pkg
     package xt  =  xtypes;				# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package dt  =  draw_types;				# draw_types		is from   src/lib/x-kit/xclient/src/window/draw-types.pkg
     package w8v =  unt8_vector;				# unt8_vector		is from   src/lib/std/src/unt8-vector.pkg
@@ -91,7 +91,7 @@ herein
 	    =
 	    xt::PROPERTY_VALUE
 	      {
-		type  =>  a::atom_string,
+		type  =>  at::atom_string,
 		#
 		value =>  xt::RAW_DATA { format => xt::RAW8,
 					 data   => byte::string_to_bytes data
@@ -105,7 +105,7 @@ herein
 	    =
 	    xt::PROPERTY_VALUE
 	      {
-		type  =>  a::atom_atom,
+		type  =>  at::atom_atom,
 		value =>  xt::RAW_DATA { format => xt::RAW32,
 					 data   => word_to_vec v
 				       }
@@ -121,7 +121,7 @@ herein
 		      =
 		      put1
 		      where
-			  fun put_size (i, g::SIZE { wide, high } )
+			  fun put_size (i, ge::SIZE { wide, high } )
 			      =
 			      {   upd (i,   unt::from_int  wide);
 				  upd (i+1, unt::from_int  high);
@@ -165,7 +165,7 @@ herein
 		=
 		xt::PROPERTY_VALUE
 		  {
-		    type  =>  a::atom_wm_size_hints,
+		    type  =>  at::atom_wm_size_hints,
 		    value =>  xt::RAW_DATA { format => xt::RAW32, data => size_hints_data lst }
 		  };
 	end;		# stipulate
@@ -203,7 +203,7 @@ herein
 				    m | 0u8;
 				};
 
-			    wh::HINT_ICON_POSITION (g::POINT { col, row } )
+			    wh::HINT_ICON_POSITION (ge::POINT { col, row } )
 				=>
 				{   upd (5, unt::from_int col);
 				    upd (6, unt::from_int row);
@@ -230,7 +230,7 @@ herein
 	    fun make_window_manager_nonsize_hints lst
 		=
 		xt::PROPERTY_VALUE {
-		    type   => a::atom_wm_hints,
+		    type   => at::atom_wm_hints,
 		    value => xt::RAW_DATA { format => xt::RAW32, data => nonsize_hints_data lst }
 		  };
 	end;
@@ -251,7 +251,7 @@ herein
 	    =
 	    xt::PROPERTY_VALUE
 	      {
-		type  =>  a::atom_window,
+		type  =>  at::atom_window,
 		value =>  xt::RAW_DATA { format => xt::RAW32,
 					 data   => word_to_vec  window
 				       }
