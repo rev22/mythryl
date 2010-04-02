@@ -81,20 +81,23 @@ herein
 
 	    # * NOTE: could bundle this all into a couple of functions *
 	    #
-	    Window_Desc
+	    Window_Info
 		=
-		WINDOW_DESC
-		  { id:          xt::Window_Id,
+		WINDOW_INFO
+		  { window_id:   xt::Window_Id,
 		    route:       Envelope_Route,
-		    parent:      Null_Or( Window_Desc ),
+		    parent:      Null_Or( Window_Info ),
 
-		    children:    Ref(  List(  Window_Desc ) ),
+		    children:    Ref(  List(  Window_Info ) ),
 		    lock:        Ref( Bool ),
 
 		    event_slot:  Mailslot( (Envelope_Route, et::x::Event) )
 		  };
 
-	    Xevent_Dst
+	    # What should we do with a given X event?
+	    #
+	    Xevent_Action
+	      #	
 	      = TO_WINDOW       xt::Window_Id
 	      | DESTROY_WINDOW  xt::Window_Id
 	      | TO_KEYMAP_IMP
@@ -102,8 +105,8 @@ herein
 	      | TO_SELECTION_IMP
 	      | TO_ALL
 	      | TO_TRASH
-	      | CREATE_WINDOW  { parent:      xt::Window_Id,
-				 new_window:  xt::Window_Id
+	      | CREATE_WINDOW  { parent_window_id:   xt::Window_Id,
+				 created_window_id:  xt::Window_Id
 			       }
 	      ;
 
@@ -122,81 +125,81 @@ herein
 
 	    # Extract the destination xid of an X-event 
 	    #
-	    fun extract_dst (et::x::KEY_PRESS      { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::KEY_RELEASE    { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::BUTTON_PRESS   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::BUTTON_RELEASE { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::MOTION_NOTIFY  { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::ENTER_NOTIFY   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::LEAVE_NOTIFY   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::FOCUS_IN       { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
-		extract_dst (et::x::FOCUS_OUT      { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+	    fun pick_xevent_action (et::x::KEY_PRESS      { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::KEY_RELEASE    { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::BUTTON_PRESS   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::BUTTON_RELEASE { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::MOTION_NOTIFY  { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::ENTER_NOTIFY   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::LEAVE_NOTIFY   { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::FOCUS_IN       { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::FOCUS_OUT      { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
 
-#		extract_dst (et::x::KeymapNotify {, ... } ) = 
-#		extract_dst (et::x::GraphicsExpose ?? 
-#		extract_dst (et::x::NoExpose {, ... } ) =
-#		extract_dst (et::x::MapRequest {, ... } ) =
-#		extract_dst (et::x::ConfigureRequest {, ... } ) =
-#		extract_dst (et::x::ResizeRequest {, ... } ) =
-#		extract_dst (et::x::CirculateRequest {, ... } ) =
+#		pick_xevent_action (et::x::KeymapNotify {, ... } ) = 
+#		pick_xevent_action (et::x::GraphicsExpose ?? 
+#		pick_xevent_action (et::x::NoExpose {, ... } ) =
+#		pick_xevent_action (et::x::MapRequest {, ... } ) =
+#		pick_xevent_action (et::x::ConfigureRequest {, ... } ) =
+#		pick_xevent_action (et::x::ResizeRequest {, ... } ) =
+#		pick_xevent_action (et::x::CirculateRequest {, ... } ) =
 
-		extract_dst (et::x::EXPOSE { exposed_window_id, ... } ) =>  TO_WINDOW  exposed_window_id;
+		pick_xevent_action (et::x::EXPOSE { exposed_window_id, ... } ) =>  TO_WINDOW  exposed_window_id;
 
 
-		extract_dst (et::x::VISIBILITY_NOTIFY { changed_window_id, ... } ) =>  TO_WINDOW  changed_window_id;
+		pick_xevent_action (et::x::VISIBILITY_NOTIFY { changed_window_id, ... } ) =>  TO_WINDOW  changed_window_id;
 
-		extract_dst (et::x::CREATE_NOTIFY { parent_window_id => parent , created_window_id, ... } )
+		pick_xevent_action (et::x::CREATE_NOTIFY { parent_window_id, created_window_id, ... } )
 		    =>
-		    CREATE_WINDOW { parent, new_window => created_window_id };
+		    CREATE_WINDOW { parent_window_id, created_window_id };
 
-		extract_dst (et::x::DESTROY_NOTIFY { event_window_id, destroyed_window_id, ... } )
+		pick_xevent_action (et::x::DESTROY_NOTIFY { event_window_id, destroyed_window_id, ... } )
 		    =>
 		    event_window_id == destroyed_window_id
 			##
                         ??  DESTROY_WINDOW  event_window_id	# Remove window from registry. 
 			::  TO_WINDOW       event_window_id;	# Report to parent that child is dead. 
 
-		extract_dst (et::x::UNMAP_NOTIFY { event_window_id, unmapped_window_id, ... } )
+		pick_xevent_action (et::x::UNMAP_NOTIFY { event_window_id, unmapped_window_id, ... } )
 		    =>
 		    ignore_substructure_notify_xevents (event_window_id, unmapped_window_id);
 
-		extract_dst (et::x::MAP_NOTIFY { event_window_id, mapped_window_id, ... } )
+		pick_xevent_action (et::x::MAP_NOTIFY { event_window_id, mapped_window_id, ... } )
 		    =>
 		    ignore_substructure_notify_xevents (event_window_id, mapped_window_id);
 
 
-		extract_dst (et::x::REPARENT_NOTIFY _)
+		pick_xevent_action (et::x::REPARENT_NOTIFY _)
 		    =>
 		    TO_TRASH;
 
-		extract_dst (et::x::CONFIGURE_NOTIFY { event_window_id, configured_window_id, ... } )
+		pick_xevent_action (et::x::CONFIGURE_NOTIFY { event_window_id, configured_window_id, ... } )
 		    =>
 		    ignore_substructure_notify_xevents (event_window_id, configured_window_id);
 
 
-		extract_dst (et::x::GRAVITY_NOTIFY { event_window_id, moved_window_id, ... } )
+		pick_xevent_action (et::x::GRAVITY_NOTIFY { event_window_id, moved_window_id, ... } )
 		    =>
 		    ignore_substructure_notify_xevents (event_window_id, moved_window_id);
 
 
-		extract_dst (et::x::CIRCULATE_NOTIFY { event_window_id, circulated_window_id, ... } )
+		pick_xevent_action (et::x::CIRCULATE_NOTIFY { event_window_id, circulated_window_id, ... } )
 		    =>
 		    ignore_substructure_notify_xevents (event_window_id, circulated_window_id);
 
 
-		extract_dst (et::x::PROPERTY_NOTIFY   _) => TO_WINDOW_PROPERTY_IMP;    # We may have other uses of PropertyNotify someday.
-		extract_dst (et::x::SELECTION_CLEAR   _) => TO_SELECTION_IMP;
-		extract_dst (et::x::SELECTION_REQUEST _) => TO_SELECTION_IMP;
-		extract_dst (et::x::SELECTION_NOTIFY  _) => TO_SELECTION_IMP;
+		pick_xevent_action (et::x::PROPERTY_NOTIFY   _) => TO_WINDOW_PROPERTY_IMP;    # We may have other uses of PropertyNotify someday.
+		pick_xevent_action (et::x::SELECTION_CLEAR   _) => TO_SELECTION_IMP;
+		pick_xevent_action (et::x::SELECTION_REQUEST _) => TO_SELECTION_IMP;
+		pick_xevent_action (et::x::SELECTION_NOTIFY  _) => TO_SELECTION_IMP;
 
-		extract_dst (et::x::COLORMAP_NOTIFY { window_id, ... } ) => TO_WINDOW window_id;
-		extract_dst (et::x::CLIENT_MESSAGE  { window_id, ... } ) => TO_WINDOW window_id;
+		pick_xevent_action (et::x::COLORMAP_NOTIFY { window_id, ... } ) => TO_WINDOW window_id;
+		pick_xevent_action (et::x::CLIENT_MESSAGE  { window_id, ... } ) => TO_WINDOW window_id;
 
-		extract_dst  et::x::MODIFIER_MAPPING_NOTIFY     => TO_ALL;
-		extract_dst (et::x::KEYBOARD_MAPPING_NOTIFY _)  => TO_ALL;
-		extract_dst  et::x::POINTER_MAPPING_NOTIFY      => TO_ALL;
+		pick_xevent_action  et::x::MODIFIER_MAPPING_NOTIFY     => TO_ALL;
+		pick_xevent_action (et::x::KEYBOARD_MAPPING_NOTIFY _)  => TO_ALL;
+		pick_xevent_action  et::x::POINTER_MAPPING_NOTIFY      => TO_ALL;
 
-		extract_dst e => {
+		pick_xevent_action e => {
 		   xgripe::warning (string::cat [
 		     "[xsocket-to-topwin: unexpected ", xevent_to_string::xevent_name e, " event]\n"]);
 		   TO_TRASH;};
@@ -211,12 +214,14 @@ herein
 		    =>
 		    ("ToWindow(" + xid_to_string w + ")");
 
-		dst2s (CREATE_WINDOW { parent, new_window } )
+		dst2s (CREATE_WINDOW { parent_window_id, created_window_id } )
 		    =>
-		    string::cat [
-		     "CreateWin { parent=", xid_to_string parent, ", new_window=",
-		     xid_to_string new_window, "}"
-		   ];
+		    string::cat
+		      [
+			"CreateWin { parent=",  xid_to_string  parent_window_id,
+			      ", new_window=",  xid_to_string created_window_id,
+			"}"
+		      ];
 
 		dst2s (DESTROY_WINDOW w)     => ("DestroyWin(" + xid_to_string w + ")");
 		dst2s TO_KEYMAP_IMP          => "ToKeymapServer";
@@ -228,11 +233,11 @@ herein
 
 	herein
 
-	    extract_dst
+	    pick_xevent_action
 		=
 		fn event
 		    =
-		    {   dst = extract_dst event;
+		    {   dst = pick_xevent_action event;
 
 			xtracing::print_if xtracing::winreg_tracing .{
 			    cat ["xsocket_to_topwindow_router: ", xevent_to_string::xevent_name event, " => ", dst2s dst];
@@ -263,7 +268,7 @@ herein
 		    =
 		    set
 		    where
-			fun set (WINDOW_DESC { lock, children, ... } )
+			fun set (WINDOW_INFO { lock, children, ... } )
 			    =
 			    {   lock := bool;
 				set_list *children;
@@ -321,18 +326,18 @@ herein
 		    insert =  hash_xid::set    id_map;
 		    remove =  hash_xid::remove id_map;
 
-		    fun do_plea (plea::NOTE_WINDOW window)
+		    fun do_plea (plea::NOTE_WINDOW  window_id)
 			    =>
 			    {   # Log a new top-level window:
 
 				event_slot = make_mailslot ();
 
 				insert
-				  ( window,
-				    WINDOW_DESC
+				  ( window_id,
+				    WINDOW_INFO
 				      {
-					id => window,
-					route => ENVELOPE_ROUTE_END window,
+					window_id,
+					route  => ENVELOPE_ROUTE_END  window_id,
 					parent => NULL,
 					children => REF [],
 					lock => REF FALSE,
@@ -343,25 +348,25 @@ herein
 				give  (register_reply_slot,  take'  event_slot);
 			    };
 
-		       do_plea (plea::LOCK_WINDOW   window) =>   lock_tree (find window);
-		       do_plea (plea::UNLOCK_WINDOW window) => unlock_tree (find window);
+		       do_plea (plea::LOCK_WINDOW   window_id) =>   lock_tree (find window_id);
+		       do_plea (plea::UNLOCK_WINDOW window_id) => unlock_tree (find window_id);
 
-		       do_plea (plea::WINDOW_IS_LOCKED window)
+		       do_plea (plea::WINDOW_IS_LOCKED window_id)
 			   =>
-			   {   my WINDOW_DESC { lock, ... }
+			   {   my WINDOW_INFO { lock, ... }
 				   =
-				   find window;
+				   find  window_id;
 
 			       give  (lock_reply_slot,  *lock);
 			   };
 		    end;
 
-		    fun new_subwin (parent, child_id)
+		    fun note_new_subwindow (parent, child_id)
 			=
 			{
 			    (find parent)
 				-> 
-				parent_desc as WINDOW_DESC { route, event_slot, children, lock, ... };
+				parent_desc as WINDOW_INFO { route, event_slot, children, lock, ... };
 
 			    fun extend_route (ENVELOPE_ROUTE_END w)      =>  ENVELOPE_ROUTE (w, ENVELOPE_ROUTE_END child_id);
 				extend_route (ENVELOPE_ROUTE (w, route)) =>  ENVELOPE_ROUTE (w, extend_route route);
@@ -371,9 +376,9 @@ herein
 
 			    child
 				=
-				WINDOW_DESC
+				WINDOW_INFO
 				  {
-				    id => child_id,
+				    window_id => child_id,
 				    route => child_route,
 				    parent => THE parent_desc,
 				    children => REF [],
@@ -388,7 +393,7 @@ herein
 		    # ddeboer, test, fall 2004 
 		    # cref = REF 0
 
-		    fun push_event (e, WINDOW_DESC { route, event_slot, ... } )
+		    fun push_event (e, WINDOW_INFO { route, event_slot, ... } )
 			= 
 			give  (event_slot, (route, e));
 
@@ -401,28 +406,29 @@ herein
 
 		    fun do_xevent e
 			=
-			case (extract_dst e)
+			case (pick_xevent_action e)
 			    #
 			    TO_WINDOW window_id
 				=>
 				push_event_to_window (e, window_id);
 
-			    CREATE_WINDOW { parent, new_window }
+			    CREATE_WINDOW { parent_window_id, created_window_id }
 				=>
-				{   new_subwin (parent, new_window);
-				    push_event_to_window (e, parent);
+				{   note_new_subwindow (parent_window_id, created_window_id);
+				    #
+				    push_event_to_window (e, parent_window_id);
 				};
 
 			    DESTROY_WINDOW window_id
 				=>
 				case (remove window_id)
 				    #
-				    (window as WINDOW_DESC { parent=>THE (WINDOW_DESC { children, ... } ), ... } )
+				    (window as WINDOW_INFO { parent=>THE (WINDOW_INFO { children, ... } ), ... } )
 					=>
-					{   fun remove_child ((w as WINDOW_DESC { id, ... } ) ! r)
+					{   fun remove_child ((window_info as WINDOW_INFO { window_id => window_id', ... } ) ! rest)
 						    =>
-						    if (id == window_id)  r;
-						    else                  (w ! (remove_child r));
+						    if (window_id' == window_id)  rest;
+						    else                          (window_info ! (remove_child rest));
 						    fi;
 
 						remove_child []

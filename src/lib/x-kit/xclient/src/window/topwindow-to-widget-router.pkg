@@ -30,9 +30,9 @@ herein
     package topwindow_to_widget_router: (weak)  Topwindow_To_Widget_Router {	# Topwindow_To_Widget_Router	is from   src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.api
 
 	# The top-level window (usually a shell widget)
-	# should never pass on CO message 
+	# should never pass on CO message 					# "CO" == "command out"
 	#
-	fun make_cothread  co_event
+	fun make_co_thread  co_event
 	    =
 	    make_thread "widget-cable root-end CO eater" .{
 
@@ -60,7 +60,7 @@ herein
 		    =
 		    {   momplug ->  wc::MOMPLUG { other_sink, keyboard_sink, mouse_sink, from_kid' };
 
-			make_cothread from_kid';
+			make_co_thread from_kid';
 
 			(other_sink, keyboard_sink, mouse_sink);
 		    };

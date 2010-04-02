@@ -1,3 +1,4 @@
+2010-04-02-03.02.51: src/lib/x-kit/xclient/src/window/window.pkg: Move window_point_to_screen_point def to src/lib/x-kit/xclient/src/window/xsession.pkg to break a package cycle.
 2010-04-02-02.23.54: src/lib/x-kit/xclient/src/window/window.api: Renamed window_pt_to_screen_pt -> window_point_to_screen_point. What is it about programming and dyslexia? :-)
 2010-04-02-02.10.27: Globally renamed translate_coords -> translate_coordinates. Remember, every time you mangle a word, God kills a kitten. Think of the kittens.
 2010-04-02-01.50.42: src/lib/x-kit/xclient/src/wire/xtypes.pkg: Renamed subpackage wa -> a per new package naming convention.
