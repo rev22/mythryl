@@ -223,11 +223,13 @@ herein
 	decode_set_modifier_mapping_reply:  v8::Vector -> xt::Mapping_Status;
 	decode_set_pointer_mapping_reply:   v8::Vector -> xt::Mapping_Status;
 
-	decode_translate_coords_reply: v8::Vector
-				       ->
-				       { child:     Null_Or(xt::Xid), 
-					 to_point:  ge::Point
-				       };
+	decode_translate_coordinates_reply
+	    :
+	    v8::Vector
+	    ->
+	    { child:     Null_Or(xt::Xid), 
+	      to_point:  ge::Point
+	    };
 
 	decode_xevent: (unt8::Unt, v8::Vector)
 		       ->

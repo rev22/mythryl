@@ -661,12 +661,12 @@ herein
 
 		my { to_point, ... }
 		    =
-		    w2v::decode_translate_coords_reply
+		    w2v::decode_translate_coordinates_reply
 		      (
 			do_mailop
 			  (sn::request_reply
 			      xsession
-			      (v2w::encode_translate_coords { from_window=>window_id, to_window=>root_window_id, from_point=>pt } )
+			      (v2w::encode_translate_coordinates { from_window=>window_id, to_window=>root_window_id, from_point=>pt } )
 			  )
 		      );
 

@@ -484,11 +484,13 @@ herein
                                   }
 				  -> v8::Vector;
 
-	encode_translate_coords:  { from_point:  ge::Point, 
-				    from_window: xt::Xid,
-                                    to_window:   xt::Xid
-                                  }
-				  -> v8::Vector;
+	encode_translate_coordinates
+	    :
+	    { from_point:  ge::Point, 
+	      from_window: xt::Xid,
+	      to_window:   xt::Xid
+	    }
+	    -> v8::Vector;
 
 	encode_ungrab_button: { button:     Null_Or(xt::Mousebutton), 
 				modifiers:  List(xt::Modifier_Key), 

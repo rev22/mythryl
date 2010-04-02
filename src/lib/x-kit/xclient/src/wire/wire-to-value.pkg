@@ -99,7 +99,7 @@ herein
 	fun decode_query_tree_reply               x = debug (w2v::decode_query_tree_reply,               "decode_query_tree_reply"               ) x;
 	fun decode_set_modifier_mapping_reply     x = debug (w2v::decode_set_modifier_mapping_reply,     "decode_set_modifier_mapping_reply"     ) x;
 	fun decode_set_pointer_mapping_reply      x = debug (w2v::decode_set_pointer_mapping_reply,      "decode_set_pointer_mapping_reply"      ) x;
-	fun decode_translate_coords_reply         x = debug (w2v::decode_translate_coords_reply,         "decode_translate_coords_reply"         ) x;
+	fun decode_translate_coordinates_reply    x = debug (w2v::decode_translate_coordinates_reply,    "decode_translate_coordinates_reply"         ) x;
 
 	# NB: The above functions were originally
         # all coded in curried form as

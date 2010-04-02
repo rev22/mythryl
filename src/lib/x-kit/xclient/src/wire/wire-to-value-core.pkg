@@ -1581,7 +1581,7 @@ result;
 		decode_set_pointer_mapping_reply  = get_set_mapping_reply;
 	    end;
 
-	    fun decode_translate_coords_reply msg
+	    fun decode_translate_coordinates_reply  msg
 		=
 		{ child  => get_xid_option (msg,  8),
 		  to_point => get_pt       (msg, 12)

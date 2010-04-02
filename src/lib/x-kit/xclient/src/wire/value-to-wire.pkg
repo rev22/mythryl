@@ -147,7 +147,7 @@ herein
 	fun encode_set_selection_owner        x =  debug (v2w::encode_set_selection_owner,        "encode_set_selection_owner"       ) x;
 	fun encode_store_colors               x =  debug (v2w::encode_store_colors,               "encode_store_colors"              ) x;
 	fun encode_store_named_color          x =  debug (v2w::encode_store_named_color,          "encode_store_named_color"         ) x;
-	fun encode_translate_coords           x =  debug (v2w::encode_translate_coords,           "encode_translate_coords"          ) x;
+	fun encode_translate_coordinates      x =  debug (v2w::encode_translate_coordinates,      "encode_translate_coordinates"     ) x;
 	fun encode_ungrab_button              x =  debug (v2w::encode_ungrab_button,              "encode_ungrab_button"             ) x;
 	fun encode_ungrab_key                 x =  debug (v2w::encode_ungrab_key,                 "encode_ungrab_key"                ) x;
 	fun encode_ungrab_keyboard            x =  debug (v2w::encode_ungrab_keyboard,            "encode_ungrab_keyboard"           ) x;

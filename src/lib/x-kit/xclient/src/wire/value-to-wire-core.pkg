@@ -443,7 +443,7 @@ herein
 	    req_query_pointer			= { code =>  0u38, size => 2 }: Reqinfo;
 	    req_get_motion_events		= { code =>  0u39, size => 4 }: Reqinfo;
 
-	    req_translate_coords		= { code =>  0u40, size => 4 }: Reqinfo;
+	    req_translate_coordinates		= { code =>  0u40, size => 4 }: Reqinfo;
 	    req_warp_pointer			= { code =>  0u41, size => 6 }: Reqinfo;
 	    req_set_input_focus			= { code =>  0u42, size => 3 }: Reqinfo;
 
@@ -1098,9 +1098,9 @@ herein
 		    msg;
 		};
 
-	    fun encode_translate_coords { from_window, to_window, from_point }
+	    fun encode_translate_coordinates { from_window, to_window, from_point }
 		=
-		{   msg =  make_resource_request  (req_translate_coords,  from_window);
+		{   msg =  make_resource_request  (req_translate_coordinates,  from_window);
 
 		    put_xid (msg,  8, to_window );
 		    put_pt  (msg, 12, from_point);
