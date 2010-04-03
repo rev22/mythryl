@@ -375,19 +375,19 @@ herein
 					=
 					make_widget_cable ();
 
-				    cwin =  wg::make_child_window (window, box, wg::args_of widget);
+				    window =  wg::make_child_window (window, box, wg::args_of widget);
 
 				    from_kid' =  wg::wrap_queue  from_kid';
 
 				    rep = { widget,
-					    window => cwin,
+					    window,
 					    box,
 					    from_kid'
 					  };
 
-				    mr::add_child router (cwin, momplug);
+				    mr::add_child router (window, momplug);
 
-				    wg::realize_fn widget { kidplug, window=>cwin, size };
+				    wg::realize_fn widget { kidplug, window, size };
 
 				    rep;
 				};
@@ -419,9 +419,8 @@ herein
 						    =
 						    make_box (wl, rl,[]);
 
-						apply (fn ( { window, ... }: Box_Rep)
-						    =
-						    xw::show_window window) replicate;
+						apply (fn ( { window, ... }: Box_Rep) =  xw::show_window window)
+                                                      replicate;
 
 						init (rest, rl', (TRUE, b, replicate) ! cl); 
 					    };

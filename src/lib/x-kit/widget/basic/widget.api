@@ -38,11 +38,11 @@ herein
 	    }
 	    ->
 	    Void;
-
+							# Window_Args		def in    src/lib/x-kit/widget/basic/widget-base.pkg
 	make_widget
 	    :
 	    { root_window:   Root_Window,
-	      args:          Void -> Window_Args,
+	      args:          Void -> Window_Args,	# Current Window_Args just records background color.
 	      realize:       Realize_Fn,
 
 	      size_preference_thunk_of
@@ -54,6 +54,8 @@ herein
 
 	root_window_of:      Widget -> Root_Window;
 	args_of:             Widget -> Window_Args;
+	window_of:	     Widget -> xc::Window;
+	size_of:	     Widget -> xg::Size;
 
 	args_fn:             Widget -> Void -> Window_Args;
 	realize_fn:          Widget -> Realize_Fn;

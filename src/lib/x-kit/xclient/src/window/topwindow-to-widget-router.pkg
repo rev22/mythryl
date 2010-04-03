@@ -328,6 +328,14 @@ herein
 	# for a top-level window, returning the
 	# input dictionary and top-level window.
 	#
+	# This function is called (only) from
+	#
+	#     make_simple_top_window
+	#     make_simple_popup_window
+	#     make_transient_window
+        # in
+        #     src/lib/x-kit/xclient/src/window/window.pkg
+	#
 	fun make_topwindow_to_widget_router
 	    (
               screen       as sn::SCREEN { xsession, ... },
@@ -351,7 +359,7 @@ herein
 
 		xevent_in'				# We receive X events via this mailop.
 		    =
-		    s2t::note_new_toplevel_window
+		    s2t::note_new_topwindow
 		      (
                         xsocket_to_topwindow_router,
 			window_id

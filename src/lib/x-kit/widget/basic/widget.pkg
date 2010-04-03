@@ -8,7 +8,6 @@
 
 
 
-
 ###       "Steve Jobs said two years ago
 ###        that X is brain-damaged and
 ###        it will be gone in two years.
@@ -17,12 +16,14 @@
 ###                  -- Dennis Ritchie
 
 
+
 stipulate
     include threadkit;				# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
     package xi =  xinput;			# xinput		is from   src/lib/x-kit/xclient/xinput.pkg
     package xg =  xgeometry;			# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xw =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
+    package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
     #
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
 herein
@@ -52,14 +53,21 @@ herein
 	    =
 	    WIDGET
 	      {
-		root_window:  Root_Window,
-		id:           Int,
-		args:         Void -> Window_Args,
+		root_window:	Root_Window,
+		id:		Int,
+		args:		Void -> Window_Args,
 		#
 		size_preference_thunk_of:  Void -> Widget_Size_Preference,
 		#
-		realized:     Oneshot_Maildrop( Void ),
-		realize:      Realize_Fn
+		realized:	Oneshot_Maildrop( Void ),
+		realize:	Realize_Fn,
+		#
+		# Support for window_of and size_of.
+		# These are NULL until realization
+		# and non-NULL thereafter:
+		#
+		window:		Ref( Null_Or(xc::Window) ),
+		size:		Ref( Null_Or(xg::Size)   )		# This needs to be updated when size changes -- not yet done. XXX BUGGO FIXME.
 	      };
 
 	fun make_widget { root_window as ROOT_WINDOW { next_widget_id, ... }, args, size_preference_thunk_of, realize }
@@ -73,20 +81,36 @@ herein
 		id       =>  next_widget_id (),			# Is there any reason not to make this just a Ref(Void) as usual?	XXX BUGGO FIXME.
 		#
 		size_preference_thunk_of,
-		realize
+		realize,
+		#
+		window   => REF NULL,
+		size     => REF NULL
 	      };
 
 	fun root_window_of  (WIDGET { root_window,      ... } ) =  root_window;
 	fun args_of         (WIDGET { args,             ... } ) =  args ();
 	fun args_fn         (WIDGET { args,             ... } ) =  args;
 
+	fun window_of       (WIDGET { window => REF (THE window), ... } ) =>  window;
+	    window_of       (WIDGET { window => REF  NULL,        ... } ) =>  raise exception  FAIL "widget::window_of called before realization";
+	end;
+
+	fun size_of         (WIDGET { size   => REF (THE size),   ... } ) =>  size;
+	    size_of         (WIDGET { size   => REF  NULL,        ... } ) =>  raise exception  FAIL "widget::size_of called before realization";
+	end;
+
 	fun size_preference_of       (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of ();
 	fun size_preference_thunk_of (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of;
 
 
-	fun realize_fn (WIDGET { realize, realized, ... } ) arg
+	fun realize_fn
+            (WIDGET { realize, realized, window, size, ... } )
+            (arg as { kidplug, window => window', size => size' } )
 	    =
-	    {   set (realized, ())
+	    {   window :=  THE window';		# Cache window as support for window_of.
+		size   :=  THE size';		# Cache size   as support for size_of.
+
+                set (realized, ())
 		except
 		    _ = raise exception ALREADY_REALIZED;
 

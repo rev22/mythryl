@@ -341,31 +341,32 @@ herein
 
 		fun check_size (label, label', wide, high)
 		    =
-		      case (label, label')
+		    case (label, label')
+			#
+			(TEXT_DATA { lb, rb, ... }, TEXT_DATA { lb=>lb', rb=>rb', ... } )
+			    =>
+			    if (wide == 0 and rb' - lb' != rb - lb)
+				#
+				do_mailop (to_mom REQ_RESIZE);
+			    fi;
 
-			   (TEXT_DATA { lb, rb, ... }, TEXT_DATA { lb=>lb', rb=>rb', ... } )
-			       =>
-			       if (wide == 0 and rb' - lb' != rb - lb)
+			(ICON_DATA t, ICON_DATA t')
+			    =>
+			    {   size = xc::size_of_ro_pixmap t;
+				size' = xc::size_of_ro_pixmap t';
+
+				if ((wide == 0 or high == 0) and size != size' )
+				    #
+				    file::print "resize2\n";
 				    do_mailop (to_mom REQ_RESIZE);
-			       fi;
+				fi; 
+			    };
 
-			   (ICON_DATA t, ICON_DATA t')
-			       =>
-			       {   size = xc::size_of_ro_pixmap t;
-				   size' = xc::size_of_ro_pixmap t';
-
-				   if ((wide == 0 or high == 0) and size != size' )
-
-					file::print "resize2\n";
-					do_mailop (to_mom REQ_RESIZE);
-				   fi; 
-			       };
-
-			   _   =>
-			       {   file::print "resize3\n";
-				   do_mailop (to_mom REQ_RESIZE);
-			       };
-		      esac;
+			_   =>
+			    {   file::print "resize3\n";
+				do_mailop (to_mom REQ_RESIZE);
+			    };
+		    esac;
 
 
 		fun do_plea (SET_LABEL v, lv)

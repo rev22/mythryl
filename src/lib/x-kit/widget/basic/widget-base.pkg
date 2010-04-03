@@ -104,7 +104,7 @@ herein
 		    xg::size_of_box  box;
 
 		if (wide <= 0  or  high <= 0) 
-
+		    #
 		    lib_base::failure
 			{
 			    module => "Widget",

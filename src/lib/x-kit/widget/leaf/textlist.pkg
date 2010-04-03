@@ -782,7 +782,9 @@ herein
 
 			    line_count = get_num_lines (result, newsz);
 
-			    size' := newsz; { items, top, line_count };
+			    size' := newsz;
+
+			    { items, top, line_count };
 			};
 
 		    do_mom (xi::ETC_REDRAW _, me)

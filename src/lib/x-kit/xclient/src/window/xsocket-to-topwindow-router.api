@@ -47,10 +47,10 @@ herein
 	    ->
 	    Xsocket_To_Topwindow_Router;
 
-	# Note new 'toplevel_window' and return the event slot
+	# Note new toplevel window and return the event slot
 	# through which we will feed X events to that window:
 	#
-	note_new_toplevel_window
+	note_new_topwindow
 	    :
 	    (Xsocket_To_Topwindow_Router, xt::Window_Id)
 	    ->
