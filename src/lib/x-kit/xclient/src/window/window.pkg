@@ -249,7 +249,7 @@ herein
 
 		screen ->  sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }, ... };
 
-		window_id = next_xid();
+		window_id = next_xid ();
 
 		window
 		    =

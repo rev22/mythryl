@@ -7,16 +7,39 @@
 #
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
 #
-# Our job is to route each incoming X event from
-# the X server to the appropriate toplevel window,
-# after which it will trickle down the widget
-# hierarchy associated with that window.
+# We receive X events from the xsession xbuf_imp
+# and decide what action to take for them.  The
+# xbuf_imp just breaks the X event bytestream up
+# into individual messages;  we are the first link
+# in the chain which actually responds to X events
+# on a semantic level.
 #
+# Typically we will route the X event from to
+# the toplevel window for the relevant widget.
+# 
 # To do this we need to track all toplevel windows
 # created by the application, keyed by their
 # X-server-assigned IDs, so that we can translate
 # the xid in the event to the corresponding widget
 # for delivery.
+#
+# There are also a few X events which we divert to
+# specialized imps for processing:
+#
+#  o  There following two X events we handle ourself,
+#     updating our window registry appropriately:
+#         CREATE_NOTIFY
+#         DESTROY_NOTIFY
+#
+#  o  The following three X events get redirected
+#     to our selection imp:
+#         SELECTION_CLEAR
+#         SELECTION_REQUEST
+#         SELECTION_NOTIFY
+#
+#  o  The following X events get redirected
+#     to our property imp:
+#         PROPERTY_NOTIFY
 #
 #
 # Secondary functionality
@@ -72,35 +95,33 @@ herein
 	    package plea {
 		#
 		Mail
-		  = NOTE_WINDOW       xt::Window_Id
-		  | LOCK_WINDOW       xt::Window_Id
-		  | UNLOCK_WINDOW     xt::Window_Id
-		  | WINDOW_IS_LOCKED  xt::Window_Id
+		  = NOTE_NEW_TOPLEVEL_WINDOW  xt::Window_Id
+		  | LOCK_WINDOW               xt::Window_Id
+		  | UNLOCK_WINDOW             xt::Window_Id
+		  | IS_WINDOW_LOCKED          xt::Window_Id
 		  ;
 	    };
 
-	    # * NOTE: could bundle this all into a couple of functions *
-	    #
 	    Window_Info
 		=
 		WINDOW_INFO
-		  { window_id:   xt::Window_Id,
-		    route:       Envelope_Route,
+		  { window_id:    xt::Window_Id,
+		    route:        Envelope_Route,
 		    parent_info:  Null_Or( Window_Info ),
 
-		    children:    Ref(  List(  Window_Info ) ),
-		    lock:        Ref( Bool ),
+		    children:     Ref(  List(  Window_Info ) ),
+		    lock:         Ref( Bool ),
 
-		    event_slot:  Mailslot( (Envelope_Route, et::x::Event) )
+		    event_slot:   Mailslot( (Envelope_Route, et::x::Event) )
 		  };
 
-	    # What should we do with a given X event?
+	    # The various things we can do with a given X event?
 	    #
 	    Xevent_Action
 	      #	
 	      = TO_WINDOW                xt::Window_Id
 	      | NOTE_WINDOW_DESTRUCTION  xt::Window_Id
-	      | TO_KEYMAP_IMP
+	      | TO_KEYMAP_IMP					# This appears to be unused at present.
 	      | TO_WINDOW_PROPERTY_IMP
 	      | TO_SELECTION_IMP
 	      | TO_ALL
@@ -124,7 +145,7 @@ herein
 		else           TO_TRASH;
 		fi;
 
-	    # Extract the destination xid of an X-event 
+	    # Decide what action to take for given X event:
 	    #
 	    fun pick_xevent_action (et::x::KEY_PRESS      { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
 		pick_xevent_action (et::x::KEY_RELEASE    { event_window_id, ... } ) =>  TO_WINDOW event_window_id;
@@ -304,8 +325,8 @@ herein
 		{
 		  display => dy::XDISPLAY { xsocket, ... },
 		  keymap_imp,
-		  prop_event_slot,
-		  sel_event_slot
+		  to_window_property_imp_slot,
+		  to_selection_imp_slot
 		}
 		=
 		{
@@ -324,13 +345,13 @@ herein
 
 		    lock_reply_slot     =   make_mailslot ();
 								    # hash_xid	is from   src/lib/x-kit/xclient/src/stuff/hash-xid.pkg
-		    id_map =  hash_xid::make_map ();
+		    window_id_to_window_info_map =  hash_xid::make_map ();
 		    #
-		    get_info  =  hash_xid::get    id_map;
-		    set_info  =  hash_xid::set    id_map;
-		    drop_info =  hash_xid::remove id_map;
+		    get_info  =  hash_xid::get     window_id_to_window_info_map;
+		    set_info  =  hash_xid::set     window_id_to_window_info_map;
+		    drop_info =  hash_xid::remove  window_id_to_window_info_map;
 
-		    fun do_plea (plea::NOTE_WINDOW  window_id)
+		    fun do_plea (plea::NOTE_NEW_TOPLEVEL_WINDOW  window_id)
 			    =>
 			    {   # Log a new top-level window:
 
@@ -355,7 +376,7 @@ herein
 		       do_plea (plea::LOCK_WINDOW   window_id) =>   lock_tree (get_info  window_id);
 		       do_plea (plea::UNLOCK_WINDOW window_id) => unlock_tree (get_info  window_id);
 
-		       do_plea (plea::WINDOW_IS_LOCKED window_id)
+		       do_plea (plea::IS_WINDOW_LOCKED window_id)
 			   =>
 			   {   (get_info  window_id)
 				   ->
@@ -409,19 +430,19 @@ herein
 			except
 			    hash_xid::XID_NOT_FOUND = ();
 
-		    fun do_xevent e
+		    fun do_xevent xevent
 			=
-			case (pick_xevent_action e)
+			case (pick_xevent_action xevent)
 			    #
 			    TO_WINDOW window_id
 				=>
-				push_event_to_window (e, window_id);
+				push_event_to_window (xevent, window_id);
 
 			    NOTE_NEW_WINDOW { parent_window_id, created_window_id }
 				=>
 				{   note_new_subwindow (parent_window_id, created_window_id);
 				    #
-				    push_event_to_window (e, parent_window_id);
+				    push_event_to_window (xevent, parent_window_id);
 				};
 
 			    NOTE_WINDOW_DESTRUCTION  window_id
@@ -447,26 +468,26 @@ herein
 						:=
 						remove_child *children;
 
-					    push_event (e, window);
+					    push_event (xevent, window);
 					};
 
 				    window
 					=>
-					push_event (e, window);
+					push_event (xevent, window);
 				esac;
 
 			    TO_KEYMAP_IMP
 				=>
-				{   xgripe::warning "[xsocket-to-topwin: unexpected ToKeymapServer]";
+				{   xgripe::warning "[xsocket-to-topwin: unexpected TO_KEYMAP_IMP]";
 				    ();
 				};
 
-			    TO_WINDOW_PROPERTY_IMP  =>  give  (prop_event_slot, e);
-			    TO_SELECTION_IMP =>  give  (sel_event_slot,  e);
+			    TO_WINDOW_PROPERTY_IMP  =>  give  (to_window_property_imp_slot, xevent);
+			    TO_SELECTION_IMP        =>  give  (to_selection_imp_slot,       xevent);
 
 			    TO_TRASH => ();
-			    TO_ALL   => apply (fn (_, x) = push_event (e, x))
-					      (hash_xid::list id_map);
+			    TO_ALL   => apply (fn (_, x) = push_event (xevent, x))
+					      (hash_xid::list  window_id_to_window_info_map);
 			esac;
 
 		    mailop
@@ -498,9 +519,17 @@ herein
 		};						# fun make_xsocket_to_topwindow_router
 
 
-	    fun note_toplevel_window (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
+	    # Add 'toplevel_window' to our    window_id_to_window_info_map
+	    # and return the event slot through which we will feed X events
+	    # to that window.
+	    #
+	    # This function is called (only) from    make_topwindow_to_widget_router   in
+	    #
+	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
+	    #
+	    fun note_new_toplevel_window (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... },  toplevel_window)
 		=
-		{   give  (plea_slot,  plea::NOTE_WINDOW window);
+		{   give  (plea_slot,  plea::NOTE_NEW_TOPLEVEL_WINDOW toplevel_window);
 		    take   reply_slot;
 		};
 
@@ -519,7 +548,7 @@ herein
 	    #
 	    fun window_is_locked (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, lock_slot, ... }, window)
 		=
-		{   give (plea_slot, plea::WINDOW_IS_LOCKED window);
+		{   give (plea_slot, plea::IS_WINDOW_LOCKED window);
 		    take lock_slot;
 		};
 	end;					# stipulate

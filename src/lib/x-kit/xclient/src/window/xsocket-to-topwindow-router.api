@@ -1,9 +1,12 @@
 ## xsocket-to-topwindow-router.api
 #
-# API for functionality which reads X server events
-# from xsocket (specifically, xbuf_imp) and routes
-# them to the appropriate top-level window.  From
-# there they get routed down the widget tree -- see:
+# API for functionality which reads X server events from
+#
+#     src/lib/x-kit/xclient/src/wire/xsocket.pkg
+# 
+# (specifically, xbuf_imp) and routes them
+# to the appropriate top-level window.
+# From there they get routed down the widget tree:
 #
 #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.api
 
@@ -38,13 +41,16 @@ herein
 	    { display:        display::Xdisplay,
 	      keymap_imp:     keymap_imp::Keymap_Imp,
 	      #
-	      prop_event_slot:  Mailslot( event_types::x::Event ),
-	      sel_event_slot:   Mailslot( event_types::x::Event )
+	      to_window_property_imp_slot:  Mailslot( event_types::x::Event ),
+	      to_selection_imp_slot:        Mailslot( event_types::x::Event )
 	    }
 	    ->
 	    Xsocket_To_Topwindow_Router;
 
-	note_toplevel_window
+	# Note new 'toplevel_window' and return the event slot
+	# through which we will feed X events to that window:
+	#
+	note_new_toplevel_window
 	    :
 	    (Xsocket_To_Topwindow_Router, xt::Window_Id)
 	    ->

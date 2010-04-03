@@ -152,9 +152,11 @@ stipulate
     package fti =  font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
     package gci =  graphics_context_imp;		# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
     package ki  =  keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+    package si  =  selection_imp;			# selection_imp			is from   src/lib/x-kit/xclient/src/window/selection-imp.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package s2w =  sendevent_to_wire;			# sendeven_to_wire		is from   src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
     package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
+    package wpi =  window_property_imp;			# window_property_imp		is from   src/lib/x-kit/xclient/src/window/window-property-imp.pkg
     package xt  =  xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
@@ -173,8 +175,8 @@ herein
 		font_imp:          	fti::Font_Imp,
 		atom_imp:          	ai::Atom_Imp,
 
-		window_property_imp:    window_property_imp::Window_Property_Imp,
-		selection_imp:     	selection_imp::Selection_Imp,
+		window_property_imp:    wpi::Window_Property_Imp,
+		selection_imp:     	si::Selection_Imp,
 
 		keymap_imp:             ki::Keymap_Imp
 	    }
@@ -270,13 +272,13 @@ herein
 		keymap_imp =   ki::make_keymap_imp  display;
 		atom_imp   =   ai::make_atom_imp    display;
 
-		my (prop_slot, window_property_imp)
-                    =
-                    window_property_imp::make_window_property_imp (display, atom_imp);
+		(wpi::make_window_property_imp (display, atom_imp))
+		    ->
+		    (to_window_property_imp_slot, window_property_imp);
 
-		my (selection_slot,  selection_imp)
-                    =
-                    selection_imp::make_selection_imp  display;
+		(si::make_selection_imp  display)
+		    ->
+		    (to_selection_imp_slot,  selection_imp);
 
 		xsocket_to_topwindow_router
 		    =
@@ -284,8 +286,8 @@ herein
 		      { display,
 			keymap_imp,
 			#
-			prop_event_slot => prop_slot,
-			sel_event_slot  => selection_slot
+			to_window_property_imp_slot,
+			to_selection_imp_slot
 		      };
 
 		fun make_screen_info (xscreen as dy::XSCREEN { root_window_id, root_visual, visuals, ... } )
