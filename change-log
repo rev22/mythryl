@@ -1,3 +1,4 @@
+2010-04-03-12.34.56: src/lib/x-kit/widget/basic/widget.api: Add window_of, size_of.
 2010-04-03-00.02.46: More cleaning and commenting, centering on src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg.
 2010-04-02-18.19.03: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: Still more general cleaning.
 2010-04-02-18.00.54: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: More general cleaning.

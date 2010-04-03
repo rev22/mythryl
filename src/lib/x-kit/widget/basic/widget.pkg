@@ -99,6 +99,12 @@ herein
 	    size_of         (WIDGET { size   => REF  NULL,        ... } ) =>  raise exception  FAIL "widget::size_of called before realization";
 	end;
 
+	fun note_new_size
+		(WIDGET { size,   ... } )
+		size'
+            =
+            size :=  THE size';
+
 	fun size_preference_of       (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of ();
 	fun size_preference_thunk_of (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of;
 
