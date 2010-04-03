@@ -78,7 +78,7 @@ herein
 	fun x_bounds ( { col_preference, ... }: wg::Widget_Size_Preference) =  get_bounds col_preference;
 	fun y_bounds ( { row_preference, ... }: wg::Widget_Size_Preference) =  get_bounds row_preference;
 
-	fun comp_size' cl
+	fun compute_size' cl
 	    =
 	    {   fun do_x (NULL, _) => NULL;
 		    do_x (_, NULL) => NULL;
@@ -167,13 +167,13 @@ herein
 		};
 	    };
 
-	fun comp_size (GEOMETRY bnds) =>  bnds;
-	    comp_size (WIDGET widget) =>  wg::size_preference_of  widget;
-	    comp_size (HB(_, boxes))  =>  comp_size' (map comp_size boxes);
+	fun compute_size (GEOMETRY bnds) =>  bnds;
+	    compute_size (WIDGET widget) =>  wg::size_preference_of  widget;
+	    compute_size (HB(_, boxes))  =>  compute_size' (map compute_size boxes);
 
-	    comp_size (NAMED_VALUE(_, boxes))
+	    compute_size (NAMED_VALUE(_, boxes))
 		=> 
-		flip_bounds (comp_size' (map (flip_bounds o comp_size) boxes));
+		flip_bounds (compute_size' (map (flip_bounds o compute_size) boxes));
 	end;
 
 	fun flr (v:  Int, base, inc)
@@ -332,14 +332,14 @@ herein
 		=>
 		{   tree = map bnds_tree boxes;
 
-		    BT_HB (comp_size' (map bnds_of tree), a, tree);
+		    BT_HB (compute_size' (map bnds_of tree), a, tree);
 		};
 
 	    bnds_tree (NAMED_VALUE (a, boxes))
 		=>
 		{   tree = map (flip_bt o bnds_tree) boxes;
 
-		    BT_VB (flip_bounds (comp_size' (map bnds_of tree)), a, tree);
+		    BT_VB (flip_bounds (compute_size' (map bnds_of tree)), a, tree);
 		};
 	end;
 
@@ -364,31 +364,31 @@ herein
 
 	herein
 
-	    fun comp_layout' (_, BT_G _)
+	    fun compute_layout' (_, BT_G _)
 		    =>
 		    [];
 
-		comp_layout' (r, BT_W (_, w))
+		compute_layout' (r, BT_W (_, w))
 		    =>
 		    [(w, r)];
 
-		comp_layout' (xg::BOX { col=>x, row=>y, wide, high }, BT_HB(_, a, bl))
+		compute_layout' (xg::BOX { col=>x, row=>y, wide, high }, BT_HB(_, a, bl))
 		    =>
 		    {   l = merge (set_majors (x, wide, bl), set_minors (y, high, bl, a), bl);
 
-			list::fold_left   (fn (bx, bl) = (comp_layout' bx)@bl)   []   l;
+			list::fold_left   (fn (bx, bl) = (compute_layout' bx)@bl)   []   l;
 		    };
 
-		comp_layout' (r as xg::BOX { col=>x, row=>y, wide, high }, BT_VB(_, a, bl))
+		compute_layout' (r as xg::BOX { col=>x, row=>y, wide, high }, BT_VB(_, a, bl))
 		    =>
 		    {   l = merge (set_minors (x, wide, bl, a), set_majors (y, high, bl), bl);
 
-			list::fold_left (fn (bx, bl) => (comp_layout' bx)@bl; end ) [] l;
+			list::fold_left (fn (bx, bl) => (compute_layout' bx)@bl; end ) [] l;
 		     };
 	    end;
 	end;
 
-	fun comp_layout (box, boxes)
+	fun compute_layout (box, boxes)
 	    =
 	    {   bnds_t = bnds_tree boxes;
 
@@ -404,9 +404,9 @@ herein
 
 			v as BT_W (bnds, w)
 			    => 
-			    comp_layout' (box, BT_HB (bnds, wt::VCENTER,[v]));
+			    compute_layout' (box, BT_HB (bnds, wt::VCENTER,[v]));
 
-			bt => comp_layout' (box, bt);
+			bt => compute_layout' (box, bt);
 		    esac;
 
 		  (fits, l);

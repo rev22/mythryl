@@ -213,6 +213,13 @@ herein
 	    # from the root widget of our widget-tree.
 
 	delete_mailop:  Topwindow ->  Mailop( Void );
+	    #
+	    # This appears to be a half-completed dusty deboer hack.
+	    # This mailop will fire if we recieve (any) CLIENT_MESSAGE
+	    # X event -- see logic in
+	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
+	    # No existing code sends a CLIENT_MESSAGE,
+	    # nor does any existing code reference delete_mailop.
     };
 end;						# stipulate
 

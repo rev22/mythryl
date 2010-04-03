@@ -21,7 +21,6 @@ herein
 
     api Lay_Out_Linearly {
 
-
 	Box_Item
 	    = GEOMETRY  { col_preference:  wg::Int_Preference,	# Should be GEOMETRY wg::Widget_Size_Preference 	XXX BUGGO FIXME
 			  row_preference:  wg::Int_Preference
@@ -31,9 +30,9 @@ herein
 	    | NAMED_VALUE  (wt::Vertical_Alignment, List( Box_Item ))
 	    ;
 
-	 comp_layout:  (xg::Box, Box_Item) -> (Bool, List( (wg::Widget, xg::Box) ));
+	 compute_layout:  (xg::Box, Box_Item) -> (Bool, List( (wg::Widget, xg::Box) ));
 
-	 comp_size:  Box_Item -> wg::Widget_Size_Preference;
+	 compute_size:  Box_Item -> wg::Widget_Size_Preference;
     };
 
 end;

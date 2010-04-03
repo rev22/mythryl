@@ -182,7 +182,7 @@ herein
 
 	# Compute bounds for box layout.
 	#
-	layout_size =  lo::comp_size;
+	layout_size =  lo::compute_size;
 
 	fun cloop from_kid' ()
 	    =
@@ -307,7 +307,7 @@ herein
 
 			    box = xg::make_box (xg::point_00, size);
 
-			    places = #2 (lo::comp_layout (box, getvis ctree));
+			    places = #2 (lo::compute_layout (box, getvis ctree));
 
 			    fun reposition (clist, rlist)
 				=
@@ -439,7 +439,7 @@ herein
 				{
 				    my (fits, nlist)
 					=
-					lo::comp_layout (me.box, get_vis me);
+					lo::compute_layout (me.box, get_vis me);
 	      /* DEBUG
 				    print (implode["resize: box = ", rectToString me.box, "\n"])
 				    print (f::format "resize: fits = %b\n        nlist =\n" [f::BOOL fits])
@@ -464,7 +464,7 @@ herein
 				   =>
 				   {   nrect =  xg::make_box (xg::point_00, xg::size_of_box r);
 
-				       nlist =  #2 (lo::comp_layout (nrect, get_vis me));
+				       nlist =  #2 (lo::compute_layout (nrect, get_vis me));
 
 				       { box  => nrect,
 					 clist => reposition (me.clist, nlist)

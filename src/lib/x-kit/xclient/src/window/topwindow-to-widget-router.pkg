@@ -1,11 +1,14 @@
 ## topwindow-to-widget-router.pkg
 #
-# At the root of each widget hierarchy we need
+# For each toplevel window, which is to say
+# at the root of each widget tree, we need
 # a thread which accepts xevents from
 #
 #     src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
 #
-# them on down the widgettree.  That's our job here.
+# and passes them them on down the widgettree.
+#
+# That's our job here.
 #
 # For the big picture see the diagram in
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
@@ -42,7 +45,12 @@ herein
 		xgripe::impossible("[widgetcable-rootend: unexpected CO message]");
 	    };
 
-	fun make_router (sn::XSESSION { keymap_imp, ... }, xevent_in', dm_config_slot, top_window)
+	fun make_router
+              ( sn::XSESSION { keymap_imp, ... },
+                xevent_in',
+                dm_config_slot,							# "dm" == "draw master"
+                top_window
+              )
 	    =
 	    {   make_descendant_window
 		    =
@@ -57,7 +65,7 @@ herein
 		    =
 		    widget_cable::make_widget_cable ();
 
-		my (route_ci, route_k, route_m)
+		my (route_other_envelope', route_keyboard_envelope', route_mouse_envelope')
 		    =
 		    {   momplug ->  wc::MOMPLUG { other_sink, keyboard_sink, mouse_sink, from_kid' };
 
@@ -74,7 +82,7 @@ herein
 
 		herein
 
-		    fun wrap_mail (route, contents)
+		    fun stuff_envelope (route, contents)
 			=
 			{   n = *seqn;
 
@@ -84,15 +92,24 @@ herein
 			};
 		end;
 
-		# Create mailslot to pass client message
-		# mailops to the application.
+		# Create mailslot to pass client messages
+		# to the application.
+		#
+		# This appears to be a half-finished dusty deboer hack.
+		# Receipt of (any) CLIENT_MESSAGE X event is signaled
+		# (see fun route_xevent below) via this slot
+		# and can be waited on via TOPWINDOW.delete_slot
+		# -- see delete_mailop in   src/lib/x-kit/widget/basic/topwindow.api
+		#
+		# We never send a CLIENT_MESSAGE, nor does any existing
+		# code reference the delete_mailop.
 		#
 		delete_slot =   make_mailslot ();
 
 
 		fun do_key (make_msg, key_event)
 		    =
-		    route_k (make_msg (lookup_key key_event));
+		    route_keyboard_envelope' (make_msg (lookup_key key_event));
 
 
 		fun do_button_press (path, info:  et::Button_Xevtinfo)
@@ -120,12 +137,12 @@ herein
 				      };
 				fi;
 
-			  route_m (wrap_mail (path, mail));
+			  route_mouse_envelope' (stuff_envelope (path, mail));
 		    };
 
 		fun do_button_release (path, info:  et::Button_Xevtinfo)
 		    =
-		    route_m (wrap_mail (path, msg))
+		    route_mouse_envelope' (stuff_envelope (path, msg))
 		    where 
 			info ->   { button, event_point, root_point, timestamp, mousebuttons_state, ... };
 
@@ -153,6 +170,8 @@ herein
 		    end;
 
 
+		# An always-ready mailop producing void:
+		#
 		always_void
 		    =
 		    always_mailop ();
@@ -162,48 +181,48 @@ herein
 		    =
 		    always_void
 			==>
-		       .{   do_mailop (route_m  (wrap_mail (path, wc::MOUSE_CONFIG_SYNC)));
-			    do_mailop (route_k  (wrap_mail (path, wc::KEY_CONFIG_SYNC)));
-			    do_mailop (route_ci (wrap_mail (path, config_msg)));
+		       .{   do_mailop (route_mouse_envelope'  (stuff_envelope (path, wc::MOUSE_CONFIG_SYNC)));
+			    do_mailop (route_keyboard_envelope'  (stuff_envelope (path, wc::KEY_CONFIG_SYNC)));
+			    do_mailop (route_other_envelope' (stuff_envelope (path, config_msg)));
 			};
 
 		fun route_xevent (path, et::x::KEY_PRESS arg)
 			=>
-			do_key (fn x = wrap_mail (path, wc::KEY_PRESS x), arg);
+			do_key (fn x = stuff_envelope (path, wc::KEY_PRESS x), arg);
 
 		    route_xevent (path, et::x::KEY_RELEASE arg)
 			=>
-			do_key (fn x = wrap_mail (path, wc::KEY_RELEASE x), arg);
+			do_key (fn x = stuff_envelope (path, wc::KEY_RELEASE x), arg);
 
 		    route_xevent (path, et::x::BUTTON_PRESS   arg) =>   do_button_press    (path, arg);
 		    route_xevent (path, et::x::BUTTON_RELEASE arg) =>   do_button_release  (path, arg);
 
 		    route_xevent (path, et::x::MOTION_NOTIFY { event_point, root_point, timestamp, ... } )
 			=>
-			route_m (wrap_mail (path, wc::MOUSE_MOTION { window_point=>event_point, screen_point=>root_point, timestamp } ));
+			route_mouse_envelope' (stuff_envelope (path, wc::MOUSE_MOTION { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
 		    route_xevent (path, et::x::ENTER_NOTIFY { event_point, root_point, timestamp, ... } )
 			=>
-			route_m (wrap_mail (path, wc::MOUSE_ENTER { window_point=>event_point, screen_point=>root_point, timestamp } ));
+			route_mouse_envelope' (stuff_envelope (path, wc::MOUSE_ENTER { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
 		    route_xevent (path, et::x::LEAVE_NOTIFY { event_point, root_point, timestamp, ... } )
 			=>
-			route_m (wrap_mail (path, wc::MOUSE_LEAVE { window_point=>event_point, screen_point=>root_point, timestamp } ));
+			route_mouse_envelope' (stuff_envelope (path, wc::MOUSE_LEAVE { window_point=>event_point, screen_point=>root_point, timestamp } ));
 
 	  /*******
-		  | routeXEvt (_, et::x::FOCUS_IN {... } ) = ()
-		  | routeXEvt (_, et::x::FOCUS_OUT {... } ) = ()
-		  | routeXEvt (_, et::x::KEYMAP_NOTIFY {... } ) = ()
+		  | route_xevent (_, et::x::FOCUS_IN {... } ) = ()
+		  | route_xevent (_, et::x::FOCUS_OUT {... } ) = ()
+		  | route_xevent (_, et::x::KEYMAP_NOTIFY {... } ) = ()
 	  ******/
 
 		   route_xevent (path, et::x::EXPOSE { boxes, ... } )
                        =>
-		      route_ci (wrap_mail (path, wc::ETC_REDRAW boxes));
+		      route_other_envelope' (stuff_envelope (path, wc::ETC_REDRAW boxes));
 
 	  /*******
-		  | routeXEvt (_, et::x::GRAPHICS_EXPOSE {... } ) = ()
-		  | routeXEvt (_, et::x::NO_EXPOSE {... } ) = ()
-		  | routeXEvt (_, et::x::VISIBILITY_NOTIFY _) = ()
+		  | route_xevent (_, et::x::GRAPHICS_EXPOSE {... } ) = ()
+		  | route_xevent (_, et::x::NO_EXPOSE {... } ) = ()
+		  | route_xevent (_, et::x::VISIBILITY_NOTIFY _) = ()
 	  ******/
 
 		    route_xevent (path, et::x::CREATE_NOTIFY { parent_window_id, created_window_id, ... } )
@@ -214,7 +233,7 @@ herein
 			=>
 			destroyed_window_id == event_window_id
 			    ##
-			    ??   route_ci (wrap_mail (path, wc::ETC_OWN_DEATH))
+			    ??   route_other_envelope' (stuff_envelope (path, wc::ETC_OWN_DEATH))
 			    ::   do_config_sync (path, wc::ETC_CHILD_DEATH (make_descendant_window  destroyed_window_id));
 
 		    route_xevent (s2t::ENVELOPE_ROUTE_END _, et::x::UNMAP_NOTIFY _)
@@ -238,25 +257,25 @@ herein
 		       always_void;
 
 	  /*******
-		  | routeXEvt (_, et::x::MAP_REQUEST {... } ) = ()
-		  | routeXEvt (_, et::x::REPARENT_NOTIFY {... } ) = ()
+		  | route_xevent (_, et::x::MAP_REQUEST {... } ) = ()
+		  | route_xevent (_, et::x::REPARENT_NOTIFY {... } ) = ()
 	  ******/
 
 		  route_xevent (path, et::x::CONFIGURE_NOTIFY { box, ... } )
 		      =>
-		      route_ci (wrap_mail (path, wc::ETC_RESIZE box));
+		      route_other_envelope' (stuff_envelope (path, wc::ETC_RESIZE box));
 
 	  /*******
-		  | routeXEvt (_, et::x::ConfigureRequest {... } ) = ()
-		  | routeXEvt (_, et::x::GravityNotify {... } ) = ()
-		  | routeXEvt (_, et::x::ResizeRequest {... } ) = ()
-		  | routeXEvt (_, et::x::CirculateNotify {... } ) = ()
-		  | routeXEvt (_, et::x::CirculateRequest {... } ) = ()
-		  | routeXEvt (_, et::x::PropertyNotify {... } ) = ()
-		  | routeXEvt (_, et::x::SelectionClear {... } ) = ()
-		  | routeXEvt (_, et::x::SelectionRequest {... } ) = ()
-		  | routeXEvt (_, et::x::SelectionNotify {... } ) = ()
-		  | routeXEvt (_, et::x::ColormapNotify {... } ) = ()
+		  | route_xevent (_, et::x::ConfigureRequest {... } ) = ()
+		  | route_xevent (_, et::x::GravityNotify {... } ) = ()
+		  | route_xevent (_, et::x::ResizeRequest {... } ) = ()
+		  | route_xevent (_, et::x::CirculateNotify {... } ) = ()
+		  | route_xevent (_, et::x::CirculateRequest {... } ) = ()
+		  | route_xevent (_, et::x::PropertyNotify {... } ) = ()
+		  | route_xevent (_, et::x::SelectionClear {... } ) = ()
+		  | route_xevent (_, et::x::SelectionRequest {... } ) = ()
+		  | route_xevent (_, et::x::SelectionNotify {... } ) = ()
+		  | route_xevent (_, et::x::ColormapNotify {... } ) = ()
 	  ******/
 	  /****** modification, ddeboer, Jul 2004: route this event when delete. 
 	  from ..protocol/event-types.pkg:
@@ -272,6 +291,15 @@ herein
 		       always_void
 			   ==>
 			  .{   give (delete_slot, ());   };
+				#
+				# This appears to be some half-complete dusty deboer hack
+				# which signals reciept of (any) CLIENT_MESSAGE via the
+				#     delete_mailop
+				# in
+				#     src/lib/x-kit/widget/basic/topwindow.api
+				#
+				# No existing code sends a CLIENT_MESSAGE,
+				# nor does any existing code reference delete_mailop.
 
 	  # * end mod ***
 
@@ -369,7 +397,7 @@ herein
 		    =
 		    dt::WINDOW { window_id, screen, screen_depth, draw_fn=>dm };
 
-		my (kidplug, router, del_slot)
+		my (kidplug, router, delete_slot)
 		    =
 		    make_router (xsession, xevent_in', dm_config_slot, top_window);
 
@@ -397,10 +425,10 @@ herein
 											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: go"; };
 		  };
 
-		  xtracing::make_thread  "topwin2widget"  init_router;
+		  xtracing::make_thread  "topwindow_to_widget_router"  init_router;
 
 
-		  (kidplug, top_window, del_slot);
+		  (kidplug, top_window, delete_slot);
 	    };										# fun make_toplevel_window_dictionary 
 
     };											# package toplevel_window

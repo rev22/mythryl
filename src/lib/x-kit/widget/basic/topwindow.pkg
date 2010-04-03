@@ -54,7 +54,7 @@ herein
 	    =
 	    TOPWINDOW
 	      ( Mailslot( Plea_Mail ),
-		Mailslot( Void )
+		Mailslot( Void )		# delete_slot. This appears to be some half-implemented dusty deboer hack.
               );
 
 	fun set_size_hints
@@ -450,20 +450,20 @@ herein
 
 	end;
 
-	fun start        (TOPWINDOW (slot, dslot))     =  give (slot, START);
-	fun destroy      (TOPWINDOW (slot, dslot))     =  give (slot, DESTROY);
-	fun unmap        (TOPWINDOW (slot, dslot))     =  give (slot, MAP FALSE);
-	fun map          (TOPWINDOW (slot, dslot))     =  give (slot, MAP TRUE);
+	fun start        (TOPWINDOW (slot, delete_slot))     =  give (slot, START);
+	fun destroy      (TOPWINDOW (slot, delete_slot))     =  give (slot, DESTROY);
+	fun unmap        (TOPWINDOW (slot, delete_slot))     =  give (slot, MAP FALSE);
+	fun map          (TOPWINDOW (slot, delete_slot))     =  give (slot, MAP TRUE);
 
 	fun set_window_manager_hints
-                (TOPWINDOW (slot, dslot))
+                (TOPWINDOW (slot, delete_slot))
                 arg
 	    =
 	    give (slot, HINTS arg);
 
-	fun delete_mailop (TOPWINDOW (slot, d_slot))
+	fun delete_mailop (TOPWINDOW (slot, delete_slot))
 	    =
-	    take'  d_slot;
+	    take'  delete_slot;
     };			# package topwindow 
 end;			# stipulate
 

@@ -70,7 +70,7 @@ herein
 		    };
 
 									    # xwindow	is from   src/lib/x-kit/xclient/xwindow.pkg
-		my (window, in_dict, _)
+		my (window, in_dict, delete_slot)
 		    =
 		    xw::make_simple_top_window
 			screen

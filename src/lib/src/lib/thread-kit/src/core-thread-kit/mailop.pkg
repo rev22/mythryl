@@ -186,24 +186,29 @@ api {
 	end;
 
 
-    fun always_mailop v
+    # A mailop which is always ready
+    # and produces given result:
+    #
+    fun always_mailop  result
         =
-        BASE_MAILOPS [   fn ()
-                    =
-                    r::MAILOP_READY
+        BASE_MAILOPS [
+
+            fn () = r::MAILOP_READY
                       { priority  =>  -1,
                         do_it =>  fn () = {   s::reenable_thread_switching ();		# Reppy calls this field doFn
-                                              v;
+                                              result;
                                           }
 	              }
-             ];
+        ];
 
+    # A mailop which is never ready:
+    #
     never = BASE_MAILOPS [];
 
     guard = GUARD;
 
     with_nack = WITH_NACK;
-
+											# "bevt" == "base event"
     fun choose (el:  List(  Mailop(X) ))
         =
 	gather_bevts (reverse el, [])

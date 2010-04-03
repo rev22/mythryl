@@ -124,7 +124,7 @@ printf "triangle_app: mouse_watcher: row,col d=(%d, %d)\n" r c;
 
 		window_size   =  xg::SIZE { wide => 450, high => 400 };
 
-		my (window, kidplug, mailslot)			# 2009-12-10 CrT: Had to add 'mailslot' so it would compile.
+		my (window, kidplug, delete_slot)			# 2009-12-10 CrT: Had to add 'delete_slot' so it would compile.
 		    =
 		    xw::make_simple_top_window  screen
 		      {

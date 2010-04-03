@@ -933,8 +933,8 @@ result;
 			#
 			value  => xt::RAW_DATA
 				    {
-				      format => get_raw_format (buf,  1),
-				      data   => w8vextract     (buf, 12, THE 20)
+				      format =>  get_raw_format   (buf,  1),
+				      data   =>  w8vextract       (buf, 12, THE 20)
 				    }
 		      };
 
