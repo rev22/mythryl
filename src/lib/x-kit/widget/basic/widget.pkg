@@ -46,6 +46,10 @@ herein
 	    }
 	    ->
 	    Void;
+						# Soon we'll want to change all the Size values
+						# in this file to Box values, so as to track the
+						# full size+position info relative to parent for
+						# each window.
 
 	exception ALREADY_REALIZED;
 

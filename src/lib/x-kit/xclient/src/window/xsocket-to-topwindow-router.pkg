@@ -101,7 +101,7 @@ stipulate
     package et  = event_types;				# event_types		is from   src/lib/x-kit/xclient/src/wire/event-types.pkg
     package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
     package xok = xsocket;				# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
-
+    package ge =  geometry;				# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
 herein
     package xsocket_to_topwindow_router: (weak)  Xsocket_To_Topwindow_Router {		# Xsocket_To_Topwindow_Router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api
 
@@ -134,6 +134,7 @@ herein
 		    #
 		    children:     Ref(  List(Window_Info) ),
 		    lock:         Ref( Bool ),
+		    site:	  Ref( Null_Or( ge::Box )),
 		    #
 		    to_topwindow_slot:   Mailslot( (Envelope_Route, et::x::Event) )	# Where to send events headed for this window.
 		  };
@@ -152,7 +153,8 @@ herein
 	      | IGNORE
 	      | NOTE_NEW_WINDOW
                   { parent_window_id:   xt::Window_Id,
-		    created_window_id:  xt::Window_Id
+		    created_window_id:  xt::Window_Id,
+		    box:                ge::Box 
 		  }
 	      ;
 
@@ -201,9 +203,9 @@ herein
 
 		pick_xevent_action (et::x::VISIBILITY_NOTIFY { changed_window_id, ... } ) =>  SEND_TO_WINDOW  changed_window_id;
 
-		pick_xevent_action (et::x::CREATE_NOTIFY { parent_window_id, created_window_id, ... } )
+		pick_xevent_action (et::x::CREATE_NOTIFY { parent_window_id, created_window_id, box, ... } )
 		    =>
-		    NOTE_NEW_WINDOW { parent_window_id, created_window_id };
+		    NOTE_NEW_WINDOW { parent_window_id, created_window_id, box };
 
 		pick_xevent_action (et::x::DESTROY_NOTIFY { event_window_id, destroyed_window_id, ... } )
 		    =>
@@ -271,7 +273,7 @@ herein
 		    =>
 		    ("SEND_TO_WINDOW(" + xid_to_string w + ")");
 
-		xevent_action_to_string (NOTE_NEW_WINDOW { parent_window_id, created_window_id } )
+		xevent_action_to_string (NOTE_NEW_WINDOW { parent_window_id, created_window_id, box } )
 		    =>
 		    string::cat
 		      [
@@ -402,7 +404,8 @@ herein
 					route       =>  ENVELOPE_ROUTE_END  window_id,
 					parent_info =>  NULL,
 					children    =>  REF [],
-					lock        =>  REF FALSE
+					lock        =>  REF FALSE,
+					site	    =>  REF NULL
 				      }
 				  );
 
@@ -422,7 +425,7 @@ herein
 			   };
 		    end;
 
-		    fun note_new_subwindow (parent_window_id, child_window_id)
+		    fun note_new_subwindow (parent_window_id, child_window_id, box)
 			=
 			{
 			    (get_info  parent_window_id)
@@ -441,6 +444,7 @@ herein
 				  {
 				    window_id   =>  child_window_id,
 				    route       =>  child_route,
+				    site        =>  REF (THE box),
 				    parent_info =>  THE parent_info,
 				    children    =>  REF [],
 				    lock        =>  REF *lock,
@@ -472,9 +476,9 @@ herein
 				=>
 				route_xevent_to_window_id (xevent, window_id);
 
-			    NOTE_NEW_WINDOW { parent_window_id, created_window_id }
+			    NOTE_NEW_WINDOW { parent_window_id, created_window_id, box }
 				=>
-				{   note_new_subwindow (parent_window_id, created_window_id);
+				{   note_new_subwindow (parent_window_id, created_window_id, box);
 				    #
 				    route_xevent_to_window_id (xevent, parent_window_id);
 				};

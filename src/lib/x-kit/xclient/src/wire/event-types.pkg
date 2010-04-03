@@ -192,7 +192,7 @@ herein
 		  | CREATE_NOTIFY
 		      { parent_window_id:	xt::Window_Id,			# The created window's parent.
 			created_window_id:	xt::Window_Id,			# The created window.
-			box:			ge::Box,				# The window's rectangle.
+			box:			ge::Box,			# The window's rectangle.
 			border_wid:		Int,				# The width of the border.
 			override_redirect:	Bool				#  
 		      }
