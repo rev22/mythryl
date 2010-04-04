@@ -1,3 +1,4 @@
+2010-04-03-18.30.02: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: Add 'site' field to WINDOW_INFO.
 2010-04-03-17.38.19: src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg: Comment dusty deboer's unused CLIENT_MESSAGE -> delete_mailop hack.
 2010-04-03-15.20.19: src/lib/x-kit/widget/basic/widget.api: Added note_new_size call.
 2010-04-03-12.34.56: src/lib/x-kit/widget/basic/widget.api: Add window_of, size_of.

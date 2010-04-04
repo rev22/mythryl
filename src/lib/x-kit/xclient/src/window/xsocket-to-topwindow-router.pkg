@@ -144,8 +144,9 @@ herein
 	    #
 	    Xevent_Action
 	      #	
-	      = SEND_TO_WINDOW           xt::Window_Id					# Forward event to given window via all of its ancestors from topwindow down.
-	      | NOTE_WINDOW_DESTRUCTION  xt::Window_Id
+	      = SEND_TO_WINDOW                        xt::Window_Id			# Forward event to given window via all of its ancestors from topwindow down.
+	      | NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW  (xt::Window_Id, ge::Box)		# Forward event to given window via all of its ancestors from topwindow down.
+	      | NOTE_WINDOW_DESTRUCTION               xt::Window_Id
 	      | SEND_TO_KEYMAP_IMP							# This appears to be unused at present.
 	      | SEND_TO_WINDOW_PROPERTY_IMP
 	      | SEND_TO_SELECTION_IMP
@@ -227,9 +228,13 @@ herein
 		    =>
 		    IGNORE;
 
-		pick_xevent_action (et::x::CONFIGURE_NOTIFY { event_window_id, configured_window_id, ... } )
+		pick_xevent_action (et::x::CONFIGURE_NOTIFY { event_window_id, configured_window_id, box, ... } )
 		    =>
-		    ignore_substructure_notify_xevents (event_window_id, configured_window_id);
+		    case (ignore_substructure_notify_xevents (event_window_id, configured_window_id))
+			#
+			IGNORE           => IGNORE;
+			SEND_TO_WINDOW _ => NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW (configured_window_id, box);
+		    esac;
 
 
 		pick_xevent_action (et::x::GRAVITY_NOTIFY { event_window_id, moved_window_id, ... } )
@@ -272,6 +277,10 @@ herein
 	    fun xevent_action_to_string (SEND_TO_WINDOW w)
 		    =>
 		    ("SEND_TO_WINDOW(" + xid_to_string w + ")");
+
+	        xevent_action_to_string (NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW (w,_))
+		    =>
+		    ("NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW(" + xid_to_string w + ")");
 
 		xevent_action_to_string (NOTE_NEW_WINDOW { parent_window_id, created_window_id, box } )
 		    =>
@@ -457,6 +466,15 @@ herein
 			};
 
 
+		    fun note_site_change (window_id, box)
+			=
+			{   (get_info window_id) ->  WINDOW_INFO { site, ... };
+
+			    site := THE box;
+			}
+			except
+			    hash_xid::XID_NOT_FOUND = ();
+
 		    fun route_xevent_per_window_info (e, WINDOW_INFO { route, to_topwindow_slot, ... } )
 			= 
 			give  (to_topwindow_slot, (route, e));
@@ -475,6 +493,12 @@ herein
 			    SEND_TO_WINDOW window_id
 				=>
 				route_xevent_to_window_id (xevent, window_id);
+
+			    NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW (window_id, box)
+				=>
+				{   note_site_change (window_id, box);
+				    route_xevent_to_window_id (xevent, window_id);
+				};
 
 			    NOTE_NEW_WINDOW { parent_window_id, created_window_id, box }
 				=>
