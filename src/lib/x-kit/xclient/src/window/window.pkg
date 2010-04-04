@@ -208,15 +208,15 @@ herein
 
 		window_id = next_xid ();
 
-		my (kidplug, window, delete_slot)
-		    =
-		    wr::make_topwindow_to_widget_router
-			#
-			(screen, root_imps, window_id);
 
 		fun create_fn { site, border_color, background_color }
 		    =
-		    {
+		    {   my (kidplug, window, delete_slot)
+			    =
+			    wr::make_topwindow_to_widget_router
+				#
+				(screen, root_imps, window_id, site);
+
 			wio::create_window  xsocket
 			  {
 			    depth,
@@ -335,7 +335,7 @@ herein
 
 		my (kidplug, window, delete_slot)
 		    =
-		    wr::make_topwindow_to_widget_router (scrn, root_imps, window_id);
+		    wr::make_topwindow_to_widget_router (scrn, root_imps, window_id, site);
 
 		wio::create_window  xsocket
                   {
@@ -378,7 +378,7 @@ herein
 
 		my (kidplug, window, delete_slot)
 		    =
-		    wr::make_topwindow_to_widget_router (scrn, root_imps, window_id);
+		    wr::make_topwindow_to_widget_router (scrn, root_imps, window_id, site);
 
 		wio::create_window  xsocket
                   {

@@ -368,7 +368,8 @@ herein
 	    (
               screen       as sn::SCREEN { xsession, ... },
 	      screen_depth as sn::SCREEN_DEPTH_IMPS  { gcontext_imp, ... },
-	      window_id
+	      window_id,
+              site
 	    )
 	    =
 	    {   xsession ->  sn::XSESSION { xdisplay as dy::XDISPLAY { xsocket, ... }, xsocket_to_topwindow_router, ... };
