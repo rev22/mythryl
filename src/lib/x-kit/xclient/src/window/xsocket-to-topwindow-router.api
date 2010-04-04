@@ -79,6 +79,17 @@ herein
 	    ->
 	    Bool;
 
+	# Get size of window plus position
+	# relative to parent:
+	#
+	get_window_site
+	    :
+	    ( Xsocket_To_Topwindow_Router,
+	      xt::Window_Id
+	    )
+	    ->
+	    ge::Box;
+
     };
 end;						# stipulate
 

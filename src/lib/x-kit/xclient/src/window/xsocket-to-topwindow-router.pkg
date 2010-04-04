@@ -121,6 +121,7 @@ herein
 		  | LOCK_WINDOW         xt::Window_Id
 		  | UNLOCK_WINDOW       xt::Window_Id
 		  | IS_WINDOW_LOCKED    xt::Window_Id
+		  | GET_WINDOW_SITE    (xt::Window_Id, Oneshot_Maildrop(ge::Box))
 		  ;
 	    };
 
@@ -134,7 +135,7 @@ herein
 		    #
 		    children:     Ref(  List(Window_Info) ),
 		    lock:         Ref( Bool ),
-		    site:	  Ref( Null_Or( ge::Box )),
+		    site:	  Ref( ge::Box ),
 		    #
 		    to_topwindow_slot:   Mailslot( (Envelope_Route, et::x::Event) )	# Where to send events headed for this window.
 		  };
@@ -414,24 +415,36 @@ herein
 					parent_info =>  NULL,
 					children    =>  REF [],
 					lock        =>  REF FALSE,
-					site	    =>  REF (THE (ge::site_to_box window_site))
+					site	    =>  REF (ge::site_to_box window_site)
 				      }
 				  );
 
 				give  (reply_slot,  take'  to_topwindow_slot);
-			    };
+			    }
+			    except hash_xid::XID_NOT_FOUND = ();
 
-		       do_plea (plea::LOCK_WINDOW   window_id) =>   lock_tree (get_info  window_id);
-		       do_plea (plea::UNLOCK_WINDOW window_id) => unlock_tree (get_info  window_id);
+			do_plea (plea::LOCK_WINDOW   window_id) =>   lock_tree (get_info  window_id)  except hash_xid::XID_NOT_FOUND = ();
+			do_plea (plea::UNLOCK_WINDOW window_id) => unlock_tree (get_info  window_id)  except hash_xid::XID_NOT_FOUND = ();
 
-		       do_plea (plea::IS_WINDOW_LOCKED window_id)
-			   =>
-			   {   (get_info  window_id)
-				   ->
+			do_plea (plea::IS_WINDOW_LOCKED window_id)
+			    =>
+			    {   (get_info  window_id)
+				    ->
 				    WINDOW_INFO { lock, ... };
 
-			       give  (lock_slot,  *lock);
-			   };
+				give  (lock_slot,  *lock);
+			    }
+			    except hash_xid::XID_NOT_FOUND = ();
+
+			do_plea (plea::GET_WINDOW_SITE (window_id, reply_1shot))
+			    =>
+			    {   (get_info  window_id)
+				    ->
+				    WINDOW_INFO { site, ... };
+
+				set (reply_1shot,  *site);
+			    }
+			    except hash_xid::XID_NOT_FOUND = ();
 		    end;
 
 		    fun note_new_subwindow (parent_window_id, child_window_id, box)
@@ -453,7 +466,7 @@ herein
 				  {
 				    window_id   =>  child_window_id,
 				    route       =>  child_route,
-				    site        =>  REF (THE box),
+				    site        =>  REF box,
 				    parent_info =>  THE parent_info,
 				    children    =>  REF [],
 				    lock        =>  REF *lock,
@@ -470,7 +483,7 @@ herein
 			=
 			{   (get_info window_id) ->  WINDOW_INFO { site, ... };
 
-			    site := THE box;
+			    site := box;
 			}
 			except
 			    hash_xid::XID_NOT_FOUND = ();
@@ -496,7 +509,7 @@ herein
 
 			    NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW (window_id, box)
 				=>
-				{   note_site_change (window_id, box);
+				{   note_site_change (window_id, box);			# Window has changed size and/or position.
 				    route_xevent_to_window_id (xevent, window_id);
 				};
 
@@ -593,22 +606,31 @@ herein
 
 	    # This is nowhere called:
 	    #
-	    fun lock_window_tree (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window)
+	    fun lock_window_tree (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... }, window_id)
 		=
-		{   give (plea_slot, plea::LOCK_WINDOW window);
+		{   give (plea_slot, plea::LOCK_WINDOW window_id);
 
-		    .{  give (plea_slot, plea::UNLOCK_WINDOW window);  };
+		    .{  give (plea_slot, plea::UNLOCK_WINDOW window_id);  };
 		};
 
 	    # This gets called exactly one place, in
 	    #
 	    #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
 	    #
-	    fun window_is_locked (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, lock_slot, ... }, window)
+	    fun window_is_locked (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, lock_slot, ... }, window_id)
 		=
-		{   give (plea_slot, plea::IS_WINDOW_LOCKED window);
+		{   give (plea_slot, plea::IS_WINDOW_LOCKED window_id);
 		    #
 		    take lock_slot;
+		};
+
+	    fun get_window_site (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, ... }, window_id)
+		=
+		{   reply_1shot = make_oneshot_maildrop ();
+
+		    give (plea_slot, plea::GET_WINDOW_SITE (window_id, reply_1shot));
+		    #
+		    get reply_1shot;
 		};
 	end;					# stipulate
     };						# package xsocket_to_topwindow_router

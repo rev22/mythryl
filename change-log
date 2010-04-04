@@ -1,3 +1,4 @@
+2010-04-03-23.20.31: src/lib/x-kit/xclient/src/window/geometry.pkg: Add site_to_box() call.  src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: do_plea (plea::NOTE_NEW_TOPWINDOW): Initialize WINDOW_INFO.site.
 2010-04-03-21.08.29: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api: Add 'site' argument to note_new_topwindow().
 2010-04-03-19.45.15: src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.api: Add 'site' argument to make_topwindow_to_widget_router.
 2010-04-03-19.19.31: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: Update WINDOW_INFO.site in response to CONFIGURE_NOTIFY X events.
