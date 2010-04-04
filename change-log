@@ -1,4 +1,5 @@
-2010-04-03-19.45.15: src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.api: Add 'site' arg to make_topwindow_to_widget_router.
+2010-04-03-21.08.29: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api: Add 'site' argument to note_new_topwindow().
+2010-04-03-19.45.15: src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.api: Add 'site' argument to make_topwindow_to_widget_router.
 2010-04-03-19.19.31: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: Update WINDOW_INFO.site in response to CONFIGURE_NOTIFY X events.
 2010-04-03-18.30.02: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: Add 'site' field to WINDOW_INFO.
 2010-04-03-17.38.19: src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg: Comment dusty deboer's unused CLIENT_MESSAGE -> delete_mailop hack.

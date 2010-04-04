@@ -227,6 +227,11 @@ herein
 		    end;
 	    end;
 
+	    fun site_to_box (WINDOW_SITE { upperleft => POINT { col, row }, size => SIZE { wide, high }, ... })
+		=
+		BOX { col, row, wide, high };
+
+
 	    # Validation routines:
 	    #
 	    fun valid_point(POINT { col, row } )  =   rc::valid_signed16 col    and   rc::valid_signed16 row;

@@ -414,7 +414,7 @@ herein
 					parent_info =>  NULL,
 					children    =>  REF [],
 					lock        =>  REF FALSE,
-					site	    =>  REF NULL
+					site	    =>  REF (THE (ge::site_to_box window_site))
 				      }
 				  );
 
