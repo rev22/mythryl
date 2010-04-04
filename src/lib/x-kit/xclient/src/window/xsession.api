@@ -299,7 +299,10 @@ herein
 	    Void
 	    ;
 
-
+	# Get size of window plus its location
+	# relative to parent:
+	#
+	get_window_site:	Xsession -> Window -> ge::Box;
 
 	# Return the maximum request size
 	# supported by the display. This

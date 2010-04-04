@@ -715,8 +715,11 @@ herein
 	    end;
 
 
-
-
+	fun get_window_site
+		(XSESSION  { xsocket_to_topwindow_router, ... })
+	        (WINDOW	   { window_id, ... })
+	    =
+	    s2t::get_window_site (xsocket_to_topwindow_router, window_id);
 
     };									# package xsession
 end;									# stipulate.
