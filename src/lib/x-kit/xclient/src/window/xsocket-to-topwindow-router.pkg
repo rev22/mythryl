@@ -117,7 +117,7 @@ herein
 	    package plea {
 		#
 		Mail
-		  = NOTE_NEW_TOPWINDOW  xt::Window_Id
+		  = NOTE_NEW_TOPWINDOW (xt::Window_Id, ge::Window_Site)
 		  | LOCK_WINDOW         xt::Window_Id
 		  | UNLOCK_WINDOW       xt::Window_Id
 		  | IS_WINDOW_LOCKED    xt::Window_Id
@@ -398,7 +398,7 @@ herein
 		    set_info  =  hash_xid::set     window_id_to_window_info_map;
 		    drop_info =  hash_xid::remove  window_id_to_window_info_map;
 
-		    fun do_plea (plea::NOTE_NEW_TOPWINDOW  window_id)
+		    fun do_plea (plea::NOTE_NEW_TOPWINDOW  (window_id, window_site))
 			    =>
 			    {   # Log a new top-level window:
 
@@ -580,9 +580,14 @@ herein
 	    #
 	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 	    #
-	    fun note_new_topwindow (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... },  topwindow)
+	    fun note_new_topwindow
+                  ( XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, reply_slot, ... },
+                    topwindow_id,
+		    site
+                  )
 		=
-		{   give  (plea_slot,  plea::NOTE_NEW_TOPWINDOW topwindow);
+		{   give  (plea_slot,  plea::NOTE_NEW_TOPWINDOW (topwindow_id, site));
+		    #
 		    take   reply_slot;
 		};
 

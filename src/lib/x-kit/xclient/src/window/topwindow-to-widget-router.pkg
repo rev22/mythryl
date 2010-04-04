@@ -391,7 +391,8 @@ herein
 		    s2t::note_new_topwindow
 		      (
                         xsocket_to_topwindow_router,
-			window_id
+			window_id,
+			site
 		      );
 
 		top_window

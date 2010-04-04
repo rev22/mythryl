@@ -22,7 +22,8 @@
 stipulate
     include threadkit;							# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package xt = xtypes;						# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package xt =  xtypes;						# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ge =  geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
 herein
 
     api Xsocket_To_Topwindow_Router {
@@ -52,7 +53,10 @@ herein
 	#
 	note_new_topwindow
 	    :
-	    (Xsocket_To_Topwindow_Router, xt::Window_Id)
+	    ( Xsocket_To_Topwindow_Router,
+              xt::Window_Id,
+	      ge::Window_Site	
+            )
 	    ->
 	    Mailop( (Envelope_Route, event_types::x::Event) );
 
