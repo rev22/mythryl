@@ -1,3 +1,4 @@
+2010-04-04-03.14.03: src/lib/x-kit/xclient/xcore.api: Export get_window_site to world+dog.
 2010-04-04-02.49.06: src/lib/x-kit/xclient/src/window/xsession.api: Added get_window_site() call.
 2010-04-04-02.31.36: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api: Added get_window_site() call.
 2010-04-03-23.20.31: src/lib/x-kit/xclient/src/window/geometry.pkg: Add site_to_box() call.  src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg: do_plea (plea::NOTE_NEW_TOPWINDOW): Initialize WINDOW_INFO.site.

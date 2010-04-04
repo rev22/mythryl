@@ -78,24 +78,24 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 
         tabulate (len, f)
             =>
-	    if   (inline_t::default_int::ltu (max_len, len))
-	        
-		 raise exception exceptions::SIZE;
+	    if (inline_t::default_int::ltu (max_len, len))
+		#	        
+		raise exception exceptions::SIZE;
 	    else
-		 arr =  assembly::a::create_r len;
+		arr =  assembly::a::create_r len;
 
-		 fun init i
-		     =
-		     if   (i < len)
-		         
-			  unsafe_set (arr,  i,  f i);
+		fun init i
+		    =
+		    if (i < len)
+			#
+			unsafe_set (arr,  i,  f i);
+			#
+			init (i+1);
+		    fi;
 
-			  init (i+1);
-		     fi;
+		init 0;
 
-		 init 0;
-
-		 arr;
+		arr;
 	    fi;
     end;
 
@@ -114,9 +114,9 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 
 		len = length (l, 0);
 
-		if   (max_len < len)
-                    
-                     raise exception exceptions::SIZE;
+		if (max_len < len)
+		    #
+                    raise exception  exceptions::SIZE;
                 fi;
 
 		arr =  assembly::a::create_r len;
@@ -156,20 +156,23 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 
     fun copy { from, to, di }
 	=
-	{
-	    sl = length from;
+	{   sl = length from;
 	    de = sl + di;
 
 	    fun copy_dn (s, d)
                 =
-		if   (s >= 0)
-                    
-                     unsafe_set (to, d, unsafe_get (from, s));
-		     copy_dn (s --- 1, d --- 1);
+		if (s >= 0)
+		    #                    
+                    unsafe_set (to, d, unsafe_get (from, s));
+		    copy_dn (s --- 1, d --- 1);
                 fi;
 
-	    if (di < 0 or de > length to) raise exception SUBSCRIPT;
-	    else copy_dn (sl --- 1, de --- 1);fi;
+	    if (di < 0 or de > length to)
+		#
+                raise exception SUBSCRIPT;
+	    else
+                copy_dn (sl --- 1, de --- 1);
+            fi;
 	};
 
     fun copy_vec { from, to, di }
@@ -179,65 +182,92 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 
 	    fun copy_dn (s, d)
 		=
-		if (s < 0 ) (); else unsafe_set (to, d, ro_unsafe_get (from, s));
-				       copy_dn (s --- 1, d --- 1); fi;
+		if (s >= 0)
+		    #
+		    unsafe_set (to, d, ro_unsafe_get (from, s));
+		    copy_dn (s --- 1, d --- 1);
+		fi;
 
-	    if (di < 0 or de > length to) raise exception SUBSCRIPT;
-	    else copy_dn (sl --- 1, de --- 1);
+	    if (di < 0 or de > length to)
+		#
+		raise exception  SUBSCRIPT;
+	    else
+		copy_dn (sl --- 1, de --- 1);
             fi;
 	};
 
     fun keyed_apply f arr
 	=
-	{
+	apply 0
+	where
 	    len = length arr;
-	    fun apply i =
-		if (i >= len ) (); else f (i, unsafe_get (arr, i)); apply (i +++ 1); fi;
 
-	    apply 0;
-	};
+	    fun apply i
+		=
+		if (i < len) 
+		    #
+		    f (i, unsafe_get (arr, i));
+		    apply (i +++ 1);
+		fi;
+	end;
 
     fun apply f arr
 	=
-	{
+	apply 0
+	where
 	    len = length arr;
-	    fun apply i =
-		if (i >= len ) (); else f (unsafe_get (arr, i)); apply (i +++ 1); fi;
 
-	    apply 0;
-	};
+	    fun apply i
+		=
+		if (i < len)
+		    #
+		    f (unsafe_get (arr, i));
+		    apply (i +++ 1);
+		fi;
+	end;
 
     fun modifyi f arr
 	=
-	{
+	mdf 0
+	where
 	    len = length arr;
-	    fun mdf i =
-		if (i >= len ) ();
-		else unsafe_set (arr, i, f (i, unsafe_get (arr, i))); mdf (i +++ 1); fi;
 
-	    mdf 0;
-	};
+	    fun mdf i
+		=
+		if (i < len)
+		    #
+		    unsafe_set (arr, i, f (i, unsafe_get (arr, i)));
+		    mdf (i +++ 1);
+		fi;
+	end;
 
     fun modify f arr
 	=
-	{
+	mdf 0
+	where
 	    len = length arr;
-	    fun mdf i =
-		if (i >= len ) ();
-		else unsafe_set (arr, i, f (unsafe_get (arr, i))); mdf (i +++ 1); fi;
 
-	    mdf 0;
-	};
+	    fun mdf i
+		=
+		if (i < len)
+		    #
+		    unsafe_set (arr, i, f (unsafe_get (arr, i)));
+		    mdf (i +++ 1);
+		fi;
+	end;
 
     fun keyed_fold_left f init arr
 	=
-	{
+	fold (0, init)
+	where
 	    len = length arr;
-	    fun fold (i, a) =
-		if (i >= len ) a; else fold (i +++ 1, f (i, unsafe_get (arr, i), a));fi;
 
-	    fold (0, init);
-	};
+	    fun fold (i, a)
+		=
+		if (i >= len)   a;
+		else	        fold (i +++ 1, f (i, unsafe_get (arr, i), a));
+		fi;
+	end;
 
     fun fold_left f init arr
 	=
@@ -247,7 +277,9 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 
 	    fun fold (i, a)
                 =
-		if (i >= len ) a; else fold (i +++ 1, f (unsafe_get (arr, i), a));fi;
+		if (i >= len)   a;
+                else            fold (i +++ 1, f (unsafe_get (arr, i), a));
+                fi;
 	end;
 
     fun keyed_fold_right f init arr
@@ -256,7 +288,9 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 	where
 	    fun fold (i, a)
                 =
-		if (i < 0 ) a; else fold (i --- 1, f (i, unsafe_get (arr, i), a));fi;
+		if (i < 0)   a;
+                else         fold (i --- 1, f (i, unsafe_get (arr, i), a));
+                fi;
 	end;
 
     fun fold_right f init arr
@@ -265,78 +299,100 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 	where
 	    fun fold (i, a)
                 =
-		if (i < 0 ) a; else fold (i --- 1, f (unsafe_get (arr, i), a));fi;
+		if (i < 0)    a;
+                else          fold (i --- 1, f (unsafe_get (arr, i), a));
+                fi;
 	end;
 
     fun findi p arr
 	=
-	{
+	fnd 0
+	where
 	    len = length arr;
-	    fun fnd i =
-		if (i >= len ) NULL;
-		else { x = unsafe_get (arr, i);
 
-			 if (p (i, x) ) THE (i, x); else fnd (i +++ 1);fi;
-		     };fi;
-
-	    fnd 0;
-	};
+	    fun fnd i
+		=
+		if (i >= len)
+		    #
+		    NULL;
+		else
+		    x = unsafe_get (arr, i);
+		    #
+		    if (p (i, x))  THE (i, x);
+                    else           fnd (i +++ 1);
+                    fi;
+		fi;
+	end;
 
     fun find p arr
 	=
-	{
+	fnd 0
+	where
 	    len = length arr;
-	    fun fnd i =
-		if (i >= len ) NULL;
-		else { x = unsafe_get (arr, i);
 
-			 if (p x ) THE x; else fnd (i +++ 1);fi;
-		     };fi;
+	    fun fnd i
+		=
+		if (i >= len)
+		    #
+		    NULL;
+		else
+		    x = unsafe_get (arr, i);
 
-	    fnd 0;
-	};
+		    if (p x)  THE x;
+                    else      fnd (i +++ 1);
+                    fi;
+		fi;
+	end;
 
     fun exists p arr
 	=
-	{
+	ex 0
+	where
 	    len = length arr;
-	    fun ex i = i < len and (p (unsafe_get (arr, i)) or ex (i +++ 1));
 
-	    ex 0;
-	};
+	    fun ex i
+		=
+		i < len
+		and
+		(p (unsafe_get (arr, i)) or ex (i +++ 1));
+	end;
 
     fun all p arr
 	=
-	{
+	al 0
+	where
 	    len = length arr;
-	    fun al i = i >= len or (p (unsafe_get (arr, i)) and al (i +++ 1));
 
-	    al 0;
-	};
+	    fun al i
+		=
+		i >= len
+		or
+		(p (unsafe_get (arr, i)) and al (i +++ 1));
+	end;
 
     fun collate c (a1, a2)
         =
-        {   l1  = length a1;
+	col 0
+	where
+            l1  = length a1;
 	    l2  = length a2;
 	    l12 = inline_t::int31::min (l1, l2);
 
 	    fun col i
 		=
-		if   (i >= l12)
-                    
-                     int_guts::compare (l1, l2);
+		if (i >= l12)
+		    #                    
+                    int_guts::compare (l1, l2);
 		else
-                     case (c (unsafe_get (a1, i), unsafe_get (a2, i)))
-                       
-			 EQUAL => col (i +++ 1);
-			unequal => unequal;
-		     esac;
+		    case (c (unsafe_get (a1, i), unsafe_get (a2, i)))
+			#
+			EQUAL   =>  col (i +++ 1);
+		        unequal =>  unequal;
+		    esac;
 		fi;
+	end;
 
-	    col 0;
-	};
-
-};	#  package float64_array 
+};							# package rw_float64_vector
 
 
 
