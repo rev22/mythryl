@@ -39,6 +39,7 @@ package char_vector: (weak)  Monomorphic_Vector {		# Monomorphic_Vector	is from 
 	tabulate (n, f)
 	    =>
 	    {   if (inline_t::default_int::ltu (max_len, n))
+		    #
                     raise exception exceptions::SIZE;
 		fi;
 
@@ -192,7 +193,7 @@ package char_vector: (weak)  Monomorphic_Vector {		# Monomorphic_Vector	is from 
                     NULL;
 		else
                     x = unsafe_get (vec, i);
-
+		    #
 		    if (p x)  THE x;
                     else      fnd (i +++ 1);
                     fi;

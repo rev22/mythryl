@@ -135,33 +135,35 @@ generic package expanding_rw_vector_g (
 
 	    fun fill_default (i, stop)
                 =
-		if   (i != stop)
-		     a::set (arr_val, i, default);
-                     fill_default (i - 1, stop);
+		if (i != stop)
+		    #	
+		    a::set (arr_val, i, default);
+                    fill_default (i - 1, stop);
                 fi;
           
-            if   (newbnd < 0)
-                 bndref := -1;
-                 arr    :=  a::make_rw_vector (0, default);
+            if (newbnd < 0)
+		#
+                bndref := -1;
+                arr    :=  a::make_rw_vector (0, default);
             else
-                 if   (newbnd < bnd)
+		if (newbnd < bnd)
+		    #	
+		    if (3 * size < array_size)
+			#
+			my BLOCK (arr', _, bnd')
+			    =
+			    copy_rw_subvector (a, 0, newbnd);
 
-                      if   (3 * size < array_size)
-
-                           my BLOCK (arr', _, bnd')
-                               =
-                               copy_rw_subvector (a, 0, newbnd);
-              
-                           bndref :=  *bnd';
-                           arr    :=  *arr';
-                      else
-                           fill_default (bnd, newbnd);
-                      fi;
-                 fi;
+			bndref :=  *bnd';
+			arr    :=  *arr';
+		    else
+			fill_default (bnd, newbnd);
+		    fi;
+		fi;
             fi;
         };
 
-};	#  expanding_rw_vector_g 
+};							# generic package expanding_rw_vector_g
 
 
 

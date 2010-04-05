@@ -45,8 +45,7 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
 
     fun get (SLICE { base, start, stop }, i)
 	=
-	{
-	    i' = start + i;
+	{   i' = start + i;
 
 	    if (i' < start or i' >= stop ) raise exception SUBSCRIPT;
 	    else unsafe_get (base, i');fi;
@@ -54,8 +53,7 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
 
     fun set (SLICE { base, start, stop }, i, x)
 	=
-	{
-	    i' = start + i;
+	{   i' = start + i;
 
 	    if (i' < start
             or   i' >= stop
@@ -99,32 +97,51 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
 	    start' = if (i < 0 or stop < i ) raise exception SUBSCRIPT;
 			 else start +++ i;fi;
 	    stop' =
-		case olen   
+		case olen
+		    #
 		    NULL => stop;
-		   THE len =>
-		      { stop' = start' +++ len;
-		       if (stop' < start' or stop < stop' ) raise exception SUBSCRIPT;
-			 else stop';fi;
-		      }; esac;
+		    #
+		    THE len =>
+		        {   stop' =  start' +++ len;
+			    #
+		            if (stop' < start' or stop < stop')
+				#
+				raise exception SUBSCRIPT;
+			    else
+				stop';
+			    fi;
+		        };
+		esac;
 
 	    SLICE { base, start => start', stop => stop' };
 	};
+
 
     fun base (SLICE { base, start, stop } )
         =
         (base, start, stop --- start);
 
+
     fun copy { src => SLICE { base, start, stop }, dst, di }
 	=
-	{
-	    sl = stop --- start;
+	{   sl = stop --- start;
 	    de = sl + di;
-	    fun copy_dn (s, d) =
-		if (s < start ) (); else unsafe_set (dst, d, unsafe_get (base, s));
-					   copy_dn (s --- 1, d --- 1); fi;
-	    fun copy_up (s, d) =
-		if (s >= stop ) (); else unsafe_set (dst, d, unsafe_get (base, s));
-					   copy_up (s +++ 1, d +++ 1); fi;
+
+	    fun copy_dn (s, d)
+		=
+		if (s >= start)
+		    #
+		    unsafe_set (dst, d, unsafe_get (base, s));
+		    copy_dn (s --- 1, d --- 1);
+		fi;
+
+	    fun copy_up (s, d)
+		=
+		if (s < stop)
+		    #
+		    unsafe_set (dst, d, unsafe_get (base, s));
+		    copy_up (s +++ 1, d +++ 1);
+		fi;
 
 	    if   (di < 0 or de > rw_length dst)  raise exception SUBSCRIPT;
 	    elif (di >= start)                   copy_dn (stop --- 1, de --- 1);
@@ -134,16 +151,23 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
 
     fun copy_vec { src => vsl, dst, di }
 	=
-	{
-	    my (base, start, vlen) = vector_slice::base vsl;
-	    de = di + vlen;
-	    fun copy_up (s, d) =
-		if (d >= de ) (); else unsafe_set (dst, d, ro_unsafe_get (base, s));
-					 copy_up (s +++ 1, d +++ 1); fi;
+	{   my (base, start, vlen)
+		=
+		vector_slice::base vsl;
 
-	    if (di < 0 or de > rw_length dst ) raise exception SUBSCRIPT;
-	    #  Assuming vector and rw_vector are disjoint 
-	    else copy_up (start, di);fi;
+	    de = di + vlen;
+
+	    fun copy_up (s, d)
+		=
+		if (d < de)
+		    #
+		    unsafe_set (dst, d, ro_unsafe_get (base, s));
+		    copy_up (s +++ 1, d +++ 1);
+		fi;
+
+	    if (di < 0 or de > rw_length dst)  raise exception SUBSCRIPT;
+	    else                               copy_up (start, di);		# Assume vector and rw_vector are disjoint.
+            fi;
 	};
 
     fun is_empty (SLICE { start, stop, ... } )
@@ -153,9 +177,11 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
     fun get_item (SLICE { base, start, stop } )
         =
 	if (start >= stop)
-             NULL;
-	else THE (unsafe_get (base, start),
-		   SLICE { base, start => start +++ 1, stop } );fi;
+	    #	
+            NULL;
+	else
+            THE (unsafe_get (base, start),   SLICE { base, start => start +++ 1, stop } );
+	fi;
 
     fun keyed_apply f (SLICE { base, start, stop } )
         =
@@ -164,9 +190,9 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
 	    fun apply i
                 =
 		if (i < stop)
-                    
-		     f (i --- start, unsafe_get (base, i));
-                     apply (i +++ 1);
+		    #                    
+		    f (i --- start, unsafe_get (base, i));
+                    apply (i +++ 1);
                 fi;
 	end;
 
@@ -177,114 +203,146 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
 	    fun apply i
                 =
 		if (i < stop)
-                    
-		     f (unsafe_get (base, i));
-                     apply (i +++ 1);
+		    #                    
+		    f (unsafe_get (base, i));
+                    apply (i +++ 1);
                 fi;
 	end;
 
     fun modifyi f (SLICE { base, start, stop } )
 	=
-	{
+	mdf start
+	where
 	    fun mdf i
                 =
-		if   (i < stop)
-                    
-		     unsafe_set (base, i, f (i --- start, unsafe_get (base, i)));
-                     mdf (i +++ 1);
+		if (i < stop)
+                    #  
+		    unsafe_set (base, i, f (i --- start, unsafe_get (base, i)));
+                    mdf (i +++ 1);
                 fi;
-
-	    mdf start;
-	};
+	end;
 
     fun modify f (SLICE { base, start, stop } )
 	=
-	{
-	    fun mdf i =
-		if (i >= stop ) ();
-		else unsafe_set (base, i, f (unsafe_get (base, i))); mdf (i +++ 1); fi;
-
-	    mdf start;
-	};
+	mdf start
+	where
+	    fun mdf i
+		=
+		if (i < stop)
+		    #
+		    unsafe_set (base, i, f (unsafe_get (base, i)));
+		    mdf (i +++ 1);
+		fi;
+	end;
 
     fun keyed_fold_left f init (SLICE { base, start, stop } )
 	=
-	{
-	    fun fold (i, a) =
-		if (i >= stop ) a;
-		else fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));fi;
-
-	    fold (start, init);
-	};
+	fold (start, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i >= stop)   a;
+		else             fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
+		fi;
+	end;
 
     fun fold_left f init (SLICE { base, start, stop } )
 	=
-	{
-	    fun fold (i, a) =
-		if (i >= stop ) a;
-		else fold (i +++ 1, f (unsafe_get (base, i), a));fi;
-
-	    fold (start, init);
-	};
+	fold (start, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i >= stop)   a;
+		else             fold (i +++ 1, f (unsafe_get (base, i), a));
+		fi;
+	end;
 
     fun keyed_fold_right f init (SLICE { base, start, stop } )
 	=
-	{
-	    fun fold (i, a) =
-		if (i < start ) a;
-		else fold (i --- 1, f (i --- start, unsafe_get (base, i), a));fi;
-
-	    fold (stop --- 1, init);
-	};
+	fold (stop --- 1, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i < start)   a;
+		else             fold (i --- 1, f (i --- start, unsafe_get (base, i), a));
+                fi;
+	end;
 
     fun fold_right f init (SLICE { base, start, stop } )
 	=
-	{
-	    fun fold (i, a) =
-		if (i < start ) a; else fold (i --- 1, f (unsafe_get (base, i), a));fi;
-
-	    fold (stop --- 1, init);
-	};
+	fold (stop --- 1, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i < start)   a;
+		else             fold (i --- 1, f (unsafe_get (base, i), a));
+		fi;
+	end;
 
     fun findi p (SLICE { base, start, stop } )
 	=
-	{
-	    fun fnd i =
-		if (i >= stop ) NULL;
-		else { x = unsafe_get (base, i);
-
-			 if (p (i, x) ) THE (i --- start, x); else fnd (i +++ 1);fi;
-		     };fi;
-
-	    fnd start;
-	};
+	fnd start
+	where
+	    fun fnd i
+		=
+		if (i >= stop)
+		    #
+		    NULL;
+		else
+		    x = unsafe_get (base, i);
+		    #
+		    if (p (i, x))   THE (i --- start, x);
+                    else            fnd (i +++ 1);
+                    fi;
+		fi;
+	end;
 
     fun find p (SLICE { base, start, stop } )
 	=
-	{
-	    fun fnd i =
-		if (i >= stop ) NULL;
-		else { x = unsafe_get (base, i);
+	fnd start
+	where
+	    fun fnd i
+		=
+		if (i >= stop)
+		    #
+		    NULL;
+		else
+		    x = unsafe_get (base, i);
+		    #
+		    if (p x)   THE x;
+                    else       fnd (i +++ 1);
+		    fi;
+		fi;
+	end;
 
-			 if (p x ) THE x; else fnd (i +++ 1);fi;
-		     };fi;
+    fun exists p (SLICE { base, start, stop } )
+	=
+	ex start
+	where
+	    fun ex i
+		=
+		i < stop
+		and
+		(   p (unsafe_get (base, i))
+		    or
+		    ex (i +++ 1)
+		);
+	end;
 
-	    fnd start;
-	};
+    fun all p (SLICE { base, start, stop } )
+	=
+	al start
+	where
+	    fun al i
+		=
+		i >= stop
+		or
+		(   p (unsafe_get (base, i))
+		    and
+		    al (i +++ 1)
+		);
+	end;    
 
-    fun exists p (SLICE { base, start, stop } ) = {
-	fun ex i =
-	    i < stop and (p (unsafe_get (base, i)) or ex (i +++ 1));
-    
-	ex start;
-    };
-
-    fun all p (SLICE { base, start, stop } ) = {
-	fun al i =
-	    i >= stop or (p (unsafe_get (base, i)) and al (i +++ 1));
-    
-	al start;
-    };
 
     fun collate c (SLICE { base => b1, start => s1, stop => e1 },
 		   SLICE { base => b2, start => s2, stop => e2 } )
@@ -293,21 +351,21 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
     where
 	fun col (i1, i2)
             =
-	    if   (i1 >= e1)
-                
-		if (i2 >= e2 ) EQUAL;
-		            else LESS; fi;
+	    if (i1 >= e1)
+		#
+		if (i2 >= e2)  EQUAL;
+		else           LESS;
+		fi;
 	    else
-                 if (i2 >= e2 ) GREATER;
-	                     else
-                                  case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
-                                    
-		                         EQUAL   =>  col (i1 +++ 1, i2 +++ 2);
-		                         unequal =>  unequal;
-                                  esac;
-                             fi;
+		if (i2 >= e2)  GREATER;
+		else
+			       case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
+				   #
+				   EQUAL   =>  col (i1 +++ 1, i2 +++ 2);
+				   unequal =>  unequal;
+			       esac;
+		fi;
             fi;
-    
     end;
 
     #  XXX BUGGO FIXME: this is inefficient (going through intermediate list)
@@ -315,8 +373,9 @@ package rw_vector_slice: (weak)  Rw_Vector_Slice {		# Rw_Vector_Slice	is from   
     fun to_vector sl
         =
 	case (length sl)
-	     0   =>  assembly::vector0;
-	     len =>  assembly::a::create_v (len, fold_right (!) [] sl);
+	    #
+	    0   =>  assembly::vector0;
+	    len =>  assembly::a::create_v (len, fold_right (!) [] sl);
         esac;
 };
 

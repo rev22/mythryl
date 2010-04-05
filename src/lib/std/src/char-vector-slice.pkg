@@ -51,12 +51,11 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 
 	    fun apply i
                 =
-		if   (i < stop)
-                     
-		     f (i --- start,  unsafe_get (base, i));
-                     apply (i +++ 1);
+		if (i < stop)
+                    #
+		    f (i --- start,  unsafe_get (base, i));
+                    apply (i +++ 1);
                 fi;
-
 	end;
 
     apply      = ss::apply;
@@ -77,11 +76,8 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 
 	fun fold (i, a)
             =
-	    if   (i >= stop)
-                
-                 a;
-	    else
-                 fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
+	    if (i >= stop)   a;
+	    else             fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
             fi;
     end;
 
@@ -97,11 +93,8 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 
 	    fun fold (i, a)
                 =
-		if   (i < start)
-                    
-                     a;
-		else
-                     fold (i --- 1, f (i --- start, unsafe_get (base, i), a));
+		if (i < start)   a;
+		else             fold (i --- 1, f (i --- start, unsafe_get (base, i), a));
                 fi;
 	end;
 
@@ -139,18 +132,15 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 
 	    fun fnd i
                 =
-		if   (i >= stop)
-                    
-                     NULL;
+		if (i >= stop)
+		    #                    
+                    NULL;
 		else
-                     x = unsafe_get (base, i);
-
-		     if   (p (i, x))
-                         
-                          THE (i --- start, x);
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    x = unsafe_get (base, i);
+		    #
+		    if (p (i, x))   THE (i --- start, x);
+		    else	    fnd (i +++ 1);
+		    fi;
 		fi;
 	end;
 
@@ -171,12 +161,9 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
                     NULL;
 		else 
 		    x = unsafe_get (base, i);
-
-		    if   (p x)
-
-			 THE x;
-		    else
-			 fnd (i +++ 1);
+		    #
+		    if (p x)   THE x;
+		    else       fnd (i +++ 1);
 		    fi;
 		fi;
 
@@ -194,8 +181,12 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 
 	    fun ex i
 		=
-		i < stop   and
-		(p (unsafe_get (base, i)) or ex (i +++ 1));
+		i < stop
+		and
+		(   p (unsafe_get (base, i))
+		    or
+		    ex (i +++ 1)
+		);
 	end;
 
     fun all p vs
@@ -210,9 +201,12 @@ package char_vector_slice : Monomorphic_Vector_Slice		# Monomorphic_Vector_Slice
 
 	    fun al i
                 =
-                i >= stop   or
-                (p (unsafe_get (base, i)) and al (i +++ 1));
-
+                i >= stop
+		or
+                (   p (unsafe_get (base, i))
+		    and
+		    al (i +++ 1)
+		);
 	end;
 };
 

@@ -43,8 +43,7 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
     fun from_list l
 	=
-	{
-	    # No list can be longer than
+	{   # No list can be longer than
             # what is representable as Int: 
 	    #
 	    fun len ([],  n) => n;
@@ -69,9 +68,10 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 	    =>
 	    {   fun tab i
                     =
-                    if   (i == n)
+                    if (i == n)
                          [];
-                    else f i ! tab (i+++1);   fi;
+                    else f i ! tab (i+++1);
+                    fi;
 
 		check_len n;
 		assembly::a::create_v (n, tab 0);
@@ -121,48 +121,71 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 	  end
 */
 
-    fun cat [v] => v;
-	cat vl => {
-	   #  get the total length and flatten the list 
-	   fun len ([], n, l) => { check_len n; (n, reverse (l, [])); };
-	      len (v ! r, n, l) => {
-		   n' = inline_t::poly_vector::length v;
-		   fun explode (i, l) =
-		       if (i < n' ) explode (i+++1, unsafe_get (v, i) ! l); else l;fi;
+    fun cat [v]
+	    =>
+            v;
 
-		   len (r, n +++ n', explode (0, l));
-	       }; end;
+	cat vl
+	    =>
+            {   # Get the total length and flatten the list:
+		#
+		fun len ([], n, l)
+			=>
+			{   check_len n;
+			    (n, reverse (l, []));
+			};
 
-	     case (len (vl, 0, []))
-               
-	        (0, _) => assembly::vector0;
-		(n, l) => assembly::a::create_v (n, l);
-             esac;
+		    len (v ! r, n, l)
+			=>
+			{   n' = inline_t::poly_vector::length v;
+
+		            fun explode (i, l)
+				=
+		                if (i < n')   explode (i+++1, unsafe_get (v, i) ! l);
+                                else          l;
+                                fi;
+
+		            len (r, n +++ n', explode (0, l));
+	               };
+                end;
+
+		case (len (vl, 0, []))
+		    #
+		    (0, _) =>  assembly::vector0;
+		    (n, l) =>  assembly::a::create_v (n, l);
+		esac;
 	   };
     end;
 
     fun keyed_apply f vec
 	=
-	{   len = length vec;
+	apply 0
+	where
+	    len = length vec;
 
 	    fun apply i
                 =
-		if   (i < len)
-                    
-                     f (i, unsafe_get (vec, i));
-                     apply (i +++ 1);
+		if (i < len)
+		    #                    
+                    f (i, unsafe_get (vec, i));
+                    apply (i +++ 1);
                 fi;
+	end;
 
-	    apply 0;
-	};
+    fun apply f vec
+	=
+	apply 0
+	where
+	    len = length vec;
 
-    fun apply f vec = {
-	len = length vec;
-	fun apply i =
-	    if (i < len ) f (unsafe_get (vec, i)); apply (i +++ 1); fi;
-    
-	apply 0;
-    };
+	    fun apply i
+		=
+		if (i < len)
+		    #
+		    f (unsafe_get (vec, i));
+		    apply (i +++ 1);
+		fi;
+	end;
 
     fun keyed_map f vec
 	=
@@ -170,18 +193,12 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun mapf (i, l)
                 =
-		if   (i < len)
-                    
-                     mapf (i +++ 1, f (i, unsafe_get (vec, i)) ! l);
-		else
-                     assembly::a::create_v (len, reverse (l, []));
+		if (i < len)   mapf (i +++ 1, f (i, unsafe_get (vec, i)) ! l);
+		else           assembly::a::create_v (len, reverse (l, []));
                 fi;
 
-	    if   (len > 0)
-                
-                 mapf (0, []);
-            else
-                 assembly::vector0;
+	    if (len > 0)   mapf (0, []);
+            else           assembly::vector0;
             fi;
 	};
 
@@ -191,18 +208,12 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun mapf (i, l)
                 =
-		if   (i < len)
-                    
-                     mapf (i+1, f (unsafe_get (vec, i)) ! l);
-		else
-                     assembly::a::create_v (len, reverse (l, []));
+		if (i < len)   mapf (i+1, f (unsafe_get (vec, i)) ! l);
+		else           assembly::a::create_v (len, reverse (l, []));
                 fi;
 
-	    if   (len > 0)
-                
-                 mapf (0, []);
-            else
-                 assembly::vector0;
+	    if (len > 0)       mapf (0, []);
+            else               assembly::vector0;
             fi;
 	};
 
@@ -222,11 +233,8 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun fold (i, a)
                 =
-		if   (i >= len)
-                    
-                     a;
-                else
-                     fold (i +++ 1, f (i, unsafe_get (vec, i), a));
+		if (i >= len)   a;
+                else            fold (i +++ 1, f (i, unsafe_get (vec, i), a));
                 fi;
 	end;
 
@@ -238,13 +246,9 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun fold (i, a)
 		=
-		if   (i >= len)
-		    
-		     a;
-		else
-		     fold (i +++ 1,   f (unsafe_get (vec, i), a));
+		if (i >= len)   a;
+		else	        fold (i +++ 1,   f (unsafe_get (vec, i), a));
 		fi;
-
 	end;
 
     fun keyed_fold_right f init vec
@@ -253,11 +257,8 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 	where
 	    fun fold (i, a)
 		=
-		if   (i < 0)
-		    
-		     a;
-		else
-		     fold (i --- 1,  f (i, unsafe_get (vec, i), a));
+		if (i < 0)   a;
+		else	     fold (i --- 1,  f (i, unsafe_get (vec, i), a));
 		fi;
 
 	end;
@@ -268,11 +269,8 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 	where
 	    fun fold (i, a)
 		=
-		if   (i < 0)
-		    
-		     a;
-		else
-		     fold (i --- 1,  f (unsafe_get (vec, i), a));
+		if (i < 0)   a;
+		else	     fold (i --- 1,  f (unsafe_get (vec, i), a));
 		fi;
 	end;
 
@@ -284,18 +282,15 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun fnd i
 		=
-		if   (i >= len)
-		    
-		     NULL;
+		if (i >= len)
+		    #		    
+		    NULL;
 		else
-		     x =  unsafe_get (vec, i);
+		    x =  unsafe_get (vec, i);
 
-		     if   (p (i, x))
-                         
-                          THE (i, x);
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    if (p (i, x))   THE (i, x);
+		    else	    fnd (i +++ 1);
+		    fi;
 		fi;
 	end;
 
@@ -307,18 +302,15 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun fnd i
                 =
-		if   (i >= len)
-                    
-                     NULL;
+		if (i >= len)
+		    #                    
+                    NULL;
 		else
-                     x =  unsafe_get (vec, i);
-
-		     if    (p x)
-                         
-                          THE x;
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    x =  unsafe_get (vec, i);
+		    #
+		    if (p x)   THE x;
+		    else       fnd (i +++ 1);
+		    fi;
 		fi;
 	end;
 
@@ -330,8 +322,12 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun ex i
 		=
-		i < len  and   (p (unsafe_get (vec, i))  or  ex (i +++ 1));
-
+		i < len
+		and
+		(   p (unsafe_get (vec, i))
+                    or
+                    ex (i +++ 1)
+                );
 	end;
 
     fun all p vec
@@ -342,7 +338,12 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun al i
 		=
-		i >= len   or   (p (unsafe_get (vec, i))  and  al (i +++ 1));
+		i >= len
+                or
+                (   p (unsafe_get (vec, i))
+                    and
+                    al (i +++ 1)
+                );
 	end;
 
     fun collate c (v1, v2)
@@ -356,19 +357,18 @@ package vector: (weak)  Vector {		# Vector	is from   src/lib/std/src/vector.api
 
 	    fun col i
 		=
-		if   (i >= l12)
-		    
-		     int_guts::compare (l1, l2);
+		if (i >= l12)
+		    #		    
+		    int_guts::compare (l1, l2);
 		else
-		     case (c (unsafe_get (v1, i), unsafe_get (v2, i)))
-		       
-			  EQUAL   =>  col (i +++ 1);
-			  unequal =>  unequal;
-		     esac;
+		    case (c (unsafe_get (v1, i), unsafe_get (v2, i)))
+			#
+			EQUAL   =>  col (i +++ 1);
+			unequal =>  unequal;
+		    esac;
 		fi;
 	end;
-
-};	#  package vector 
+};							#  package vector 
 
 
 ##########################################################################

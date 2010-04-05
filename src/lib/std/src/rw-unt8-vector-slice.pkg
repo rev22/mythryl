@@ -72,7 +72,8 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	    if  (i' < start
             or   i' >= stop
             )    raise exception SUBSCRIPT;
-	    else unsafe_set (base, i', x); fi;
+	    else unsafe_set (base, i', x);
+	    fi;
 	};
 
 
@@ -91,13 +92,17 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 			  else                          start;
                           fi,
 
-		 stop => case olen   
+		 stop => case olen
+			     #
 			     NULL => al;
-			    THE len =>
-			       { stop = start +++ len;
-				if (stop < start or al < stop ) raise exception SUBSCRIPT;
-				  else stop;fi;
-			       };
+			     #
+			     THE len =>
+				 {   stop = start +++ len;
+				     #
+				     if (stop < start or al < stop)   raise exception SUBSCRIPT;
+				     else                             stop;
+				     fi;
+				 };
                          esac
                };
 	};
@@ -109,54 +114,72 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 		     else                    start +++ i;
                      fi;
 
-	    stop'  = case olen   
+	    stop'  = case olen
+			 #
 			 NULL => stop;
-			THE len =>
-			   { stop' = start' +++ len;
-			    if (stop' < start' or stop < stop')  raise exception SUBSCRIPT;
-			      else stop';fi;
-			   };
+			 #
+			 THE len =>
+			     {   stop' = start' +++ len;
+				 #
+			         if (stop' < start' or stop < stop')   raise exception SUBSCRIPT;
+			         else                                  stop';
+                                 fi;
+			     };
                      esac;
 
 	    SL { base, start => start', stop => stop' };
 	};
 
+
     fun base (SL { base, start, stop } )
         =
         (base, start, stop --- start);
 
+
     fun to_vector (SL { base, start, stop } )
         =
 	case (stop --- start)
-          
-	     0 => inline_t::cast "";
+	    #          
+	    0 => inline_t::cast "";
+	    #          
+	    len =>
+		{   v = inline_t::cast (assembly::a::create_s len);
 
-	   len => {   v = inline_t::cast (assembly::a::create_s len);
+		    fun fill (i, j)
+			=
+			if (i < len)
+			    #
+			    ro_unsafe_set (v, i, unsafe_get (base, j));
+			    fill (i +++ 1, j +++ 1);
+			fi;
 
-		      fun fill (i, j)
-                          =
-			  if   (i < len)
-                              
-			       ro_unsafe_set (v, i, unsafe_get (base, j));
-			       fill (i +++ 1, j +++ 1);
-                          fi;
-		   
-		       fill (0, start); v;
-		   };
-        esac;
+		    fill (0, start);
+
+		    v;
+		};
+	esac;
 
 
     fun copy { from => SL { base, start, stop }, to, di }
 	=
-	{
-	    sl = stop --- start;
+	{   sl = stop --- start;
 	    de = sl + di;
-	    fun copy_dn (s, d) =
-		if (s < start ) (); else unsafe_set (to, d, unsafe_get (base, s));
-					   copy_dn (s --- 1, d --- 1); fi;
-	    fun copy_up (s, d) =
-		if (s >= stop ) (); else unsafe_set (to, d, unsafe_get (base, s));
-					   copy_up (s +++ 1, d +++ 1); fi;
+
+	    fun copy_dn (s, d)
+		=
+		if (s >= start)
+		    #
+		    unsafe_set (to, d, unsafe_get (base, s));
+		    copy_dn (s --- 1, d --- 1);
+		fi;
+
+	    fun copy_up (s, d)
+		=
+		if (s < stop)
+		    #
+		    unsafe_set (to, d, unsafe_get (base, s));
+		    copy_up (s +++ 1, d +++ 1);
+		fi;
 
 	    if   (di < 0 or de > alength to) raise exception SUBSCRIPT;
 	    elif (di >= start )              copy_dn (stop --- 1, de --- 1);
@@ -166,16 +189,23 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 
     fun copy_vec { from => vsl, to, di }
 	=
-	{
-	    my (base, start, vlen) = unt8_vector_slice::base vsl;
-	    de = di + vlen;
-	    fun copy_up (s, d) =
-		if (d >= de ) (); else unsafe_set (to, d, ro_unsafe_get (base, s));
-					 copy_up (s +++ 1, d +++ 1); fi;
+	{   my (base, start, vlen)
+		=
+		unt8_vector_slice::base vsl;
 
-	    if (di < 0 or de > alength to) raise exception SUBSCRIPT;
-	    #  Assuming vector and rw_vector are disjoint 
-	    else copy_up (start, di);fi;
+	    de = di + vlen;
+
+	    fun copy_up (s, d)
+		=
+		if (d < de)
+		    #
+		    unsafe_set (to, d, ro_unsafe_get (base, s));
+		    copy_up (s +++ 1, d +++ 1);
+		fi;
+
+	    if (di < 0 or de > alength to)   raise exception SUBSCRIPT;
+	    else			     copy_up (start, di);	    #  Assume vector and rw_vector are disjoint 
+	    fi;
 	};
 
     fun is_empty (SL { start, stop, ... } )
@@ -184,39 +214,48 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 
     fun get_item (SL { base, start, stop } )
         =
-	if (start >= stop ) NULL;
-	else THE (unsafe_get (base, start),
-		   SL { base, start => start +++ 1, stop } );fi;
+	if (start >= stop)   NULL;
+	else                 THE (unsafe_get (base, start),   SL { base, start => start +++ 1, stop } );
+	fi;
 
     fun keyed_apply f (SL { base, start, stop } )
 	=
-	{
-	    fun apply i =
-		if (i >= stop ) ();
-		else f (i --- start, unsafe_get (base, i)); apply (i +++ 1); fi;
-
-	    apply start;
-	};
+	apply start
+	where
+	    fun apply i
+		=
+		if (i < stop)
+		    #
+		    f (i --- start, unsafe_get (base, i));
+		    apply (i +++ 1);
+		fi;
+	end;
 
     fun apply f (SL { base, start, stop } )
 	=
-	{
-	    fun apply i =
-		if (i >= stop ) ();
-		else f (unsafe_get (base, i)); apply (i +++ 1); fi;
-
-	    apply start;
-	};
+	apply start
+	where
+	    fun apply i
+		=
+		if (i < stop)
+		    #
+		    f (unsafe_get (base, i));
+		    apply (i +++ 1);
+		fi;
+	end;
 
     fun modifyi f (SL { base, start, stop } )
 	=
-	{
-	    fun mdf i =
-		if (i >= stop ) ();
-		else unsafe_set (base, i, f (i --- start, unsafe_get (base, i))); mdf (i +++ 1); fi;
-
-	    mdf start;
-	};
+	mdf start
+	where
+	    fun mdf i
+		=
+		if (i < stop)
+		    #
+		    unsafe_set (base, i, f (i --- start, unsafe_get (base, i)));
+		    mdf (i +++ 1);
+		fi;
+	end;
 
     fun modify f (SL { base, start, stop } )
 	=
@@ -225,8 +264,9 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	    fun mdf i
                 =
 		if (i < stop)
-		     unsafe_set (base, i, f (unsafe_get (base, i)));
-                     mdf (i +++ 1);
+		    #
+		    unsafe_set (base, i, f (unsafe_get (base, i)));
+                    mdf (i +++ 1);
                 fi;
 	end;
 
@@ -236,11 +276,8 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	where
 	    fun fold (i, a)
                 =
-		if   (i >= stop)
-                    
-                     a;
-		else
-                     fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
+		if (i >= stop)   a;
+		else             fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
                 fi;
 	end;
 
@@ -250,10 +287,8 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	where
 	    fun fold (i, a)
                 =
-		if (i >= stop )
-                     a;
-		else
-                     fold (i +++ 1, f (unsafe_get (base, i), a));
+		if (i >= stop)   a;
+		else             fold (i +++ 1, f (unsafe_get (base, i), a));
                 fi;
 	end;
 
@@ -263,8 +298,9 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	where
 	    fun fold (i, a)
                 =
-		if (i < start ) a;
-		else fold (i --- 1, f (i --- start, unsafe_get (base, i), a));fi;
+		if (i < start)   a;
+		else             fold (i --- 1, f (i --- start, unsafe_get (base, i), a));
+                fi;
 	end;
 
     fun fold_right f init (SL { base, start, stop } )
@@ -273,7 +309,9 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	where
 	    fun fold (i, a)
                 =
-		if (i < start ) a; else fold (i --- 1, f (unsafe_get (base, i), a));fi;
+		if (i < start)   a;
+                else             fold (i --- 1, f (unsafe_get (base, i), a));
+                fi;
 	end;
 
     fun findi p (SL { base, start, stop } )
@@ -282,14 +320,15 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	where
 	    fun fnd i
                 =
-		if   (i >= stop)
-                    
-                     NULL;
+		if (i >= stop)
+                    #  
+                    NULL;
 		else 
-                     x = unsafe_get (base, i);
-
-		     if   (p (i, x)   )   THE (i --- start, x);
-                                     else   fnd (i +++ 1);    fi;
+		    x = unsafe_get (base, i);
+		    #
+		    if (p (i, x))   THE (i --- start, x);
+		    else            fnd (i +++ 1);
+                    fi;
 		fi;
 	end;
 
@@ -300,12 +339,14 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	    fun fnd i
                 =
 		if (i >= stop )
-                     NULL;
+		    #
+                    NULL;
 		else
-                     x = unsafe_get (base, i);
-
-		     if (p x)   THE x;
-                     else       fnd (i +++ 1);     fi;
+		    x = unsafe_get (base, i);
+		    #
+		    if (p x)   THE x;
+		    else       fnd (i +++ 1);
+                    fi;
 		fi;
 	end;
 
@@ -315,7 +356,12 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	where
 	    fun ex i
                 =
-		i < stop and (p (unsafe_get (base, i)) or ex (i +++ 1));
+		i < stop
+		and
+		(   p (unsafe_get (base, i))
+		    or
+		    ex (i +++ 1)
+		);
 	end;
 
     fun all p (SL { base, start, stop } )
@@ -324,7 +370,12 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	where
 	    fun al i
                 =
-		i >= stop or (p (unsafe_get (base, i)) and al (i +++ 1));
+		i >= stop
+		or
+		(   p (unsafe_get (base, i))
+		    and
+		    al (i +++ 1)
+		);
 	end;
 
     fun collate c (SL { base => b1, start => s1, stop => e1 },
@@ -335,17 +386,17 @@ package rw_unt8_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	    fun col (i1, i2)
                 =
 		if (i1 >= e1)
-                    
+		    #                    
 		    if (i2 >= e2 ) EQUAL;
 		    else           LESS;
                     fi;
 		elif (i2 >= e2 ) GREATER;
 		else
-                     case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
-                       
-			  EQUAL   => col (i1 +++ 1, i2 +++ 2);
-			  unequal => unequal;
-                     esac;
+		    case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
+			#
+			EQUAL   =>  col (i1 +++ 1, i2 +++ 2);
+			unequal =>  unequal;
+		    esac;
                 fi;
 	end;
 };

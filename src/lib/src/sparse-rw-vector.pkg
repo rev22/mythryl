@@ -76,19 +76,17 @@ api {
 
 	    fun ins i
                 = 
-		{ pos = index (a, i);
+		{   pos = index (a, i);
 		    x   = f i;
-		  a::set (a, pos, (i, x) ! a::get (a, pos)); x;
+		    a::set (a, pos, (i, x) ! a::get (a, pos)); x;
 		};
 
 	    fun insert 0 => ins 0;
-	        insert i => { ins i; insert (i - 1);};
+	        insert i => {  ins i;   insert (i - 1);  };
             end;
 
- 	    if   (n < 0)
-	         ARRAY (REF a, FFF (fn _ = raise exception SUBSCRIPT), REF 0, REF 0);
-	    else
-	         ARRAY (REF a, VVV (insert (n - 1)), REF n, REF n);
+ 	    if (n < 0)   ARRAY (REF a, FFF (fn _ = raise exception SUBSCRIPT), REF 0, REF 0);
+	    else         ARRAY (REF a, VVV (insert (n - 1)), REF n, REF n);
             fi;
 	};
 
@@ -122,28 +120,27 @@ api {
 
     fun get (a' as ARRAY (REF a, d, _, _), i)
 	= 
-	{   pos = index (a, i);
+	search (a::get (a, pos))
+	where
+	    pos = index (a, i);
 
 	    fun search []
                     =>
                     case d
-                      
-			 VVV d =>  d;
-			 FFF f =>  f i;
-			 UUU f =>  {   x = f i;
-				       set (a', i, x);
-                                       x;
-                                   };
+			#
+			VVV d =>  d;
+			FFF f =>  f i;
+			UUU f =>  {   x = f i;
+				      set (a', i, x);
+				      x;
+				  };
                     esac;
-
 
 	        search ((j, x) ! l)
                     =>
                     if (i == j ) x; else search l;fi;
             end;
-
-	    search (a::get (a, pos));
-	}
+	end
 
     also
     fun set (a' as ARRAY (REF a, _, n, s as REF size), i, x)
@@ -154,25 +151,24 @@ api {
 
 	    fun change ([], l)
                     => 
-		    if   (size + size  >= nnn)
-                         grow (a', i, x);
+		    if (size + size  >= nnn)
+			#
+			grow (a', i, x);
 		    else
-                         s := size + 1;
-                         a::set (a, pos, (i, x) ! l);
+			s := size + 1;
+			a::set (a, pos, (i, x) ! l);
                     fi;
 
 	        change ((y as (j, _)) ! l', l)
                     => 
-		    if   (j == i)
-                         a::set (a, pos, (i, x) ! l'@l);
-		    else
-                         change (l', y ! l);
+		    if (j == i)   a::set (a, pos, (i, x) ! l'@l);
+		    else          change (l', y ! l);
                     fi;
             end;
 	
 	    change (a::get (a, pos),[]);
 
-	    if   (i >= *n   )   n := i+1;  fi;
+	    if (i >= *n)   n := i+1;   fi;
 	}
 
     also
@@ -220,7 +216,8 @@ api {
 
 
 
-    #  These seem bogus since they do not run in order 
+    # These seem bogus since they do not run in order 
+    #
     fun keyed_apply f (ARRAY (REF a, _, REF n, _))
         =
         a::apply (list::apply f) a;
@@ -241,8 +238,8 @@ api {
 	vector::keyed_apply (fn (i, x) =  set (to, di + i, x))  from;
 
 
-    #  These seem bogus since they do not run in order 
-
+    # These seem bogus since they do not run in order 
+    #
     fun keyed_fold_left f e (ARRAY (REF a, _, _, _))
         =
 	a::fold_left (fn (l, e) => list::fold_left (fn ((i, x), e) => f (i, x, e); end ) e l; end ) e a;
@@ -289,40 +286,44 @@ api {
 
     fun findi p (ARRAY (REF a, _, _, _))
 	=
-	{   len = a::length a;
+	fnd 0
+	where
+	    len = a::length a;
 
 	    fun fnd i
                 =
-		if   (i >= len)
-                     NULL;
+		if (i >= len)
+		    #	
+                    NULL;
 		else
-                     case (list::find p (a::get (a, i)))
-			  NULL =>  fnd (i + 1);
-			  some =>  some;
-                     esac;
+		    case (list::find p (a::get (a, i)))
+			#
+			NULL =>  fnd (i + 1);
+			some =>  some;
+		    esac;
                 fi;
-
-	    fnd 0;
-	};
+	end;
 
 
     fun find p (ARRAY (REF a, _, _, _))
 	=
-	{   len = a::length a;
+	fnd 0
+	where
+	    len = a::length a;
 
 	    fun fnd i
 		=
-		if   (i >= len)
-		     NULL;
+		if (i >= len)
+		    #
+		    NULL;
 		else
-		     case (list::find (p o #2) (a::get (a, i)))
-			  NULL => fnd (i + 1);
-			  THE (_, x) => THE x;
-		     esac;
+		    case (list::find (p o #2) (a::get (a, i)))
+			#
+			THE (_, x) =>  THE x;
+			NULL       =>  fnd (i + 1);
+		    esac;
 		fi;
-
-	    fnd 0;
-	};
+	end;
 
 
     fun exists p arr

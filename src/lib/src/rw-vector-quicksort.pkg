@@ -54,23 +54,25 @@ package rw_vector_quicksort: (weak)  Rw_Vector_Sort {		# Rw_Vector_Sort	is from 
 
 		    fun outer i
                         =
-			if   (i < limit)
+			if (i < limit)
+			    #
+			    fun inner j
+				=
+				if (j == start)
+				    #
+				    outer (i+1);
+				else
+				    j' = j - 1;
 
-			     fun inner j
-                                 =
-				 if   (j == start)
-                                      outer (i+1);
-				 else
-				      j' = j - 1;
+				    if (compare (item j', item j) == GREATER)
+					#
+					swap (j, j'); inner j';
+				    else
+					outer (i+1);
+				    fi;
+				fi;
 
-				      if   (compare (item j', item j) == GREATER)
-				           swap (j, j'); inner j';
-				      else
-                                           outer (i+1);
-                                      fi;
-				 fi;
-
-			     inner i;
+			    inner i;
                         fi;
 
 		    outer (start+1);
@@ -134,41 +136,45 @@ package rw_vector_quicksort: (weak)  Rw_Vector_Sort {		# Rw_Vector_Sort	is from 
 		    c' = item c;
 
 		    case (compare (a', b'), compare (b', c'))
-		      
-		         (LESS, LESS) => b;
-		         (_, GREATER) => b;
+			#
+			(LESS, LESS) => b;
+			(_, GREATER) => b;
+			#
+			(LESS, _)
+			    =>
+			    case (compare (a', c'))      LESS => c;
+						         _    => a;
+                            esac;
 
-		         (LESS, _)
-                             =>
-			     case (compare (a', c'))      LESS => c;
-                                                    _    => a;   esac;
-
-		         _   =>
-                             case (compare (a', c'))      LESS => a;
-                                                    _    => c;   esac;
+			_   =>
+			    case (compare (a', c'))      LESS => a;
+						         _    => c;
+                            esac;
                     esac;
 		};
 
 	    fun get_pivot (a, n)
                 = 
-		if   (n <= 7)
-                     a + n / 2;
+		if (n <= 7)
+		    #
+                    a + n / 2;
 		else
-		     p1 = a;
-		     pm = a + n / 2;
-		     pn = a + n - 1;
+		    p1 = a;
+		    pm = a + n / 2;
+		    pn = a + n - 1;
 
-		     if   (n <= 40)
-                          med3 (p1, pm, pn);
-		     else
-			  d =  n / 8;
+		    if (n <= 40)
+			#
+			med3 (p1, pm, pn);
+		    else
+			d =  n / 8;
 
-			  p1 = med3 (p1, p1+d, p1+2*d);
-			  pm = med3 (pm-d, pm, pm+d);
-			  pn = med3 (pn - 2*d, pn-d, pn);
+			p1 = med3 (p1, p1+d, p1+2*d);
+			pm = med3 (pm-d, pm, pm+d);
+			pn = med3 (pn - 2*d, pn-d, pn);
 
-			  med3 (p1, pm, pn);
-		     fi;
+			med3 (p1, pm, pn);
+		    fi;
 		fi;
 
 	    fun quick_sort (arg as (a, n))
@@ -179,14 +185,16 @@ package rw_vector_quicksort: (weak)  Rw_Vector_Sort {		# Rw_Vector_Sort	is from 
 			where
 			    fun loop (arg as (pa, pb))
 				=
-				if   (pb > limit)
-                                     arg;
+				if (pb > limit)
+				    #
+                                    arg;
 				else
-                                     case (compare (item pb, item a))
-				          GREATER =>  arg;
-				          LESS    =>  loop (pa, pb+1);
-				          _       =>  { swap arg;   loop (pa+1, pb+1); };
-                                     esac;
+				    case (compare (item pb, item a))
+					#
+					GREATER =>  arg;
+					LESS    =>  loop (pa, pb+1);
+					_       =>  { swap arg;   loop (pa+1, pb+1); };
+				    esac;
                                 fi;
 			end;
 
@@ -196,31 +204,32 @@ package rw_vector_quicksort: (weak)  Rw_Vector_Sort {		# Rw_Vector_Sort	is from 
 			where
 			    fun loop (arg as (pc, pd))
                                 =
-				if   (limit > pc)
-                                     arg;
+				if (limit > pc)
+				    #
+                                    arg;
 				else
-                                     case (compare (item pc, item a))
-                                       
-				          LESS    =>  arg;
-				          GREATER =>  loop (pc - 1, pd);
-				          _       =>  { swap arg;   loop (pc - 1, pd - 1); };
-                                     esac;
+				    case (compare (item pc, item a))
+					#
+					LESS    =>  arg;
+					GREATER =>  loop (pc - 1, pd);
+					_       =>  { swap arg;   loop (pc - 1, pd - 1); };
+				    esac;
                                 fi;
 			end;
 
 		    fun split (pa, pb, pc, pd)
                         =
-                        {
-			    my (pa, pb) =  bottom  pc (pa, pb);
+                        {   my (pa, pb) =  bottom  pc (pa, pb);
 			    my (pc, pd) =  top     pb (pc, pd);
 
-			    if    (pb > pc)
-                                 (pa, pb, pc, pd);
+			    if (pb > pc)
+				#
+                                (pa, pb, pc, pd);
 			    else
-                                 swap (pb, pc);
-                                 split (pa, pb+1, pc - 1, pd);
+                                swap (pb, pc);
+                                split (pa, pb+1, pc - 1, pd);
                             fi;
-			  };
+			};
 
 		    pm = get_pivot arg;
 		    swap (a, pm);
@@ -271,11 +280,11 @@ package rw_vector_quicksort: (weak)  Rw_Vector_Sort {		# Rw_Vector_Sort	is from 
                 {   v' =  get (rw_vector, i);
 
 		    case (compare (v, v'))
-                      
-		         GREATER =>  FALSE;
-		         _       =>  if (i+1 == len)   TRUE;
-                                     else              s (v', i+1);
-                                     fi;
+			#                      
+			GREATER =>  FALSE;
+			_       =>  if (i+1 == len)   TRUE;
+				    else              s (v', i+1);
+				    fi;
                     esac;
 		};
 
@@ -285,7 +294,7 @@ package rw_vector_quicksort: (weak)  Rw_Vector_Sort {		# Rw_Vector_Sort	is from 
             fi;
         };
 
-};	 #  ArraySort 
+};								# package rw_vector_quicksort
 
 
 

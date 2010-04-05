@@ -288,23 +288,23 @@ Monomorphic_Rw_Vector_Sort							# Monomorphic_Rw_Vector_Sort	is from   src/lib/
                 {   v' =  a::get (rw_vector, i);
                 
                     case (compare (v, v'))
-                      
-                         GREATER =>  FALSE;
+			#                      
+			GREATER =>  FALSE;
 
-                         _       =>  if   (i+1 == len)
-                                          TRUE;
-                                     else
-                                          s (v', i+1);
-                                     fi;
+			_       =>  if   (i+1 == len)
+					 TRUE;
+				    else
+					 s (v', i+1);
+				    fi;
                     esac;
                 };
           
             if  (len == 0   or
                  len == 1)
-
-                 TRUE;
+		#
+                TRUE;
             else
-                 s (a::get (rw_vector, 0), 1);
+                s (a::get (rw_vector, 0), 1);
             fi;
         };
 

@@ -391,7 +391,6 @@ package rw_float64_vector: (weak)  Monomorphic_Rw_Vector {		# Monomorphic_Rw_Vec
 		    esac;
 		fi;
 	end;
-
 };							# package rw_float64_vector
 
 

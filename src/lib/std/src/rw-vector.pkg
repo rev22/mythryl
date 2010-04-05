@@ -106,23 +106,22 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
     fun copy { from, to, di }
 	=
-	{
-	    sl =  length from;
+	{   sl =  length from;
 	    de =  sl + di;
 
 	    fun copy_dn (s,  d)
 		=
-		if   (s >= 0)
-		    
-		     unsafe_set (to, d, unsafe_get (from, s));
-		     copy_dn (s --- 1, d --- 1);
+		if (s >= 0)
+		    #		    
+		    unsafe_set (to, d, unsafe_get (from, s));
+		    copy_dn (s --- 1, d --- 1);
 		fi;
 
-	    if   (di < 0   or   de  >  length to)
-	        
-		 raise exception SUBSCRIPT;
+	    if (di < 0   or   de  >  length to)
+		#
+		raise exception SUBSCRIPT;
 	    else
-		 copy_dn (sl --- 1, de --- 1);
+		copy_dn (sl --- 1, de --- 1);
 	    fi;
 	};
 
@@ -133,13 +132,13 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun copy_dn (s, d)
                 =
-		if   (s >= 0)
-                    
-                     unsafe_set (to, d, ro_unsafe_get (from, s));
-		     copy_dn (s --- 1, d --- 1);
+		if (s >= 0)
+		    #                    
+                    unsafe_set (to, d, ro_unsafe_get (from, s));
+		    copy_dn (s --- 1, d --- 1);
                 fi;
 
-	    if   (di < 0   or   de  >  length to)
+	    if (di < 0   or   de  >  length to)
 		#                
                 raise exception SUBSCRIPT;
 	    else
@@ -155,10 +154,10 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun apply i
 		=
-		if   (i < len)
-		    
-		     f (i, unsafe_get (arr, i));
-		     apply (i +++ 1);
+		if (i < len)
+		    #		    
+		    f (i, unsafe_get (arr, i));
+		    apply (i +++ 1);
 		fi;
 	end;
 
@@ -170,10 +169,10 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun apply i
 		=
-		if   (i < len)
-		     
-		     f (unsafe_get (arr, i));
-		     apply (i +++ 1);
+		if (i < len)
+		    #		     
+		    f (unsafe_get (arr, i));
+		    apply (i +++ 1);
 		fi;
 	end;
 
@@ -185,12 +184,11 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun mdf i
                 =
-		if   (i < len)
-                    
-                     unsafe_set (arr, i, f (i, unsafe_get (arr, i)));
-                     mdf (i +++ 1);
+		if (i < len)
+		    #                    
+                    unsafe_set (arr, i, f (i, unsafe_get (arr, i)));
+                    mdf (i +++ 1);
 		fi;
-
 	end;
 
     fun modify f arr
@@ -201,10 +199,10 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun mdf i
                 =
-		if   (i < len)
-                    
-                     unsafe_set (arr, i, f (unsafe_get (arr, i)));
-                     mdf (i +++ 1);
+		if (i < len)
+		    #                    
+                    unsafe_set (arr, i, f (unsafe_get (arr, i)));
+                    mdf (i +++ 1);
 		fi;
 	end;
 
@@ -216,11 +214,8 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun fold (i, a)
                 =
-		if   (i < len)
-                    
-                     fold (i +++ 1, f (i, unsafe_get (arr, i), a));
-                else
-                     a;
+		if (i < len)   fold (i +++ 1, f (i, unsafe_get (arr, i), a));
+                else           a;
                 fi;
 	end;
 
@@ -228,16 +223,13 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 	=
 	fold (0, init)
 	where
-	      len =  length arr;
+	    len =  length arr;
 
-	      fun fold (i, a)
-                  =
-		  if   (i < len)
-                      
-                       fold (i +++ 1, f (unsafe_get (arr, i), a));
-                  else
-                       a;
-                  fi;
+	    fun fold (i, a)
+		=
+		if (i < len)   fold (i +++ 1, f (unsafe_get (arr, i), a));
+		else	       a;
+		fi;
 	end;
 
     fun keyed_fold_right f init arr
@@ -246,11 +238,8 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 	where
 	    fun fold (i, a)
 		=
-		if   (i < 0)
-		    
-		     a;
-		else
-		     fold (i --- 1, f (i, unsafe_get (arr, i), a));
+		if (i < 0)   a;
+		else	     fold (i --- 1, f (i, unsafe_get (arr, i), a));
 		fi;
 	end;
 
@@ -260,11 +249,8 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 	where
 	    fun fold (i, a)
                 =
-		if   (i < 0)
-                    
-                     a;
-                else
-                     fold (i --- 1, f (unsafe_get (arr, i), a));
+		if (i < 0)   a;
+                else         fold (i --- 1, f (unsafe_get (arr, i), a));
                 fi;
 	end;
 
@@ -276,18 +262,15 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun fnd i
                 =
-		if   (i >= len)
-                    
-                     NULL;
+		if (i >= len)
+		    #                    
+                    NULL;
 		else
-                     x = unsafe_get (arr, i);
-
-		     if   (p (i, x))
-                         
-                          THE (i, x);
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    x = unsafe_get (arr, i);
+		    #
+		    if (p (i, x))   THE (i, x);
+		    else	    fnd (i +++ 1);
+		    fi;
 		fi;
 	end;
 
@@ -299,18 +282,15 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun fnd i
                 = 
-		if   (i >= len)
-                    
-                     NULL;
+		if (i >= len)
+                    #  
+                    NULL;
 		else
-                     x = unsafe_get (arr, i);
-
-		     if   (p x)
-                         
-                          THE x;
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    x = unsafe_get (arr, i);
+		    #
+		    if (p x)   THE x;
+		    else       fnd (i +++ 1);
+		    fi;
 		fi;
 
 	end;
@@ -320,11 +300,14 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 	ex 0
 	where
 	    len =  length arr;
-
+	    #
 	    fun ex i
                 =
                 i < len   and
-                (p (unsafe_get (arr, i))  or  ex (i +++ 1));
+                (   p (unsafe_get (arr, i))
+		    or
+                    ex (i +++ 1)
+		);
 	end;
 
     fun all p arr
@@ -335,8 +318,12 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun al i
                 =
-                i >= len   or
-                (p (unsafe_get (arr, i))  and  al (i +++ 1));
+                i >= len
+		or
+                (   p (unsafe_get (arr, i))
+                    and
+                    al (i +++ 1)
+		);
 	end;
 
     fun collate c (a1, a2)
@@ -350,15 +337,15 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
 
 	    fun coll i
                 =
-		if   (i >= l12)
-                    
-                     int_guts::compare (l1, l2);
+		if (i >= l12)
+		    #
+                    int_guts::compare (l1, l2);
 		else
-                     case (c (unsafe_get (a1, i), unsafe_get (a2, i)))
-                       
-			  EQUAL   =>  coll (i +++ 1);
-			  unequal =>  unequal;
-                     esac;
+		    case (c (unsafe_get (a1, i), unsafe_get (a2, i)))
+			#
+			EQUAL   =>  coll (i +++ 1);
+			unequal =>  unequal;
+		    esac;
                 fi;
 
 	end;
@@ -369,11 +356,12 @@ package rw_vector: (weak)  Rw_Vector {		# Rw_Vector		is from   src/lib/std/src/r
     fun to_vector arr
         =
 	case (length arr)
-	      0   =>  assembly::vector0;
-	      len =>  assembly::a::create_v (len, fold_right (!) [] arr);
+	    #
+	    0   =>  assembly::vector0;
+	    len =>  assembly::a::create_v (len, fold_right (!) [] arr);
         esac;
 
-};	#  package rw_vector 
+};							#  package rw_vector 
 
 
 

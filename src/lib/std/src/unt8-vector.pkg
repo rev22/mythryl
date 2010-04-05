@@ -71,51 +71,79 @@ package {
 
     my v2cv:  Vector -> char_vector::Vector = inline_t::cast;
 
-    fun keyed_fold_left f init vec = {
-	len = length vec;
-	fun fold (i, a) =
-	    if (i >= len ) a; else fold (i +++ 1, f (i, unsafe_get (vec, i), a));fi;
-    
-	fold (0, init);
-    };
+    fun keyed_fold_left f init vec
+	=
+	fold (0, init)
+	where
+	    len = length vec;
 
-    fun fold_left f init vec = {
-	len = length vec;
-	fun fold (i, a) =
-	    if (i >= len ) a; else fold (i +++ 1, f (unsafe_get (vec, i), a));fi;
-    
-	fold (0, init);
-    };
+	    fun fold (i, a)
+		=
+		if (i >= len)  a;
+		else          fold (i +++ 1, f (i, unsafe_get (vec, i), a));
+		fi;
+	end;
 
-    fun keyed_fold_right f init vec = {
-	fun fold (i, a) =
-	    if (i < 0 ) a; else fold (i --- 1, f (i, unsafe_get (vec, i), a));fi;
-    
-	fold (length vec --- 1, init);
-    };
+    fun fold_left f init vec
+	=
+	fold (0, init)
+	where
+	    len = length vec;
 
-    fun fold_right f init vec = {
-	fun fold (i, a) =
-	    if (i < 0 ) a; else fold (i --- 1, f (unsafe_get (vec, i), a));fi;
-    
-	fold (length vec --- 1, init);
-    };
+	    fun fold (i, a)
+		=
+		if (i >= len)   a;
+		else		fold (i +++ 1, f (unsafe_get (vec, i), a));
+		fi;
+	end;    
+
+    fun keyed_fold_right f init vec
+	=
+	fold (length vec --- 1, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i < 0)   a;
+		else	     fold (i --- 1, f (i, unsafe_get (vec, i), a));
+		fi;
+	end;
+
+    fun fold_right f init vec
+	=
+	fold (length vec --- 1, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i < 0)   a;
+		else         fold (i --- 1, f (unsafe_get (vec, i), a));
+		fi;
+	end;
+
 
     my findi:  ((Int, Element) -> Bool) -> Vector -> Null_Or( (Int, Element) )
-             = inline_t::cast char_vector::findi;
+	=
+	inline_t::cast char_vector::findi;
+
 
     my find:  (Element -> Bool) -> Vector -> Null_Or( Element )
-          = inline_t::cast char_vector::find;
+	=
+	inline_t::cast char_vector::find;
+
 
     my exists:  (Element -> Bool) -> Vector -> Bool
-          = inline_t::cast char_vector::exists;
+	=
+	inline_t::cast char_vector::exists;
+
 
     my all:  (Element -> Bool) -> Vector -> Bool
-          = inline_t::cast char_vector::all;
+	=
+	inline_t::cast char_vector::all;
+
 
     my collate:  ((Element, Element) -> Order) -> (Vector, Vector) -> Order
-          = inline_t::cast char_vector::collate;
-  };
+        =
+	inline_t::cast char_vector::collate;
+};
 
 
 

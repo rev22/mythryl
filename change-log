@@ -1,3 +1,4 @@
+2010-04-04-14.15.15: src/lib/std/src/rw-float64-vector.pkg: Random cleaning.
 2010-04-04-03.14.03: src/lib/x-kit/xclient/xcore.api: Export get_window_site to world+dog.
 2010-04-04-02.49.06: src/lib/x-kit/xclient/src/window/xsession.api: Added get_window_site() call.
 2010-04-04-02.31.36: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api: Added get_window_site() call.

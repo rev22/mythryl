@@ -55,22 +55,27 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	=
 	{   vl = vlength vec;
 
-	    SL { base => vec,
+	    SL
+	      { base => vec,
 
-		 start => if (start < 0 or vl < start)  raise exception SUBSCRIPT;
-			 else                           start;
-                         fi,
+		start =>
+		    if (start < 0 or vl < start)  raise exception SUBSCRIPT;
+		    else                           start;
+		    fi,
 
-		 stop =>
-		   case olen   
-		       NULL => vl;
-		      THE len => 
-			 { stop = start +++ len;
-			   if (stop < start or vl < stop)  raise exception SUBSCRIPT;
-			   else                            stop;
-                           fi;
-			 };
-                   esac
+		stop =>
+		    case olen
+			#
+			NULL => vl;
+			#
+			THE len => 
+			    {   stop = start +++ len;
+				#	
+				if (stop < start or vl < stop)  raise exception SUBSCRIPT;
+				else                            stop;
+				fi;
+			    };
+		    esac
                };
 	};
 
@@ -101,10 +106,11 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 
     fun to_vector (SL { base, start, stop } )
         =
-	vector::tabulate (
+	vector::tabulate
+          (
             stop --- start,
             fn i =  unsafe_get (base, start +++ i)
-        );
+          );
 
     fun is_empty (SL { start, stop, ... } )
         =
@@ -112,9 +118,9 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 
     fun get_item (SL { base, start, stop } )
         =
-	if   (start >= stop)
-            
-             NULL;
+	if (start >= stop)
+            #  
+            NULL;
 	else
             THE (unsafe_get (base, start),
 		   SL { base, start => start +++ 1, stop } );
@@ -126,12 +132,11 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	    fun apply i
                 =
-		if   (i < stop)
-                    
-                     f (i --- start, unsafe_get (base, i));
-                     apply (i +++ 1);
+		if (i < stop)
+		    #                    
+                    f (i --- start, unsafe_get (base, i));
+                    apply (i +++ 1);
                 fi;
-
 	end;
 
     fun apply f (SL { base, start, stop } )
@@ -140,10 +145,10 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	    fun apply i
                 =
-		if   (i < stop)
-                    
-                     f (unsafe_get (base, i));
-                     apply (i +++ 1);
+		if (i < stop)
+		    #                    
+                    f (unsafe_get (base, i));
+                    apply (i +++ 1);
                 fi;
 
 	end;
@@ -154,11 +159,11 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	    fun fold (i, a)
                 =
-		if   (i >= stop)
-                    
-                     a;
+		if (i >= stop)
+                    #
+                    a;
 		else
-                     fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
+                    fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
                 fi;
 
 	end;
@@ -169,11 +174,11 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	   fun fold (i, a)
 	       =
-	       if   (i >= stop)
-	           
-		    a;
+	       if (i >= stop)
+	           #
+		   a;
 	       else
-		    fold (i +++ 1, f (unsafe_get (base, i), a));
+		   fold (i +++ 1, f (unsafe_get (base, i), a));
 	       fi;
 	end;
 
@@ -183,11 +188,11 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	    fun fold (i, a)
                 =
-		if   (i < start)
-                    
-                     a;
+		if (i < start)
+                    #
+                    a;
 		else
-                     fold (i --- 1, f (i --- start, unsafe_get (base, i), a));
+                    fold (i --- 1, f (i --- start, unsafe_get (base, i), a));
                 fi;
 	end;
 
@@ -197,11 +202,11 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
         where
 	    fun fold (i, a)
                 =
-		if   (i < start)
-                    
-                     a;
+		if (i < start)
+                    #
+                    a;
                 else
-                     fold (i --- 1,  f (unsafe_get (base, i), a));
+                    fold (i --- 1,  f (unsafe_get (base, i), a));
                 fi;
 	end;
 
@@ -230,20 +235,16 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	    fun fnd i
                 =
-		if   (i >= stop)
-                    
-                     NULL;
+		if (i >= stop)
+                    #
+                    NULL;
 		else
-                     x = unsafe_get (base, i);
-
-		     if   (p (i, x))
-                         
-                          THE (i --- start, x);
-                     else
-                          fnd (i +++ 1);
-                     fi;
-                fi;
-
+		    x = unsafe_get (base, i);
+		    #
+		    if (p (i, x))   THE (i --- start, x);
+		    else	    fnd (i +++ 1);
+		    fi;
+		fi;
 	end;
 
     fun find p (SL { base, start, stop } )
@@ -252,18 +253,15 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	    fun fnd i
                 =
-		if   (i >= stop)
-                    
-                     NULL;
+		if (i >= stop)
+                    #
+                    NULL;
 		else
-                     x = unsafe_get (base, i);
-
-		     if   (p x)
-                         
-                          THE x;
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    x = unsafe_get (base, i);
+		    #
+		    if (p x)   THE x;
+		    else       fnd (i +++ 1);
+		    fi;
 		fi;
 
 	end;
@@ -274,8 +272,12 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
 	where
 	    fun ex i
 		=
-		i < stop   and
-		(p (unsafe_get (base, i))  or  ex (i +++ 1));
+		i < stop
+		and
+		(   p (unsafe_get (base, i))
+		    or
+		    ex (i +++ 1)
+		);
 	end;
 
     fun all p (SL { base, start, stop } )
@@ -284,8 +286,12 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
     where
 	fun al i
             =
-            i >= stop   or
-            (p (unsafe_get (base, i))  and  al (i +++ 1));
+            i >= stop
+	    or
+            (   p (unsafe_get (base, i))
+		and
+		al (i +++ 1)
+	    );
     end;
 
     fun collate c (SL { base => b1, start => s1, stop => e1 },
@@ -295,19 +301,20 @@ package vector_slice : Vector_Slice {		# Vector_Slice	is from   src/lib/std/src/
         where
 	    fun col (i1, i2)
                 =
-		if   (i1 >= e1)
-                    
-		     if  (i2 >= e2  )  EQUAL;
-		                   else  LESS;  fi;
+		if (i1 >= e1)
+                    #
+		    if (i2 >= e2)  EQUAL;
+		    else           LESS;
+                    fi;
 		else
-                     if  (i2 >= e2  )  GREATER;
-		                   else
-                                         case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
-                                           
-			                      EQUAL   =>  col (i1 +++ 1, i2 +++ 1);
-			                      unequal =>  unequal;
-                                         esac;
-                                   fi;
+		    if (i2 >= e2)  GREATER;
+		    else
+			case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
+			    #
+			    EQUAL   =>  col (i1 +++ 1, i2 +++ 1);
+			    unequal =>  unequal;
+			esac;
+		    fi;
                 fi;
 	end;
 };

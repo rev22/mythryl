@@ -68,24 +68,25 @@ package {
 	=
 	{   vl = vlength vec;
 
-	    SLICE { base => vec,
+	    SLICE
+	      { base => vec,
 
-		    start => if (start < 0 or vl < start)  raise exception SUBSCRIPT;
-			     else                          start;
-                             fi,
+		start => if (start < 0 or vl < start)  raise exception SUBSCRIPT;
+			 else                          start;
+			 fi,
 
-		    stop =>  case olen   
-
+		stop =>  case olen   
+			     #
 			     NULL    => vl;
-
+			     #
 			     THE len => {   stop = start +++ len;
 
-				            if (stop < start or vl < stop)  raise exception SUBSCRIPT;
-				            else                            stop;
-                                            fi;
-				        };
-                             esac
-                  };
+					    if (stop < start or vl < stop)  raise exception SUBSCRIPT;
+					    else                            stop;
+					    fi;
+					};
+			 esac
+              };
 	};
 
     fun make_subslice (SLICE { base, start, stop }, i, olen)
@@ -95,12 +96,16 @@ package {
                      fi;
 
 	    stop'  = case olen   
+			 #
 			 NULL => stop;
-			THE len =>
-			   { stop' = start' +++ len;
-			    if (stop' < start' or stop < stop' ) raise exception SUBSCRIPT;
-			      else stop';fi;
-			   };
+			 #
+			 THE len =>
+			     {   stop' = start' +++ len;
+				 #
+			         if (stop' < start' or stop < stop')   raise exception SUBSCRIPT;
+			         else                                  stop';
+                                 fi;
+			     };
                      esac;
 
 	    SLICE { base, start => start', stop => stop' };
@@ -114,7 +119,7 @@ package {
 
     fun to_vector (SLICE { base, start, stop } )
         =
-	unt8_vector::tabulate (stop --- start, fn i => unsafe_get (base, start +++ i); end );
+	unt8_vector::tabulate (stop --- start, fn i = unsafe_get (base, start +++ i) );
 
 
     fun is_empty (SLICE { start, stop, ... } )
@@ -124,58 +129,83 @@ package {
 
     fun get_item (SLICE { base, start, stop } )
         =
-	if (start >= stop ) NULL;
-	else THE (unsafe_get (base, start),
-		   SLICE { base, start => start +++ 1, stop } );
+	if (start >= stop)
+	    #
+	    NULL;
+	else
+	    THE (unsafe_get (base, start),
+		SLICE { base, start => start +++ 1, stop } );
         fi;
 
     fun keyed_apply f (SLICE { base, start, stop } )
 	=
-	{   fun apply i
+	apply start
+	where
+	    fun apply i
                 =
-		if (i >= stop )  ();
-		else             f (i --- start, unsafe_get (base, i)); apply (i +++ 1);
+		if (i < stop)
+		    #
+		    f (i --- start, unsafe_get (base, i));
+		    apply (i +++ 1);
                 fi;
+	end;
 
-	    apply start;
-	};
+    fun apply f (SLICE { base, start, stop } )
+	=
+	apply start
+	where
+	    fun apply i
+		=
+	        if (i < stop)
+		    #
+		    f (unsafe_get (base, i));
+		    apply (i +++ 1);
+		fi;
+	end;
 
-    fun apply f (SLICE { base, start, stop } ) = {
-	fun apply i =
-	    if (i >= stop ) (); else f (unsafe_get (base, i)); apply (i +++ 1); fi;
-    
-	apply start;
-    };
+    fun keyed_fold_left f init (SLICE { base, start, stop } )
+	=
+	fold (start, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i >= stop)   a;
+		else             fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));
+		fi;
+	end;
 
-    fun keyed_fold_left f init (SLICE { base, start, stop } ) = {
-	fun fold (i, a) =
-	    if (i >= stop ) a;
-	    else fold (i +++ 1, f (i --- start, unsafe_get (base, i), a));fi;
-    
-	fold (start, init);
-    };
+    fun fold_left f init (SLICE { base, start, stop } )
+	=
+	fold (start, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i >= stop)   a;
+		else             fold (i +++ 1, f (unsafe_get (base, i), a));
+		fi;
+	end;
 
-    fun fold_left f init (SLICE { base, start, stop } ) = {
-	fun fold (i, a) =
-	    if (i >= stop ) a; else fold (i +++ 1, f (unsafe_get (base, i), a));fi;
-    
-	fold (start, init);
-    };
+    fun keyed_fold_right f init (SLICE { base, start, stop } )
+	=
+	fold (stop --- 1, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i < start)   a;
+		else             fold (i --- 1, f (i --- start, unsafe_get (base, i), a));
+		fi;
+	end;
 
-    fun keyed_fold_right f init (SLICE { base, start, stop } ) = {
-	fun fold (i, a) =
-	    if (i < start ) a;
-	    else fold (i --- 1, f (i --- start, unsafe_get (base, i), a));fi;
-    
-	fold (stop --- 1, init);
-    };
-
-    fun fold_right f init (SLICE { base, start, stop } ) = {
-	fun fold (i, a) =
-	    if (i < start ) a; else fold (i --- 1, f (unsafe_get (base, i), a));fi;
-    
-	fold (stop --- 1, init);
-    };
+    fun fold_right f init (SLICE { base, start, stop } )
+	=
+	fold (stop --- 1, init)
+	where
+	    fun fold (i, a)
+		=
+		if (i < start)   a;
+                else             fold (i --- 1, f (unsafe_get (base, i), a));
+		fi;
+	end;
 
     fun cat sll
         =
@@ -216,18 +246,15 @@ package {
 	where
 	    fun fnd i
                 =
-		if   (i >= stop)
-                    
-                     NULL;
+		if (i >= stop)
+                    #
+                    NULL;
 		else
-                     x = unsafe_get (base, i);
-
-		     if   (p (i, x))
-                         
-                          THE (i --- start, x);
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    x = unsafe_get (base, i);
+		    #
+		    if (p (i, x))   THE (i --- start, x);
+		    else	    fnd (i +++ 1);
+		    fi;
 		fi;
 	end;
 
@@ -237,18 +264,15 @@ package {
 	where
 	    fun fnd i
                 =
-		if   (i >= stop)
-                    
-                     NULL;
+		if (i >= stop)
+                    #
+                    NULL;
 		else
-                     x =  unsafe_get (base, i);
-
-		     if   (p x)
-                         
-                          THE x;
-                     else
-                          fnd (i +++ 1);
-                     fi;
+		    x =  unsafe_get (base, i);
+		    #
+		    if (p x)   THE x;
+		    else       fnd (i +++ 1);
+		    fi;
 		fi;
 	end;
 
@@ -258,8 +282,12 @@ package {
 	where
 	    fun ex i
                 =
-                i < stop   and
-                (p (unsafe_get (base, i)) or ex (i +++ 1));
+                i < stop
+		and
+                (   p (unsafe_get (base, i))
+		    or
+		    ex (i +++ 1)
+		);
 	end;
 
     fun all p (SLICE { base, start, stop } )
@@ -268,8 +296,12 @@ package {
 	where
 	    fun al i
 		=
-		i >= stop   or
-		(p (unsafe_get (base, i)) and al (i +++ 1));
+		i >= stop
+		or
+		(   p (unsafe_get (base, i))
+		    and
+		    al (i +++ 1)
+		);
 	end;
 
     fun collate c ( SLICE { base => b1,  start => s1,  stop => e1 },
@@ -279,21 +311,21 @@ package {
 	where
 	    fun col (i1, i2)
                 =
-		if   (i1 >= e1)
-                    
-		     if   (i2 >= e2   )   EQUAL;
-		                     else   LESS;   fi;
+		if (i1 >= e1)
+                    #
+		    if (i2 >= e2)   EQUAL;
+		    else            LESS;
+                    fi;
 		else
-                     if   (i2 >= e2   )   GREATER;
-		                     else
-                                            case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
-                                              
-			                           EQUAL   =>   col (i1 +++ 1, i2 +++ 1);
-			                           unequal => unequal;
-                                            esac;
-                                     fi;
+                    if (i2 >= e2)   GREATER;
+		    else
+			case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
+			    #
+			    EQUAL   =>  col (i1 +++ 1, i2 +++ 1);
+			    unequal =>  unequal;
+			esac;
+                    fi;
                fi;
-
 	end;
 };
 

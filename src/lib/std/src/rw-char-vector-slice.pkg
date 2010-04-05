@@ -60,7 +60,7 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
     fun get (SLICE { base, start, stop }, i)
 	=
 	{   i' = start + i;
-
+	    #
 	    if (i' < start or i' >= stop)  raise exception SUBSCRIPT;
 	    else                           unsafe_get (base, i');
             fi;
@@ -70,7 +70,7 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
     fun set (SLICE { base, start, stop }, i, x)
 	=
 	{   i' = start + i;
-
+	    #
 	    if  (i' < start
             or   i' >= stop
             )    raise exception SUBSCRIPT;
@@ -98,15 +98,17 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 			  else                          start;
                           fi,
 
-		 stop  => case olen   
-			     NULL => al;
-
-			     THE len =>
-				{  stop = start +++ len;
-				   if (stop < start or al < stop)  raise exception SUBSCRIPT;
-				   else                            stop;
-                                   fi;
-				};
+		 stop  => case olen
+			      #
+			      NULL => al;
+			      #
+			      THE len =>
+				  {   stop = start +++ len;
+				      #	
+				      if (stop < start or al < stop)  raise exception SUBSCRIPT;
+				      else                            stop;
+				      fi;
+				  };
                           esac
                };
 	};
@@ -124,7 +126,7 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 			#
 			THE len =>
 			    {   stop' = start' +++ len;
-
+				#
 			        if (stop' < start' or stop < stop')  raise exception SUBSCRIPT;
 			        else                                 stop';
 				fi;
@@ -163,8 +165,7 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 
     fun copy { from => SLICE { base, start, stop }, to, di }
 	=
-	{
-	    sl = stop --- start;
+	{   sl = stop --- start;
 	    de = sl + di;
 
 	    fun copy_dn (s, d)
@@ -210,9 +211,8 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 	    if (di < 0 or de > rw_length to)
 		#
 		raise exception SUBSCRIPT;
-	        #  Assuming vector and rw_vector are disjoint 
 	    else
-		copy_up (start, di);
+		copy_up (start, di);	        # Assume vector and rw_vector are disjoint 
 	    fi;
 	};
 
@@ -338,7 +338,7 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 		    NULL;
 		else
 		    x = unsafe_get (base, i);
-
+		    #
 		    if (p (i, x))   THE (i --- start, x);
                     else            fnd (i +++ 1);
                     fi;
@@ -356,7 +356,7 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 		    NULL;
 		else
 		    x = unsafe_get (base, i);
-
+		    #
 		    if (p x)   THE x;
                     else       fnd (i +++ 1);
                     fi;
@@ -406,8 +406,8 @@ package rw_char_vector_slice : Monomorphic_Rw_Vector_Slice		# Monomorphic_Rw_Vec
 		else
 		    case (c (unsafe_get (b1, i1), unsafe_get (b2, i2)))
 			#
-			 EQUAL => col (i1 +++ 1, i2 +++ 2);
-		       unequal => unequal;
+			EQUAL   =>  col (i1 +++ 1, i2 +++ 2);
+		        unequal =>  unequal;
 		    esac;
 		fi;
 	end;
