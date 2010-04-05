@@ -55,8 +55,7 @@ herein
 	root_window_of:      Widget -> Root_Window;
 	args_of:             Widget -> Window_Args;
 	window_of:	     Widget -> xc::Window;
-	size_of:	     Widget -> xg::Size;
-	note_new_size:	     Widget -> xg::Size -> Void;
+#	size_of:	     Widget -> xg::Size;
 
 	args_fn:             Widget -> Void -> Window_Args;
 	realize_fn:          Widget -> Realize_Fn;

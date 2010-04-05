@@ -66,12 +66,11 @@ herein
 		realized:	Oneshot_Maildrop( Void ),
 		realize:	Realize_Fn,
 		#
-		# Support for window_of and size_of.
-		# These are NULL until realization
+		# Support for window_of.
+		# This ise NULL until realization
 		# and non-NULL thereafter:
 		#
-		window:		Ref( Null_Or(xc::Window) ),
-		size:		Ref( Null_Or(xg::Size)   )		# This needs to be updated when size changes -- not yet done. XXX BUGGO FIXME.
+		window:		Ref( Null_Or(xc::Window) )
 	      };
 
 	fun make_widget { root_window as ROOT_WINDOW { next_widget_id, ... }, args, size_preference_thunk_of, realize }
@@ -87,8 +86,7 @@ herein
 		size_preference_thunk_of,
 		realize,
 		#
-		window   => REF NULL,
-		size     => REF NULL
+		window   => REF NULL
 	      };
 
 	fun root_window_of  (WIDGET { root_window,      ... } ) =  root_window;
@@ -99,26 +97,19 @@ herein
 	    window_of       (WIDGET { window => REF  NULL,        ... } ) =>  raise exception  FAIL "widget::window_of called before realization";
 	end;
 
-	fun size_of         (WIDGET { size   => REF (THE size),   ... } ) =>  size;
-	    size_of         (WIDGET { size   => REF  NULL,        ... } ) =>  raise exception  FAIL "widget::size_of called before realization";
-	end;
-
-	fun note_new_size
-		(WIDGET { size,   ... } )
-		size'
-            =
-            size :=  THE size';
+#	fun size_of         (WIDGET { size   => REF (THE size),   ... } ) =>  size;
+#	    size_of         (WIDGET { size   => REF  NULL,        ... } ) =>  raise exception  FAIL "widget::size_of called before realization";
+#	end;
 
 	fun size_preference_of       (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of ();
 	fun size_preference_thunk_of (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of;
 
 
 	fun realize_fn
-            (WIDGET { realize, realized, window, size, ... } )
-            (arg as { kidplug, window => window', size => size' } )
+            (WIDGET { realize, realized, window, ... } )
+            (arg as { kidplug, window => window', size } )
 	    =
 	    {   window :=  THE window';		# Cache window as support for window_of.
-		size   :=  THE size';		# Cache size   as support for size_of.
 
                 set (realized, ())
 		except
