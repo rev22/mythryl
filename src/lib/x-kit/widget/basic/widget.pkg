@@ -63,8 +63,9 @@ herein
 		#
 		size_preference_thunk_of:  Void -> Widget_Size_Preference,
 		#
-		realized:	Oneshot_Maildrop( Void ),
-		realize:	Realize_Fn,
+		seen_first_redraw:	Oneshot_Maildrop( Void ),
+		realized:		Oneshot_Maildrop( Void ),
+		realize:		Realize_Fn,
 		#
 		# Support for window_of.
 		# This ise NULL until realization
@@ -80,8 +81,9 @@ herein
 		root_window,
 		args,
 		#
-		realized =>  make_oneshot_maildrop (),
-		id       =>  next_widget_id (),			# Is there any reason not to make this just a Ref(Void) as usual?	XXX BUGGO FIXME.
+		realized 	  =>  make_oneshot_maildrop (),
+		seen_first_redraw =>  make_oneshot_maildrop (),
+		id       	  =>  next_widget_id (),			# Is there any reason not to make this just a Ref(Void) as usual?	XXX BUGGO FIXME.
 		#
 		size_preference_thunk_of,
 		realize,
@@ -104,18 +106,27 @@ herein
 	fun size_preference_of       (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of ();
 	fun size_preference_thunk_of (WIDGET { size_preference_thunk_of, ... } ) =  size_preference_thunk_of;
 
+	fun seen_first_redraw_oneshot_of  (WIDGET { seen_first_redraw,   ... } ) =  seen_first_redraw;
 
 	fun realize_fn
-            (WIDGET { realize, realized, window, ... } )
-            (arg as { kidplug, window => window', size } )
+            (WIDGET { realize, realized, window => window_ref, seen_first_redraw, ... } )
+            (arg as { kidplug, window, size } )
 	    =
-	    {   window :=  THE window';		# Cache window as support for window_of.
-
-                set (realized, ())
+	    {   set (realized, ())
 		except
 		    _ = raise exception ALREADY_REALIZED;
 
-		realize arg;
+		# Cache window as support for window_of:
+		#
+		window_ref :=  THE window;
+
+		# Post  seen_first_redraw  oneshot as support for
+		#
+		#     seen_first_redraw_oneshot_of
+		#
+		xw::note_seen_first_expose_oneshot  window  seen_first_redraw;
+
+               	realize arg;
 	    };
 
 

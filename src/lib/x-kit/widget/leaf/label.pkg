@@ -406,7 +406,9 @@ herein
 
 		fun do_mom (ETC_REDRAW _, me as (lv, drawf))
 			=> 
-			{ drawf lv; me;};
+			{   drawf lv;
+                            me;
+                        };
 
 		    do_mom (ETC_RESIZE (xg::BOX { wide, high, ... } ), (lv, _))
 			=> 
@@ -425,9 +427,9 @@ herein
 			take'  plea_slot
 			    ==>
 			    (fn event = case (do_plea (event, lv))
-
+					    #
 					    NULL    => loop (lv, drawf);
-
+					    #
 					    THE lv' => {   drawf lv';
 							   loop (lv', drawf);
 						       };

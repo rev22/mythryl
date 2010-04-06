@@ -220,10 +220,6 @@ api  Xcore {
 	Void
 	;
 
-    # Get size of window plus its location
-    # relative to parent:
-    #
-    get_window_site:	Xsession -> Window -> xg::Box;
     
 
     # Screen operations:

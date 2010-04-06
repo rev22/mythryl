@@ -1,5 +1,12 @@
 ## widget.api
 #
+# Here we implement substrate functionality common
+# to all widgets;  this is a bit like a superclass
+# that all widgets inherit from, in OOP-think: Every
+# widget calls make_widget at some point, and every
+# widget provides a widget_of() function to obtain
+# its underlying widget record.
+#
 # See bottom-of-file comments
 # for an extended overview.
 
@@ -28,13 +35,27 @@ herein
 
 	Widget;
 
+
+	# Creating the widget-tree is a multi-phase process.
+	#
+	# In particular, we decouple widget "creation" from
+	# widget "realization".
+	#
+	# Each widget creation function (make_button, make_label...)
+	# calls "make_widget" below, which returns the core Widget value.
+	#
+	# Much later, that widget's parent calls its Realize_Fn,
+	# passing in the widget's size in pixels, the Window on which
+	# it is to draw itself, and the Kidplug from which it receives
+	# mouse, keyboard and other event input:
+
 	exception ALREADY_REALIZED;
 
 	Realize_Fn
 	    =
-	    { kidplug: xi::Kidplug,
-	      size:    xg::Size,
-	      window:  xc::Window
+	    { kidplug: xi::Kidplug,			# Source for X events, segregated into "keyboard", "mouse" and "other" events.
+	      size:    xg::Size,			# Pixel size widget has to draw itself.
+	      window:  xc::Window			# X window on which widget should draw itself.
 	    }
 	    ->
 	    Void;
@@ -43,30 +64,30 @@ herein
 	    :
 	    { root_window:   Root_Window,
 	      args:          Void -> Window_Args,	# Current Window_Args just records background color.
-	      realize:       Realize_Fn,
-
-	      size_preference_thunk_of
+	      realize:       Realize_Fn,		# Our parent calls this to start us running.
+	      #	
+	      size_preference_thunk_of			# Parent calls this to find out what size we would like to be.
 		  :
 		  Void -> Widget_Size_Preference
 	    }
 	    ->
 	    Widget;
 
-	root_window_of:      Widget -> Root_Window;
-	args_of:             Widget -> Window_Args;
-	window_of:	     Widget -> xc::Window;
-#	size_of:	     Widget -> xg::Size;
+	root_window_of:		Widget -> Root_Window;
+	args_of:		Widget -> Window_Args;
+	window_of:		Widget -> xc::Window;
+#	size_of:		Widget -> xg::Size;
 
-	args_fn:             Widget -> Void -> Window_Args;
-	realize_fn:          Widget -> Realize_Fn;
-	same_widget:        (Widget, Widget) -> Bool;
+	args_fn:		Widget -> Void -> Window_Args;
+	realize_fn:		Widget -> Realize_Fn;
+	same_widget:	       (Widget, Widget) -> Bool;
 
-	preferred_size:      Widget -> xg::Size;
-	okay_size:          (Widget, xg::Size) -> Bool;
+	preferred_size:		Widget -> xg::Size;
+	okay_size:	       (Widget, xg::Size) -> Bool;
 
-	filter_mouse:        Widget -> (Widget, (Mailop( (Mailop( xi::Envelope( xi::Mouse_Mail   ) ),  Mailslot( xi::Envelope( xi::Mouse_Mail   ) )) ) ));
-	filter_keyboard:     Widget -> (Widget, (Mailop( (Mailop( xi::Envelope( xi::Keyboard_Mail) ),  Mailslot( xi::Envelope( xi::Keyboard_Mail) )) ) ));
-	filter_other:        Widget -> (Widget, (Mailop( (Mailop( xi::Envelope( xi::Other_Mail   ) ),  Mailslot( xi::Envelope( xi::Other_Mail   ) )) ) ));
+	filter_mouse:		Widget -> (Widget, (Mailop( (Mailop( xi::Envelope( xi::Mouse_Mail   ) ),  Mailslot( xi::Envelope( xi::Mouse_Mail   ) )) ) ));
+	filter_keyboard:	Widget -> (Widget, (Mailop( (Mailop( xi::Envelope( xi::Keyboard_Mail) ),  Mailslot( xi::Envelope( xi::Keyboard_Mail) )) ) ));
+	filter_other:		Widget -> (Widget, (Mailop( (Mailop( xi::Envelope( xi::Other_Mail   ) ),  Mailslot( xi::Envelope( xi::Other_Mail   ) )) ) ));
 	    #
 	    # Wrap a new widget around a given widget,
 	    # intercepting the given mailstream and
@@ -79,8 +100,23 @@ herein
 	    # widget which intercepts and discards all
 	    # messages on the given mail stream.
 
-	size_preference_of:        Widget ->         Widget_Size_Preference;
-	size_preference_thunk_of:  Widget -> Void -> Widget_Size_Preference;
+	size_preference_of:		Widget ->         Widget_Size_Preference;
+	size_preference_thunk_of:	Widget -> Void -> Widget_Size_Preference;
+
+	seen_first_redraw_oneshot_of:	Widget -> Oneshot_Maildrop(Void);
+	    #
+	    # We often want to wait until a widget is fully
+	    # operational before pestering it with requests.
+	    # This call returns a condition variable on which
+	    # we can wait via
+	    #
+	    #     get (seen_first_redraw_oneshot_of  widget);
+	    #
+	    # This condition variable gets set
+	    # when the first EXPOSE event arrives for it from
+	    # the X server;  this gets done in
+	    #
+	    #     src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     };
 end;
 

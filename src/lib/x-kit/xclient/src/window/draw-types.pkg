@@ -32,6 +32,10 @@ herein
 
     package draw_types: (weak) Draw_Types {	# Draw_Types		is from   src/lib/x-kit/xclient/src/window/draw-types.api
 
+	# This basically does
+	#
+	#     Window = sn::Window;
+	#
 	package x: api {
 		       Window
 			   =
@@ -45,7 +49,6 @@ herein
 	           } = xsession;
 	include xsession;    
 
-#	Window = sn::Window;
 
 	#  An off-screen rectangular pixel array on X server:
 	#

@@ -107,9 +107,9 @@ herein
 	    :
 	    Window
 	    ->
-	    { site:             ge::Window_Site,
-	      border_color:     Null_Or( rgb::Rgb ),
-	      background_color: Null_Or( rgb8::Rgb8 )
+	    { site:              ge::Window_Site,
+	      border_color:      Null_Or( rgb::Rgb ),
+	      background_color:  Null_Or( rgb8::Rgb8 )
 	    }
 	    ->
 	    Window;
@@ -216,6 +216,16 @@ herein
 	standard_xevent_mask: xt::Event_Mask;
 
 	rgb8_of:	      rgb::Rgb -> rgb8::Rgb8;
+
+
+	get_window_site:	Window -> ge::Box;
+	    #
+	    # Get size of window plus its location
+	    # relative to parent.
+
+	note_seen_first_expose_oneshot: Window -> Oneshot_Maildrop(Void) -> Void;
+	    #
+	    # Infrastructure -- see comments in src/lib/x-kit/xclient/src/window/window.pkg
     };
 
 end;

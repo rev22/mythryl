@@ -90,6 +90,16 @@ herein
 	    ->
 	    ge::Box;
 
+	# Infrastructure -- see comments in src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
+	#
+	note_window's_seen_first_expose_oneshot
+	    :
+	    ( Xsocket_To_Topwindow_Router,
+              xt::Window_Id,
+	      Oneshot_Maildrop(Void)
+	    )
+	    ->
+	    Void;
     };
 end;						# stipulate
 

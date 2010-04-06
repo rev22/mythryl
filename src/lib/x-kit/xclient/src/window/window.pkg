@@ -31,6 +31,7 @@ stipulate
     package s2w =  sendevent_to_wire;			# sendevent_to_wire		is from   src/lib/x-kit/xclient/src/wire/sendevent-to-wire.pkg
     package sa  =  standard_x11_atoms;			# standard_x11_atoms		is from   src/lib/x-kit/xclient/src/iccc/standard-x11-atoms.pkg
     package sn  =  xsession;				# xsession			is from   src/lib/x-kit/xclient/src/window/xsession.pkg
+    package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     package wio =  window_io;				# window_io			is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
@@ -763,6 +764,52 @@ herein
 		0;
 	    };
 						# end added ddeboer 
+
+
+	# Get size of window plus its location
+	# relative to parent:
+	#
+	fun get_window_site
+	        (dt::WINDOW { window_id, screen => sn::SCREEN { xsession as sn::XSESSION  { xsocket_to_topwindow_router, ... }, ... }, ... })
+	    =
+	    s2t::get_window_site (xsocket_to_topwindow_router, window_id);
+
+
+
+	# This call is infrastructure.
+	#
+	# We often want to wait until a widget is fully
+	# operational before sending pleas to it. 
+	#
+	# A practical definition of "operational" is
+	# "has received its first EXPOSE X event".
+	#
+	# We maintain a oneshot in widgets which
+	# clients may wait on for this purpose; see
+	#     seen_first_redraw_oneshot_of
+	# in
+	#     src/lib/x-kit/widget/basic/widget.api
+	#	
+	# The oneshot in question originates at widget
+	# creation time -- make_widget in
+	#
+	#     src/lib/x-kit/widget/basic/widget.pkg
+	#
+	# At realization time, which is when a widget
+	# for the first time becomes associated with an
+	# X window, it registers its oneshot with us
+	# via this call:  See realize_fn in widget.pkg.
+	# This ensures that we have the onehost on hand
+	# when we recieve a window's first EXPOSE event.
+	#
+	fun note_seen_first_expose_oneshot
+		(dt::WINDOW { window_id, screen => sn::SCREEN { xsession as sn::XSESSION  { xsocket_to_topwindow_router, ... }, ... }, ... })
+		seen_first_redraw
+	    =
+	    s2t::note_window's_seen_first_expose_oneshot
+		#
+		(xsocket_to_topwindow_router,  window_id,  seen_first_redraw);
+
     };						# Window 
 end;						# stipulate
 

@@ -8,197 +8,203 @@
 # The types and operations provided by x-kit to support windows and window
 # dictionaries.
 
+stipulate
+    include threadkit;
+herein
 
+    api  Xwindow {
 
-api  Xwindow {
+	package xc:         Xcore;		# Xcore		is from   src/lib/x-kit/xclient/xcore.api
+	package xg:         Xgeometry;		# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
+	package xselection: Xselection;		# Xselection	is from   src/lib/x-kit/xclient/xselection.api
+	package xinput:	    Xinput;		# Xinput	is from   src/lib/x-kit/xclient/xinput.api
 
-    package xc:      	Xcore;		# Xcore		is from   src/lib/x-kit/xclient/xcore.api
-    package xg:      	Xgeometry;	# Xgeometry	is from   src/lib/x-kit/xclient/xgeometry.api
-    package xselection: Xselection;	# Xselection	is from   src/lib/x-kit/xclient/xselection.api
-    package xinput:	Xinput;		# Xinput	is from   src/lib/x-kit/xclient/xinput.api
+	Window;
 
-    Window;
-
-    # User-level window attributes 
-    #
-    package a: api {
-	Window_Attribute
-	  #
-	  = BACKGROUND_NONE
-	  | BACKGROUND_PARENT_RELATIVE
-	  | BACKGROUND_RO_PIXMAP    	  xc::Ro_Pixmap
-	  | BACKGROUND_COLOR              xc::Rgb
-	  | BACKGROUND_RW_PIXMAP	  xc::Rw_Pixmap
-	  #
-	  | BORDER_COPY_FROM_PARENT
-	  | BORDER_RW_PIXMAP    	  xc::Rw_Pixmap
-	  | BORDER_RO_PIXMAP        	  xc::Ro_Pixmap
-	  | BORDER_COLOR                  xc::Rgb
-	  #
-	  | BIT_GRAVITY                   xc::Gravity
-	  | WINDOW_GRAVITY                xc::Gravity
-	  #
-	  | CURSOR                        xc::Xcursor
-	  | CURSOR_NONE
-	  ;
-    };
-
-    # Window stacking modes:
-    #
-    Stack_Mode = ABOVE
-               | BELOW
-               | TOP_IF
-               | BOTTOM_IF
-               | OPPOSITE
-               ;
-
-    # Window configuration values 
-    #
-    package c: api {
-
-	Window_Config
-	  #
-	  = ORIGIN          xg::Point
-	  | SIZE            xg::Size
-	  #
-	  | BORDER_WID      Int
-	  | STACK_MODE      Stack_Mode
-	  #
-	  | REL_STACK_MODE  (Window, Stack_Mode)
-	  ;
-    };
-
-    # Window operations
-
-    exception BAD_WINDOW_SITE;
-
-    make_simple_top_window
-	:
-	xc::Screen
-	->
-	{ site:              xg::Window_Site,
-	  border_color:      xc::Rgb,
-	  background_color:  xc::Rgb8
-        }
-	->
-	( Window,
-          xinput::Kidplug,
-          threadkit::Mailslot(Void)
-        );
-
-    make_simple_subwindow
-	:
-	Window
-	->
-	{ site:              xg::Window_Site,
-	  border_color:      Null_Or( xc::Rgb ),
-	  background_color:  Null_Or( xc::Rgb8  )
-        }
-        ->
-        Window;
-
-    make_transient_window
-        :
-        xc::Window
-        ->
-        { site:              xg::Window_Site,
-	  border_color:      xc::Rgb,
-	  background_color:  xc::Rgb8
-        }
-        ->
-        (Window, xinput::Kidplug);
-
-    make_simple_popup_window
-        :
-        xc::Screen
-        ->
-        { site:              xg::Window_Site,
-	  border_color:      xc::Rgb,
-	  background_color:  xc::Rgb8
-        }
-        ->
-        (Window, xinput::Kidplug);
-
-    make_input_only_window
-	:
-	Window -> xg::Box -> Window;
-
-    # We raise this exception on operations
-    # such as drawing that are illegal for
-    # InputOnly windows.
-    #
-    exception INPUT_ONLY;
-											# commandline		is from   src/lib/std/commandline.pkg
-    # Set the properties of a top-level window.
-    #
-    # This should be done before showing (mapping)
-    # the window:
-    #
-    set_window_manager_properties
-	:
-	Window
-	->
-	{
-          window_name:              Null_Or( String ),
-          icon_name:                Null_Or( String ),
-          #
-          commandline_arguments:    List( String ),					# Typically from:   commandline::get_arguments ().
-          size_hints:    	    List( xselection::Window_Manager_Size_Hint ),
-          nonsize_hints:	    List( xselection::Window_Manager_Nonsize_Hint ),
-          #
-          class_hints:              Null_Or { resource_class:   String,
-                                              resource_name:  String
-                                            }
-        }
-	->
-	Void;
-
-    # Set the window-manager protocols
-    # for a window: 
-    #
-    set_window_manager_protocols:  Window -> List( xc::Atom ) -> Bool;
-
-    # Various routines to reconfigure window layout: 
-    #
-    configure_window:        Window -> List( c::Window_Config ) -> Void;
-    move_window:             Window -> xg::Point -> Void;
-    resize_window:           Window -> xg::Size  -> Void;
-    move_and_resize_window:  Window -> xg::Box   -> Void;
-
-    # Map a point in the window's coordinate
-    # system to the screen's coordinate system:
-    #
-    window_point_to_screen_point
-	:
-	Window -> xg::Point -> xg::Point;
-
-    set_cursor:  Window ->  Null_Or( xc::Xcursor ) -> Void;
-
-    set_background_color:  Window -> Null_Or( xc::Rgb ) -> Void;
+	# User-level window attributes 
 	#
-	# Set the background color attribute of the window.
-        #
-        # This does not immediately affect the window's contents,
-        # but if it is done before the window is mapped the window
-        # will come up with the right color.
+	package a: api {
+	    Window_Attribute
+	      #
+	      = BACKGROUND_NONE
+	      | BACKGROUND_PARENT_RELATIVE
+	      | BACKGROUND_RO_PIXMAP          xc::Ro_Pixmap
+	      | BACKGROUND_COLOR              xc::Rgb
+	      | BACKGROUND_RW_PIXMAP	      xc::Rw_Pixmap
+	      #
+	      | BORDER_COPY_FROM_PARENT
+	      | BORDER_RW_PIXMAP    	      xc::Rw_Pixmap
+	      | BORDER_RO_PIXMAP              xc::Ro_Pixmap
+	      | BORDER_COLOR                  xc::Rgb
+	      #
+	      | BIT_GRAVITY                   xc::Gravity
+	      | WINDOW_GRAVITY                xc::Gravity
+	      #
+	      | CURSOR                        xc::Xcursor
+	      | CURSOR_NONE
+	      ;
+	};
 
-
-    change_window_attributes:  Window -> List( a::Window_Attribute ) -> Void;
+	# Window stacking modes:
 	#
-        # Set various window attributes.
+	Stack_Mode = ABOVE
+		   | BELOW
+		   | TOP_IF
+		   | BOTTOM_IF
+		   | OPPOSITE
+		   ;
 
-    show_window:        Window -> Void;		# Show ("map") window.  Won't actually show unless all ancestors show.
-    hide_window:        Window -> Void;		# Opposite of show.	
-    withdraw_window:    Window -> Void;
-    destroy_window:     Window -> Void;
+	# Window configuration values 
+	#
+	package c: api {
 
-    screen_of_window:   Window -> xc::Screen;
-    xsession_of_window: Window -> xc::Xsession;
+	    Window_Config
+	      #
+	      = ORIGIN          xg::Point
+	      | SIZE            xg::Size
+	      #
+	      | BORDER_WID      Int
+	      | STACK_MODE      Stack_Mode
+	      #
+	      | REL_STACK_MODE  (Window, Stack_Mode)
+	      ;
+	};
 
-    grab_keyboard:      Window -> Int;
-    ungrab_keyboard:    Window -> Int;
-};						# api Xwindow
+	# Window operations
 
+	exception BAD_WINDOW_SITE;
+
+	make_simple_top_window
+	    :
+	    xc::Screen
+	    ->
+	    { site:              xg::Window_Site,
+	      border_color:      xc::Rgb,
+	      background_color:  xc::Rgb8
+	    }
+	    ->
+	    ( Window,
+	      xinput::Kidplug,
+	      Mailslot(Void)
+	    );
+
+	make_simple_subwindow
+	    :
+	    Window
+	    ->
+	    { site:              xg::Window_Site,
+	      border_color:      Null_Or( xc::Rgb ),
+	      background_color:  Null_Or( xc::Rgb8  )
+	    }
+	    ->
+	    Window;
+
+	make_transient_window
+	    :
+	    xc::Window
+	    ->
+	    { site:              xg::Window_Site,
+	      border_color:      xc::Rgb,
+	      background_color:  xc::Rgb8
+	    }
+	    ->
+	    (Window, xinput::Kidplug);
+
+	make_simple_popup_window
+	    :
+	    xc::Screen
+	    ->
+	    { site:              xg::Window_Site,
+	      border_color:      xc::Rgb,
+	      background_color:  xc::Rgb8
+	    }
+	    ->
+	    (Window, xinput::Kidplug);
+
+	make_input_only_window
+	    :
+	    Window -> xg::Box -> Window;
+
+	# We raise this exception on operations
+	# such as drawing that are illegal for
+	# InputOnly windows.
+	#
+	exception INPUT_ONLY;
+											    # commandline		is from   src/lib/std/commandline.pkg
+	# Set the properties of a top-level window.
+	#
+	# This should be done before showing (mapping)
+	# the window:
+	#
+	set_window_manager_properties
+	    :
+	    Window
+	    ->
+	    {
+	      window_name:              Null_Or( String ),
+	      icon_name:                Null_Or( String ),
+	      #
+	      commandline_arguments:    List( String ),					# Typically from:   commandline::get_arguments ().
+	      size_hints:    	        List( xselection::Window_Manager_Size_Hint ),
+	      nonsize_hints:	        List( xselection::Window_Manager_Nonsize_Hint ),
+	      #
+	      class_hints:              Null_Or { resource_class:   String,
+						  resource_name:  String
+						}
+	    }
+	    ->
+	    Void;
+
+	# Set the window-manager protocols
+	# for a window: 
+	#
+	set_window_manager_protocols:  Window -> List( xc::Atom ) -> Bool;
+
+	# Various routines to reconfigure window layout: 
+	#
+	configure_window:        Window -> List( c::Window_Config ) -> Void;
+	move_window:             Window -> xg::Point -> Void;
+	resize_window:           Window -> xg::Size  -> Void;
+	move_and_resize_window:  Window -> xg::Box   -> Void;
+
+	# Map a point in the window's coordinate
+	# system to the screen's coordinate system:
+	#
+	window_point_to_screen_point
+	    :
+	    Window -> xg::Point -> xg::Point;
+
+	set_cursor:  Window ->  Null_Or( xc::Xcursor ) -> Void;
+
+	set_background_color:  Window -> Null_Or( xc::Rgb ) -> Void;
+	    #
+	    # Set the background color attribute of the window.
+	    #
+	    # This does not immediately affect the window's contents,
+	    # but if it is done before the window is mapped the window
+	    # will come up with the right color.
+
+
+	change_window_attributes:  Window -> List( a::Window_Attribute ) -> Void;
+	    #
+	    # Set various window attributes.
+
+	show_window:        Window -> Void;		# Show ("map") window.  Won't actually show unless all ancestors show.
+	hide_window:        Window -> Void;		# Opposite of show.	
+	withdraw_window:    Window -> Void;
+	destroy_window:     Window -> Void;
+
+	screen_of_window:   Window -> xc::Screen;
+	xsession_of_window: Window -> xc::Xsession;
+
+	grab_keyboard:      Window -> Int;
+	ungrab_keyboard:    Window -> Int;
+
+	note_seen_first_expose_oneshot: Window -> Oneshot_Maildrop(Void) -> Void;
+	    #
+	    # Infrastructure -- see comments in src/lib/x-kit/xclient/src/window/window.pkg
+    };						# api Xwindow
+end;
 
 ## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,

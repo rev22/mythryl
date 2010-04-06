@@ -15,16 +15,20 @@
 # on a semantic level.
 #
 # Typically we route an X event to the toplevel
-# window containing the relevant widget.
+# window containing the relevant widget.  More
+# precisely, to the topwindow_to_widget_router
+# instance for that topwindow -- see
+#
+#     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 # 
 # To do this we maintain a
 #
 #     window_id_to_window_info_map
 #
 # which tracks all windows created by the application,
-# keyed by their X-server-assigned IDs, so that we can
-# translate the xid in the event to the corresponding
-# window for delivery.
+# keyed by their associated X-server IDs (xids), so that
+# we can translate the xid in the event to the proper
+# topwindow_to_widget_router input slot for delivery.
 #
 # In particular we track, for each window, the route
 # needed to reach it down the window hierarchy, and
@@ -37,6 +41,7 @@
 #     note_new_topwindow
 #
 # fn, which is called by the topwindow-creation functions
+#
 #     make_simple_top_window
 #     make_simple_popup_window
 #     make_transient_window
@@ -117,11 +122,13 @@ herein
 	    package plea {
 		#
 		Mail
-		  = NOTE_NEW_TOPWINDOW (xt::Window_Id, ge::Window_Site)
-		  | LOCK_WINDOW         xt::Window_Id
-		  | UNLOCK_WINDOW       xt::Window_Id
-		  | IS_WINDOW_LOCKED    xt::Window_Id
-		  | GET_WINDOW_SITE    (xt::Window_Id, Oneshot_Maildrop(ge::Box))
+		  = NOTE_NEW_TOPWINDOW             (xt::Window_Id, ge::Window_Site)
+		  | GET_WINDOW_SITE                (xt::Window_Id, Oneshot_Maildrop(ge::Box))
+		  | NOTE_SEEN_FIRST_EXPOSE_ONESHOT (xt::Window_Id, Oneshot_Maildrop(Void))
+		  #
+		  | LOCK_WINDOW                     xt::Window_Id
+		  | UNLOCK_WINDOW                   xt::Window_Id
+		  | IS_WINDOW_LOCKED                xt::Window_Id
 		  ;
 	    };
 
@@ -133,12 +140,24 @@ herein
 		    route:        Envelope_Route,					# Path needed to reach this window, starting at its topwindow.
 		    parent_info:  Null_Or( Window_Info ),
 		    #
-		    children:     Ref(  List(Window_Info) ),
+		    children:     Ref( List(Window_Info) ),
 		    lock:         Ref( Bool ),
 		    site:	  Ref( ge::Box ),
 		    #
-		    to_topwindow_slot:   Mailslot( (Envelope_Route, et::x::Event) )	# Where to send events headed for this window.
+		    to_topwindow_slot:   Mailslot( (Envelope_Route, et::x::Event) ),	# Where to send events headed for this window.
+		    #
+		    seen_first_expose:		Ref( Bool ),				# We set this TRUE on first EXPOSE event.
+		    seen_first_expose_oneshot:	Ref( Null_Or(Oneshot_Maildrop(Void)) )	# We set this      on first EXPOSE event.
 		  };
+		    # The seen_first_expose* stuff is part of the
+		    # infrastructure allowing a widget client to wait
+		    # until the widget is fully operational before
+		    # submitting requests to it.  We presume that a
+		    # widget is operational when we see an EXPOSE
+		    # x event for it -- it had better be!
+		    #
+		    # See also   seen_first_redraw_slot_of   in
+		    #     src/lib/x-kit/widget/basic/widget.api
 
 	    # The various things we can
 	    # do with a given X event:
@@ -146,7 +165,8 @@ herein
 	    Xevent_Action
 	      #	
 	      = SEND_TO_WINDOW                        xt::Window_Id			# Forward event to given window via all of its ancestors from topwindow down.
-	      | NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW  (xt::Window_Id, ge::Box)		# Forward event to given window via all of its ancestors from topwindow down.
+	      | NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW  (xt::Window_Id, ge::Box)		# Note new size+position of window, then forward event normally.
+	      | NOTE_EXPOSE_AND_SEND_TO_WINDOW        xt::Window_Id			# Note EXPOSE (if first for window) then forward event normally.
 	      | NOTE_WINDOW_DESTRUCTION               xt::Window_Id
 	      | SEND_TO_KEYMAP_IMP							# This appears to be unused at present.
 	      | SEND_TO_WINDOW_PROPERTY_IMP
@@ -200,7 +220,7 @@ herein
 #		pick_xevent_action (et::x::ResizeRequest {, ... } ) =
 #		pick_xevent_action (et::x::CirculateRequest {, ... } ) =
 
-		pick_xevent_action (et::x::EXPOSE { exposed_window_id, ... } ) =>  SEND_TO_WINDOW  exposed_window_id;
+		pick_xevent_action (et::x::EXPOSE { exposed_window_id, ... } ) =>  NOTE_EXPOSE_AND_SEND_TO_WINDOW  exposed_window_id;
 
 
 		pick_xevent_action (et::x::VISIBILITY_NOTIFY { changed_window_id, ... } ) =>  SEND_TO_WINDOW  changed_window_id;
@@ -415,11 +435,36 @@ herein
 					parent_info =>  NULL,
 					children    =>  REF [],
 					lock        =>  REF FALSE,
-					site	    =>  REF (ge::site_to_box window_site)
+					site	    =>  REF (ge::site_to_box window_site),
+					#
+					seen_first_expose	  => REF( FALSE ),
+					seen_first_expose_oneshot => REF( NULL  )
 				      }
 				  );
 
 				give  (reply_slot,  take'  to_topwindow_slot);
+			    }
+			    except hash_xid::XID_NOT_FOUND = ();
+
+		        do_plea (plea::NOTE_SEEN_FIRST_EXPOSE_ONESHOT  (window_id, oneshot))
+			    =>
+			    {   # Note the oneshot used to signal receipt
+				# of the first EXPOSE event on a window:
+
+				(get_info  window_id)
+				    ->
+				    WINDOW_INFO { 
+					seen_first_expose	=> REF( seen_first_expose ),
+					seen_first_expose_oneshot,
+					...
+				    };
+
+				seen_first_expose_oneshot :=   THE oneshot;
+	
+				if seen_first_expose
+				    #
+				    set (oneshot, ());		# This shouldn't happen.
+				fi;
 			    }
 			    except hash_xid::XID_NOT_FOUND = ();
 
@@ -436,13 +481,13 @@ herein
 			    }
 			    except hash_xid::XID_NOT_FOUND = ();
 
-			do_plea (plea::GET_WINDOW_SITE (window_id, reply_1shot))
+			do_plea (plea::GET_WINDOW_SITE (window_id, reply_oneshot))
 			    =>
 			    {   (get_info  window_id)
 				    ->
 				    WINDOW_INFO { site, ... };
 
-				set (reply_1shot,  *site);
+				set (reply_oneshot,  *site);
 			    }
 			    except hash_xid::XID_NOT_FOUND = ();
 		    end;
@@ -470,7 +515,11 @@ herein
 				    parent_info =>  THE parent_info,
 				    children    =>  REF [],
 				    lock        =>  REF *lock,
-				    to_topwindow_slot
+				    #
+				    to_topwindow_slot,
+				    #
+				    seen_first_expose	      =>  REF( FALSE ),
+				    seen_first_expose_oneshot =>  REF( NULL  )
 				  };
 
 			    children := child_info ! *children;
@@ -487,6 +536,44 @@ herein
 			}
 			except
 			    hash_xid::XID_NOT_FOUND = ();
+
+
+		    # If this is the first EXPOSE event for window,
+		    # remember that we've seen it and set the
+		    # condition variable   seen_first_expose_oneshot
+		    # to notify any threads waiting for the
+		    # EXPOSE -- see   seen_first_redraw_oneshot_of   in
+		    #     src/lib/x-kit/widget/basic/widget.api
+		    # 
+		    fun maybe_note_first_expose_event window_id
+			=
+			{   (get_info  window_id)
+				->
+				WINDOW_INFO
+                                  { seen_first_expose         =>      seen_first_expose,
+				    seen_first_expose_oneshot =>  REF seen_first_expose_oneshot,
+                                    ...
+                                  };
+
+			    case seen_first_expose
+				#
+				REF TRUE  => ();			# Nothing to do.
+
+				REF FALSE =>
+				    {
+					seen_first_expose :=  TRUE;
+
+					case seen_first_expose_oneshot
+					    #
+					    THE oneshot =>  set (oneshot, ());		# Tell all waiting threads this widget is GO for action. :-)
+					    NULL        =>  ();				# Oneshot not yet registered -- shouldn't really happen,
+					esac;						# but no big deal, we'll set it when it arrives.
+				    };
+			    esac;
+			}
+			except
+			    hash_xid::XID_NOT_FOUND = ();
+
 
 		    fun route_xevent_per_window_info (e, WINDOW_INFO { route, to_topwindow_slot, ... } )
 			= 
@@ -506,6 +593,13 @@ herein
 			    SEND_TO_WINDOW window_id
 				=>
 				route_xevent_to_window_id (xevent, window_id);
+
+			    NOTE_EXPOSE_AND_SEND_TO_WINDOW window_id
+				=>
+				{   maybe_note_first_expose_event window_id;
+# BUGGO, haven't implemented the "note" part here yet! :-)
+				    route_xevent_to_window_id (xevent, window_id);
+				};
 
 			    NOTE_SITE_CHANGE_AND_SEND_TO_WINDOW (window_id, box)
 				=>
@@ -626,12 +720,44 @@ herein
 
 	    fun get_window_site (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, ... }, window_id)
 		=
-		{   reply_1shot = make_oneshot_maildrop ();
+		{   reply_oneshot = make_oneshot_maildrop ();
 
-		    give (plea_slot, plea::GET_WINDOW_SITE (window_id, reply_1shot));
+		    give (plea_slot, plea::GET_WINDOW_SITE (window_id, reply_oneshot));
 		    #
-		    get reply_1shot;
+		    get reply_oneshot;
 		};
+
+	    # This call is infrastructure.
+	    #
+	    # We often want to wait until a widget is fully
+	    # operational before sending pleas to it. 
+	    #
+	    # A practical definition of "operational" is
+	    # "has received its first EXPOSE X event".
+	    #
+	    # We maintain a oneshot in widgets which
+	    # clients may wait on for this purpose; see
+	    #     seen_first_redraw_oneshot_of
+	    # in
+	    #     src/lib/x-kit/widget/basic/widget.api
+	    #	
+	    # The oneshot in question originates at widget
+	    # creation time -- make_widget in
+	    #
+	    #     src/lib/x-kit/widget/basic/widget.pkg
+	    #
+	    # At realization time, which is when a widget
+	    # for the first time becomes associated with an
+	    # X window, it registers its oneshot with us
+	    # via this call:  See realize_fn in widget.pkg.
+	    # This ensures that we have the onehost on hand
+	    # when we recieve a window's first EXPOSE event.
+	    #
+	    fun note_window's_seen_first_expose_oneshot
+                    (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, ... }, window_id, oneshot)
+		=
+		give (plea_slot, plea::NOTE_SEEN_FIRST_EXPOSE_ONESHOT (window_id, oneshot));
+
 	end;					# stipulate
     };						# package xsocket_to_topwindow_router
 end;

@@ -299,11 +299,6 @@ herein
 	    Void
 	    ;
 
-	# Get size of window plus its location
-	# relative to parent:
-	#
-	get_window_site:	Xsession -> Window -> ge::Box;
-
 	# Return the maximum request size
 	# supported by the display. This
 	# information comes ultimately from
@@ -363,6 +358,8 @@ herein
 	# to the screen's coordinate system
 	#
 	window_point_to_screen_point:  Window -> ge::Point -> ge::Point;
+
+
     };									# api Xsession
 end;									# stipulate.
 
