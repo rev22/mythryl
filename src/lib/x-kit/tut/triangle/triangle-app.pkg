@@ -77,46 +77,68 @@ herein
 				          }
 	      };
 
-# Temporary hack to test out call to
-# read mouse position:
+#	# Temporary hack to test out call to
+#	# read mouse position:
+#	#
+#	fun make_mouse_watcher  xsession  window
+#	    =
+#	    {   fun mouse_watcher ()
+#		    =
+#		    loop (10, 10, 1)
+#		    where
+#			fun loop (row, col, delta)
+#			    =
+#			    {
+#				(xc::get_mouse_location  xsession)
+#				    ->
+#				    xg::POINT { row => r, col => c };
 #
-fun make_mouse_watcher  xsession  window
-    =
-    {   fun mouse_watcher ()
+#	printf "triangle_app: mouse_watcher: row,col d=(%d, %d)\n" r c;
+#
+#	#			sleep_for (time::from_milliseconds 333);
+#
+#				delta =   row <   10 ??  1 :: delta;
+#				delta =   row > 1000 ?? -1 :: delta;
+#
+#				row   = row + delta;
+#				col   = col + delta;
+#
+#				if (row == 20)   thread_done ();   fi;
+#
+#				xc::set_mouse_location  xsession  (xg::POINT { row, col });
+#
+#				loop (row, col, delta);
+#			    };		
+#		    end;
+#
+#		xtr::make_thread "mouse watcher" mouse_watcher;
+#	    };
+
+	# Thread to exercise the app by simulating user
+	# mouseclicks and verifying their effects:
+	#
+	fun make_selftest_thread
+            { topwindow:        xw::Window,
+              drawing_window:   xw::Window,
+              button_window:    xw::Window
+            }
 	    =
-	    loop (10, 10, 1)
-	    where
-	        fun loop (row, col, delta)
+	    {   fun selftest ()
 		    =
 		    {
-			(xc::get_mouse_location  xsession)
-			    ->
-			    xg::POINT { row => r, col => c };
+			# First order of business is to wait
+			# until things are up and running.
+		    };	
 
-printf "triangle_app: mouse_watcher: row,col d=(%d, %d)\n" r c;
-
-#			sleep_for (time::from_milliseconds 333);
-
-			delta =   row <   10 ??  1 :: delta;
-			delta =   row > 1000 ?? -1 :: delta;
-
-			row   = row + delta;
-			col   = col + delta;
-
-			if (row == 20)   thread_done ();   fi;
-
-			xc::set_mouse_location  xsession  (xg::POINT { row, col });
-
-			loop (row, col, delta);
-		    };		
-	    end;
-
-        xtr::make_thread "mouse watcher" mouse_watcher;
-    };
+		xtr::make_thread "triangle-app selftest" selftest;
+	    };
 
 	fun make_topwindow  xdisplay  xauthentication
 	    =
-	    (screen, window, kidplug)
+	    ( screen,
+              window,
+              kidplug
+            )
 	    where
 		xsession =  xc::open_xsession (xdisplay, xauthentication);
 
@@ -160,7 +182,7 @@ printf "triangle_app: mouse_watcher: row,col d=(%d, %d)\n" r c;
 		    commandline_arguments =>  commandline::get_arguments ()
 		  };
 
-make_mouse_watcher  xsession  window;
+# make_mouse_watcher  xsession  window;
 
 		xw::show_window  window;
 	    end;
@@ -168,20 +190,15 @@ make_mouse_watcher  xsession  window;
 	# Divide the topwindow into a
 	# drawing window over a button window:
 	#
-	fun make_drawing_and_button_windows  xdisplay  xauthentication
+	fun make_drawing_and_button_windows  (screen, topwindow, top_kidplug)
 	    =
-	    {   (make_topwindow  xdisplay  xauthentication)
-		    ->
-		    (screen, top_window, top_kidplug);
-		    
-
-		(xc::size_of_window  top_window)
+	    {   (xc::size_of_window  topwindow)
 		    ->
 		    xg::SIZE topwindow_size;
 
 		drawing_window
 		    =
-		    xw::make_simple_subwindow  top_window
+		    xw::make_simple_subwindow  topwindow
 		      {
 			site => drawing_window_site  topwindow_size,
 			#
@@ -191,7 +208,7 @@ make_mouse_watcher  xsession  window;
 
 		button_window
 		    =
-		    xw::make_simple_subwindow  top_window
+		    xw::make_simple_subwindow  topwindow
 		      {
 			site =>  button_window_site  topwindow_size,
 			#
@@ -202,7 +219,7 @@ make_mouse_watcher  xsession  window;
 		xw::show_window  drawing_window;
 		xw::show_window  button_window;
 
-		{ top_window,
+		{ topwindow,
 		  top_kidplug,
 		  drawing_window,
 		  button_window
@@ -471,7 +488,7 @@ trace .{ "drawing_window loop -- doing select []"; };
 
 	fun make_toplevel_threads
             {
-              top_window,
+              topwindow,
               top_kidplug  => xi::KIDPLUG { from_keyboard', from_mouse', from_other', ... },
               button_window,
               drawing_window
@@ -558,8 +575,16 @@ trace .{ "main router for (;;) -- above select []"; };
 	fun run_triangle_app  xdisplay  xauthentication
 	    =
 	    {
+trace .{ "run_triangle_app -- above make_topwindow ()"; };
+		(make_topwindow  xdisplay  xauthentication)
+		    ->
+		    ( screen,
+		      topwindow,
+		      kidplug
+		    );
+
 trace .{ "run_triangle_app -- above make_drawing_and_button_windows ()"; };
-	        (make_drawing_and_button_windows  xdisplay  xauthentication)
+	        (make_drawing_and_button_windows (screen, topwindow, kidplug))
 		    ->
 		    (x as { button_window, drawing_window, ... } );
 
@@ -575,6 +600,8 @@ trace .{ "run_triangle_app -- above make_draw_threads ()"; };
 		    make_button_threads (button_window, button_kidplug),
 		    draw_kidplug
 		  );
+
+		make_selftest_thread  { topwindow, drawing_window, button_window };
 trace .{ "run_triangle_app -- DONE"; };
 	    };
 

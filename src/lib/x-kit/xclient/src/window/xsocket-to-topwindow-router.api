@@ -90,6 +90,7 @@ herein
 	    ->
 	    ge::Box;
 
+
 	# Infrastructure -- see comments in src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
 	#
 	note_window's_seen_first_expose_oneshot
@@ -100,6 +101,26 @@ herein
 	    )
 	    ->
 	    Void;
+
+	# This function makes the above oneshot
+	# available to clients with access to
+	# the Window but not the Widget.  Clients
+	# with access to the Widget should use the
+	#
+	#     widget::seen_first_redraw_oneshot_of
+	#
+	# call because it is guaranteed to return
+	# the required oneshot;  the below call may
+	# return NULL, in which case the client thread
+	# will have to sleep a bit and then retry:
+	#
+	seen_first_expose_oneshot_of
+	    :
+	    ( Xsocket_To_Topwindow_Router,
+              xt::Window_Id
+	    )
+	    ->
+	    Null_Or(Oneshot_Maildrop(Void));
     };
 end;						# stipulate
 

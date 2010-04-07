@@ -104,8 +104,8 @@ herein
 	draw_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::draw_tracing"  };
 	dm_tracing     = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::dm_tracing" };
 	#
-	winreg_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::winreg_tracing"      };
-	toplevel_tracing = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::toplevel_tracing"   };
+	xsocket_to_topwindow_router_tracing   = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::xsocket_to_topwindow_router_tracing"  };
+	topwindow_to_widget_router_tracing    = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::topwindow_to_widget_router_tracing"   };
 	#
 	graphics_context_tracing = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::graphics_context_tracing" };
 	selection_tracing        = tracing::make_trace_tree_leaf { parent => lib_tracing, name => "xtracing::selection_tracing"        };

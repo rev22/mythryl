@@ -610,10 +610,10 @@ trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_v
 		un::format  number_string::DECIMAL  n;
 
 
-	    fun queue_element_to_string (ERROR_CHECK       (n, _)) => "  ERROR_CHECK #"    + (seqn_to_string n);
-		queue_element_to_string (ONE_REPLY         (n, _)) => "  ONE_REPLY #"      + (seqn_to_string n);
-		queue_element_to_string (MULTI_REPLY (n, _, _, _)) => "  MULTI_REPLY #"    + (seqn_to_string n);
-		queue_element_to_string (EXPOSURE_REPLY    (n, _)) => "  EXPOSURE_REPLY #" + (seqn_to_string n);
+	    fun queue_element_to_string (ERROR_CHECK       (n, _)) => "  ERROR_CHECK seqn=="    + (seqn_to_string n);
+		queue_element_to_string (ONE_REPLY         (n, _)) => "  ONE_REPLY seqn=="      + (seqn_to_string n);
+		queue_element_to_string (MULTI_REPLY (n, _, _, _)) => "  MULTI_REPLY seqn=="    + (seqn_to_string n);
+		queue_element_to_string (EXPOSURE_REPLY    (n, _)) => "  EXPOSURE_REPLY seqn==" + (seqn_to_string n);
 	    end;
 
 	    fun pending_reply_queue_to_string ([], [])
@@ -758,9 +758,9 @@ trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s)/BOT pending_reply_que
 fun drop_outdated_pending_replies q
     =
     {
-trace  .{ sprintf "xsocket::drop_outdated_pending_replies/TOP: n =%s q =%s" (seqn_to_string n) (pending_reply_queue_to_string q); }; result =
+trace  .{ sprintf "xsocket::drop_outdated_pending_replies/TOP: seqn =%s q =%s" (seqn_to_string n) (pending_reply_queue_to_string q); }; result =
 drop_outdated_pending_replies' q;
-trace  .{ sprintf "xsocket::drop_outdated_pending_replies/TOP: n =%s q =%s" (seqn_to_string n) (pending_reply_queue_to_string q); }; result;
+trace  .{ sprintf "xsocket::drop_outdated_pending_replies/TOP: seqn =%s q =%s" (seqn_to_string n) (pending_reply_queue_to_string q); }; result;
     }; 
 
 		end;
@@ -880,7 +880,7 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 			pending_reply_queue';
 
 		    _   =>
-    /* DEBUG */         {   trace .{ sprintf "IMPOSSIBLE ERROR: xsocket::handle_error_message(n==%s: BOGUS PENDING REPLY QUEUE, queue =%s" (seqn_to_string n) (pending_reply_queue_to_string pending_reply_queue);  };
+    /* DEBUG */         {   trace .{ sprintf "IMPOSSIBLE ERROR: xsocket::handle_error_message(seqn==%s: BOGUS PENDING REPLY QUEUE, queue =%s" (seqn_to_string n) (pending_reply_queue_to_string pending_reply_queue);  };
 			    xgripe::impossible "ERROR: xsocket::handle_error_message: bogus pending reply queue]";
     /* DEBUG */         };
 		esac;
@@ -1089,7 +1089,7 @@ trace  .{ "xsocket::sequencer_imp: do_from_x/TOP"; };
 
 						    seqn = get_seq_n();
 
-trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling error message %s.)" (seqn_to_string seqn); };
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling error message seqn==%s.)" (seqn_to_string seqn); };
 						    give (error_sink_slot, (seqn, msg));
 
 						    (seqn, last_seqn_sent, handle_error_message (seqn, msg, pending_reply_queue));
@@ -1100,7 +1100,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling error message %s.
 
 						    seqn = get_seq_n();
 
-trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling reply message %s.)" (seqn_to_string seqn); };
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling reply message seqn==%s.)" (seqn_to_string seqn); };
 						    (seqn, last_seqn_sent, handle_reply_message (seqn, msg, pending_reply_queue));
 						};
 
@@ -1120,7 +1120,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling reply message %s.
 
 						    seqn = get_seq_n();
 
-trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling GraphicsExpose event %s.)" (seqn_to_string seqn); };
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling GraphicsExpose event seqn==%s.)" (seqn_to_string seqn); };
 						    include event_types;
 
 						    boxes = read_expose_event_train ([], wire_to_value::decode_graphics_expose msg)
@@ -1159,7 +1159,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling GraphicsExpose ev
 					0u14 => {   # NoExpose event:
 
 						    seqn = get_seq_n();
-trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling NoExpose event %s.)" (seqn_to_string seqn); };
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling NoExpose event seqn==%s.)" (seqn_to_string seqn); };
 
 						    (seqn, last_seqn_sent, handle_expose_message (seqn, [], pending_reply_queue));
 						};
@@ -1168,7 +1168,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling NoExpose event %s
 					_    => {   # Other event messages:
 
 						    seqn = get_seq_n();
-trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event %s.)" (seqn_to_string seqn); };
+trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seqn==%s.)" (seqn_to_string seqn); };
 
 						    give (to_xbuf_slot, (code, msg));
 
@@ -1385,7 +1385,7 @@ trace  .{  "xsocket.pkg: make_xsocket/EEE";  };
     ******/
 trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
     /* DEBUG */
-                xtracing::make_thread  "Sequencer_Imp"  (
+                xtracing::make_thread  "sequencer_imp"  (
 		    sequencer_imp
 		      ( client_to_sequencer_slot,
 			inbuf_to_sequencer_slot,

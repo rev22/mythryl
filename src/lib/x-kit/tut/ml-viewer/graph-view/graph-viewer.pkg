@@ -839,7 +839,7 @@ herein
 
 				fun do_mom (xi::ETC_REDRAW rs, state)
 					=>
-					{   xtracing::print_if xtracing::toplevel_tracing .{ "redraw"; };
+					{   xtracing::print_if xtracing::topwindow_to_widget_router_tracing .{ "redraw"; };
 					    apply (drawr state) rs;
 					    state;
 					};
@@ -854,7 +854,7 @@ herein
 
 					    new_state = set_view (newsz, winrect, do_resize (bbox, newr, oldr), picked);
 
-					    xtracing::print_if xtracing::toplevel_tracing .{ "resize."; };
+					    xtracing::print_if xtracing::topwindow_to_widget_router_tracing .{ "resize."; };
 					    xd::clear_drawable (xd::drawable_of_window window);
 					    init_loop (newsz, new_state);
 					};

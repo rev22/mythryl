@@ -223,9 +223,23 @@ herein
 	    # Get size of window plus its location
 	    # relative to parent.
 
-	note_seen_first_expose_oneshot: Window -> Oneshot_Maildrop(Void) -> Void;
+	note_seen_first_expose_oneshot:   Window -> Oneshot_Maildrop(Void) -> Void;
 	    #
 	    # Infrastructure -- see comments in src/lib/x-kit/xclient/src/window/window.pkg
+
+	seen_first_expose_oneshot_of:     Window -> Null_Or(Oneshot_Maildrop(Void));
+	    #
+	    # This function makes the above oneshot
+	    # available to clients with access to
+	    # the Window but not the Widget.  Clients
+	    # with access to the Widget should use the
+	    #
+	    #     widget::seen_first_redraw_oneshot_of
+	    #
+	    # call because it is guaranteed to return
+	    # the required oneshot;  the above call may
+	    # return NULL, in which case the client thread
+	    # will have to sleep a bit and then retry.
     };
 
 end;

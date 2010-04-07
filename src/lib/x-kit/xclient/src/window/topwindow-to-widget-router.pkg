@@ -29,9 +29,12 @@ stipulate
     package sn  =  xsession;				# xsession			is from   src/lib/x-kit/xclient/src/window/xsession.pkg
     package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     package wc  =  widget_cable;			# widget_cable			is from   src/lib/x-kit/xclient/src/window/widget-cable.pkg
+    package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
 herein
 
     package topwindow_to_widget_router: (weak)  Topwindow_To_Widget_Router {	# Topwindow_To_Widget_Router	is from   src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.api
+
+	trace =  xtr::print_if  xtr::topwindow_to_widget_router_tracing;	# Conditionally write strings to tracing.log or whatever.
 
 	# The top-level window (usually a shell widget)
 	# should never pass on CO message 					# "CO" == "command out"
@@ -307,8 +310,7 @@ herein
 		       =>
 		       always_void
 			   ==>	
-			  .{   xtracing::print_if xtracing::toplevel_tracing
-				   .{ cat [ "[topwindow_to_widget_router::route_xevent: unexpected event ", xevent_to_string::xevent_name event, "]" ];  };
+			  .{   trace .{ cat [ "[topwindow_to_widget_router::route_xevent: unexpected event ", xevent_to_string::xevent_name event, "]" ];  };
 			   };
 
 		end;			# fun route_xevent
@@ -316,8 +318,7 @@ herein
 	  #  +DEBUG 
 		fun debug_router (result as (_, xevent))
 		    = 
-		    {   xtracing::print_if xtracing::toplevel_tracing
-			    .{ cat [ "topwin2widget: get ", xevent_to_string::xevent_name xevent ];  };
+		    {   trace  .{ cat [ "topwin2widget: get ", xevent_to_string::xevent_name xevent ];  };
 
 			result;
 		    };
@@ -413,21 +414,21 @@ herein
 				arg as (_, et::x::EXPOSE _)
 				    =>
 				    {
-											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: ExposeEvt"; };
+											    /* DEBUG */ trace .{ "init_router: ExposeEvt"; };
 					give  (dm_config_slot,  di::DM_FIRST_EXPOSE);
-											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: DM_FirstExpose sent"; };
+											    /* DEBUG */ trace .{ "init_router: DM_FirstExpose sent"; };
 					(arg ! buf);
 				    };
 
 				arg => loop (arg ! buf);
 			    esac;
 
-											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ cat ["initRouter: winId = ", xtype_to_string::xid_to_string window_id]; };
+											    /* DEBUG */ trace .{ cat ["init_router: window_id = ", xtype_to_string::xid_to_string window_id]; };
 			  router (reverse (loop []));
-											    /* DEBUG */ xtracing::print_if xtracing::toplevel_tracing .{ "initRouter: go"; };
+											    /* DEBUG */ trace .{ "init_router: go"; };
 		  };
 
-		  xtracing::make_thread  "topwindow_to_widget_router"  init_router;
+		  xtr::make_thread  "topwindow_to_widget_router"  init_router;
 
 
 		  (kidplug, top_window, delete_slot);
