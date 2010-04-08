@@ -123,14 +123,63 @@ herein
               button_window:    xw::Window
             }
 	    =
-	    {   fun selftest ()
+	    {   fun get_seen_first_expose_oneshot
+			window
+		    =
+		    case (xw::seen_first_expose_oneshot_of  window)
+			#
+			THE oneshot =>  oneshot;
+			NULL        =>  get_seen_first_expose_oneshot window;		# Cannot actually happen.
+		    esac;
+
+		# Wait for drawing window to
+		# get its first EXPOSE x event:
+		#
+		fun wait_for_first_drawing_window_expose ()
 		    =
 		    {
-			# First order of business is to wait
-			# until things are up and running.
-		    };	
+			# Normally we would use the
+			#
+			#     seen_first_redraw_oneshot_of
+			#
+			# from 
+			#
+			#     src/lib/x-kit/widget/basic/widget.api
+			#
+			# but the logic here doesn't use the widget
+			# support (I'm guessing this app predates
+			# the widget layer) so we have to use the
+			# following call instead:
+			#
+			# 
+			seen_first_drawing_window_expose_oneshot
+			    =
+			    get_seen_first_expose_oneshot
+				#
+				drawing_window;
 
-		xtr::make_thread "triangle-app selftest" selftest;
+			get  seen_first_drawing_window_expose_oneshot;
+		    };
+
+		fun selftest ()
+		    =
+		    {   # First order of business is to wait
+			# until things are up and running:
+			#
+trace .{ "Waiting for first drawing window EXPOSE..."; };
+			wait_for_first_drawing_window_expose ();
+trace .{ "Seen first drawing window EXPOSE."; };
+
+			# Get size of drawing window:
+			#
+			(xw::get_window_site  drawing_window)
+			    ->
+			    xg::BOX { row, col, high, wide };
+
+trace .{ sprintf "drawing window box = { row %d, col %d, high %d, wide %d }." row col high wide; };
+		    };
+
+		xtr::make_thread "tri-app selftest" selftest;
 	    };
 
 	fun make_topwindow  xdisplay  xauthentication
@@ -146,7 +195,7 @@ herein
 
 		window_size   =  xg::SIZE { wide => 450, high => 400 };
 
-		my (window, kidplug, delete_slot)			# 2009-12-10 CrT: Had to add 'delete_slot' so it would compile.
+		my (window, kidplug, delete_slot)					# 2009-12-10 CrT: Had to add 'delete_slot' so it would compile.
 		    =
 		    xw::make_simple_top_window  screen
 		      {
@@ -206,6 +255,11 @@ herein
 			background_color => THE  xc::rgb8_color0
 		      };
 
+trace .{ "make_drawing_and_button_windows noting drawing window oneshot..."; };
+		xw::note_seen_first_expose_oneshot
+		    drawing_window
+		    (make_oneshot_maildrop ());
+
 		button_window
 		    =
 		    xw::make_simple_subwindow  topwindow
@@ -215,6 +269,11 @@ herein
 			border_color     =>  NULL,
 			background_color =>  THE  xc::rgb8_white
 		      };
+
+trace .{ "make_drawing_and_button_windows noting button window oneshot..."; };
+		xw::note_seen_first_expose_oneshot
+		    button_window
+		    (make_oneshot_maildrop ());
 
 		xw::show_window  drawing_window;
 		xw::show_window  button_window;

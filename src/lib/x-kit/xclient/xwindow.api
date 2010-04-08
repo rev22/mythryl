@@ -200,9 +200,64 @@ herein
 	grab_keyboard:      Window -> Int;
 	ungrab_keyboard:    Window -> Int;
 
+	get_window_site:    Window -> xg::Box;
+
 	note_seen_first_expose_oneshot: Window -> Oneshot_Maildrop(Void) -> Void;
 	    #
 	    # Infrastructure -- see comments in src/lib/x-kit/xclient/src/window/window.pkg
+
+	seen_first_expose_oneshot_of:     Window -> Null_Or(Oneshot_Maildrop(Void));
+	    #
+	    # This function makes the above oneshot
+	    # available to clients with access to
+	    # the Window but not the Widget.  Clients
+	    # with access to the Widget should use the
+	    #
+	    #     widget::seen_first_redraw_oneshot_of
+	    #
+	    # call because it is guaranteed to return
+	    # the required oneshot;  the above call may
+	    # return NULL, in which case the client thread
+	    # will have to sleep a bit and then retry.
+
+
+	# Make 'window' receive a (faked) mousebutton click at 'point'.
+	# 'window' should be the sub/window actually holding the widget to be activate.
+	# 'point'  should be the click point in that window's coordinate system.
+	#
+	# NOTE! We send the event via the X server to provide full end-to-end testing;
+	# the resulting network round trip will be quite slow, making this call
+	# generally inappropriate for anything other than unit test code.
+	#
+	send_mousebutton_press_xevent
+	    :
+	    { window:		Window,				# Window handling the mouse-button click event.
+	      button:		xinput::Mousebutton,		# Mouse button just clicked down.
+	      point:		xg::Point
+	    }
+	    ->
+	    Void
+	    ;
+
+	# Counterpart of previous:  make 'window' receive a (faked) mousebutton release at 'point'.
+	# 'window' should be the sub/window actually holding the widget to be activate.
+	# 'point'  should be the button-release point in that window's coordinate system.
+	#
+	# NOTE! We send the event via the X server to provide full end-to-end testing;
+	# the resulting network round trip will be quite slow, making this call
+	# generally inappropriate for anything other than unit test code.
+	#
+	send_mousebutton_release_xevent
+	    :
+	    { window:		Window,				# Window handling the mouse-button release event.
+	      button:		xinput::Mousebutton,		# Mouse button just released.
+	      point:		xg::Point
+	    }
+	    ->
+	    Void
+	    ;
+
+
     };						# api Xwindow
 end;
 

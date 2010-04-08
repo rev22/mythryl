@@ -775,6 +775,12 @@ herein
 	    s2t::get_window_site (xsocket_to_topwindow_router, window_id);
 
 
+	# Convenience wrappers for the corresponding functions in
+	#     src/lib/x-kit/xclient/src/window/xsession.api
+	#
+	fun send_mousebutton_press_xevent   (arg as { window => (dt::WINDOW { screen => sn::SCREEN { xsession, ... }, ... }), ... }) =   sn::send_mousebutton_press_xevent    xsession  arg;
+	fun send_mousebutton_release_xevent (arg as { window => (dt::WINDOW { screen => sn::SCREEN { xsession, ... }, ... }), ... }) =   sn::send_mousebutton_release_xevent  xsession  arg;
+
 
 	# This call is infrastructure.
 	#

@@ -267,9 +267,21 @@ herein
 	    ;
 
 
+	# NB: Rather than using the following xevent-send calls,
+	#     you will often find it more convenient to use the
+	#     corresponding calls in
+	#
+	#     src/lib/x-kit/xclient/src/window/window.api
+	#     src/lib/x-kit/xclient/xwindow.api
+
+
 	# Make 'window' receive a (faked) mousebutton click at 'point'.
 	# 'window' should be the sub/window actually holding the widget to be activate.
 	# 'point'  should be the click point in that window's coordinate system.
+	#
+	# NOTE! We send the event via the X server to provide full end-to-end testing;
+	# the resulting network round trip will be quite slow, making this call
+	# generally inappropriate for anything other than unit test code.
 	#
 	send_mousebutton_press_xevent
 	    :
@@ -286,6 +298,10 @@ herein
 	# Counterpart of previous:  make 'window' receive a (faked) mousebutton release at 'point'.
 	# 'window' should be the sub/window actually holding the widget to be activate.
 	# 'point'  should be the button-release point in that window's coordinate system.
+	#
+	# NOTE! We send the event via the X server to provide full end-to-end testing;
+	# the resulting network round trip will be quite slow, making this call
+	# generally inappropriate for anything other than unit test code.
 	#
 	send_mousebutton_release_xevent
 	    :
