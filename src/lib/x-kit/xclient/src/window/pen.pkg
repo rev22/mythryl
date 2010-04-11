@@ -92,20 +92,19 @@ herein
 
 	    fun check_item chkfn
 		=
-		fn v
-		    =
-		    if (chkfn v)   v;
-		    else           raise exception BAD_PEN_TRAIT;
-		    fi;
+		fn v =  if (chkfn v)   v;
+			else           raise exception BAD_PEN_TRAIT;
+			fi;
 
 	    check_card16 =  unt::from_int  o  (check_item  rc::valid16);
 	    check_card8  =  unt::from_int  o  (check_item  rc::valid8);
 
-	    check_point =  check_item  ge::valid_point;
-	    check_box   =  check_item  ge::valid_box;
+	    check_point  =  check_item  ge::valid_point;
+	    check_box    =  check_item  ge::valid_box;
 
 	    check_boxes  =  check_list  check_box;
 	    check_card8s =  check_list  check_card8;
+
 
 	    # Map a pen trait to its slot and representation 
 	    #
@@ -117,7 +116,9 @@ herein
 		    =>
 		    (0, IS_WIRE (v2w::graph_op_to_wire  gr_op));
 
-		trait_to_rep (PLANE_MASK (xt::PLANEMASK mask)) => (1, IS_WIRE mask);
+		trait_to_rep (PLANE_MASK (xt::PLANEMASK mask))
+		    =>
+		    (1, IS_WIRE mask);
 
 		trait_to_rep (FOREGROUND rgb8)
 		    =>

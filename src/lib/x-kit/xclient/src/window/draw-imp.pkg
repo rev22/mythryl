@@ -16,7 +16,7 @@ stipulate
     #
     package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     package ge  =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package gi  =  graphics_context_imp;		# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package gi  =  graphics_context_cache;		# graphics_context_cache		is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
     package m1  =  oneshot_maildrop;			# oneshot_maildrop		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
     package pg  =  pen_guts;				# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
@@ -98,22 +98,23 @@ herein
 
 
 	/* +DEBUG 
-	fun dopToString (DOP_POLY_POINT    _) = "PolyPoint"
-	  | dopToString (DOP_POLY_LINE     _) = "PolyLine"
-	  | dopToString (DOP_POLY_SEG      _) = "PolySeg"
-	  | dopToString (DOP_FILL_POLY     _) = "PolyFillPoly"
-	  | dopToString (DOP_POLY_BOX      _) = "PolyRect"
-	  | dopToString (DOP_POLY_FILL_BOX _) = "PolyFillRect"
-	  | dopToString (DOP_POLY_ARC      _) = "PolyArc"
-	  | dopToString (DOP_POLY_FILL_ARC _) = "PolyFillArc"
-	  | dopToString (DOP_COPY_AREA     _) = "CopyArea"
-	  | dopToString (DOP_COPY_PLANE    _) = "CopyPlane"
-	  | dopToString (DOP_COPY_PMAREA   _) = "CopyPMArea"
-	  | dopToString (DOP_COPY_PMPLANE  _) = "CopyPMPlane"
-	  | dopToString (DOP_CLEAR_AREA    _) = "ClearArea"
-	  | dopToString (DOP_PUT_IMAGE     _) = "PutImage"
-	  | dopToString (DOP_POLY_TEXT8    _) = "PolyText8"
-	  | dopToString (DOP_IMAGE_TEXT8   _) = "ImageText8"
+	fun dop_to_string (DOP_POLY_POINT    _) = "PolyPoint";
+	    dop_to_string (DOP_POLY_LINE     _) = "PolyLine";
+	    dop_to_string (DOP_POLY_SEG      _) = "PolySeg";
+	    dop_to_string (DOP_FILL_POLY     _) = "PolyFillPoly";
+	    dop_to_string (DOP_POLY_BOX      _) = "PolyRect";
+	    dop_to_string (DOP_POLY_FILL_BOX _) = "PolyFillRect";
+	    dop_to_string (DOP_POLY_ARC      _) = "PolyArc";
+	    dop_to_string (DOP_POLY_FILL_ARC _) = "PolyFillArc";
+	    dop_to_string (DOP_COPY_AREA     _) = "CopyArea";
+	    dop_to_string (DOP_COPY_PLANE    _) = "CopyPlane";
+	    dop_to_string (DOP_COPY_PMAREA   _) = "CopyPMArea";
+	    dop_to_string (DOP_COPY_PMPLANE  _) = "CopyPMPlane";
+	    dop_to_string (DOP_CLEAR_AREA    _) = "ClearArea";
+	    dop_to_string (DOP_PUT_IMAGE     _) = "PutImage";
+	    dop_to_string (DOP_POLY_TEXT8    _) = "PolyText8";
+	    dop_to_string (DOP_IMAGE_TEXT8   _) = "ImageText8";
+	end;
 	 -DEBUG */
 
 
@@ -135,79 +136,82 @@ herein
 		=
 		((unsafe::cast a) : Int) == ((unsafe::cast b) : Int);
 
-	    # Bit masks for the various components of a pen.
+	    # Bitmasks for the various components of a pen.
 	    # These should track the slot numbers given in PenValues.
 
-	    pen_function              = (0u1 << 0u0);
-	    pen_plane_mask            = (0u1 << 0u1);
+	    pen_function	= (0u1 << 0u0);
+	    pen_plane_mask	= (0u1 << 0u1);
 
-	    pen_foreground            = (0u1 << 0u2);
-	    pen_background            = (0u1 << 0u3);
+	    pen_foreground	= (0u1 << 0u2);
+	    pen_background	= (0u1 << 0u3);
 
-	    pen_line_width            = (0u1 << 0u4);
-	    pen_line_style            = (0u1 << 0u5);
+	    pen_line_width	= (0u1 << 0u4);
+	    pen_line_style	= (0u1 << 0u5);
 
-	    pen_cap_style             = (0u1 << 0u6);
-	    pen_join_style		= (0u1 << 0u7);
+	    pen_cap_style	= (0u1 << 0u6);
+	    pen_join_style	= (0u1 << 0u7);
 
-	    pen_fill_style		= (0u1 << 0u8);
-	    pen_fill_rule		= (0u1 << 0u9); 
+	    pen_fill_style	= (0u1 << 0u8);
+	    pen_fill_rule	= (0u1 << 0u9); 
 
-	    pen_tile		        = (0u1 << 0u10);
+	    pen_tile		= (0u1 << 0u10);
 	    pen_stipple		= (0u1 << 0u11);
 
-	    pen_tile_stip_origin	= (0u1 << 0u12);
+	    pen_tile_stip_origin= (0u1 << 0u12);
 	    pen_subwindow_mode	= (0u1 << 0u13);
 
-	    pen_clip_origin		= (0u1 << 0u14);
-	    pen_clip_mask		= (0u1 << 0u15);
+	    pen_clip_origin	= (0u1 << 0u14);
+	    pen_clip_mask	= (0u1 << 0u15);
 
-	    pen_dash_offset		= (0u1 << 0u16);
-	    pen_dash_list		= (0u1 << 0u17);
+	    pen_dash_offset	= (0u1 << 0u16);
+	    pen_dash_list	= (0u1 << 0u17);
 
-	    pen_arc_mode		= (0u1 << 0u18);
-	    pen_exposures		= 0u0; #  (0u1 << 0u19) 
+	    pen_arc_mode	= (0u1 << 0u18);
+	    pen_exposures	= 0u0; #  (0u1 << 0u19) 
 
-	    my std_comp		#  the standard pen components used by most ops 
-		  = pen_function
-		  | pen_plane_mask
-		  | pen_subwindow_mode
-		  | pen_clip_origin
-		  | pen_clip_mask
-		  | pen_foreground
-		  | pen_background
-		  | pen_tile
-		  | pen_stipple
-		  | pen_tile_stip_origin
-		  ;
+	    stipulate
+		my std_comp			# The standard pen components used by most ops.
+		      = pen_function
+		      | pen_plane_mask
+		      | pen_subwindow_mode
+		      | pen_clip_origin
+		      | pen_clip_mask
+		      | pen_foreground
+		      | pen_background
+		      | pen_tile
+		      | pen_stipple
+		      | pen_tile_stip_origin
+		      ;
 
-	    my std_line_comp		#  the components used by line-drawing operations 
-		  =  std_comp
-		  | pen_line_width
-		  | pen_line_style
-		  | pen_cap_style
-		  | pen_join_style
-		  | pen_fill_style
-		  | pen_dash_offset
-		  | pen_dash_list
-		  ;
+		my std_line_comp		# The components used by line-drawing operations.
+		      =  std_comp
+		      | pen_line_width
+		      | pen_line_style
+		      | pen_cap_style
+		      | pen_join_style
+		      | pen_fill_style
+		      | pen_dash_offset
+		      | pen_dash_list
+		      ;
+	    herein
 
-	    fun pen_vals_used (DOP_POLY_POINT    _)	=>  std_comp;
-		pen_vals_used (DOP_POLY_LINE     _)	=>  std_line_comp;
-		pen_vals_used (DOP_POLY_SEG      _)	=>  std_line_comp;
-		pen_vals_used (DOP_FILL_POLY     _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_POLY_BOX      _)	=>  std_line_comp;
-		pen_vals_used (DOP_POLY_FILL_BOX _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_POLY_ARC      _)	=>  std_line_comp;
-		pen_vals_used (DOP_POLY_FILL_ARC _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_COPY_AREA     _)	=>  std_comp|pen_exposures;
-		pen_vals_used (DOP_COPY_PLANE    _)	=>  std_comp|pen_exposures;
-		pen_vals_used (DOP_COPY_PMAREA   _)	=>  std_comp;
-		pen_vals_used (DOP_COPY_PMPLANE  _)	=>  std_comp;
-		pen_vals_used (DOP_CLEAR_AREA    _)	=> 0u0;
-		pen_vals_used (DOP_PUT_IMAGE     _)	=>  std_comp;
-		pen_vals_used (DOP_POLY_TEXT8 _)	=> (std_comp|pen_fill_style);
-		pen_vals_used (DOP_IMAGE_TEXT8 _)	=>  std_comp;
+		fun pen_vals_used (DOP_POLY_POINT    _)	=>  std_comp;
+		    pen_vals_used (DOP_POLY_LINE     _)	=>  std_line_comp;
+		    pen_vals_used (DOP_POLY_SEG      _)	=>  std_line_comp;
+		    pen_vals_used (DOP_FILL_POLY     _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (DOP_POLY_BOX      _)	=>  std_line_comp;
+		    pen_vals_used (DOP_POLY_FILL_BOX _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (DOP_POLY_ARC      _)	=>  std_line_comp;
+		    pen_vals_used (DOP_POLY_FILL_ARC _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (DOP_COPY_AREA     _)	=>  std_comp|pen_exposures;
+		    pen_vals_used (DOP_COPY_PLANE    _)	=>  std_comp|pen_exposures;
+		    pen_vals_used (DOP_COPY_PMAREA   _)	=>  std_comp;
+		    pen_vals_used (DOP_COPY_PMPLANE  _)	=>  std_comp;
+		    pen_vals_used (DOP_CLEAR_AREA    _)	=> 0u0;
+		    pen_vals_used (DOP_PUT_IMAGE     _)	=>  std_comp;
+		    pen_vals_used (DOP_POLY_TEXT8    _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (DOP_IMAGE_TEXT8   _)	=>  std_comp;
+		end;
 	    end;
 
 #	    stipulate
@@ -445,12 +449,12 @@ herein
 		    | WITH_FONT xt::Font_Id
 		    | SET_FONT  xt::Font_Id;
 
-		  acq_gc =  gi::acquire_graphics_context  gcontext_imp;
-		  rel_gc =  gi::release_graphics_context  gcontext_imp;
+		  acq_gc =  gi::allocate_graphics_context  gcontext_imp;
+		  rel_gc =  gi::free_graphics_context  gcontext_imp;
 
-		  acq_gcwith_font    =   gi::acquire_graphics_context_with_font     gcontext_imp;
-		  acq_gcand_set_font =   gi::acquire_graphics_context_and_set_font  gcontext_imp;
-		  rel_gcand_font     =   gi::release_graphics_context_and_font      gcontext_imp;
+		  acq_gcwith_font    =   gi::allocate_graphics_context_with_font     gcontext_imp;
+		  acq_gcand_set_font =   gi::allocate_graphics_context_and_set_font  gcontext_imp;
+		  rel_gcand_font     =   gi::free_graphics_context_and_font      gcontext_imp;
 
 		  request_dop
 		      =

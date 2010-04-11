@@ -78,7 +78,7 @@
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
 #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
 #     src/lib/x-kit/xclient/src/window/font-imp.pkg
-#     src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+#     src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
 #     src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
 #     src/lib/x-kit/xclient/src/window/keymap-imp.pkg
 #     src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
@@ -129,7 +129,7 @@ stipulate
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     #
-    package ge  = geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package ge  =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     #
     trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
@@ -329,9 +329,9 @@ herein
 				read (n, vl)
 				    =>
 				    {
-trace  .{  "xsocket.pkg: inbuf_imp: read_vector: ABOVE call to socket::receive_vector";  };
+trace  .{  "read_vector: ABOVE call to socket::receive_vector";  };
                                         v = rse::do_syscall_retry_on_eintr socket::receive_vector (socket, n);	# 2010-03-15 CrT: Added rse::do_syscall_retry_on_eintr here, not sure why it was apparently not needed in SML/NJ version.
-trace  .{  "xsocket.pkg: inbuf_imp: read_vector: BELOW call to socket::receive_vector";  };
+trace  .{  "read_vector: BELOW call to socket::receive_vector";  };
 
 					case (v8::length v)
 					    #
@@ -1059,7 +1059,7 @@ trace  .{ sprintf "xsocket::sequencer_imp_main_loop/TOP: last_seqn_read s=%s las
                                 }
 				=
 				{
-trace  .{ "xsocket::sequencer_imp: do_from_x/TOP"; };
+trace  .{ "do_from_x/TOP"; };
 				    # NOTE: this doesn't work if there are 2**17
 				    # outgoing messages between replies/events.
 				    #
@@ -1220,16 +1220,16 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 
 		fun decode (k, s)
 		    =
-{ trace  .{  "xsocket.pkg: xbuf_imp: decode:   calling wire_to_value::decode_xevent ...";  }; result =
-		    #2 (wire_to_value::decode_xevent (k, s));
-  trace  .{  "xsocket.pkg: xbuf_imp: decode: back from wire_to_value::decode_xevent.";  }; result;
-};
+		    {   my (sevenbit, event) = (wire_to_value::decode_xevent (k, s));
+trace  .{  sprintf "%s <=== (fun decode. %s)" (xevent_to_string::xevent_name  event) (sevenbit ?? "" :: "OPCODE IS NOT 7-BIT!!") ;  };
+			event;
+		    };
 
 		fun pack_expose_events (e as x::EXPOSE { exposed_window_id, ... } )
 		    =
-{ trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events:   calling pack() ...";  }; result =
+{ trace  .{  "pack_expose_events:   calling pack() ...";  }; result =
 		    x::EXPOSE { exposed_window_id, boxes => pack([], e), count => 0 };
-  trace  .{  "xsocket.pkg: xbuf_imp: pack_expose_events: back from pack.";  }; result;
+  trace  .{  "pack_expose_events: back from pack.";  }; result;
 }
 		    where
 			fun pack (rl, x::EXPOSE { boxes, count=>0, ... } )
@@ -1250,7 +1250,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 
 		fun do_xevent (msg, q)
 		    =
-{ trace  .{  "xsocket.pkg: xbuf_imp: do_xevent/TOP ...";  }; result =
+{ trace  .{  "do_xevent/TOP ...";  }; result =
 		    case (decode msg)
 			#
 			(e as x::EXPOSE _)
@@ -1259,7 +1259,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 
 			e => (e ! q);
 		    esac;
-  trace  .{  "xsocket.pkg: xbuf_imp: do_xevent/BOT.";  }; result;
+  trace  .{  "do_xevent/BOT.";  }; result;
 };
 		take_xevent' = take'  from_sequencer_slot;
 
@@ -1271,9 +1271,9 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 				=>
 #				loop  (do_xevent  (take  from_sequencer_slot,  []),  []);
 {
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],[])/TOP";  }; result =
+ trace  .{  "route_p: loop ([],[])/TOP";  }; result =
  (do_xevent  (take  from_sequencer_slot,  []),  []);
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],[])/BOT";  };
+ trace  .{  "route_p: loop ([],[])/BOT";  };
  loop result;
 };
 
@@ -1281,9 +1281,9 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 				=>
 #				loop (reverse rear, []);
 {
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],rear)/TOP";  }; result =
+ trace  .{  "route_p: loop ([],rear)/TOP";  }; result =
  (reverse rear, []);
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop ([],rear)/BOT";  };
+ trace  .{  "route_p: loop ([],rear)/BOT";  };
  loop result;
 };
 
@@ -1302,7 +1302,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 #				    ]
 #				);
 {
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop (front as (x ! rest), rear)/TOP";  }; result =
+ trace  .{  "route_p: loop (front as (x ! rest), rear)/TOP";  }; result =
  select [
      #
      take_xevent'
@@ -1310,7 +1310,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 	 (fn mail
              =
              {
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop: Did take_xevent' branch";  };
+ trace  .{  "route_p: loop: Did take_xevent' branch";  };
                  (front, do_xevent (mail, rear));
              }
          ),
@@ -1318,11 +1318,11 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
      give' (to_widget_slot, x)
 	 ==>
 	 .{
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop: Did give' (to_widget_slot, x) branch";  };
+ trace  .{  "route_p: loop: Did give' (to_widget_slot, x) branch";  };
               (rest, rear);
           }
  ];
- trace  .{  "xsocket.pkg: xbuf_imp: route_p: loop (front as (x ! rest), rear)/BOT";  };
+ trace  .{  "route_p: loop (front as (x ! rest), rear)/BOT";  };
  loop result;
 };
 
@@ -1347,19 +1347,19 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 	fun make_xsocket  socket
 	    =
 	    {
-trace  .{  "xsocket.pkg: make_xsocket/TOP";  };
+trace  .{  "make_xsocket/TOP";  };
                 inbuf_to_sequencer_slot  = make_mailslot ();
-trace  .{  "xsocket.pkg: make_xsocket/AAA";  };
+trace  .{  "make_xsocket/AAA";  };
 		sequencer_to_outbuf_slot = make_mailslot ();
 
-trace  .{  "xsocket.pkg: make_xsocket/BBB";  };
+trace  .{  "make_xsocket/BBB";  };
 		xbuf_to_client_slot      = make_mailslot ();
-trace  .{  "xsocket.pkg: make_xsocket/CCC";  };
+trace  .{  "make_xsocket/CCC";  };
 		sequencer_to_xbuf_slot   = make_mailslot ();
 
-trace  .{  "xsocket.pkg: make_xsocket/DDD";  };
+trace  .{  "make_xsocket/DDD";  };
 		client_to_sequencer_slot = make_mailslot ();
-trace  .{  "xsocket.pkg: make_xsocket/EEE";  };
+trace  .{  "make_xsocket/EEE";  };
 		xerror_slot              = make_mailslot ();
 
     #	    expose_strm = make_mailslot ();
@@ -1383,7 +1383,7 @@ trace  .{  "xsocket.pkg: make_xsocket/EEE";  };
 		make_thread "xok out"  (outbuf_imp (outStrm, socket));
 		make_thread "xok buf"  (xeventBuffer (xevtMsgStrm, xevtStrm));
     ******/
-trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
+trace  .{  "make_xsocket/FFF";  };
     /* DEBUG */
                 xtracing::make_thread  "sequencer_imp"  (
 		    sequencer_imp
@@ -1399,7 +1399,7 @@ trace  .{  "xsocket.pkg: make_xsocket/FFF";  };
 		xtracing::make_thread  "outbuf_imp"   (outbuf_imp (sequencer_to_outbuf_slot, socket));
 		xtracing::make_thread  "xbuf_imp"     (xbuf_imp   (  sequencer_to_xbuf_slot, xbuf_to_client_slot));
 
-trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
+trace  .{  "make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 		XSOCKET
 		  { xsocket_id => REF (),
 
@@ -1431,9 +1431,22 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	# needs to be raised in the context of the
 	# calling client thread.  That is our job here:
 	#
-	fun unwrap_reply  REPLY_LOST     =>  raise exception LOST_REPLY;
-	    unwrap_reply (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
-	    unwrap_reply (REPLY s)       =>  s;
+#	fun unwrap_reply  REPLY_LOST     =>  raise exception LOST_REPLY;
+#	    unwrap_reply (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
+#	    unwrap_reply (REPLY s)       =>  s;
+#	end;
+	fun unwrap_reply  REPLY_LOST     => {
+trace  .{  "xsocket::unwrap_reply/REPLY_LOST.";  };
+                                             raise exception LOST_REPLY;
+                                            }; 
+	    unwrap_reply (REPLY_ERROR s) => {
+trace  .{  "xsocket::unwrap_reply/REPLY_ERROR.";  };
+                                             raise exception ERROR_REPLY (wire_to_value::decode_error s);
+					    };
+	    unwrap_reply (REPLY s)       => {
+trace  .{  "xsocket::unwrap_reply/REPLY.";  };
+                                             s;
+					    };	
 	end;
 
 
@@ -1478,8 +1491,16 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 
 		take' reply_slot1
 		    ==>
-		    fn (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
-		       _               =>  ();
+#		    fn (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
+#		       _               =>  ();
+		    fn (REPLY_ERROR s) => {
+trace  .{  "xsocket::request_and_check:  Raising exception ERROR_REPLY.";  };
+                                           raise exception ERROR_REPLY (wire_to_value::decode_error s);
+                                          };
+		       _               => {
+trace  .{  "xsocket::request_and_check:  Normal return, returning Void.";  };
+                                           ();
+					  }; 
 		    end;
 	    };
 
@@ -1525,6 +1546,8 @@ trace  .{  "xsocket.pkg: make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    =
 	    take'  xevent_slot;
 
+	# This is called (only) once, from   err_handler()   in:
+	#     src/lib/x-kit/xclient/src/wire/display.pkg
 	fun read_xerror     (XSOCKET { xerror_slot,  ... } )
 	    =
 	    take  xerror_slot;

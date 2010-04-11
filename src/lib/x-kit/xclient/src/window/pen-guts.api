@@ -21,7 +21,7 @@
 #     src/lib/x-kit/xclient/src/window/pen-guts.pkg
 
 stipulate
-    package vec = vector;
+    package vec =  vector;
     package ge  =  geometry;					# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xt  =  xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein

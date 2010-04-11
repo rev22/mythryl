@@ -19,7 +19,7 @@ do  session
 	  callbacks  [ delete_event  .{ print "delete event occurred\n"; } ],
 
 	  kids       [ button_with_label  "Hello World" [
-		         callbacks [ click .{ print "Hello, world!\n";  destroy_widget_tree  session;  } ]
+		         callbacks [ click .{ print "Hello, world!\n";  quit_eventloop  session;  } ]
                        ]
 		     ]
 	]

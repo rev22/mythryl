@@ -428,7 +428,7 @@ herein
 											    /* DEBUG */ trace .{ "init_router: go"; };
 		  };
 
-		  xtr::make_thread  "topwindow_to_widget_router"  init_router;
+		  xtr::make_thread  "topwin_to_widget"  init_router;
 
 
 		  (kidplug, top_window, delete_slot);

@@ -114,7 +114,7 @@ herein
 	    dt::Rw_Pixmap;
 
 	make_clientside_pixmap_from_readwrite_pixmap:	dt::Rw_Pixmap -> Cs_Pixmap;
-	make_clientside_pixmap_from_readonly_pixmap:  dt::Ro_Pixmap  -> Cs_Pixmap;
+	make_clientside_pixmap_from_readonly_pixmap:    dt::Ro_Pixmap -> Cs_Pixmap;
     };
 
 end;

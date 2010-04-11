@@ -14,16 +14,16 @@ stipulate
     #
     package s2t = xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     #
-    package ge  = geometry;				# geometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package dy  = display;				# display		is from   src/lib/x-kit/xclient/src/wire/display.pkg
-    package ai  = atom_imp;				# atom_imp		is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
-    package cs  = color_spec;				# color_spec		is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
-    package di  = draw_imp;				# draw_imp		is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
-    package fb  = font_base;				# font_base		is from   src/lib/x-kit/xclient/src/window/font-base.pkg
-    package fti = font_imp;	# "fi" is taken! :-)	# font_imp		is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
-    package gci = graphics_context_imp;			# graphics_context_imp	is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
-    package ki  = keymap_imp;				# keymap_imp		is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
-    package xt  = xtypes;				# xtypes		is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ge  = geometry;				# geometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package dy  = display;				# display			is from   src/lib/x-kit/xclient/src/wire/display.pkg
+    package ai  = atom_imp;				# atom_imp			is from   src/lib/x-kit/xclient/src/iccc/atom-imp.pkg
+    package cs  = color_spec;				# color_spec			is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
+    package di  = draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
+    package fb  = font_base;				# font_base			is from   src/lib/x-kit/xclient/src/window/font-base.pkg
+    package fti = font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
+    package gci = graphics_context_cache;		# graphics_context_cache	is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+    package ki  = keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
+    package xt  = xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     api Xsession {
@@ -72,7 +72,7 @@ herein
 							# for a given  depth of a screen.
 		depth:      Int,    
 
-		gcontext_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
+		gcontext_imp:     gci::Graphics_Context_Cache,	# The graphics context imp for this screen.
 
 		draw_fn:    di::Draw_Mail -> Void	# The draw-imp connection for
 							# the root  window of the screen. 

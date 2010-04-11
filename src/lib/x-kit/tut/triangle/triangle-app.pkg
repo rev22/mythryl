@@ -175,8 +175,41 @@ trace .{ "Seen first drawing window EXPOSE."; };
 			(xw::get_window_site  drawing_window)
 			    ->
 			    xg::BOX { row, col, high, wide };
-
 trace .{ sprintf "drawing window box = { row %d, col %d, high %d, wide %d }." row col high wide; };
+
+			# Define midpoint of drawing window:
+			#
+			stipulate
+			    row   =  high / 2;
+			    col   =  wide / 2;
+			herein
+			    midpoint =  xg::POINT { row, col };
+			end;
+trace .{ sprintf "drawing window midpoint = { row %d, col %d }." row col; };
+# Sleep for one second in the hope that all pending
+# initialization stuff will have time to run, making
+# the tracelog of the following stuff easier to interpret:
+# This apparently never returns.  I'm presuming this is
+# some independent bug. :-(
+# trace .{ "sleeping for one second"; };
+#		        sleep_for (time::from_milliseconds 1000);
+# trace .{ "slept    for one second"; };
+
+trace .{ sprintf "Sending midwindow downclick to X server."; };
+			# Simulate a mouseclick in center of drawing window:
+			#
+			xw::send_mousebutton_press_xevent
+                          { window => drawing_window,
+                            button => xi::MOUSEBUTTON 1,
+			    point  => midpoint
+			  };
+			#
+trace .{ sprintf "Sending midwindow upclick to X server."; };
+			xw::send_mousebutton_release_xevent
+                          { window => drawing_window,
+                            button => xi::MOUSEBUTTON 1,
+			    point  => midpoint
+			  };
 		    };
 
 		xtr::make_thread "tri-app selftest" selftest;

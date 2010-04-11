@@ -150,7 +150,7 @@ stipulate
     package cs  =  color_spec;				# color_spec			is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
     package di  =  draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package fti =  font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
-    package gci =  graphics_context_imp;		# graphics_context_imp		is from   src/lib/x-kit/xclient/src/window/graphics-context-imp.pkg
+    package gci =  graphics_context_cache;		# graphics_context_cache		is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
     package ki  =  keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
     package si  =  selection_imp;			# selection_imp			is from   src/lib/x-kit/xclient/src/window/selection-imp.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
@@ -158,6 +158,8 @@ stipulate
     package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
     package wpi =  window_property_imp;			# window_property_imp		is from   src/lib/x-kit/xclient/src/window/window-property-imp.pkg
     package xt  =  xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 herein
 
     package xsession: Xsession {			# Xsession			is from   src/lib/x-kit/xclient/src/window/xsession.api
@@ -206,7 +208,7 @@ herein
 							# for a given  depth of a screen.
 		depth:      Int,    
 
-		gcontext_imp:     gci::Graphics_Context_Imp,	# The graphics context imp for this screen.
+		gcontext_imp:     gci::Graphics_Context_Cache,	# The graphics context imp for this screen.
 
 		draw_fn:    di::Draw_Mail -> Void	# The draw-imp connection for
 							# the root  window of the screen. 
@@ -339,7 +341,7 @@ herein
                                               );
 
 					    make_screen_depth
-						(d, gci::make_graphics_context_imp (display, xid));
+						(d, gci::make_graphics_context_cache (display, xid));
 				        };
 
 
@@ -363,7 +365,7 @@ herein
 			    make_screen_depth
 			      (
 				dy::depth_of_visual  root_visual,
-				gci::make_graphics_context_imp  (display, root_window_id)
+				gci::make_graphics_context_cache  (display, root_window_id)
 			      );
 
 			imps = make_gcontext_imps (visuals, [root_imps]);
@@ -516,12 +518,14 @@ herein
 	    {   # We need the clickpoint in both
                 # local and screen coords:
 		#
+trace .{ sprintf "xsession: send_mousebutton_press_event/TOP window_point = { row %d, col %d }." row col; };
 		(window_point_to_screen_point  window  point)
 		    ->
 		    ge::POINT { row => screen_row,
                                 col => screen_col
                               };
 
+trace .{ sprintf "xsession: send_mousebutton_press_event/MID screen_point = { row %d, col %d }." screen_row screen_col; };
 		# For the semantics of these three fields see
 		#     p27 http://mythryl.org/pub/exene/X-protocol-R6.pdf
 		#
@@ -539,6 +543,7 @@ herein
 		event_y		=  col;
 		buttons		=  xt::MOUSEBUTTON_STATE 0u0;
 
+trace .{ "xsession: send_mousebutton_press_event/YYY calling s2w::encode_send_button_press_xevent"; };
 		command
 		    =
 		    s2w::encode_send_button_press_xevent
@@ -547,6 +552,9 @@ herein
 			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button, buttons
 		      };		
 
+		xok::request xsocket command;
+
+trace .{ "xsession: send_mousebutton_press_event/BOT called  s2w::encode_send_button_press_xevent -- DONE"; };
 		();
 	    };
 
@@ -566,12 +574,14 @@ herein
 	    {   # We need the clickpoint in both
                 # local and screen coords:
 		#
+trace .{ sprintf "xsession: send_mousebutton_release_event/TOP window_point = { row %d, col %d }." row col; };
 		(window_point_to_screen_point  window  point)
 		    ->
 		    ge::POINT { row => screen_row,
                                 col => screen_col
                               };
 
+trace .{ sprintf "xsession: send_mousebutton_release_event/MID screen_point = { row %d, col %d }." screen_row screen_col; };
 		# For the semantics of these three fields see
 		#     p27 http://mythryl.org/pub/exene/X-protocol-R6.pdf
 		#
@@ -588,6 +598,7 @@ herein
 		event_x		=  row;					# Mouse position on recipient window at time of button release.
 		event_y		=  col;
 
+trace .{ "xsession: send_mousebutton_release_event/YYY calling s2w::encode_send_button_press_xevent"; };
 		command
 		    =
 		    s2w::encode_send_button_release_xevent
@@ -595,6 +606,9 @@ herein
 			send_event_to,  propagate,  event_mask,
 			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button
 		      };		
+
+		xok::request xsocket command;
+trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_button_press_xevent -- DONE"; };
 		();
 	    };
 

@@ -85,7 +85,7 @@ herein
             ->
             v8::Vector;
 
-	encode_clear_area:       { box: ge::Box,  exposures: Bool, window_id: xt::Xid }       -> v8::Vector;
+	encode_clear_area:       { box: ge::Box,  exposures: Bool, window_id: xt::Xid }      -> v8::Vector;
 	encode_close_font:       { font: xt::Xid }                                           -> v8::Vector;
 	encode_configure_window: { vals: xt::Value_List,  window_id: xt::Xid }               -> v8::Vector;
 

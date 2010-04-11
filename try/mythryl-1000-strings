@@ -2,20 +2,22 @@
 
 # A simple benchmark that allocates and then frees a lot of strings
 
-
+include rw_vector;
 
 fun allocate_and_discard_1000_strings ()
     =
-    {   vec = rw_vector::rw_vector (1000, "");
+    {   vec = rw_vector::make_rw_vector (1000, "");
 
-        # Demonstrate that Perl7 does tail recursion
+        # Demonstrate that Mythryl does tail recursion
         # right, unlike C, Java or Perl5: :) 
-        fun loop 0  = ()
-          | loop n = {  n = n - 1;
-                        str = int::to_string n;
-                        rw_vector::update( vec, n, str );
+	#
+        fun loop 0 => ();
+            loop n => {  n = n - 1;
+                        string = int::to_string n;
+                        vec[n] := string;
                         loop n;
                      };
+        end;
 
         loop 1000;
 
@@ -24,16 +26,16 @@ fun allocate_and_discard_1000_strings ()
 
 
 
-my passes =   100000;
+passes =   100000;
 
-my started_at  =   time::now ();
+started_at  =   time::get ();
 
-my     i = ref 0;
-while *i < passes do {
+i = REF 0;
+for (*i < passes) {
     allocate_and_discard_1000_strings ();
     i := *i + 1;
 };
 
 print "Elapsed time = ";
-print (big_int::to_string (time::to_seconds(time::now ()) - time::to_seconds(started_at)));
+print (large_int::to_string (time::to_seconds(time::get ()) - time::to_seconds(started_at)));
 print " seconds.\n";

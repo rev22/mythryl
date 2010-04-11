@@ -2,8 +2,8 @@
 #
 # A read-only drawing context.
 # This is gets mapped onto an
-# X-server graphics context (GC)
-# by the GC-server 
+# X-server graphics context (GC) by
+#     src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -13,8 +13,8 @@
 # The internal representation of pen values.
 
 stipulate
-    package ge = geometry;					# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package xt = xtypes;					# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package ge =  geometry;						# geometry		is from   src/lib/x-kit/xclient/src/window/geometry.pkg
+    package xt =  xtypes;						# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
     package pen_guts: (weak)  Pen_Guts {				# pen_guts		is from   src/lib/x-kit/xclient/src/window/pen-guts.api

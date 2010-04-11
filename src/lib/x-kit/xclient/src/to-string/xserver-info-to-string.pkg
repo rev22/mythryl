@@ -1,5 +1,7 @@
 ## xserver-into-to-string.pkg
 #
+# See comments in
+#     src/lib/x-kit/xclient/src/to-string/xserver-info-to-string.api
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6

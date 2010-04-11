@@ -1,8 +1,8 @@
 #!/usr/bin/mythryl
 
-my burp = a
-          where {
-              a = "aaa ";
-          };
+burp = a
+       where
+           a = "aaa ";
+       end;
 
 print burp;

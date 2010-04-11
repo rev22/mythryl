@@ -208,8 +208,12 @@ herein
 	    #
 	    fun pick_xevent_action (et::x::KEY_PRESS      { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
 		pick_xevent_action (et::x::KEY_RELEASE    { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
-		pick_xevent_action (et::x::BUTTON_PRESS   { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
-		pick_xevent_action (et::x::BUTTON_RELEASE { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
+#		pick_xevent_action (et::x::BUTTON_PRESS   { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
+#		pick_xevent_action (et::x::BUTTON_RELEASE { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
+		pick_xevent_action (et::x::BUTTON_PRESS   { event_window_id, ... } ) => { trace .{ sprintf "pick_xevent_action/BUTTON_PRESS: event_window_id s=%s" (xtype_to_string::xid_to_string  event_window_id); };
+											 SEND_TO_WINDOW event_window_id; };
+		pick_xevent_action (et::x::BUTTON_RELEASE { event_window_id, ... } ) => { trace .{ sprintf "pick_xevent_action/BUTTON_RELEASE: event_window_id s=%s" (xtype_to_string::xid_to_string  event_window_id); };
+											 SEND_TO_WINDOW event_window_id; };
 		pick_xevent_action (et::x::MOTION_NOTIFY  { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
 		pick_xevent_action (et::x::ENTER_NOTIFY   { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;
 		pick_xevent_action (et::x::LEAVE_NOTIFY   { event_window_id, ... } ) =>  SEND_TO_WINDOW event_window_id;

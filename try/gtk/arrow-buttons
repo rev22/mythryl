@@ -27,12 +27,12 @@ window = make_window  session;
 
 set_window_title (session, window, "Arrow Buttons");
 
-set_delete_event_callback session window .{ exit_main session; exit 0; };
-set_destroy_callback      session window .{ exit_main session; exit 0; };
+set_delete_event_callback session window .{ exit 0; };
+set_destroy_callback      session window .{ exit 0; };
 
 set_border_width (session, window, 10);
 
-box = make_horizontal_box   { session, homogeneous => FALSE, spacing => 0 };
+box = make_horizontal_box  (session, FALSE, 0);
 set_border_width (session, box, 2);
 add_kid { session, mom => window, kid => box  };
 
@@ -45,6 +45,6 @@ kid = make_arrow_button (session, ARROW_RIGHT, SHADOW_ETCHED_OUT);  pack_box { s
 
 show_widget (session, window);
 
-main session;
+run_eventloop_indefinitely session;
 
 exit 0;

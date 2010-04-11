@@ -525,7 +525,7 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 									# xerror_to_string	is from   src/lib/x-kit/xclient/src/to-string/xerror-to-string.pkg
 			trace .{
 			    #
-			    sprintf "Error on request #%s: %s"
+			    sprintf "ERROR on request #%s: %s"
 				#
 			        (unt::format  number_string::DECIMAL  seqn)
 			        (xerror_to_string::xerror_to_string (w2v::decode_error err_msg));

@@ -614,12 +614,13 @@ herein
 
 		all_planes = unt::bitwise_not 0u0;
 
-		msg = v2w::encode_get_image { 
-			drawable => id, 
-			box => ge::make_box (ge::point_00, size),
-			plane_mask => xt::PLANEMASK all_planes, 
-			format => xt::XYPIXMAP
-		      };
+		msg =   v2w::encode_get_image
+			  { 
+			    drawable => id, 
+			    box => ge::make_box (ge::point_00, size),
+			    plane_mask => xt::PLANEMASK all_planes, 
+			    format => xt::XYPIXMAP
+			  };
 
 		my { depth, data, visualid }
 		    = 
