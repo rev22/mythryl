@@ -51,7 +51,7 @@ herein
 	fun make_router
               ( sn::XSESSION { keymap_imp, ... },
                 xevent_in',
-                dm_config_slot,							# "dm" == "draw master"
+                drawimp_mappedstate_slot,
                 top_window
               )
 	    =
@@ -243,7 +243,7 @@ herein
 			=>
 			always_void
 			    ==> 
-			    .{  give (dm_config_slot, di::c::UNMAP);  };
+			    .{  give (drawimp_mappedstate_slot, di::s::TOPWINDOW_IS_NOW_UNMAPPED);  };
 
 		    route_xevent (_, et::x::UNMAP_NOTIFY _)
 			=>
@@ -253,7 +253,7 @@ herein
 			=>
 			always_void
 			    ==>
-			    .{   give  (dm_config_slot,  di::c::MAP);   };
+			    .{   give  (drawimp_mappedstate_slot,  di::s::TOPWINDOW_IS_NOW_MAPPED);   };
 
 		   route_xevent (_, et::x::MAP_NOTIFY _)
 		       =>
@@ -375,13 +375,13 @@ herein
 	    =
 	    {   xsession ->  sn::XSESSION { xdisplay as dy::XDISPLAY { xsocket, ... }, xsocket_to_topwindow_router, ... };
 
-		dm_config_slot
+		drawimp_mappedstate_slot
 		    =
 		    make_mailslot ();
 
-		dm = di::make_draw_imp
+		di = di::make_draw_imp
 			  (
-			    take'  dm_config_slot,
+			    take'  drawimp_mappedstate_slot,
 			    gcontext_imp,
 			    xsocket_to_topwindow_router,
 			    xsocket
@@ -398,11 +398,11 @@ herein
 
 		top_window
 		    =
-		    dt::WINDOW { window_id, screen, screen_depth, draw_fn=>dm };
+		    dt::WINDOW { window_id, screen, screen_depth, draw_fn=>di };
 
 		my (kidplug, router, delete_slot)
 		    =
-		    make_router (xsession, xevent_in', dm_config_slot, top_window);
+		    make_router (xsession, xevent_in', drawimp_mappedstate_slot, top_window);
 
 		fun init_router ()
 		    =
@@ -415,7 +415,7 @@ herein
 				    =>
 				    {
 											    /* DEBUG */ trace .{ "init_router: ExposeEvt"; };
-					give  (dm_config_slot,  di::c::FIRST_EXPOSE);
+					give  (drawimp_mappedstate_slot,  di::s::FIRST_EXPOSE);
 											    /* DEBUG */ trace .{ "init_router: DM_FirstExpose sent"; };
 					(arg ! buf);
 				    };

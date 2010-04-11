@@ -23,11 +23,11 @@ herein
 
     api Draw_Imp {
 
-	package c: api {
+	package s: api {
 	    #
-	    Config
-	      = UNMAP
-	      | MAP
+	    Mapped_State
+	      = TOPWINDOW_IS_NOW_UNMAPPED
+	      | TOPWINDOW_IS_NOW_MAPPED
 	      | FIRST_EXPOSE
 	      ;
 	};
@@ -110,7 +110,7 @@ herein
 
 	make_draw_imp
 	   :
-	   ( Mailop( c::Config ),
+	   ( Mailop( s::Mapped_State ),				# Used to tell draw_imp when its window is un/mapped.
 	     gi::Graphics_Context_Cache,
 	     s2t::Xsocket_To_Topwindow_Router,
 	     xok::Xsocket

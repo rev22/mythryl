@@ -296,10 +296,9 @@ herein
 		    =
 		    {   fun make_screen_depth (depth, gcontext_imp)
 			    =
-			    {
-				config_slot =  make_mailslot ();
+			    {   drawimp_mappedstate_slot =  make_mailslot ();
 
-				make_thread  "display make_screen_info"  .{   give (config_slot, di::c::FIRST_EXPOSE);   };
+				make_thread  "display make_screen_info"  .{   give (drawimp_mappedstate_slot, di::s::FIRST_EXPOSE);   };
 
 				SCREEN_DEPTH_IMPS {
 				    depth,
@@ -307,7 +306,7 @@ herein
 				    draw_fn
 					=>
 					di::make_draw_imp
-					  ( take'  config_slot,
+					  ( take'  drawimp_mappedstate_slot,
 					    gcontext_imp,
 					    xsocket_to_topwindow_router,
                                             xsocket

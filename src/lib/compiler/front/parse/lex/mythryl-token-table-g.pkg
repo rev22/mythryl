@@ -91,9 +91,6 @@ api {
 	    (":?",	 fn yypos =  tokens::colon_what  (yypos, yypos+2)),	# XXX BUGGO FIXME should kill this
 	    ("++",	 fn yypos =  tokens::plus_plus   (yypos, yypos+2)),
 	    ("--",	 fn yypos =  tokens::dash_dash   (yypos, yypos+2))
-#	    ("||",	 fn yypos =  tokens::or_t        (yypos, yypos+2)),	# XXX BUGGO FIXME should kill this
-#	    ("&&",	 fn yypos =  tokens::and_t       (yypos, yypos+2))	# XXX BUGGO FIXME should kill this
-
 	  ]);
 
     id_table

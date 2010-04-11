@@ -27,11 +27,11 @@ herein
 
     package draw_imp: (weak)  Draw_Imp {		# Draw_Imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.api
 
-	package c {
+	package s {
 	    #
-	    Config
-	      = UNMAP
-	      | MAP
+	    Mapped_State				# These are the messages we receive via our mappedstate_slot from xsession and topwindow-to-widget-router.
+	      = TOPWINDOW_IS_NOW_UNMAPPED
+	      | TOPWINDOW_IS_NOW_MAPPED
 	      | FIRST_EXPOSE
 	      ;
 	};
@@ -486,15 +486,20 @@ herein
 			    xok::request_with_exposures  connection
 			  );
 
-		    # Batch the maximal sequence of operations
-		    # that can safely use the same GC.  ("graphics context")
-		    # Add the batch to the batch list.
-		    #
-		    fun batch_gc ([], batch_lst)
+		    # Our first argument is a list of X drawing operations
+		    # to be performed.  For efficiency, we want to avoid
+		    # switching graphics contexts needlessly, so we break our
+		    # argument draw-op list into a sequence of sublists,
+		    # each of which can be performed using a single gc.
+		    # 
+		    fun batch_drawops ([], results)
 			    =>
-			    batch_lst;
+			    results;									# No more input -- done. (Why don't we reverse it?)
 
-			batch_gc (ops as (first_op ! _), batch_lst)
+			batch_drawops
+                            ( draw_ops as (first_op ! _),						# Input drawops list.
+                              results									# Batch accumulator.
+                            )
 			    =>
 			    {   fun gc_usage_of (o::CLEAR_AREA _)            =>   NO_GC;
 				    gc_usage_of (o::POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
@@ -508,13 +513,17 @@ herein
 				    m | (pen_vals_used op);
 
 
-				fun f (arg as ([], _, _, _, _))
+				# We are given a list of X drawing operations to do.
+				# Our job is to find the maximal prefix of this list
+				# which can all use the same graphics context:
+				# 
+				fun find_max_prefix (arg as ([], _, _, _, _))
 					=>
 					arg;
 
-				    f (arg as ( { to, pen, op } ! r, gc_usage, cur_pen, used_mask, ops))
+				    find_max_prefix (arg as ( { to, pen, op } ! rest, gc_usage, first_pen, used_mask, prefix))
 					=>
-					if (not (pen_eq (pen, cur_pen)))
+					if (not (pen_eq (pen, first_pen)))
 					    #
 					    arg;
 					else
@@ -522,47 +531,47 @@ herein
 						#
 						(_, NO_GC)
 						    =>
-						    f (r, gc_usage, cur_pen, used_mask,                                (to, op) ! ops);
+						    find_max_prefix (rest, gc_usage, first_pen, used_mask,                                (to, op) ! prefix);
 
 						(NO_GC, new_gc_usage)
 						    =>
-						    f (r, new_gc_usage, cur_pen, pen_vals_used op,                     (to, op) ! ops);
+						    find_max_prefix (rest, new_gc_usage, first_pen, pen_vals_used op,                     (to, op) ! prefix);
 
 						(_, NO_FONT)
 						    =>
-						    f (r, gc_usage, cur_pen, extend_mask (used_mask, op),              (to, op) ! ops);
+						    find_max_prefix (rest, gc_usage, first_pen, extend_mask (used_mask, op),              (to, op) ! prefix);
 
 						(SET_FONT fid, WITH_FONT _)
 						    =>
-						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),      (to, op) ! ops);
+						    find_max_prefix (rest, SET_FONT fid, first_pen, extend_mask (used_mask, op),      (to, op) ! prefix);
 
 						(_, WITH_FONT fid)
 						    =>
-						    f (r, WITH_FONT fid, cur_pen, extend_mask (used_mask, op),     (to, op) ! ops);
+						    find_max_prefix (rest, WITH_FONT fid, first_pen, extend_mask (used_mask, op),     (to, op) ! prefix);
 
 						(SET_FONT fid1, SET_FONT fid2)
 						    =>
 						    if (fid1 == fid2)
 							#
-							f (r, SET_FONT fid1, cur_pen, extend_mask (used_mask, op), (to, op) ! ops);
+							find_max_prefix (rest, SET_FONT fid1, first_pen, extend_mask (used_mask, op), (to, op) ! prefix);
 						    else
 							arg;
 						    fi;
 
 						(_, SET_FONT fid)
 						    =>
-						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),      (to, op) ! ops);
+						    find_max_prefix (rest, SET_FONT fid, first_pen, extend_mask (used_mask, op),      (to, op) ! prefix);
 					    esac;
 					fi;
 				end;
 
-				my (rest, gc_usage, pen, mask, ops)
-				       =
-				       f (ops, NO_GC, first_op.pen, 0u0, []);
+				my (remaining_draw_ops, gc_usage, pen, mask, max_prefix)
+				    =
+				    find_max_prefix (draw_ops, NO_GC, first_op.pen, 0u0, []);
 
-				batch_gc (rest, (gc_usage, pen, mask, ops) ! batch_lst);
+				batch_drawops (remaining_draw_ops, (gc_usage, pen, mask, max_prefix) ! results);
 			   };
-		    end;						# fun batch_gc
+		    end;						# fun batch_drawops
 
 
 		    fun draw_ops (gc, initial_fid)
@@ -617,11 +626,11 @@ herein
 			   };
 		    end;
 
-		    draw = apply draw_batch;
+		    draw_all_batches =  apply  draw_batch;
 
 		    fun flush buf
 			=
-			{   draw (batch_gc (buf, []));
+			{   draw_all_batches (batch_drawops (buf, []));
 			    xok::flush connection;
 			};
 
@@ -637,16 +646,16 @@ herein
 		(count+1, cmd ! last ! rest);
 
 
-	    fun destroy_window connection (d::WINDOW window_id)
+	    fun destroy_window xsocket (d::WINDOW window_id)
 		    =>
-		    {   xok::request connection (v2w::encode_destroy_window { window_id } );
-			xok::flush connection;
+		    {   xok::request xsocket (v2w::encode_destroy_window { window_id } );
+			xok::flush   xsocket;
 		    };
 
-		destroy_window connection (d::PIXMAP pm_id)
+		destroy_window xsocket (d::PIXMAP pm_id)
 		    =>
-		    {   xok::request connection (v2w::encode_free_pixmap { pixmap => pm_id } );
-			xok::flush connection;
+		    {   xok::request xsocket (v2w::encode_free_pixmap { pixmap => pm_id } );
+			xok::flush   xsocket;
 		    };
 	    end;
 
@@ -723,39 +732,39 @@ herein
 	    #     src/lib/x-kit/xclient/src/window/xsession.pkg
 	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 	    #
-	    fun make_draw_imp (configure', gc_cache, lock_imp, connection)
+	    fun make_draw_imp (mapmode', gc_cache, lock_imp, xsocket)
 		=
 		{   # Need to check state transitions to insure no deadlock *  XXX BUGGO FIXME
 
 		    plea_slot    =   make_mailslot ();
 		    plea'        =   take'  plea_slot;
 
-		    flush        =   flush_buf (gc_cache, connection);
+		    flush        =   flush_buf (gc_cache, xsocket);
 
 		    flush_delay' =   timeout_in' (time::from_milliseconds 40);
 
-		    destroy =   destroy_window connection;
+		    destroy      =   destroy_window xsocket;
 
-		    fun server_unmapped ()
+		    fun imp_unmapped ()
 			=
-			{   fun do_configure c::MAP
+			{   fun set_mapmode s::TOPWINDOW_IS_NOW_MAPPED
 				    =>
-				    server_mapped (0, []);
+				    imp_mapped (0, []);
 
-				do_configure c::UNMAP
+				set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED
 				    =>
-				    server_unmapped ();
+				    imp_unmapped ();
 
-				do_configure _
+				set_mapmode _
 				    =>
-				    (xgripe::impossible "[DM (unmapped): bad config command]");
+				    (xgripe::impossible "[draw_mp (unmapped): bad config command]");
 			    end;
 
 
 			    fun do_plea (m::DESTROY id)
 				    =>
 				    {   destroy id;
-					server_unmapped ();
+					imp_unmapped ();
 				    };
 
 				do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
@@ -764,29 +773,29 @@ herein
 
 				do_plea _
 				    =>
-				    server_unmapped();
+				    imp_unmapped();
 			    end;
 
 			    # Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverUnmapped\n"]); 
 			    #
 			    select [
-				plea'         ==>  do_plea,
-				configure' ==>  do_configure
+				plea'    ==>  do_plea,
+				mapmode' ==>  set_mapmode
 			    ];
 			 }
 
 		    also
-		    fun server_mapped (_, [])
+		    fun imp_mapped (_, [])
 			    =>
-			    {   fun do_configure c::UNMAP
+			    {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED
 					=>
-					server_unmapped ();
+					imp_unmapped ();
 
-				    do_configure c::MAP
+				    set_mapmode s::TOPWINDOW_IS_NOW_MAPPED
 					=>
-					server_mapped (0, []);
+					imp_mapped (0, []);
 
-				    do_configure _
+				    set_mapmode _
 					=>
 					(xgripe::impossible "[DM (mapped): bad config command]");
 				end;
@@ -794,11 +803,11 @@ herein
 
 				fun do_plea (m::DRAW m)
 					=>
-					server_mapped (1, [m]);
+					imp_mapped (1, [m]);
 
 				    do_plea (m::FLUSH)
 					=>
-					server_mapped (0, []);
+					imp_mapped (0, []);
 
 				    do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
 					=>
@@ -807,7 +816,7 @@ herein
 				    do_plea (m::DESTROY id)
 					=>
 					{   destroy id;
-					    server_mapped (0, []);
+					    imp_mapped (0, []);
 					};
 
 				    do_plea _
@@ -820,21 +829,21 @@ herein
 				#
 				select [
 				    plea'    ==>  do_plea,
-				    configure' ==>  do_configure
+				    mapmode' ==>  set_mapmode
 				];
 			    };
 
-		       server_mapped (count, buf as (last ! r))
+		       imp_mapped (count, buf as (last ! r))
 			   =>
-			   {   fun do_configure c::UNMAP
+			   {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED
 					=>
-					server_unmapped ();
+					imp_unmapped ();
 
-				   do_configure c::MAP
+				   set_mapmode s::TOPWINDOW_IS_NOW_MAPPED
 					=>
-					server_mapped (count, buf);
+					imp_mapped (count, buf);
 
-				   do_configure _
+				   set_mapmode _
 					=>
 					(xgripe::impossible "[DM (mapped): bad config command]");
 			       end;
@@ -842,12 +851,12 @@ herein
 
 			       fun do_plea (m::DRAW m)
 					=>
-					server_mapped (batch_cmd (count, m, last, r));
+					imp_mapped (batch_cmd (count, m, last, r));
 
 				   do_plea (m::FLUSH)
 					=>
 					{   flush buf;
-					    server_mapped (0, []);
+					    imp_mapped (0, []);
 					};
 
 				   do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
@@ -860,7 +869,7 @@ herein
 					=>
 					{   flush buf;
 					    destroy id;
-					    server_mapped (0, []);
+					    imp_mapped (0, []);
 					};
 
 				   do_plea _
@@ -874,12 +883,12 @@ herein
 			       if (count > full_buffer_size)
 				   #
 				   flush buf;
-				   server_mapped (0, []);
+				   imp_mapped (0, []);
 			       else
 				   select [
-				       flush_delay'  ==>   (fn _ = {  flush buf;  server_mapped (0, []);  }),
-				       plea'    ==>   do_plea,
-				       configure' ==>   do_configure
+				       flush_delay' ==>   (fn _ = {  flush buf;  imp_mapped (0, []);  }),
+				       plea'        ==>   do_plea,
+				       mapmode'     ==>   set_mapmode
 				   ];
 			       fi;
 			  };
@@ -898,10 +907,10 @@ herein
 
 			    fun overlay_unmapped ()
 				=
-				{   fun do_configure c::MAP   => overlay_mapped (0, []);
-					do_configure c::UNMAP => overlay_unmapped();
+				{   fun set_mapmode s::TOPWINDOW_IS_NOW_MAPPED   => overlay_mapped (0, []);
+					set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED => overlay_unmapped();
 
-					do_configure _ => xgripe::impossible
+					set_mapmode _ => xgripe::impossible
 					   "[DM (unmapped-overlay): bad config command]";
 				    end;
 
@@ -920,17 +929,17 @@ herein
 
 				    select [
 					flush_done'  ==>  (fn _ = FALSE),
-					new_plea'     ==>  do_plea,
-					configure'      ==>  do_configure
+					new_plea'    ==>  do_plea,
+					mapmode'     ==>  set_mapmode
 				    ];
 				}
 
 			    also
 			    fun overlay_mapped (_, [])
 				    =>
-				    {   fun do_configure c::UNMAP => overlay_unmapped();
-					    do_configure c::MAP   => overlay_mapped (0, []);
-					    do_configure _        => xgripe::impossible "[DM (mapped-overlay): bad config command]";
+				    {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED => overlay_unmapped();
+					    set_mapmode s::TOPWINDOW_IS_NOW_MAPPED   => overlay_mapped (0, []);
+					    set_mapmode _                            => xgripe::impossible "[DM (mapped-overlay): bad config command]";
 					end;
 
 					fun do_plea (m::DRAW m)     => overlay_mapped (1, [m]);
@@ -942,17 +951,17 @@ herein
 					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (empty)\n"]); 
 
 					select [
-					    flush_done'  ==>  (fn _ = TRUE),
-					    new_plea'    ==>  do_plea,
-					    configure'   ==>  do_configure
+					    flush_done' ==>  (fn _ = TRUE),
+					    new_plea'   ==>  do_plea,
+					    mapmode'    ==>  set_mapmode
 					];
 				    };
 
 				overlay_mapped (count, buf as (last ! r))
 				    =>
-				    {   fun do_configure c::UNMAP =>  overlay_unmapped();
-					    do_configure c::MAP   =>  overlay_mapped (count, buf);
-					    do_configure _	  =>  xgripe::impossible "[DM (mapped): bad config command]";
+				    {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED =>  overlay_unmapped();
+					    set_mapmode s::TOPWINDOW_IS_NOW_MAPPED   =>  overlay_mapped (count, buf);
+					    set_mapmode _	                     =>  xgripe::impossible "[DM (mapped): bad config command]";
 					end;
 
 					fun do_plea (m::DRAW m)
@@ -983,7 +992,7 @@ herein
 					    flush_done'  ==>  (fn _ = {  flush buf;  TRUE;  }),
 					    flush_delay' ==>  (fn _ = {  flush buf;  overlay_mapped (0, []);  }),
 					    new_plea'    ==>  do_plea,
-					    configure'   ==>  do_configure
+					    mapmode'     ==>  set_mapmode
 					];
 				    };
 			    end;
@@ -994,16 +1003,16 @@ herein
 					   ::  overlay_unmapped ();
 
 
-			    do_overlay ()  ??  server_mapped (0, [])
-					   ::  server_unmapped ();
+			    do_overlay ()  ??  imp_mapped (0, [])
+					   ::  imp_unmapped ();
 
 			};			# fun overlay 
 
 		    fun initialize_imp ()
 			=
-			case (do_mailop configure')
+			case (do_mailop mapmode')
 			    #
-			    c::FIRST_EXPOSE =>   server_mapped (0, []);
+			    s::FIRST_EXPOSE =>   imp_mapped (0, []);
 			     _              =>   initialize_imp();
 			esac;
 
