@@ -348,9 +348,9 @@ herein
 				    =
 				    f (fid, txt_items)
 				    where
-					fun f (last_fid, [])                 =>  last_fid;
+					fun f (last_fid, [])               =>  last_fid;
 					    f (last_fid, (t::FONT id) ! r) =>  f (id, r);
-					    f (last_fid, _ ! r)              =>  f (last_fid, r);
+					    f (last_fid, _ ! r)            =>  f (last_fid, r);
 					end;
 				    end;
 
@@ -365,6 +365,7 @@ herein
 				    fid == cur_fid
 				    ?? txt_items
 				    :: (t::FONT fid) ! txt_items;
+
 
 				fun split_delta (0, l)
 					=>
@@ -495,38 +496,41 @@ herein
 
 			batch_gc (ops as (first_op ! _), batch_lst)
 			    =>
-			    {   fun gc_info_of (o::CLEAR_AREA _)            =>   NO_GC;
-				    gc_info_of (o::POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
-				    gc_info_of (o::IMAGE_TEXT8 (fid, _, _)) =>   SET_FONT  fid;
-				    gc_info_of op                           =>   NO_FONT;
+			    {   fun gc_usage_of (o::CLEAR_AREA _)            =>   NO_GC;
+				    gc_usage_of (o::POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
+				    gc_usage_of (o::IMAGE_TEXT8 (fid, _, _)) =>   SET_FONT  fid;
+				    gc_usage_of op                           =>   NO_FONT;
 				end;
+
 
 				fun extend_mask (m, op)
 				    =
 				    m | (pen_vals_used op);
 
-				fun f (arg as ([], _, _, _, _))
-					=> arg;
 
-				    f (arg as ( { to, pen, op } ! r, info, cur_pen, used_mask, ops))
+				fun f (arg as ([], _, _, _, _))
+					=>
+					arg;
+
+				    f (arg as ( { to, pen, op } ! r, gc_usage, cur_pen, used_mask, ops))
 					=>
 					if (not (pen_eq (pen, cur_pen)))
 					    #
 					    arg;
 					else
-					    case (info, gc_info_of op)
+					    case (gc_usage, gc_usage_of op)
 						#
 						(_, NO_GC)
 						    =>
-						    f (r, info, cur_pen, used_mask,                                (to, op) ! ops);
+						    f (r, gc_usage, cur_pen, used_mask,                                (to, op) ! ops);
 
-						(NO_GC, new_info)
+						(NO_GC, new_gc_usage)
 						    =>
-						    f (r, new_info, cur_pen, pen_vals_used op,                     (to, op) ! ops);
+						    f (r, new_gc_usage, cur_pen, pen_vals_used op,                     (to, op) ! ops);
 
 						(_, NO_FONT)
 						    =>
-						    f (r, info, cur_pen, extend_mask (used_mask, op),              (to, op) ! ops);
+						    f (r, gc_usage, cur_pen, extend_mask (used_mask, op),              (to, op) ! ops);
 
 						(SET_FONT fid, WITH_FONT _)
 						    =>
@@ -552,11 +556,11 @@ herein
 					fi;
 				end;
 
-				my (rest, info, pen, mask, ops)
+				my (rest, gc_usage, pen, mask, ops)
 				       =
 				       f (ops, NO_GC, first_op.pen, 0u0, []);
 
-				batch_gc (rest, (info, pen, mask, ops) ! batch_lst);
+				batch_gc (rest, (gc_usage, pen, mask, ops) ! batch_lst);
 			   };
 		    end;						# fun batch_gc
 

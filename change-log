@@ -1,3 +1,4 @@
+2010-04-11-16.46.00: src/lib/x-kit/xclient/src/window/draw-imp.api: Moved Destroy_Item into its own package d to get rid of distracting DESTROY_ prefix.
 2010-04-11-15.05.02: src/lib/x-kit/xclient/src/window/draw-imp.api: Renamed Dm_Config -> Config, moved it into its own package c to eliminate DM_ prefixes.
 2010-04-11-14.52.05: src/lib/x-kit/xclient/src/window/draw-imp.api: Moved Poly_Text into its own package t to eliminate the PTXT_ prefixes.
 2010-04-11-14.41.21: src/lib/x-kit/xclient/src/window/draw-imp.api: Moved Draw_Mail into its own package m to eliminate DMSG_ prefixes.

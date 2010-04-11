@@ -33,6 +33,10 @@
 # This package gets used by:
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
 #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
+#
+# Our allocate* and free* functions are however called
+# only from the latter; we are essentially supporting
+# infrastructure for draw-imp.
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6

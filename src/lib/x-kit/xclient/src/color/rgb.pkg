@@ -87,9 +87,9 @@ herein
 
 
 	fun same (a, b)
-	    =  float::(====) (a[0], b[0])
-            && float::(====) (a[1], b[1])
-            && float::(====) (a[2], b[2])
+	    =   float::(====) (a[0], b[0])
+            and float::(====) (a[1], b[1])
+            and float::(====) (a[2], b[2])
 	    ;
 
 
@@ -100,9 +100,9 @@ herein
 	    =
 	    {   (to_floats rgb) -> (red, green, blue);
 
-		if (red   >= 0.0   &&   red   <= 0.0
-                &&  green >= 0.0   &&   green <= 0.0
-                &&  blue  >= 0.0   &&   blue  <= 0.0
+		if (red   >= 0.0   and   red   <= 0.0
+                and green >= 0.0   and   green <= 0.0
+                and blue  >= 0.0   and   blue  <= 0.0
 		)
 		    rgb;
 		else

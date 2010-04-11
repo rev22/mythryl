@@ -90,9 +90,9 @@ api {
 	    ("?:",	 fn yypos =  tokens::what_colon  (yypos, yypos+2)),	# XXX BUGGO FIXME should kill this
 	    (":?",	 fn yypos =  tokens::colon_what  (yypos, yypos+2)),	# XXX BUGGO FIXME should kill this
 	    ("++",	 fn yypos =  tokens::plus_plus   (yypos, yypos+2)),
-	    ("--",	 fn yypos =  tokens::dash_dash   (yypos, yypos+2)),
-	    ("||",	 fn yypos =  tokens::or_t        (yypos, yypos+2)),	# XXX BUGGO FIXME should kill this
-	    ("&&",	 fn yypos =  tokens::and_t       (yypos, yypos+2))	# XXX BUGGO FIXME should kill this
+	    ("--",	 fn yypos =  tokens::dash_dash   (yypos, yypos+2))
+#	    ("||",	 fn yypos =  tokens::or_t        (yypos, yypos+2)),	# XXX BUGGO FIXME should kill this
+#	    ("&&",	 fn yypos =  tokens::and_t       (yypos, yypos+2))	# XXX BUGGO FIXME should kill this
 
 	  ]);
 
@@ -105,8 +105,8 @@ api {
 	    ("api",         fn yypos =  tokens::api_t       (yypos, yypos+3)),
 	    ("as",	    fn yypos =  tokens::as_t        (yypos, yypos+2)),
 	    ("case",	    fn yypos =  tokens::case_t      (yypos, yypos+4)),
-	    ("class",	    fn yypos =  tokens::class_t     (yypos, yypos+5)),
-	    ("class2",	    fn yypos =  tokens::class2_t    (yypos, yypos+6)),
+	    ("class",	    fn yypos =  tokens::class_t     (yypos, yypos+5)),	# This should be moved to the non-reserved section by switching from "class foo { ... }" to "class package foo { ... }".
+	    ("class2",	    fn yypos =  tokens::class2_t    (yypos, yypos+6)),	# This should die in due course.
 	    ("elif",	    fn yypos =  tokens::elif_t      (yypos, yypos+4)),
 	    ("else",	    fn yypos =  tokens::else_t      (yypos, yypos+4)),
 	    ("end",	    fn yypos =  tokens::end_t       (yypos, yypos+3)),
@@ -115,36 +115,63 @@ api {
 	    ("except",	    fn yypos =  tokens::except_t    (yypos, yypos+6)),
 	    ("exception",   fn yypos =  tokens::exception_t (yypos, yypos+9)),
 	    ("fi",	    fn yypos =  tokens::fi_t        (yypos, yypos+2)),
-	    ("field",       fn yypos =  tokens::field_t     (yypos, yypos+5)),	# Not a reserved word!
 	    ("fn",	    fn yypos =  tokens::fn_t        (yypos, yypos+2)),
 	    ("for",	    fn yypos =  tokens::for_t       (yypos, yypos+3)),
 	    ("fprintf",     fn yypos =  tokens::fprintf_t   (yypos, yypos+7)),
 	    ("fun",	    fn yypos =  tokens::fun_t       (yypos, yypos+3)),
-	    ("generic",	    fn yypos =  tokens::generic_t   (yypos, yypos+7)),	# Not a reserved word!
 	    ("herein",	    fn yypos =  tokens::herein_t    (yypos, yypos+6)),
 	    ("if",	    fn yypos =  tokens::if_t        (yypos, yypos+2)),
-	    ("in",	    fn yypos =  tokens::in_t        (yypos, yypos+2)),	# Not a reserved word!
 	    ("include",	    fn yypos =  tokens::include_t   (yypos, yypos+7)),
-	    ("infix",	    fn yypos =  tokens::infix_t     (yypos, yypos+5)),	# Not a reserved word!
-	    ("infixr",	    fn yypos =  tokens::infixr_t    (yypos, yypos+6)),	# Not a reserved word!
-	    ("lazy",	    fn yypos = *mythryl_parser::lazy_is_a_keyword ??  tokens::lazy_t (yypos, yypos+4) ::  (raise exception NO_TOKEN)),
-	    ("message",     fn yypos =  tokens::message_t   (yypos, yypos+6)),	# Not a reserved word!
-	    ("method",      fn yypos =  tokens::method_t    (yypos, yypos+6)),	# Not a reserved word!
+	    ("lazy",	    fn yypos = *mythryl_parser::lazy_is_a_keyword ??  tokens::lazy_t (yypos, yypos+4) ::  (raise exception NO_TOKEN)),	# We should find a way to make this non-reserved even when in use, assuming we decide to support it at all.
 	    ("my",	    fn yypos =  tokens::my_t        (yypos, yypos+2)),
-	    ("nonfix",	    fn yypos =  tokens::nonfix_t    (yypos, yypos+6)),	# Not a reserved word!
 	    ("or",	    fn yypos =  tokens::or_t        (yypos, yypos+2)),
-	    ("overloaded",  fn yypos =  tokens::overloaded_t(yypos, yypos+10)),	# Not a reserved word!
 	    ("package",     fn yypos =  tokens::package_t   (yypos, yypos+7)),
 	    ("printf",      fn yypos =  tokens::printf_t    (yypos, yypos+6)),
-	    ("raise",	    fn yypos =  tokens::raise_t     (yypos, yypos+5)),	# Not a reserved word!
-	    ("recursive",   fn yypos =  tokens::recursive_t (yypos, yypos+9)),	# Not a reserved word!
 	    ("sharing",	    fn yypos =  tokens::sharing_t   (yypos, yypos+7)),
 	    ("sprintf",     fn yypos =  tokens::sprintf_t   (yypos, yypos+7)),
 	    ("stipulate",   fn yypos =  tokens::stipulate_t (yypos, yypos+9)),
-	    ("val",	    fn yypos =  tokens::my_t        (yypos, yypos+3)),
+	    ("val",	    fn yypos =  tokens::my_t        (yypos, yypos+3)),	# WE CAN DUMP RESERVED WORD "val" by changing "field val foo ..." to "my <field> foo ..." etc, where the angle brackets are NOT metasyntax. XXX BUGGO FIXME.
 	    ("where",	    fn yypos =  tokens::where_t     (yypos, yypos+5)),
 	    ("with",	    fn yypos =  tokens::with_t      (yypos, yypos+4)),
-	    ("withtype",    fn yypos =  tokens::withtype_t  (yypos, yypos+8))
+	    ("withtype",    fn yypos =  tokens::withtype_t  (yypos, yypos+8)),
+		#
+		# The above totals 35 reserved words.  Of those
+		#
+		#    "lazy" is not currently support and probably unneeded anyhow;
+		#    "class"   can be phased out.
+		#    "class2"  can be phased out.
+		#    "fprintf" can be phased out if we introduce a way to allow user-defined compiletime functions.
+		#     "printf" can be phased out if we introduce a way to allow user-defined compiletime functions.
+		#    "sprintf" can be phased out if we introduce a way to allow user-defined compiletime functions.
+		#    "val"     can be phased out.
+		#
+		# That leaves 28 reserved words.  Of those
+		#    "eqstype" could be phased out if we rewrote to use Harper-Stone semantics/typechecking (instead of the Definition).
+		#    "abstype" is generally considered obsolete.
+		#    Possibly we could do with just one of the "with"/"withtype" duo?
+		#
+		# Obviously, we could trivially replace "fi" and "esac" with "end"
+		# if we wanted to, but I don't -- I think they pull their weight
+		# by improving readability, easily.
+		#
+		# Bottom line: We have 25-26 hard-core alphabetic reserved words which
+		#              I expect us to support basically forever -- not bad!
+
+	    # The following are NOT reserved words, just identifiers which have
+	    # special meaning to the compiler in certain contexts.  They can all
+	    # still be used as regular identifiers by the user, without conflict:
+	    #	
+	    ("field",       fn yypos =  tokens::field_t     (yypos, yypos+5)),	# Used in:  field val ...
+	    ("generic",	    fn yypos =  tokens::generic_t   (yypos, yypos+7)),	# Used in:  generic package ...
+	    ("in",	    fn yypos =  tokens::in_t        (yypos, yypos+2)),	# 
+	    ("infix",	    fn yypos =  tokens::infix_t     (yypos, yypos+5)),	# Used in:  infix val ...
+	    ("infixr",	    fn yypos =  tokens::infixr_t    (yypos, yypos+6)),	# Used in:  infixr val ...
+	    ("message",     fn yypos =  tokens::message_t   (yypos, yypos+6)),	# Used in:  message fun ...
+	    ("method",      fn yypos =  tokens::method_t    (yypos, yypos+6)),	# Used in:  method  fun ...
+	    ("nonfix",	    fn yypos =  tokens::nonfix_t    (yypos, yypos+6)),	# Used in:  nonfix val ...
+	    ("overloaded",  fn yypos =  tokens::overloaded_t(yypos, yypos+10)),	# Used in:  overloaded val ...
+	    ("raise",	    fn yypos =  tokens::raise_t     (yypos, yypos+5)),	# Used in:  raise exception ...
+	    ("recursive",   fn yypos =  tokens::recursive_t (yypos, yypos+9))	# Used in:  recursive val ...
 	  ]);
 
 #    overload_hash   =   hash_string "overload";
