@@ -1,3 +1,4 @@
+2010-04-11-13.37.04: src/lib/x-kit/xclient/src/window/: For clarity, renamed graphics-context-imp.api, graphics-context-imp.api -> graphics-context-cache.api, graphics-context-cache.pkg. Cleaning and commenting.
 2010-04-08-17.00.10: src/lib/x-kit/xclient/xwindow.api: Added send_mousebutton_press_xevent, send_mousebutton_release_xevent for the corresponding xsession.pkg functions. (Unit test support.)
 2010-04-07-15.04.05: src/lib/x-kit/xclient/src/window/window.api: Added seen_first_expose_oneshot_of call. Also supporting version in src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api.
 2010-04-07-01.40.36: triangle-app.pkg had stopped working; traced to not including new NOTE_EXPOSE_AND_SEND_TO_WINDOW case in xevent_action_to_string() in src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg. Lesson: Do not ignore compiler not exhaustive warnings. :-)

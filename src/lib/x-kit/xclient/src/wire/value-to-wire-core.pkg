@@ -268,7 +268,7 @@ herein
 	    fun put_event_mask     (buf, i, xt::EVENT_MASK  m) =  put_word32   (buf, i, m);
 	    fun put_ptr_event_mask (buf, i, xt::EVENT_MASK  m) =  put_word16   (buf, i, m);
 
-	    fun put_pt (buf, i, ge::POINT { col, row } )
+	    fun put_point (buf, i, ge::POINT { col, row } )
 		=
 		{   put_signed16 (buf, i,   col);
 		    put_signed16 (buf, i+2, row);
@@ -300,7 +300,7 @@ herein
 
 	    fun put_wgeom (buf, i, ge::WINDOW_SITE { upperleft, size, border_width } )
 		=
-		{   put_pt       (buf, i,   upperleft   );
+		{   put_point    (buf, i,   upperleft   );
 		    put_size     (buf, i+4, size        );
 		    put_signed16 (buf, i+8, border_width);
 		};
@@ -335,9 +335,9 @@ herein
 		    end;
 		 end;
 
-	    put_pts   =  put_list (put_pt,   4);
-	    put_boxes =  put_list (put_box,  8);
-	    put_rgb8s =  put_list (put_rgb8, 4);
+	    put_points =  put_list (put_point, 4);
+	    put_boxes  =  put_list (put_box,   8);
+	    put_rgb8s  =  put_list (put_rgb8,  4);
 
 	    # Build a value list and mask from a value option rw_vector 
 	    #
@@ -734,8 +734,8 @@ herein
 		=
 		{   msg = make_resource_request (req_reparent_window, window_id);
 
-		    put_xid (msg,  8, parent_id);
-		    put_pt  (msg, 12, pos      );
+		    put_xid   (msg,  8, parent_id);
+		    put_point (msg, 12, pos      );
 
 		    msg;
 		};
@@ -1102,8 +1102,8 @@ herein
 		=
 		{   msg =  make_resource_request  (req_translate_coordinates,  from_window);
 
-		    put_xid (msg,  8, to_window );
-		    put_pt  (msg, 12, from_point);
+		    put_xid   (msg,  8, to_window );
+		    put_point (msg, 12, from_point);
 
 		    msg;
 		};
@@ -1118,7 +1118,7 @@ herein
 		    put_xid_option (msg,  4, from    );
 		    put_xid_option (msg,  8, to      );
 		    put_box        (msg, 12, from_box);
-		    put_pt         (msg, 20, to_point);
+		    put_point      (msg, 20, to_point);
 
 		    msg;
 		};
@@ -1311,7 +1311,7 @@ herein
 
 		    put8      (msg,  1, ordering   );
 		    put_xid   (msg,  4, gc         );
-		    put_pt    (msg,  8, clip_origin);
+		    put_point (msg,  8, clip_origin);
 		    put_boxes (msg, 12, boxes      );
 
 		    msg;
@@ -1335,11 +1335,11 @@ herein
 		=
 		{   msg = make_resource_request (req_copy_area, from);
 
-		    put_xid  (msg,  8, to        );
-		    put_xid  (msg, 12, gc        );
-		    put_pt   (msg, 16, from_point);
-		    put_pt   (msg, 20, to_point  );
-		    put_size (msg, 24, size      );
+		    put_xid   (msg,  8, to        );
+		    put_xid   (msg, 12, gc        );
+		    put_point (msg, 16, from_point);
+		    put_point (msg, 20, to_point  );
+		    put_size  (msg, 24, size      );
 
 		    msg;
 		};
@@ -1348,12 +1348,12 @@ herein
 		=
 		{   msg = make_resource_request (req_copy_plane, from);
 
-		    put_xid  (msg,  8, to                                        );
-		    put_xid  (msg, 12, gc                                        );
-		    put_pt   (msg, 16, from_point                                );
-		    put_pt   (msg, 20, to_point                                  );
-		    put_size (msg, 24, size                                      );
-		    put32    (msg, 28, large_unt::(<<) (0u1, unt::from_int plane));
+		    put_xid    (msg,  8, to                                        );
+		    put_xid    (msg, 12, gc                                        );
+		    put_point  (msg, 16, from_point                                );
+		    put_point  (msg, 20, to_point                                  );
+		    put_size   (msg, 24, size                                      );
+		    put32      (msg, 28, large_unt::(<<) (0u1, unt::from_int plane));
 
 		    msg;
 		};
@@ -1365,10 +1365,10 @@ herein
 		    =
 		    {   msg = make_extra_request (req_info, list::length items);
 
-			put_bool (msg,  1, relative);
-			put_xid  (msg,  4, drawable);
-			put_xid  (msg,  8, gc      );
-			put_pts  (msg, 12, items   );
+			put_bool   (msg,  1, relative);
+			put_xid    (msg,  4, drawable);
+			put_xid    (msg,  8, gc      );
+			put_points (msg, 12, items   );
 
 			msg;
 		    };
@@ -1396,8 +1396,8 @@ herein
 		    put_list
 			(  fn (buf, i, ge::LINE (p1, p2))
 			       =
-			       {   put_pt (buf, i,   p1);
-				   put_pt (buf, i+4, p2);
+			       {   put_point (buf, i,   p1);
+				   put_point (buf, i+4, p2);
 			       },
 			   8
 			);
@@ -1412,7 +1412,7 @@ herein
 		encode_poly_fill_arc  = encode (req_poly_fill_arc,  put_arcs,  3);
 	    end;
 
-	    fun encode_fill_poly { drawable, gc, shape, relative, pts }
+	    fun encode_fill_poly { drawable, gc, shape, relative, points }
 		=
 		{   shape =  case shape
 				 #
@@ -1421,13 +1421,13 @@ herein
 				 xt::CONVEX_SHAPE    => 0u2;
 			     esac;
 
-		    msg = make_extra_request (req_fill_poly, list::length pts);
+		    msg = make_extra_request (req_fill_poly, list::length points);
 
-		    put_xid  (msg,  4, drawable);
-		    put_xid  (msg,  8, gc      );
-		    put8     (msg, 12, shape   );
-		    put_bool (msg, 13, relative);
-		    put_pts  (msg, 16, pts     );
+		    put_xid    (msg,  4, drawable);
+		    put_xid    (msg,  8, gc      );
+		    put8       (msg, 12, shape   );
+		    put_bool   (msg, 13, relative);
+		    put_points (msg, 16, points  );
 
 		    msg;
 		};
@@ -1448,7 +1448,7 @@ herein
 			put_xid          (msg,  4, drawable);
 			put_xid          (msg,  8, gc      );
 			put_size         (msg, 12, size    );
-			put_pt           (msg, 16, to      );
+			put_point        (msg, 16, to      );
 			put_signed8      (msg, 20, lpad    );
 			put_signed8      (msg, 21, depth   );
 			put_data         (msg, 24, data    );
@@ -1515,10 +1515,10 @@ herein
 
 			if (p != l)   put8 (msg, 16+l, 0u0);   fi;  /* Xlib does this */ 
 
-			put_xid  (msg,  4, drawable);
-			put_xid  (msg,  8, gc      );
-			put_pt   (msg, 12, pt      );
-			put      (msg, 16, items   );
+			put_xid   (msg,  4, drawable);
+			put_xid   (msg,  8, gc      );
+			put_point (msg, 12, pt      );
+			put       (msg, 16, items   );
 
 			msg;
 		    };
@@ -1537,7 +1537,7 @@ herein
 			put_signed8 (msg,  1, textlen str);
 			put_xid     (msg,  4, drawable   );
 			put_xid     (msg,  8, gc         );
-			put_pt      (msg, 12, pt         );
+			put_point   (msg, 12, pt         );
 			put_string  (msg, 16, str        );
 
 			msg;
@@ -1720,7 +1720,7 @@ herein
 		    put_xid_option (msg, 12, mask          );
 		    put_rgb        (msg, 16, foreground_rgb);
 		    put_rgb        (msg, 22, background_rgb);
-		    put_pt         (msg, 24, hot_spot      );
+		    put_point      (msg, 24, hot_spot      );
 
 		    msg;
 		};

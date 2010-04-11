@@ -16,7 +16,7 @@ stipulate
     #
     package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     package ge  =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package gi  =  graphics_context_cache;		# graphics_context_cache		is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+    package gi  =  graphics_context_cache;		# graphics_context_cache	is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
     package m1  =  oneshot_maildrop;			# oneshot_maildrop		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
     package pg  =  pen_guts;				# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
@@ -130,11 +130,18 @@ herein
 
 	    infix val | <<;
 
-	    #  "eq" test on pens for efficiency hack 
-
-	    fun pen_eq (a:  pg::Pen, b:  pg::Pen)
+	    # Officially Mythryl does not have pointer equality,
+	    # but we do it here anyway for speed.  Naughty! :-)
+	    #
+	    fun pen_eq
+                ( a:  pg::Pen,
+                  b:  pg::Pen
+                )
 		=
-		((unsafe::cast a) : Int) == ((unsafe::cast b) : Int);
+		{   ((unsafe::cast a): Int)
+		    ==
+		    ((unsafe::cast b): Int);
+		};
 
 	    # Bitmasks for the various components of a pen.
 	    # These should track the slot numbers given in PenValues.
@@ -183,7 +190,7 @@ herein
 		      | pen_tile_stip_origin
 		      ;
 
-		my std_line_comp		# The components used by line-drawing operations.
+		my std_line_comp		# The pen components used by line-drawing operations.
 		      =  std_comp
 		      | pen_line_width
 		      | pen_line_style
@@ -222,22 +229,22 @@ herein
 
 		fun request_draw_op (request, request_with_exposures)
 		    =
-		    fn  (to, gc, _, DOP_POLY_POINT (rel, pts))
+		    fn  (to, gc, _, DOP_POLY_POINT (rel, points))
 			    =>
-			    request (v2w::encode_poly_point { drawable=>to, gc, items=>pts, relative=>rel } );
+			    request (v2w::encode_poly_point { drawable=>to, gc, items=>points, relative=>rel } );
 
-			(to, gc, _, DOP_POLY_LINE (rel, pts))
+			(to, gc, _, DOP_POLY_LINE (rel, points))
 			    =>
-			    request (v2w::encode_poly_line { drawable=>to, gc, items=>pts, relative=>rel } );
+			    request (v2w::encode_poly_line { drawable=>to, gc, items=>points, relative=>rel } );
 
 			(to, gc, _, DOP_POLY_SEG lines)
 			    =>
 			    request (v2w::encode_poly_segment { drawable=>to, gc, items=>lines } );
 
-			(to, gc, _, DOP_FILL_POLY (shape, rel, pts))
+			(to, gc, _, DOP_FILL_POLY (shape, rel, points))
 			    =>
 			    request (v2w::encode_fill_poly {
-				drawable=>to, gc, pts, relative=>rel, shape
+				drawable=>to, gc, points, relative=>rel, shape
 			      } );
 
 			(to, gc, _, DOP_POLY_BOX boxes)
@@ -271,8 +278,9 @@ herein
 
 			(to, gc, _, DOP_COPY_PLANE (pt, from, box, plane, sync_v))
 			    =>
-			    {
-				my (p, size) = ge::upperleft_and_size_of_box box;
+			    {   my (p, size)
+				    =
+				    ge::upperleft_and_size_of_box  box;
 
 				request_with_exposures (
 				  v2w::encode_copy_plane {

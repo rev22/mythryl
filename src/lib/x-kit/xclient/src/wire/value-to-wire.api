@@ -191,7 +191,7 @@ herein
 
 	encode_fill_poly: { drawable:  xt::Xid,
                             gc:        xt::Xid, 
-			    pts:       List(ge::Point),
+			    points:    List(ge::Point),
                             relative:  Bool, 
 			    shape:     xt::Shape
                           }
