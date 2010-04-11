@@ -415,7 +415,7 @@ herein
 
 		window_id = next_xid();
 
-		fun draw_fn (arg as (di::DMSG_DESTROY _))
+		fun draw_fn (arg as (di::m::DESTROY _))
 			=>
 			draw_fn arg;
 
@@ -650,7 +650,7 @@ herein
 	#
 	fun destroy_window (dt::WINDOW { window_id, draw_fn, ... } )
 	    = 
-	    draw_fn (di::DMSG_DESTROY (di::DESTROY_WINDOW window_id));
+	    draw_fn (di::m::DESTROY (di::DESTROY_WINDOW window_id));
 
 
 	# Map a point in the window's coordinate

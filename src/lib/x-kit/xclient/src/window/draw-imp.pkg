@@ -33,87 +33,92 @@ herein
 	  | DM_FIRST_EXPOSE
 	  ;
 
-	Poly_Text
-	  = PTXT_TEXT  (Int, String)
-	  | PTXT_FONT  xt::Font_Id
-	  ;
+	package t {
+	    Poly_Text
+	      = TEXT  (Int, String)
+	      | FONT  xt::Font_Id
+	      ;
+	};
 
-	Draw_Op
-	  = DOP_POLY_POINT     (Bool, List( ge::Point ))
-	  | DOP_POLY_LINE      (Bool, List( ge::Point ))
-	  | DOP_FILL_POLY      (xt::Shape, Bool, List( ge::Point ))
-	  | DOP_POLY_SEG       List( ge::Line )
-	  | DOP_POLY_BOX       List( ge::Box )
-	  | DOP_POLY_FILL_BOX  List( ge::Box )
-	  | DOP_POLY_ARC       List( ge::Arc  )
-	  | DOP_POLY_FILL_ARC  List( ge::Arc  )
-	  | DOP_COPY_AREA
-		( ge::Point,
-		  xt::Xid,
-		  ge::Box,
-		  Oneshot_Maildrop( Void -> List( ge::Box ) )
-		)
-	  | DOP_COPY_PLANE
-		( ge::Point,
-		  xt::Xid,
-		  ge::Box,
-		  Int,
-		  Oneshot_Maildrop (Void -> List( ge::Box ) )
-		)
-	  | DOP_COPY_PMAREA    (ge::Point, xt::Xid, ge::Box)
-	  | DOP_COPY_PMPLANE   (ge::Point, xt::Xid, ge::Box, Int)
-	  | DOP_CLEAR_AREA      ge::Box
-	  | DOP_PUT_IMAGE  {
-		to_point: ge::Point,
-		size:     ge::Size,
-		depth:    Int,
-		lpad:     Int,
-		format:   xt::Image_Format,
-		data:     vu8::Vector
-	      }
-	  | DOP_POLY_TEXT8   (xt::Font_Id, ge::Point, List( Poly_Text ))
-	  | DOP_IMAGE_TEXT8  (xt::Font_Id, ge::Point, String)
-	  ;
+	package o {
+	    Draw_Op
+	      = POLY_POINT     (Bool, List( ge::Point ))
+	      | POLY_LINE      (Bool, List( ge::Point ))
+	      | FILL_POLY      (xt::Shape, Bool, List( ge::Point ))
+	      | POLY_SEG       List( ge::Line )
+	      | POLY_BOX       List( ge::Box )
+	      | POLY_FILL_BOX  List( ge::Box )
+	      | POLY_ARC       List( ge::Arc  )
+	      | POLY_FILL_ARC  List( ge::Arc  )
+	      | COPY_AREA
+		    ( ge::Point,
+		      xt::Xid,
+		      ge::Box,
+		      Oneshot_Maildrop( Void -> List( ge::Box ) )
+		    )
+	      | COPY_PLANE
+		    ( ge::Point,
+		      xt::Xid,
+		      ge::Box,
+		      Int,
+		      Oneshot_Maildrop (Void -> List( ge::Box ) )
+		    )
+	      | COPY_PMAREA    (ge::Point, xt::Xid, ge::Box)
+	      | COPY_PMPLANE   (ge::Point, xt::Xid, ge::Box, Int)
+	      | CLEAR_AREA      ge::Box
+	      | PUT_IMAGE  {
+		    to_point: ge::Point,
+		    size:     ge::Size,
+		    depth:    Int,
+		    lpad:     Int,
+		    format:   xt::Image_Format,
+		    data:     vu8::Vector
+		  }
+	      | POLY_TEXT8   (xt::Font_Id, ge::Point, List( t::Poly_Text ))
+	      | IMAGE_TEXT8  (xt::Font_Id, ge::Point, String)
+	      ;
+	};
 
 	Destroy_Item
 	  = DESTROY_WINDOW  xt::Window_Id
 	  | DESTROY_PIXMAP  xt::Pixmap_Id
 	  ;
 
-	Draw_Mail
-	  = DMSG  {
-	      to:    xt::Xid,
-	      pen:   pg::Pen,
-	      op:    Draw_Op
-	    }
-	  | DMSG_FLUSH
-	  | DMSG_MAKE_LOCKED_WINDOW  {
-	      draw_slot:       Mailslot( Draw_Mail ),		# Stream of drawing commands for the overlay.
-	      release':        Mailop( Void )			# Overlay release mailop.
-	    }
-	  | DMSG_DESTROY  Destroy_Item
-	  | DMSG_BATCHING_ON
-	  | DMSG_BATCHING_OFF
-	  ;
-
+	package m {
+	    Draw_Mail
+	      = DRAW  {
+		  to:    xt::Xid,
+		  pen:   pg::Pen,
+		  op:    o::Draw_Op
+		}
+	      | FLUSH
+	      | MAKE_LOCKED_WINDOW  {
+		  draw_slot:       Mailslot( Draw_Mail ),		# Stream of drawing commands for the overlay.
+		  release':        Mailop( Void )			# Overlay release mailop.
+		}
+	      | DESTROY  Destroy_Item
+	      | BATCHING_ON
+	      | BATCHING_OFF
+	      ;
+	};
 
 	/* +DEBUG 
-	fun dop_to_string (DOP_POLY_POINT    _) = "PolyPoint";
-	    dop_to_string (DOP_POLY_LINE     _) = "PolyLine";
-	    dop_to_string (DOP_POLY_SEG      _) = "PolySeg";
-	    dop_to_string (DOP_FILL_POLY     _) = "PolyFillPoly";
-	    dop_to_string (DOP_POLY_BOX      _) = "PolyRect";
-	    dop_to_string (DOP_POLY_FILL_BOX _) = "PolyFillRect";
-	    dop_to_string (DOP_POLY_ARC      _) = "PolyArc";
-	    dop_to_string (DOP_POLY_FILL_ARC _) = "PolyFillArc";
-	    dop_to_string (DOP_COPY_AREA     _) = "CopyArea";
-	    dop_to_string (DOP_COPY_PLANE    _) = "CopyPlane";
-	    dop_to_string (DOP_COPY_PMAREA   _) = "CopyPMArea";
-	    dop_to_string (DOP_COPY_PMPLANE  _) = "CopyPMPlane";
-	    dop_to_string (DOP_CLEAR_AREA    _) = "ClearArea";
-	    dop_to_string (DOP_PUT_IMAGE     _) = "PutImage";
-	    dop_to_string (DOP_POLY_TEXT8    _) = "PolyText8";
-	    dop_to_string (DOP_IMAGE_TEXT8   _) = "ImageText8";
+	fun dop_to_string (o::POLY_POINT    _) = "PolyPoint";
+	    dop_to_string (o::POLY_LINE     _) = "PolyLine";
+	    dop_to_string (o::POLY_SEG      _) = "PolySeg";
+	    dop_to_string (o::FILL_POLY     _) = "PolyFillPoly";
+	    dop_to_string (o::POLY_BOX      _) = "PolyRect";
+	    dop_to_string (o::POLY_FILL_BOX _) = "PolyFillRect";
+	    dop_to_string (o::POLY_ARC      _) = "PolyArc";
+	    dop_to_string (o::POLY_FILL_ARC _) = "PolyFillArc";
+	    dop_to_string (o::COPY_AREA     _) = "CopyArea";
+	    dop_to_string (o::COPY_PLANE    _) = "CopyPlane";
+	    dop_to_string (o::COPY_PMAREA   _) = "CopyPMArea";
+	    dop_to_string (o::COPY_PMPLANE  _) = "CopyPMPlane";
+	    dop_to_string (o::CLEAR_AREA    _) = "ClearArea";
+	    dop_to_string (o::PUT_IMAGE     _) = "PutImage";
+	    dop_to_string (o::POLY_TEXT8    _) = "PolyText8";
+	    dop_to_string (o::IMAGE_TEXT8   _) = "ImageText8";
 	end;
 	 -DEBUG */
 
@@ -202,22 +207,22 @@ herein
 		      ;
 	    herein
 
-		fun pen_vals_used (DOP_POLY_POINT    _)	=>  std_comp;
-		    pen_vals_used (DOP_POLY_LINE     _)	=>  std_line_comp;
-		    pen_vals_used (DOP_POLY_SEG      _)	=>  std_line_comp;
-		    pen_vals_used (DOP_FILL_POLY     _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (DOP_POLY_BOX      _)	=>  std_line_comp;
-		    pen_vals_used (DOP_POLY_FILL_BOX _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (DOP_POLY_ARC      _)	=>  std_line_comp;
-		    pen_vals_used (DOP_POLY_FILL_ARC _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (DOP_COPY_AREA     _)	=>  std_comp|pen_exposures;
-		    pen_vals_used (DOP_COPY_PLANE    _)	=>  std_comp|pen_exposures;
-		    pen_vals_used (DOP_COPY_PMAREA   _)	=>  std_comp;
-		    pen_vals_used (DOP_COPY_PMPLANE  _)	=>  std_comp;
-		    pen_vals_used (DOP_CLEAR_AREA    _)	=> 0u0;
-		    pen_vals_used (DOP_PUT_IMAGE     _)	=>  std_comp;
-		    pen_vals_used (DOP_POLY_TEXT8    _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (DOP_IMAGE_TEXT8   _)	=>  std_comp;
+		fun pen_vals_used (o::POLY_POINT    _)	=>  std_comp;
+		    pen_vals_used (o::POLY_LINE     _)	=>  std_line_comp;
+		    pen_vals_used (o::POLY_SEG      _)	=>  std_line_comp;
+		    pen_vals_used (o::FILL_POLY     _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (o::POLY_BOX      _)	=>  std_line_comp;
+		    pen_vals_used (o::POLY_FILL_BOX _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (o::POLY_ARC      _)	=>  std_line_comp;
+		    pen_vals_used (o::POLY_FILL_ARC _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (o::COPY_AREA     _)	=>  std_comp|pen_exposures;
+		    pen_vals_used (o::COPY_PLANE    _)	=>  std_comp|pen_exposures;
+		    pen_vals_used (o::COPY_PMAREA   _)	=>  std_comp;
+		    pen_vals_used (o::COPY_PMPLANE  _)	=>  std_comp;
+		    pen_vals_used (o::CLEAR_AREA    _)	=> 0u0;
+		    pen_vals_used (o::PUT_IMAGE     _)	=>  std_comp;
+		    pen_vals_used (o::POLY_TEXT8    _)	=> (std_comp|pen_fill_style);
+		    pen_vals_used (o::IMAGE_TEXT8   _)	=>  std_comp;
 		end;
 	    end;
 
@@ -229,41 +234,41 @@ herein
 
 		fun request_draw_op (request, request_with_exposures)
 		    =
-		    fn  (to, gc, _, DOP_POLY_POINT (rel, points))
+		    fn  (to, gc, _, o::POLY_POINT (rel, points))
 			    =>
 			    request (v2w::encode_poly_point { drawable=>to, gc, items=>points, relative=>rel } );
 
-			(to, gc, _, DOP_POLY_LINE (rel, points))
+			(to, gc, _, o::POLY_LINE (rel, points))
 			    =>
 			    request (v2w::encode_poly_line { drawable=>to, gc, items=>points, relative=>rel } );
 
-			(to, gc, _, DOP_POLY_SEG lines)
+			(to, gc, _, o::POLY_SEG lines)
 			    =>
 			    request (v2w::encode_poly_segment { drawable=>to, gc, items=>lines } );
 
-			(to, gc, _, DOP_FILL_POLY (shape, rel, points))
+			(to, gc, _, o::FILL_POLY (shape, rel, points))
 			    =>
 			    request (v2w::encode_fill_poly {
 				drawable=>to, gc, points, relative=>rel, shape
 			      } );
 
-			(to, gc, _, DOP_POLY_BOX boxes)
+			(to, gc, _, o::POLY_BOX boxes)
 			    =>
 			    request (v2w::encode_poly_box { drawable=>to, gc, items=>boxes } );
 
-			(to, gc, _, DOP_POLY_FILL_BOX boxes)
+			(to, gc, _, o::POLY_FILL_BOX boxes)
 			    =>
 			    request (v2w::encode_poly_fill_box { drawable=>to, gc, items=>boxes } );
 
-			(to, gc, _, DOP_POLY_ARC arcs)
+			(to, gc, _, o::POLY_ARC arcs)
 			    =>
 			    request (v2w::encode_poly_arc { drawable=>to, gc, items=>arcs } );
 
-			(to, gc, _, DOP_POLY_FILL_ARC arcs)
+			(to, gc, _, o::POLY_FILL_ARC arcs)
 			    =>
 			    request (v2w::encode_poly_fill_arc { drawable=>to, gc, items=>arcs } );
 
-			(to, gc, _, DOP_COPY_AREA (pt, from, box, sync_v))
+			(to, gc, _, o::COPY_AREA (pt, from, box, sync_v))
 			    =>
 			    {   my (p, size)
 				    =
@@ -276,7 +281,7 @@ herein
 				  sync_v);
 			    };
 
-			(to, gc, _, DOP_COPY_PLANE (pt, from, box, plane, sync_v))
+			(to, gc, _, o::COPY_PLANE (pt, from, box, plane, sync_v))
 			    =>
 			    {   my (p, size)
 				    =
@@ -290,7 +295,7 @@ herein
 				  sync_v);
 			    };
 
-			(to, gc, _, DOP_COPY_PMAREA (pt, from, box))
+			(to, gc, _, o::COPY_PMAREA (pt, from, box))
 			    =>
 			    {   my (p, size)
 				    =
@@ -301,7 +306,7 @@ herein
 				  } );
 			    };
 
-			(to, gc, _, DOP_COPY_PMPLANE (pt, from, box, plane))
+			(to, gc, _, o::COPY_PMPLANE (pt, from, box, plane))
 			    =>
 			    {
 				my (p, size) = ge::upperleft_and_size_of_box box;
@@ -311,11 +316,11 @@ herein
 				    } );
 			    };
 
-			(to, _, _, DOP_CLEAR_AREA box)
+			(to, _, _, o::CLEAR_AREA box)
 			    =>
 			    request (v2w::encode_clear_area { window_id=>to, box, exposures => FALSE } );
 
-			(to, gc, _, DOP_PUT_IMAGE im)
+			(to, gc, _, o::PUT_IMAGE im)
 			    =>
 			    request
 				(v2w::encode_put_image
@@ -330,14 +335,14 @@ herein
 			          }
                                 );
 
-			(to, gc, cur_fid, DOP_POLY_TEXT8 (fid, pt, txt_items))
+			(to, gc, cur_fid, o::POLY_TEXT8 (fid, pt, txt_items))
 			    =>
 			    {   last_fid
 				    =
 				    f (fid, txt_items)
 				    where
 					fun f (last_fid, [])                 =>  last_fid;
-					    f (last_fid, (PTXT_FONT id) ! r) =>  f (id, r);
+					    f (last_fid, (t::FONT id) ! r) =>  f (id, r);
 					    f (last_fid, _ ! r)              =>  f (last_fid, r);
 					end;
 				    end;
@@ -346,13 +351,13 @@ herein
 				    =
 				    last_fid == cur_fid
 				    ?? txt_items
-				    :: txt_items @ [PTXT_FONT cur_fid];
+				    :: txt_items @ [t::FONT cur_fid];
 
 				txt_items
 				    =
 				    fid == cur_fid
 				    ?? txt_items
-				    :: (PTXT_FONT fid) ! txt_items;
+				    :: (t::FONT fid) ! txt_items;
 
 				fun split_delta (0, l)
 					=>
@@ -392,14 +397,14 @@ herein
 					};
 				end;
 
-				fun split_item (PTXT_FONT id)
+				fun split_item (t::FONT id)
 					=>
 					[xt::FONT_ITEM id];
 
-				    split_item (PTXT_TEXT (delta, s))
+				    split_item (t::TEXT (delta, s))
 					=>
 					case (split_delta (delta, []), split_text s)
-
+					    #
 					    ([], []) =>   [];
 					    ([], sl) =>   (map (fn s => xt::TEXT_ITEM (0, s); end ) sl);
 					    (dl, []) =>   (map (fn n => xt::TEXT_ITEM (n, ""); end ) dl);
@@ -433,7 +438,7 @@ herein
 				    );
 			    };
 
-			(to, gc, _, DOP_IMAGE_TEXT8(_, pt, txt))
+			(to, gc, _, o::IMAGE_TEXT8(_, pt, txt))
 			    =>
 			    request (v2w::encode_image_text8 { drawable=>to, gc, pt, str=>txt } );
 		    end;
@@ -477,10 +482,10 @@ herein
 
 		      batch_gc (ops as (first_op ! _), batch_lst)
 			  =>
-			  {   fun gc_info_of (DOP_CLEAR_AREA _)            =>   NO_GC;
-				  gc_info_of (DOP_POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
-				  gc_info_of (DOP_IMAGE_TEXT8 (fid, _, _)) =>   SET_FONT  fid;
-				  gc_info_of op                            =>   NO_FONT;
+			  {   fun gc_info_of (o::CLEAR_AREA _)            =>   NO_GC;
+				  gc_info_of (o::POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
+				  gc_info_of (o::IMAGE_TEXT8 (fid, _, _)) =>   SET_FONT  fid;
+				  gc_info_of op                           =>   NO_FONT;
 			      end;
 
 			      fun extend_mask (m, op)
@@ -643,7 +648,7 @@ herein
 		  fun release buf
 		      =
 		      {   list::apply (fn msg = give (new_slot, msg)) (list::reverse buf);
-			  give (new_slot, DMSG_FLUSH);
+			  give (new_slot, m::FLUSH);
 			  set (flush_done_1shot, ());
 		      };
 
@@ -659,21 +664,21 @@ herein
 				  loop buf;
 			      fi;
 
-			  fun filter (m as DMSG { to, ... } )
+			  fun filter (m as m::DRAW { to, ... } )
 				  =>
 				  filter_msg (to, m);
 
-			      filter (DMSG_FLUSH)
+			      filter (m::FLUSH)
 				  =>
-				  {   give  (new_slot, DMSG_FLUSH);
+				  {   give  (new_slot, m::FLUSH);
 				      loop buf;
 				  };
 
-			      filter (DMSG_MAKE_LOCKED_WINDOW _)
+			      filter (m::MAKE_LOCKED_WINDOW _)
 				  =>
 				  xgripe::impossible "[multiple overlays not supported]";
 
-			      filter (m as (DMSG_DESTROY (DESTROY_WINDOW wid)))
+			      filter (m as (m::DESTROY (DESTROY_WINDOW wid)))
 				  =>
 				  filter_msg (wid, m);
 
@@ -728,13 +733,13 @@ herein
 			    end;
 
 
-			    fun do_plea (DMSG_DESTROY id)
+			    fun do_plea (m::DESTROY id)
 				    =>
 				    {   destroy id;
 					server_unmapped ();
 				    };
 
-				do_plea (DMSG_MAKE_LOCKED_WINDOW { draw_slot, release' } )
+				do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
 				    =>
 				    overlay (FALSE, draw_slot, release');
 
@@ -768,19 +773,19 @@ herein
 				end;
 
 
-				fun do_plea (DMSG m)
+				fun do_plea (m::DRAW m)
 					=>
 					server_mapped (1, [m]);
 
-				    do_plea (DMSG_FLUSH)
+				    do_plea (m::FLUSH)
 					=>
 					server_mapped (0, []);
 
-				    do_plea (DMSG_MAKE_LOCKED_WINDOW { draw_slot, release' } )
+				    do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
 					=>
 					overlay (TRUE, draw_slot, release');
 
-				    do_plea (DMSG_DESTROY id)
+				    do_plea (m::DESTROY id)
 					=>
 					{   destroy id;
 					    server_mapped (0, []);
@@ -816,23 +821,23 @@ herein
 			       end;
 
 
-			       fun do_plea (DMSG m)
+			       fun do_plea (m::DRAW m)
 					=>
 					server_mapped (batch_cmd (count, m, last, r));
 
-				   do_plea (DMSG_FLUSH)
+				   do_plea (m::FLUSH)
 					=>
 					{   flush buf;
 					    server_mapped (0, []);
 					};
 
-				   do_plea (DMSG_MAKE_LOCKED_WINDOW { draw_slot, release' } )
+				   do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
 					=>
 					{   flush buf;
 					    overlay (TRUE, draw_slot, release');
 					};
 
-				   do_plea (DMSG_DESTROY id)
+				   do_plea (m::DESTROY id)
 					=>
 					{   flush buf;
 					    destroy id;
@@ -881,7 +886,7 @@ herein
 					   "[DM (unmapped-overlay): bad config command]";
 				    end;
 
-				    fun do_plea (DMSG_DESTROY id)
+				    fun do_plea (m::DESTROY id)
 					    =>
 					    {   destroy id;
 						overlay_unmapped ();
@@ -909,10 +914,10 @@ herein
 					    do_configure _        => xgripe::impossible "[DM (mapped-overlay): bad config command]";
 					end;
 
-					fun do_plea (DMSG m)          => overlay_mapped (1, [m]);
-					    do_plea (DMSG_FLUSH)      => overlay_mapped (0, []);
-					    do_plea (DMSG_DESTROY id) => { destroy id; overlay_mapped (0, []);};
-					    do_plea _                 => xgripe::impossible "[DM (mapped-overlay): bad command]";
+					fun do_plea (m::DRAW m)     => overlay_mapped (1, [m]);
+					    do_plea (m::FLUSH)      => overlay_mapped (0, []);
+					    do_plea (m::DESTROY id) => { destroy id; overlay_mapped (0, []);};
+					    do_plea _               => xgripe::impossible "[DM (mapped-overlay): bad command]";
 					end;
 
 					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (empty)\n"]); 
@@ -926,27 +931,25 @@ herein
 
 				overlay_mapped (count, buf as (last ! r))
 				    =>
-				    {   fun do_configure DM_UNMAP => overlay_unmapped();
-					    do_configure DM_MAP => overlay_mapped (count, buf);
-
-					    do_configure _
-						 =>
-						 xgripe::impossible "[DM (mapped): bad config command]";
+				    {   fun do_configure DM_UNMAP =>  overlay_unmapped();
+					    do_configure DM_MAP   =>  overlay_mapped (count, buf);
+					    do_configure _	  =>  xgripe::impossible "[DM (mapped): bad config command]";
 					end;
 
-					fun do_plea (DMSG m)
+					fun do_plea (m::DRAW m)
 					       =>
 					       overlay_mapped (batch_cmd (count, m, last, r));
 
-					    do_plea (DMSG_FLUSH)
+					    do_plea (m::FLUSH)
 						=>
 						{   flush buf;
 						    overlay_mapped (0, []);
 						};
 
-					    do_plea (DMSG_DESTROY id)
+					    do_plea (m::DESTROY id)
 						=>
-						{   flush buf; destroy id;
+						{   flush buf;
+						    destroy id;
 						    overlay_mapped (0, []);
 						};
 

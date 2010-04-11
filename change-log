@@ -1,3 +1,6 @@
+2010-04-11-14.41.21: src/lib/x-kit/xclient/src/window/draw-imp.api: Moved Draw_Mail into its own package m to eliminate DMSG_ prefixes.
+2010-04-11-14.24.02: src/lib/x-kit/xclient/src/window/draw-imp.api: Moved Draw_Op into its own package o to eliminate the bloody DOP_ prefixes.
+2010-04-11-14.10.15: src/lib/x-kit/xclient/src/window/draw-imp.pkg: Squished another bloody-bedamned include statement.
 2010-04-11-13.58.31: Random cleaning and commenting in src/lib/x-kit/xclient/src/window/draw-imp.pkg, src/lib/x-kit/xclient/src/wire/value-to-wire-core.pkg.
 2010-04-11-13.37.04: src/lib/x-kit/xclient/src/window/: For clarity, renamed graphics-context-imp.api, graphics-context-imp.api -> graphics-context-cache.api, graphics-context-cache.pkg. Cleaning and commenting.
 2010-04-08-17.00.10: src/lib/x-kit/xclient/xwindow.api: Added send_mousebutton_press_xevent, send_mousebutton_release_xevent for the corresponding xsession.pkg functions. (Unit test support.)

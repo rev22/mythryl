@@ -85,7 +85,7 @@ herein
 			=
 			info_of_drawable drawable;
 
-		    fn x =  draw_fn (di::DMSG { to => id, pen, op => (f x) } );
+		    fn x =  draw_fn (di::m::DRAW { to => id, pen, op => (f x) } );
 		};
 
 	    fun draw_fn2 f drawable pen
@@ -94,7 +94,7 @@ herein
 			=
 			info_of_drawable  drawable;
 
-		    fn x =   fn x' =   draw_fn (di::DMSG { to => id, pen, op => (f x x') } );
+		    fn x =   fn x' =   draw_fn (di::m::DRAW { to => id, pen, op => (f x x') } );
 		};
 
 	    fun check_list chkfn l
@@ -130,36 +130,36 @@ herein
 
 	    # Points:
 	    #
-	    draw_points	    =  draw_fn  (fn pts =  di::DOP_POLY_POINT (FALSE, check_pts pts));
-	    draw_point_path =  draw_fn  (fn pts =  di::DOP_POLY_POINT (TRUE,  check_pts pts));
-	    draw_point	    =  draw_fn  (fn pt  =  di::DOP_POLY_POINT (FALSE, [check_point pt]));
+	    draw_points	    =  draw_fn  (fn pts =  di::o::POLY_POINT (FALSE, check_pts pts));
+	    draw_point_path =  draw_fn  (fn pts =  di::o::POLY_POINT (TRUE,  check_pts pts));
+	    draw_point	    =  draw_fn  (fn pt  =  di::o::POLY_POINT (FALSE, [check_point pt]));
 
 	    # Lines and segments:
 	    #
-	    draw_lines   =  draw_fn  (fn pts   =  di::DOP_POLY_LINE (FALSE, check_pts pts));
-	    draw_path    =  draw_fn  (fn pts   =  di::DOP_POLY_LINE (TRUE,  check_pts pts));
-	    draw_segs    =  draw_fn  (fn lines =  di::DOP_POLY_SEG  (check_lines lines));
-	    draw_seg	 =  draw_fn  (fn seg   =  di::DOP_POLY_SEG  [check_line seg]);
+	    draw_lines   =  draw_fn  (fn pts   =  di::o::POLY_LINE (FALSE, check_pts pts));
+	    draw_path    =  draw_fn  (fn pts   =  di::o::POLY_LINE (TRUE,  check_pts pts));
+	    draw_segs    =  draw_fn  (fn lines =  di::o::POLY_SEG  (check_lines lines));
+	    draw_seg	 =  draw_fn  (fn seg   =  di::o::POLY_SEG  [check_line seg]);
 
 	    # Filled polygons:
 	    #
-	    fill_polygon =  draw_fn  (fn { verts, shape } =  di::DOP_FILL_POLY (shape, FALSE, check_pts verts));
-	    fill_path    =  draw_fn  (fn { path,  shape } =  di::DOP_FILL_POLY (shape, TRUE,  check_pts path ));
+	    fill_polygon =  draw_fn  (fn { verts, shape } =  di::o::FILL_POLY (shape, FALSE, check_pts verts));
+	    fill_path    =  draw_fn  (fn { path,  shape } =  di::o::FILL_POLY (shape, TRUE,  check_pts path ));
 
 	    # Rectangles:
 	    #
-	    draw_boxes  =  draw_fn  (fn boxes =  di::DOP_POLY_BOX (check_boxes boxes));
-	    draw_box    =  draw_fn  (fn box   =  di::DOP_POLY_BOX [check_box box]);
+	    draw_boxes  =  draw_fn  (fn boxes =  di::o::POLY_BOX (check_boxes boxes));
+	    draw_box    =  draw_fn  (fn box   =  di::o::POLY_BOX [check_box box]);
 
-	    fill_boxes  =  draw_fn  (fn boxes =  di::DOP_POLY_FILL_BOX (check_boxes boxes));
-	    fill_box    =  draw_fn  (fn box   =  di::DOP_POLY_FILL_BOX [check_box box]);
+	    fill_boxes  =  draw_fn  (fn boxes =  di::o::POLY_FILL_BOX (check_boxes boxes));
+	    fill_box    =  draw_fn  (fn box   =  di::o::POLY_FILL_BOX [check_box box]);
 
 	    # Arcs:
 	    #
-	    draw_arcs    =  draw_fn  (fn arcs =  di::DOP_POLY_ARC      (check_arcs arcs));
-	    draw_arc     =  draw_fn  (fn arc  =  di::DOP_POLY_ARC      [check_arc arc]);
-	    fill_arcs    =  draw_fn  (fn arcs =  di::DOP_POLY_FILL_ARC (check_arcs arcs));
-	    fill_arc     =  draw_fn  (fn arc  =  di::DOP_POLY_FILL_ARC [check_arc arc]);
+	    draw_arcs    =  draw_fn  (fn arcs =  di::o::POLY_ARC      (check_arcs arcs));
+	    draw_arc     =  draw_fn  (fn arc  =  di::o::POLY_ARC      [check_arc arc]);
+	    fill_arcs    =  draw_fn  (fn arcs =  di::o::POLY_FILL_ARC (check_arcs arcs));
+	    fill_arc     =  draw_fn  (fn arc  =  di::o::POLY_FILL_ARC [check_arc arc]);
 
 	    # Circles:
 	    #
@@ -174,8 +174,8 @@ herein
 		    };
 		};
 
-	    draw_circle =  draw_fn  (fn arg =  di::DOP_POLY_ARC      [circle_to_arc arg]);
-	    fill_circle =  draw_fn  (fn arg =  di::DOP_POLY_FILL_ARC [circle_to_arc arg]);
+	    draw_circle =  draw_fn  (fn arg =  di::o::POLY_ARC      [circle_to_arc arg]);
+	    fill_circle =  draw_fn  (fn arg =  di::o::POLY_FILL_ARC [circle_to_arc arg]);
 
 	    # Text drawing:
 	    #
@@ -186,7 +186,7 @@ herein
 			=
 			fn (pt, s)
 			    =
-			    di::DOP_POLY_TEXT8 (id, check_point pt, [di::PTXT_TEXT (0, s)]
+			    di::o::POLY_TEXT8 (id, check_point pt, [di::t::TEXT (0, s)]
 		    )
 		);
 
@@ -197,7 +197,7 @@ herein
 			=
 			fn (pt, s)
 			    =
-			    di::DOP_IMAGE_TEXT8 (id, check_point pt, s)
+			    di::o::IMAGE_TEXT8 (id, check_point pt, s)
 		    );
 
 	    # Polytext drawing:
@@ -223,7 +223,7 @@ herein
 
 		    fun f (pt, TEXT (FONT { id=>font, ... }, items))
 			=
-			di::DOP_POLY_TEXT8
+			di::o::POLY_TEXT8
 			  ( font,
 			    check_point pt,
 			    reverse (#2 (flat (font, 0, items, [])))
@@ -235,7 +235,7 @@ herein
 
 				flat (font, d, (TEXT_STRING s) ! r, l)
 				    =>
-				    flat (font, 0, r, di::PTXT_TEXT (d, s) ! l);
+				    flat (font, 0, r, di::t::TEXT (d, s) ! l);
 
 				flat (font, d, (TEXT_BLANK_PIXELS d') ! r, l)
 				    =>
@@ -243,15 +243,15 @@ herein
 
 				flat (_, d, [TEXT_FONT (FONT { id=>font, ... }, items)], l)
 				    =>
-				    flat (font, d, items, (di::PTXT_FONT font) ! l);
+				    flat (font, d, items, (di::t::FONT font) ! l);
 
 				flat (font, d, (TEXT_FONT (FONT { id=>font', ... }, items)) ! r, l)
 				    =>
 				    {   my (d', l')
 					    =
-					    flat (font', d, items, (di::PTXT_FONT font') ! l);
+					    flat (font', d, items, (di::t::FONT font') ! l);
 
-					flat (font, d', r, (di::PTXT_FONT font) ! l');
+					flat (font, d', r, (di::t::FONT font) ! l');
 				    };
 			    end;
 			end;
@@ -288,7 +288,7 @@ herein
 			    raise exception DEPTH_MISMATCH;
 			fi;
 
-			draw_fn (di::DMSG { to => to_id, pen, op => msg } );
+			draw_fn (di::m::DRAW { to => to_id, pen, op => msg } );
 
 			result;
 		    };
@@ -315,7 +315,7 @@ herein
 			    raise exception BAD_PLANE;
 			fi;
 
-			draw_fn (di::DMSG { to => to_id, pen, op => msg } );
+			draw_fn (di::m::DRAW { to => to_id, pen, op => msg } );
 
 			result;
 		    };
@@ -327,7 +327,7 @@ herein
 			    =
 			    {   sync_1shot = make_oneshot_maildrop ();
 
-				(di::DOP_COPY_AREA (to_pos, from_id, from_box, sync_1shot), sync_1shot);
+				(di::o::COPY_AREA (to_pos, from_id, from_box, sync_1shot), sync_1shot);
 			    }
 			);
 
@@ -338,18 +338,18 @@ herein
 			    =
 			    {   sync_1shot = make_oneshot_maildrop ();
 
-				(di::DOP_COPY_PLANE (to_pos, from_id, from_box, plane, sync_1shot), sync_1shot);
+				(di::o::COPY_PLANE (to_pos, from_id, from_box, plane, sync_1shot), sync_1shot);
 			    }
 			);
 
-		copy_pmarea  = copy_area_fn  (fn arg = (di::DOP_COPY_PMAREA arg,  ()));
-		copy_pmplane = copy_plane_fn (fn arg = (di::DOP_COPY_PMPLANE arg, ()));
+		copy_pmarea  = copy_area_fn  (fn arg = (di::o::COPY_PMAREA arg,  ()));
+		copy_pmplane = copy_plane_fn (fn arg = (di::o::COPY_PMPLANE arg, ()));
 
-								    # "They made us many promises,
-								    #  more than I can remember,
+								# "They made us many promises,
+								#  more than I can remember,
 		fun promise_event (draw_fn, sync_1shot)		#  but they never kept but one;
-		    =                                               #  they promised to take our land,
-		    {   sync_mailop                                 #  and they took it." -- Red Cloud
+		    =                                           #  they promised to take our land,
+		    {   sync_mailop                             #  and they took it." -- Red Cloud
 			    =
 			    get'  sync_1shot;
 
@@ -365,7 +365,7 @@ herein
 
 				NULL
 				    =>
-				    {   draw_fn (di::DMSG_FLUSH);
+				    {   draw_fn (di::m::FLUSH);
 
 					sync_mailop
 					    ==>
@@ -382,7 +382,7 @@ herein
 
 			    sync_1shot = copy_area (to, pen, to_pos, from, from_box);
 
-			    draw_fn (di::DMSG_FLUSH);
+			    draw_fn (di::m::FLUSH);
 
 			    (get  sync_1shot) ();
 			};
@@ -417,7 +417,7 @@ herein
 
 			    sync_1shot = copy_plane (to, pen, to_pos, from, from_box, plane);
 
-			    draw_fn (di::DMSG_FLUSH);
+			    draw_fn (di::m::FLUSH);
 
 			    (get  sync_1shot) ();
 			};
@@ -536,10 +536,10 @@ herein
 			fn box
 			    =
 			    draw_fn (
-				di::DMSG
+				di::m::DRAW
                                    { to  => id,
 				     pen => clear_pen,
-				     op  => (di::DOP_CLEAR_AREA (check_box box))
+				     op  => (di::o::CLEAR_AREA (check_box box))
 				   }
 			    );
 		    };

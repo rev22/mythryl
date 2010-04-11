@@ -74,7 +74,7 @@ herein
 
 		gcontext_imp:     gci::Graphics_Context_Cache,	# The graphics context imp for this screen.
 
-		draw_fn:    di::Draw_Mail -> Void		# The draw-imp connection for
+		draw_fn:    di::m::Draw_Mail -> Void		# The draw-imp connection for
 								# the root  window of the screen. 
 	    }
 
@@ -97,7 +97,7 @@ herein
 		screen:        Screen,
 		screen_depth:  Screen_Depth_Imps,
 		#
-		draw_fn:       di::Draw_Mail -> Void
+		draw_fn:       di::m::Draw_Mail -> Void
 	      };
 
 	# Identity tests:

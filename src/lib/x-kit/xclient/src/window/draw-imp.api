@@ -23,88 +23,95 @@ herein
 
     api Draw_Imp {
 
-	 Dm_Config
-	  = DM_UNMAP
-	  | DM_MAP
-	  | DM_FIRST_EXPOSE
-	  ;
+	Dm_Config
+	 = DM_UNMAP
+	 | DM_MAP
+	 | DM_FIRST_EXPOSE
+	 ;
 
-	 Poly_Text
-	  = PTXT_TEXT  (Int, String)
-	  | PTXT_FONT  xt::Font_Id
-	  ;
+	package t: api {
+	    Poly_Text
+	     = TEXT  (Int, String)
+	     | FONT  xt::Font_Id
+	     ;
+	};
 
-	 Draw_Op
-	  = DOP_POLY_POINT     (Bool, List( ge::Point ))
-	  | DOP_POLY_LINE      (Bool, List( ge::Point ))
-	  | DOP_FILL_POLY      (xt::Shape, Bool, List( ge::Point ))
-	  | DOP_POLY_SEG       List( ge::Line )
-	  | DOP_POLY_BOX       List( ge::Box )
-	  | DOP_POLY_FILL_BOX  List( ge::Box )
-	  | DOP_POLY_ARC       List( ge::Arc )
-	  | DOP_POLY_FILL_ARC  List( ge::Arc )
-	  | DOP_COPY_AREA
-		( ge::Point,
-		  xt::Xid,
-		  ge::Box,
-		  m1::Oneshot_Maildrop (Void -> List( ge::Box ) )
-		)
-	  | DOP_COPY_PLANE
-		( ge::Point,
-		  xt::Xid,
-		  ge::Box,
-		  Int,
-		  m1::Oneshot_Maildrop (Void -> List( ge::Box ) )
-		)
-	  | DOP_COPY_PMAREA   (ge::Point, xt::Xid, ge::Box)
-	  | DOP_COPY_PMPLANE  (ge::Point, xt::Xid, ge::Box, Int)
-	  | DOP_CLEAR_AREA     ge::Box
-	  | DOP_PUT_IMAGE
-	      {
-		to_point:  ge::Point,
-		size:      ge::Size,
-		depth:     Int,
-		lpad:      Int,
-		format:    xt::Image_Format,
-		data:      vu8::Vector
-	      }
-	  | DOP_POLY_TEXT8   (xt::Font_Id, ge::Point, List(Poly_Text))
-	  | DOP_IMAGE_TEXT8  (xt::Font_Id, ge::Point, String)
-	  ;
+	package o: api {
+	    Draw_Op
+	     = POLY_POINT     (Bool, List( ge::Point ))
+	     | POLY_LINE      (Bool, List( ge::Point ))
+	     | FILL_POLY      (xt::Shape, Bool, List( ge::Point ))
+	     | POLY_SEG       List( ge::Line )
+	     | POLY_BOX       List( ge::Box )
+	     | POLY_FILL_BOX  List( ge::Box )
+	     | POLY_ARC       List( ge::Arc )
+	     | POLY_FILL_ARC  List( ge::Arc )
+	     | COPY_AREA
+		   ( ge::Point,
+		     xt::Xid,
+		     ge::Box,
+		     m1::Oneshot_Maildrop (Void -> List( ge::Box ) )
+		   )
+	     | COPY_PLANE
+		   ( ge::Point,
+		     xt::Xid,
+		     ge::Box,
+		     Int,
+		     m1::Oneshot_Maildrop (Void -> List( ge::Box ) )
+		   )
+	     | COPY_PMAREA   (ge::Point, xt::Xid, ge::Box)
+	     | COPY_PMPLANE  (ge::Point, xt::Xid, ge::Box, Int)
+	     | CLEAR_AREA     ge::Box
+	     | PUT_IMAGE
+		 {
+		   to_point:  ge::Point,
+		   size:      ge::Size,
+		   depth:     Int,
+		   lpad:      Int,
+		   format:    xt::Image_Format,
+		   data:      vu8::Vector
+		 }
+	     | POLY_TEXT8   (xt::Font_Id, ge::Point, List(t::Poly_Text))
+	     | IMAGE_TEXT8  (xt::Font_Id, ge::Point, String)
+	     ;
+	};
 
-	 Destroy_Item
-	  = DESTROY_WINDOW  xt::Window_Id
-	  | DESTROY_PIXMAP  xt::Pixmap_Id
-	  ;
+	Destroy_Item
+	 = DESTROY_WINDOW  xt::Window_Id
+	 | DESTROY_PIXMAP  xt::Pixmap_Id
+	 ;
 
-	 Draw_Mail
-          = DMSG
-	      { to:    xt::Xid,
-		pen:   pg::Pen,
-		op:    Draw_Op
-	      }
-
-	  | DMSG_FLUSH
-	  | DMSG_MAKE_LOCKED_WINDOW  {
-	      draw_slot:       Mailslot( Draw_Mail ),	# Stream of drawing commands for the overlay 
-	      release':        Mailop( Void )		# Overlay release mailop
-	    }
-	  | DMSG_DESTROY  Destroy_Item
-	  | DMSG_BATCHING_ON
-	  | DMSG_BATCHING_OFF
-	  ;
-
-	 make_draw_imp
-	    :
-	    ( Mailop( Dm_Config ),
-	      gi::Graphics_Context_Cache,
-	      s2t::Xsocket_To_Topwindow_Router,
-	      xok::Xsocket
-	    )
-	    ->
+	package m: api {
+	    #
 	    Draw_Mail
-	    ->
-	    Void;
+	      = DRAW
+		  { to:    xt::Xid,
+		    pen:   pg::Pen,
+		    op:    o::Draw_Op
+		  }
+
+	      | FLUSH
+	      | MAKE_LOCKED_WINDOW  {
+		  draw_slot:       Mailslot( Draw_Mail ),	# Stream of drawing commands for the overlay 
+		  release':        Mailop( Void )		# Overlay release mailop
+		}
+	      | DESTROY  Destroy_Item
+	      | BATCHING_ON
+	      | BATCHING_OFF
+	      ;
+	};
+
+	make_draw_imp
+	   :
+	   ( Mailop( Dm_Config ),
+	     gi::Graphics_Context_Cache,
+	     s2t::Xsocket_To_Topwindow_Router,
+	     xok::Xsocket
+	   )
+	   ->
+	   m::Draw_Mail
+	   ->
+	   Void;
 
     };
 end;				# stipulate

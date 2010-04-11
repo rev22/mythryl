@@ -27,7 +27,7 @@ herein
 		window_id:    xt::Window_Id,
 		screen:       sn::Screen,
 		screen_depth: sn::Screen_Depth_Imps,
-		draw_fn:      di::Draw_Mail -> Void
+		draw_fn:      di::m::Draw_Mail -> Void
 	      };
 
 	# An off-screen rectangular array of pixels on the X server:
@@ -120,8 +120,8 @@ herein
 	    =
 	    DRAWABLE_WINDOW
 	      {
-		root:      Draw_Root,
-		draw_fn:  di::Draw_Mail -> Void
+		root:     Draw_Root,
+		draw_fn:  di::m::Draw_Mail -> Void
 	      };
 
 	drawable_of_window:        Window -> Drawable_Window;

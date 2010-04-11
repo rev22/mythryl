@@ -458,11 +458,11 @@ herein
 			xdata =  map  extract_box  data;
 
 			draw_fn
-			    (di::DMSG
+			    (di::m::DRAW
 			      {
 				to  => id,
 				pen => pen::default_pen,
-				op  => di::DOP_PUT_IMAGE {
+				op  => di::o::PUT_IMAGE {
 				    to_point,
 				    size => ge::SIZE { wide, high },
 				    depth,
@@ -610,7 +610,7 @@ herein
 		    =
 		    sn::xsession_of_screen screen;
 
-		draw_fn (di::DMSG_FLUSH);
+		draw_fn (di::m::FLUSH);
 
 		all_planes = unt::bitwise_not 0u0;
 
