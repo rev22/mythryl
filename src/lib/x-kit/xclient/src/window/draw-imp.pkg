@@ -27,13 +27,17 @@ herein
 
     package draw_imp: (weak)  Draw_Imp {		# Draw_Imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.api
 
-	Dm_Config
-	  = DM_UNMAP
-	  | DM_MAP
-	  | DM_FIRST_EXPOSE
-	  ;
+	package c {
+	    #
+	    Config
+	      = UNMAP
+	      | MAP
+	      | FIRST_EXPOSE
+	      ;
+	};
 
 	package t {
+	    #
 	    Poly_Text
 	      = TEXT  (Int, String)
 	      | FONT  xt::Font_Id
@@ -719,11 +723,11 @@ herein
 
 		    fun server_unmapped ()
 			=
-			{   fun do_configure DM_MAP
+			{   fun do_configure c::MAP
 				    =>
 				    server_mapped (0, []);
 
-				do_configure DM_UNMAP
+				do_configure c::UNMAP
 				    =>
 				    server_unmapped ();
 
@@ -759,11 +763,11 @@ herein
 		    also
 		    fun server_mapped (_, [])
 			    =>
-			    {   fun do_configure DM_UNMAP
+			    {   fun do_configure c::UNMAP
 					=>
 					server_unmapped ();
 
-				    do_configure DM_MAP
+				    do_configure c::MAP
 					=>
 					server_mapped (0, []);
 
@@ -807,11 +811,11 @@ herein
 
 		       server_mapped (count, buf as (last ! r))
 			   =>
-			   {   fun do_configure DM_UNMAP
+			   {   fun do_configure c::UNMAP
 					=>
 					server_unmapped ();
 
-				   do_configure DM_MAP
+				   do_configure c::MAP
 					=>
 					server_mapped (count, buf);
 
@@ -879,8 +883,8 @@ herein
 
 			    fun overlay_unmapped ()
 				=
-				{   fun do_configure DM_MAP   => overlay_mapped (0, []);
-					do_configure DM_UNMAP => overlay_unmapped();
+				{   fun do_configure c::MAP   => overlay_mapped (0, []);
+					do_configure c::UNMAP => overlay_unmapped();
 
 					do_configure _ => xgripe::impossible
 					   "[DM (unmapped-overlay): bad config command]";
@@ -909,8 +913,8 @@ herein
 			    also
 			    fun overlay_mapped (_, [])
 				    =>
-				    {   fun do_configure DM_UNMAP => overlay_unmapped();
-					    do_configure DM_MAP   => overlay_mapped (0, []);
+				    {   fun do_configure c::UNMAP => overlay_unmapped();
+					    do_configure c::MAP   => overlay_mapped (0, []);
 					    do_configure _        => xgripe::impossible "[DM (mapped-overlay): bad config command]";
 					end;
 
@@ -931,8 +935,8 @@ herein
 
 				overlay_mapped (count, buf as (last ! r))
 				    =>
-				    {   fun do_configure DM_UNMAP =>  overlay_unmapped();
-					    do_configure DM_MAP   =>  overlay_mapped (count, buf);
+				    {   fun do_configure c::UNMAP =>  overlay_unmapped();
+					    do_configure c::MAP   =>  overlay_mapped (count, buf);
 					    do_configure _	  =>  xgripe::impossible "[DM (mapped): bad config command]";
 					end;
 
@@ -984,7 +988,7 @@ herein
 			=
 			case (do_mailop configure')
 			    #
-			    DM_FIRST_EXPOSE =>   server_mapped (0, []);
+			    c::FIRST_EXPOSE =>   server_mapped (0, []);
 			     _              =>   initialize_imp();
 			esac;
 

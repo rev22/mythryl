@@ -23,13 +23,17 @@ herein
 
     api Draw_Imp {
 
-	Dm_Config
-	 = DM_UNMAP
-	 | DM_MAP
-	 | DM_FIRST_EXPOSE
-	 ;
+	package c: api {
+	    #
+	    Config
+	      = UNMAP
+	      | MAP
+	      | FIRST_EXPOSE
+	      ;
+	};
 
 	package t: api {
+	    #
 	    Poly_Text
 	     = TEXT  (Int, String)
 	     | FONT  xt::Font_Id
@@ -103,7 +107,7 @@ herein
 
 	make_draw_imp
 	   :
-	   ( Mailop( Dm_Config ),
+	   ( Mailop( c::Config ),
 	     gi::Graphics_Context_Cache,
 	     s2t::Xsocket_To_Topwindow_Router,
 	     xok::Xsocket

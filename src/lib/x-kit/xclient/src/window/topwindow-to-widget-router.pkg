@@ -243,7 +243,7 @@ herein
 			=>
 			always_void
 			    ==> 
-			    .{  give (dm_config_slot, di::DM_UNMAP);  };
+			    .{  give (dm_config_slot, di::c::UNMAP);  };
 
 		    route_xevent (_, et::x::UNMAP_NOTIFY _)
 			=>
@@ -253,7 +253,7 @@ herein
 			=>
 			always_void
 			    ==>
-			    .{   give  (dm_config_slot,  di::DM_MAP);   };
+			    .{   give  (dm_config_slot,  di::c::MAP);   };
 
 		   route_xevent (_, et::x::MAP_NOTIFY _)
 		       =>
@@ -415,7 +415,7 @@ herein
 				    =>
 				    {
 											    /* DEBUG */ trace .{ "init_router: ExposeEvt"; };
-					give  (dm_config_slot,  di::DM_FIRST_EXPOSE);
+					give  (dm_config_slot,  di::c::FIRST_EXPOSE);
 											    /* DEBUG */ trace .{ "init_router: DM_FirstExpose sent"; };
 					(arg ! buf);
 				    };

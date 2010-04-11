@@ -299,7 +299,7 @@ herein
 			    {
 				config_slot =  make_mailslot ();
 
-				make_thread  "display make_screen_info"  .{   give (config_slot, di::DM_FIRST_EXPOSE);   };
+				make_thread  "display make_screen_info"  .{   give (config_slot, di::c::FIRST_EXPOSE);   };
 
 				SCREEN_DEPTH_IMPS {
 				    depth,
