@@ -650,7 +650,7 @@ herein
 	#
 	fun destroy_window (dt::WINDOW { window_id, draw_fn, ... } )
 	    = 
-	    draw_fn (di::m::DESTROY (di::DESTROY_WINDOW window_id));
+	    draw_fn (di::m::DESTROY (di::d::WINDOW window_id));
 
 
 	# Map a point in the window's coordinate

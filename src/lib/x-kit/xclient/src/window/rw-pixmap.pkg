@@ -79,7 +79,7 @@ herein
 	#
 	fun destroy_rw_pixmap  (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { draw_fn, ... }, ... } )
             =
-	    draw_fn (di::m::DESTROY (di::DESTROY_PIXMAP id));
+	    draw_fn (di::m::DESTROY (di::d::PIXMAP id));
 
     };						# package pixmap 
 end;

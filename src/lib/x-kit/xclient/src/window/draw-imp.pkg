@@ -83,10 +83,13 @@ herein
 	      ;
 	};
 
-	Destroy_Item
-	  = DESTROY_WINDOW  xt::Window_Id
-	  | DESTROY_PIXMAP  xt::Pixmap_Id
-	  ;
+	package d {
+	    #
+	    Destroy_Item
+	      = WINDOW  xt::Window_Id
+	      | PIXMAP  xt::Pixmap_Id
+	      ;
+	};
 
 	package m {
 	    Draw_Mail
@@ -100,7 +103,7 @@ herein
 		  draw_slot:       Mailslot( Draw_Mail ),		# Stream of drawing commands for the overlay.
 		  release':        Mailop( Void )			# Overlay release mailop.
 		}
-	      | DESTROY  Destroy_Item
+	      | DESTROY  d::Destroy_Item
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;
@@ -379,6 +382,7 @@ herein
 					fi;
 				end;
 
+
 				# Split a string into legal
 				# lengths for a PolyText8 command 
 				#
@@ -401,6 +405,7 @@ herein
 					};
 				end;
 
+
 				fun split_item (t::FONT id)
 					=>
 					[xt::FONT_ITEM id];
@@ -410,17 +415,17 @@ herein
 					case (split_delta (delta, []), split_text s)
 					    #
 					    ([], []) =>   [];
-					    ([], sl) =>   (map (fn s => xt::TEXT_ITEM (0, s); end ) sl);
-					    (dl, []) =>   (map (fn n => xt::TEXT_ITEM (n, ""); end ) dl);
+					    ([], sl) =>   (map (fn s = xt::TEXT_ITEM (0,  s)) sl);
+					    (dl, []) =>   (map (fn n = xt::TEXT_ITEM (n, "")) dl);
 
 					    ([d], s ! sr)
 						=>
-						(xt::TEXT_ITEM (d, s) ! (map (fn s => xt::TEXT_ITEM (0, s); end ) sr));
+						(xt::TEXT_ITEM (d, s) ! (map (fn s = xt::TEXT_ITEM (0, s)) sr));
 
 					    (d ! dr, s ! sr)
 						=>
-						((map (fn n => xt::TEXT_ITEM (n, ""); end ) dr)
-						 @ (xt::TEXT_ITEM (d, s) ! (map (fn s => xt::TEXT_ITEM (0, s); end ) sr)));
+						((map (fn n = xt::TEXT_ITEM (n, "")) dr)
+						 @ (xt::TEXT_ITEM (d, s) ! (map (fn s = xt::TEXT_ITEM (0, s)) sr)));
 					esac;
 
 				end;
@@ -449,258 +454,264 @@ herein
 
 #	    end;				# stipulate
 
-	  # Flush a list of drawing commands out to the sequencer.
-	  # This requires aquiring actual server graphics contexts
-	  # for the operations from the GC-imp.
-	  #
-	  fun flush_buf (gcontext_imp, connection)
-	      =
-	      flush
-	      where 
 
-		   Gc_Info
-		    = NO_GC
-		    | NO_FONT
-		    | WITH_FONT xt::Font_Id
-		    | SET_FONT  xt::Font_Id;
+	    # Flush a list of drawing commands out to the sequencer.
+	    # This means aquiring actual X-server graphics contexts
+	    # for the operations from graphics_context_cache:
+	    #
+	    fun flush_buf (gc_cache, connection)
+		=
+		flush
+		where 
 
-		  acq_gc =  gi::allocate_graphics_context  gcontext_imp;
-		  rel_gc =  gi::free_graphics_context  gcontext_imp;
+		    Gc_Info
+		      = NO_GC
+		      | NO_FONT
+		      | WITH_FONT xt::Font_Id
+		      | SET_FONT  xt::Font_Id
+		      ;
 
-		  acq_gcwith_font    =   gi::allocate_graphics_context_with_font     gcontext_imp;
-		  acq_gcand_set_font =   gi::allocate_graphics_context_and_set_font  gcontext_imp;
-		  rel_gcand_font     =   gi::free_graphics_context_and_font      gcontext_imp;
+		    alloc_gc =  gi::allocate_graphics_context  gc_cache;
+		    free_gc  =  gi::free_graphics_context      gc_cache;
 
-		  request_dop
-		      =
-		      request_draw_op
-			( xok::request                 connection,
-			  xok::request_with_exposures  connection
-			);
+		    alloc_gc_with_font    =   gi::allocate_graphics_context_with_font     gc_cache;
+		    alloc_gc_and_set_font =   gi::allocate_graphics_context_and_set_font  gc_cache;
+		    free_gc_and_font      =   gi::free_graphics_context_and_font          gc_cache;
 
-		  # Batch the maximal sequence of operations
-		  # that can safely use the same GC.  ("graphics context")
-		  # Add the batch to the batch list.
-		  #
-		  fun batch_gc ([], batch_lst) => batch_lst;
+		    request_dop
+			=
+			request_draw_op
+			  ( xok::request                 connection,
+			    xok::request_with_exposures  connection
+			  );
 
-		      batch_gc (ops as (first_op ! _), batch_lst)
-			  =>
-			  {   fun gc_info_of (o::CLEAR_AREA _)            =>   NO_GC;
-				  gc_info_of (o::POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
-				  gc_info_of (o::IMAGE_TEXT8 (fid, _, _)) =>   SET_FONT  fid;
-				  gc_info_of op                           =>   NO_FONT;
-			      end;
+		    # Batch the maximal sequence of operations
+		    # that can safely use the same GC.  ("graphics context")
+		    # Add the batch to the batch list.
+		    #
+		    fun batch_gc ([], batch_lst)
+			    =>
+			    batch_lst;
 
-			      fun extend_mask (m, op)
-				  =
-				  m | (pen_vals_used op);
+			batch_gc (ops as (first_op ! _), batch_lst)
+			    =>
+			    {   fun gc_info_of (o::CLEAR_AREA _)            =>   NO_GC;
+				    gc_info_of (o::POLY_TEXT8  (fid, _, _)) =>   WITH_FONT fid;
+				    gc_info_of (o::IMAGE_TEXT8 (fid, _, _)) =>   SET_FONT  fid;
+				    gc_info_of op                           =>   NO_FONT;
+				end;
 
-			      fun f (arg as ([], _, _, _, _)) => arg;
+				fun extend_mask (m, op)
+				    =
+				    m | (pen_vals_used op);
 
-				  f (arg as ( { to, pen, op } ! r, info, cur_pen, used_mask, ops))
-				       =>
-				       if   (pen_eq (pen, cur_pen))
+				fun f (arg as ([], _, _, _, _))
+					=> arg;
 
+				    f (arg as ( { to, pen, op } ! r, info, cur_pen, used_mask, ops))
+					=>
+					if (not (pen_eq (pen, cur_pen)))
+					    #
+					    arg;
+					else
 					    case (info, gc_info_of op)
-
+						#
 						(_, NO_GC)
 						    =>
-						    f (r, info, cur_pen, used_mask, (to, op) ! ops);
+						    f (r, info, cur_pen, used_mask,                                (to, op) ! ops);
 
 						(NO_GC, new_info)
 						    =>
-						    f (r, new_info, cur_pen, pen_vals_used op,
-							(to, op) ! ops);
+						    f (r, new_info, cur_pen, pen_vals_used op,                     (to, op) ! ops);
 
 						(_, NO_FONT)
 						    =>
-						    f (r, info, cur_pen, extend_mask (used_mask, op),
-							(to, op) ! ops);
+						    f (r, info, cur_pen, extend_mask (used_mask, op),              (to, op) ! ops);
 
 						(SET_FONT fid, WITH_FONT _)
 						    =>
-						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),
-							(to, op) ! ops);
+						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),      (to, op) ! ops);
 
 						(_, WITH_FONT fid)
 						    =>
-						    f (r, WITH_FONT fid, cur_pen, extend_mask (used_mask, op),
-							(to, op) ! ops);
+						    f (r, WITH_FONT fid, cur_pen, extend_mask (used_mask, op),     (to, op) ! ops);
 
 						(SET_FONT fid1, SET_FONT fid2)
 						    =>
-						    if   (fid1 == fid2)
-
-							 f (r, SET_FONT fid1, cur_pen,
-							  extend_mask (used_mask, op), (to, op) ! ops);
+						    if (fid1 == fid2)
+							#
+							f (r, SET_FONT fid1, cur_pen, extend_mask (used_mask, op), (to, op) ! ops);
 						    else
 							arg;
 						    fi;
 
 						(_, SET_FONT fid)
 						    =>
-						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),
-						       (to, op) ! ops);
+						    f (r, SET_FONT fid, cur_pen, extend_mask (used_mask, op),      (to, op) ! ops);
 					    esac;
+					fi;
+				end;
 
-				       else
-					   arg;
-				       fi;
-			      end;
+				my (rest, info, pen, mask, ops)
+				       =
+				       f (ops, NO_GC, first_op.pen, 0u0, []);
 
-			      my (rest, info, pen, mask, ops)
-				     =
-				     f (ops, NO_GC, first_op.pen, 0u0, []);
+				batch_gc (rest, (info, pen, mask, ops) ! batch_lst);
+			   };
+		    end;						# fun batch_gc
 
-			      batch_gc (rest, (info, pen, mask, ops) ! batch_lst);
-			 };
 
-		  end; #  BatchGC 
+		    fun draw_ops (gc, initial_fid)
+			=
+			draw
+			where 
+			    fun draw []
+				    =>
+				    ();
 
-		  fun draw_ops (gc, initial_fid)
-		      =
-		      draw
-		      where 
+				draw ((to, op) ! r)
+				    =>
+				    {   request_dop (to, gc, initial_fid, op);
+					draw r;
+				    };
+			    end;
 
-			  fun draw [] => ();
+			end;
 
-			      draw ((to, op) ! r)
-				  =>
-				  {   request_dop (to, gc, initial_fid, op);
-				      draw r;
-				  };
-			  end;
 
-		      end;
+		    xid0 =   xt::XID 0u0;
 
-		  xid0 =   xt::XID 0u0;
 
-		  fun draw_batch (NO_GC, _, _, ops)
-			  =>
-			  draw_ops (xid0, xid0) ops;
+		    fun draw_batch (NO_GC, _, _, ops)
+			    =>
+			    draw_ops (xid0, xid0) ops;
 
-		      draw_batch (NO_FONT, pen, mask, ops)
-			  =>
-			  {   gc =   acq_gc { pen, used => mask };
+			draw_batch (NO_FONT, pen, mask, ops)
+			    =>
+			    {   gc =   alloc_gc { pen, used => mask };
 
-			      draw_ops (gc, xid0) ops;
-			      rel_gc gc;
-			  };
+				draw_ops (gc, xid0) ops;
+				free_gc gc;
+			    };
 
-		      draw_batch (WITH_FONT fid, pen, mask, ops)
-			  =>
-			  {   my (gc, init_fid) = acq_gcwith_font { pen, used => mask, fid };
+			draw_batch (WITH_FONT fid, pen, mask, ops)
+			    =>
+			    {   my (gc, init_fid)
+				    =
+				    alloc_gc_with_font { pen, used => mask, fid };
 
-			      draw_ops (gc, init_fid) ops;
-			      rel_gcand_font gc;
-			  };
+				draw_ops (gc, init_fid) ops;
+				free_gc_and_font gc;
+			    };
 
-		      draw_batch (SET_FONT fid, pen, mask, ops)
-			 =>
-			 {   gc =   acq_gcand_set_font { pen, used => mask, fid };
+			draw_batch (SET_FONT fid, pen, mask, ops)
+			   =>
+			   {   gc =   alloc_gc_and_set_font { pen, used => mask, fid };
 
-			     draw_ops (gc, fid) ops;
-			     rel_gcand_font gc;
-			 };
-		  end;
+			       draw_ops (gc, fid) ops;
+			       free_gc_and_font gc;
+			   };
+		    end;
 
-		  draw = apply draw_batch;
+		    draw = apply draw_batch;
 
-		  fun flush buf
-		      =
-		      {   draw (batch_gc (buf, []));
-			  xok::flush connection;
-		      };
+		    fun flush buf
+			=
+			{   draw (batch_gc (buf, []));
+			    xok::flush connection;
+			};
 
-	      end;			# fun flush_buf 
+		end;			# fun flush_buf 
 
-	  # Insert a drawing command into the buffer,
-	  # checking for possible batching of operations.
-	  # BATCHING NOT IMPLEMENTED YET	XXX BUGGO FIXME
-	  #
-	  fun batch_cmd (count, cmd, last, rest)
-	      =
-	      (count+1, cmd ! last ! rest);
 
-	  fun destroy_window connection (DESTROY_WINDOW window_id)
-		  =>
-		  {   xok::request connection (v2w::encode_destroy_window { window_id } );
-		      xok::flush connection;
-		  };
+	    # Insert a drawing command into the buffer,
+	    # checking for possible batching of operations.
+	    # BATCHING NOT IMPLEMENTED YET	XXX BUGGO FIXME
+	    #
+	    fun batch_cmd (count, cmd, last, rest)
+		=
+		(count+1, cmd ! last ! rest);
 
-	      destroy_window connection (DESTROY_PIXMAP pm_id)
-		  =>
-		  {   xok::request connection (v2w::encode_free_pixmap { pixmap => pm_id } );
-		      xok::flush connection;
-		  };
-	  end;
 
-	  # Create an overlay buffer on the drawing command stream.
-	  #
-	  # This buffers operations aimed at locked windows and passes
-	  # the others onto the draw imp.  release' is enabled when
-	  # the overlay is released; this causes the buffer to flush
-	  # its buffered messages.
-	  #
-	  # A mailop is returned that signals flush-complete.
-	  #
-	  fun make_overlay_buffer (lock_imp, new_slot, old_slot', release')
-	      =
-	      {   flush_done_1shot = make_oneshot_maildrop ();
+	    fun destroy_window connection (d::WINDOW window_id)
+		    =>
+		    {   xok::request connection (v2w::encode_destroy_window { window_id } );
+			xok::flush connection;
+		    };
 
-		  fun release buf
-		      =
-		      {   list::apply (fn msg = give (new_slot, msg)) (list::reverse buf);
-			  give (new_slot, m::FLUSH);
-			  set (flush_done_1shot, ());
-		      };
+		destroy_window connection (d::PIXMAP pm_id)
+		    =>
+		    {   xok::request connection (v2w::encode_free_pixmap { pixmap => pm_id } );
+			xok::flush connection;
+		    };
+	    end;
 
-		  fun loop buf
-		      =
-		      {   fun filter_msg (to, m)
-			      =
-			      if (s2t::window_is_locked (lock_imp, to))
-				  #
-				  loop (m ! buf);
-			      else
-				  give  (new_slot, m);
-				  loop buf;
-			      fi;
 
-			  fun filter (m as m::DRAW { to, ... } )
-				  =>
-				  filter_msg (to, m);
+	    # Create an overlay buffer on the drawing command stream.
+	    #
+	    # This buffers operations aimed at locked windows and passes
+	    # the others onto the draw imp.  release' is enabled when
+	    # the overlay is released; this causes the buffer to flush
+	    # its buffered messages.
+	    #
+	    # A mailop is returned that signals flush-complete.
+	    #
+	    fun make_overlay_buffer (lock_imp, new_slot, old_slot', release')
+		=
+		{   flush_done_1shot = make_oneshot_maildrop ();
 
-			      filter (m::FLUSH)
-				  =>
-				  {   give  (new_slot, m::FLUSH);
-				      loop buf;
-				  };
+		    fun release buf
+			=
+			{   list::apply (fn msg = give (new_slot, msg)) (list::reverse buf);
+			    give (new_slot, m::FLUSH);
+			    set (flush_done_1shot, ());
+			};
 
-			      filter (m::MAKE_LOCKED_WINDOW _)
-				  =>
-				  xgripe::impossible "[multiple overlays not supported]";
+		    fun loop buf
+			=
+			{   fun filter_msg (to, m)
+				=
+				if (s2t::window_is_locked (lock_imp, to))
+				    #
+				    loop (m ! buf);
+				else
+				    give  (new_slot, m);
+				    loop buf;
+				fi;
 
-			      filter (m as (m::DESTROY (DESTROY_WINDOW wid)))
-				  =>
-				  filter_msg (wid, m);
+			    fun filter (m as m::DRAW { to, ... } )
+				    =>
+				    filter_msg (to, m);
 
-			      filter _
-				  =>
-				  xgripe::impossible "[unsupported message in DrawMaster::make_ovrlay_buffer]";
-			  end;
+				filter (m::FLUSH)
+				    =>
+				    {   give  (new_slot, m::FLUSH);
+					loop buf;
+				    };
 
-			  select [
-			      old_slot' ==>  filter,
-			      release'  ==>  .{ release buf; }
-			  ];
-		      };
+				filter (m::MAKE_LOCKED_WINDOW _)
+				    =>
+				    xgripe::impossible "[multiple overlays not supported]";
 
-		      xtracing::make_thread  "OverlayBuffer"  .{ loop []; };
+				filter (m as (m::DESTROY (d::WINDOW wid)))
+				    =>
+				    filter_msg (wid, m);
 
-		      get' flush_done_1shot;
-	      };							 #  fun make_overlay_buffer 
+				filter _
+				    =>
+				    xgripe::impossible "[unsupported message in DrawMaster::make_ovrlay_buffer]";
+			    end;
+
+			    select [
+				old_slot' ==>  filter,
+				release'  ==>  .{ release buf; }
+			    ];
+			};
+
+			xtracing::make_thread  "OverlayBuffer"  .{ loop []; };
+
+			get' flush_done_1shot;
+		};							 #  fun make_overlay_buffer 
 
 	herein
 
@@ -708,14 +719,14 @@ herein
 	    #     src/lib/x-kit/xclient/src/window/xsession.pkg
 	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 	    #
-	    fun make_draw_imp (configure', gcontext_imp, lock_imp, connection)
+	    fun make_draw_imp (configure', gc_cache, lock_imp, connection)
 		=
 		{   # Need to check state transitions to insure no deadlock *  XXX BUGGO FIXME
 
 		    plea_slot    =   make_mailslot ();
 		    plea'        =   take'  plea_slot;
 
-		    flush        =   flush_buf (gcontext_imp, connection);
+		    flush        =   flush_buf (gc_cache, connection);
 
 		    flush_delay' =   timeout_in' (time::from_milliseconds 40);
 

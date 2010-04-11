@@ -80,10 +80,13 @@ herein
 	     ;
 	};
 
-	Destroy_Item
-	 = DESTROY_WINDOW  xt::Window_Id
-	 | DESTROY_PIXMAP  xt::Pixmap_Id
-	 ;
+	package d: api {
+	    #
+	    Destroy_Item
+	     = WINDOW  xt::Window_Id
+	     | PIXMAP  xt::Pixmap_Id
+	     ;
+	};
 
 	package m: api {
 	    #
@@ -99,7 +102,7 @@ herein
 		  draw_slot:       Mailslot( Draw_Mail ),	# Stream of drawing commands for the overlay 
 		  release':        Mailop( Void )		# Overlay release mailop
 		}
-	      | DESTROY  Destroy_Item
+	      | DESTROY    d::Destroy_Item
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;
