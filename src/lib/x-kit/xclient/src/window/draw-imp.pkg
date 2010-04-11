@@ -332,15 +332,13 @@ herein
 
 			(to, gc, cur_fid, DOP_POLY_TEXT8 (fid, pt, txt_items))
 			    =>
-			    {   include xtypes;
-
-				last_fid
+			    {   last_fid
 				    =
 				    f (fid, txt_items)
 				    where
-					fun f (last_fid, [])                 => last_fid;
-					    f (last_fid, (PTXT_FONT id) ! r) => f (id, r);
-					    f (last_fid, _ ! r)              => f (last_fid, r);
+					fun f (last_fid, [])                 =>  last_fid;
+					    f (last_fid, (PTXT_FONT id) ! r) =>  f (id, r);
+					    f (last_fid, _ ! r)              =>  f (last_fid, r);
 					end;
 				    end;
 
@@ -396,24 +394,24 @@ herein
 
 				fun split_item (PTXT_FONT id)
 					=>
-					[FONT_ITEM id];
+					[xt::FONT_ITEM id];
 
 				    split_item (PTXT_TEXT (delta, s))
 					=>
 					case (split_delta (delta, []), split_text s)
 
 					    ([], []) =>   [];
-					    ([], sl) =>   (map (fn s => TEXT_ITEM (0, s); end ) sl);
-					    (dl, []) =>   (map (fn n => TEXT_ITEM (n, ""); end ) dl);
+					    ([], sl) =>   (map (fn s => xt::TEXT_ITEM (0, s); end ) sl);
+					    (dl, []) =>   (map (fn n => xt::TEXT_ITEM (n, ""); end ) dl);
 
 					    ([d], s ! sr)
 						=>
-						(TEXT_ITEM (d, s) ! (map (fn s => TEXT_ITEM (0, s); end ) sr));
+						(xt::TEXT_ITEM (d, s) ! (map (fn s => xt::TEXT_ITEM (0, s); end ) sr));
 
 					    (d ! dr, s ! sr)
 						=>
-						((map (fn n => TEXT_ITEM (n, ""); end ) dr)
-						 @ (TEXT_ITEM (d, s) ! (map (fn s => TEXT_ITEM (0, s); end ) sr)));
+						((map (fn n => xt::TEXT_ITEM (n, ""); end ) dr)
+						 @ (xt::TEXT_ITEM (d, s) ! (map (fn s => xt::TEXT_ITEM (0, s); end ) sr)));
 					esac;
 
 				end;
