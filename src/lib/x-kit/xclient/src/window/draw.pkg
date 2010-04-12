@@ -39,21 +39,23 @@ herein
 
 	stipulate
 
-	    # Extract the draw_fn, id
-	    # and depth of a drawable: 
+	    # Extract from a drawable its
+            #     draw_fn,
+            #     xid
+	    #     depth
 	    #
-	    fun info_of_drawable (dt::DRAWABLE_WINDOW { draw_fn, root => dt::DWIN w } )
+	    fun info_of_drawable (dt::DRAWABLE_WINDOW { draw_command_sink, root => dt::DWIN w } )
 		    =>
 		    {   w ->   dt::WINDOW { window_id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
-			{ draw_fn, id => window_id, depth };
+			{ draw_command_sink, id => window_id, depth };
 		    };
 
-		info_of_drawable (dt::DRAWABLE_WINDOW { draw_fn, root => dt::DPM pm } )
+		info_of_drawable (dt::DRAWABLE_WINDOW { draw_command_sink, root => dt::DPM pm } )
 		    =>
 		    {   pm -> dt::RW_PIXMAP { id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
-			{ draw_fn, id, depth };
+			{ draw_command_sink, id, depth };
 		    };
 	    end;
 
@@ -73,6 +75,7 @@ herein
 		    (id, depth);
 	    end;
 
+
 	    # Build a drawing function from an encoding function.
 	    #
 	    # The functions have the basic type scheme
@@ -81,20 +84,20 @@ herein
 	    #
 	    fun draw_fn f drawable pen
 		=
-		{   my { draw_fn, id, ... }
+		{   my { draw_command_sink, id, ... }
 			=
 			info_of_drawable drawable;
 
-		    fn x =  draw_fn (di::m::DRAW { to => id, pen, op => (f x) } );
+		    fn x =  draw_command_sink (di::m::DRAW { to => id, pen, op => (f x) } );
 		};
 
 	    fun draw_fn2 f drawable pen
 		=
-		{   my { draw_fn, id, ... }
+		{   my { draw_command_sink, id, ... }
 			=
 			info_of_drawable  drawable;
 
-		    fn x =   fn x' =   draw_fn (di::m::DRAW { to => id, pen, op => (f x x') } );
+		    fn x =   fn x' =   draw_command_sink (di::m::DRAW { to => id, pen, op => (f x x') } );
 		};
 
 	    fun check_list chkfn l
@@ -202,17 +205,15 @@ herein
 
 	    # Polytext drawing:
 	    #
-	    Text
-		=
-		TEXT ( font_base::Font,
-		       List( Text_Item )
-		     )
+	    Text = TEXT ( font_base::Font,
+			  List( Text_Item )
+			)
 
 	    also
 	    Text_Item
-	      = TEXT_FONT    (font_base::Font, List( Text_Item ))
-	      | TEXT_STRING   String
-	      | TEXT_BLANK_PIXELS    Int
+	      = TEXT_FONT         (font_base::Font, List(Text_Item))
+	      | TEXT_STRING        String
+	      | TEXT_BLANK_PIXELS  Int
 	      ;
 
 	    draw_transparent_text
@@ -271,7 +272,7 @@ herein
 
 		fun copy_area_fn  msg_fn  (to, pen, to_pos, from, from_box)
 		    =
-		    {   my { id=>to_id, draw_fn, depth=>to_depth }
+		    {   my { id=>to_id, draw_command_sink, depth=>to_depth }
 			    =
 			    info_of_drawable  to;
 
@@ -288,14 +289,14 @@ herein
 			    raise exception DEPTH_MISMATCH;
 			fi;
 
-			draw_fn (di::m::DRAW { to => to_id, pen, op => msg } );
+			draw_command_sink (di::m::DRAW { to => to_id, pen, op => msg } );
 
 			result;
 		    };
 
 		fun copy_plane_fn msg_fn (to, pen, to_pos, from, from_box, plane)
 		    =
-		    {   my { id=>to_id, draw_fn, ... }
+		    {   my { id=>to_id, draw_command_sink, ... }
 			    =
 			    info_of_drawable  to;
 
@@ -315,7 +316,7 @@ herein
 			    raise exception BAD_PLANE;
 			fi;
 
-			draw_fn (di::m::DRAW { to => to_id, pen, op => msg } );
+			draw_command_sink (di::m::DRAW { to => to_id, pen, op => msg } );
 
 			result;
 		    };
@@ -345,11 +346,11 @@ herein
 		copy_pmarea  = copy_area_fn  (fn arg = (di::o::COPY_PMAREA arg,  ()));
 		copy_pmplane = copy_plane_fn (fn arg = (di::o::COPY_PMPLANE arg, ()));
 
-								# "They made us many promises,
-								#  more than I can remember,
-		fun promise_event (draw_fn, sync_1shot)		#  but they never kept but one;
-		    =                                           #  they promised to take our land,
-		    {   sync_mailop                             #  and they took it." -- Red Cloud
+										# "They made us many promises,
+										#  more than I can remember,
+		fun promise_event (draw_command_sink, sync_1shot)		#  but they never kept but one;
+		    =                                   		        #  they promised to take our land,
+		    {   sync_mailop                     		        #  and they took it." -- Red Cloud
 			    =
 			    get'  sync_1shot;
 
@@ -365,7 +366,7 @@ herein
 
 				NULL
 				    =>
-				    {   draw_fn (di::m::FLUSH);
+				    {   draw_command_sink (di::m::FLUSH);
 
 					sync_mailop
 					    ==>
@@ -378,11 +379,11 @@ herein
 
 		fun pixel_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { draw_command_sink, ... };
 
 			    sync_1shot = copy_area (to, pen, to_pos, from, from_box);
 
-			    draw_fn (di::m::FLUSH);
+			    draw_command_sink (di::m::FLUSH);
 
 			    (get  sync_1shot) ();
 			};
@@ -396,11 +397,11 @@ herein
 
 		fun pixel_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { draw_command_sink, ... };
 
 			    sync_v = copy_area (to, pen, to_pos, from, from_box);
 
-			    promise_event (draw_fn, sync_v);
+			    promise_event (draw_command_sink, sync_v);
 			};
 
 		    pixel_blt_mailop to pen { from, from_box, to_pos }
@@ -413,11 +414,11 @@ herein
 
 		fun plane_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { draw_command_sink, ... };
 
 			    sync_1shot = copy_plane (to, pen, to_pos, from, from_box, plane);
 
-			    draw_fn (di::m::FLUSH);
+			    draw_command_sink (di::m::FLUSH);
 
 			    (get  sync_1shot) ();
 			};
@@ -431,11 +432,11 @@ herein
 
 		fun plane_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { draw_fn, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { draw_command_sink, ... };
 
 			    sync_v = copy_plane (to, pen, to_pos, from, from_box, plane);
 
-			    promise_event (draw_fn, sync_v);
+			    promise_event (draw_command_sink, sync_v);
 			};	    
 
 		    plane_blt_mailop to pen { from, from_box, to_pos, plane }
@@ -529,13 +530,13 @@ herein
 
 		fun clear_box drawable
 		    =
-		    {   my { draw_fn, id, ... }
+		    {   my { draw_command_sink, id, ... }
 			    =
 			    info_of_drawable  drawable;
 
 			fn box
 			    =
-			    draw_fn (
+			    draw_command_sink (
 				di::m::DRAW
                                    { to  => id,
 				     pen => clear_pen,

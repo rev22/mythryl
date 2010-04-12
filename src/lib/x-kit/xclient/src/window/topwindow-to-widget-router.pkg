@@ -57,11 +57,11 @@ herein
 	    =
 	    {   make_descendant_window
 		    =
-		    {   top_window ->  dt::WINDOW { screen, screen_depth, draw_fn, ... };
+		    {   top_window ->  dt::WINDOW { screen, screen_depth, draw_command_sink, ... };
 
 			fn window_id
 			    =
-                            dt::WINDOW { window_id, screen, screen_depth, draw_fn };
+                            dt::WINDOW { window_id, screen, screen_depth, draw_command_sink };
 		    };
 
 		my { kidplug, momplug }
@@ -379,7 +379,9 @@ herein
 		    =
 		    make_mailslot ();
 
-		di = di::make_draw_imp
+		draw_imp
+		    =
+		    di::make_draw_imp
 			  (
 			    take'  drawimp_mappedstate_slot,
 			    gcontext_imp,
@@ -398,7 +400,7 @@ herein
 
 		top_window
 		    =
-		    dt::WINDOW { window_id, screen, screen_depth, draw_fn=>di };
+		    dt::WINDOW { window_id, screen, screen_depth, draw_command_sink => draw_imp };
 
 		my (kidplug, router, delete_slot)
 		    =

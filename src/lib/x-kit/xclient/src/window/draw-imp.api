@@ -90,7 +90,7 @@ herein
 
 	package m: api {
 	    #
-	    Draw_Mail
+	    Draw_Command
 	      = DRAW
 		  { to:    xt::Xid,
 		    pen:   pg::Pen,
@@ -99,7 +99,7 @@ herein
 
 	      | FLUSH
 	      | LOCK_WINDOW_FOR_RUBBERBANDING  {
-		  draw_slot:       Mailslot( Draw_Mail ),	# Stream of drawing commands for the overlay 
+		  draw_slot:       Mailslot( Draw_Command ),	# Stream of drawing commands for the overlay 
 		  release':        Mailop( Void )		# Overlay release mailop
 		}
 	      | DESTROY    d::Destroy_Item
@@ -116,7 +116,7 @@ herein
 	     xok::Xsocket
 	   )
 	   ->
-	   m::Draw_Mail
+	   m::Draw_Command
 	   ->
 	   Void;
 

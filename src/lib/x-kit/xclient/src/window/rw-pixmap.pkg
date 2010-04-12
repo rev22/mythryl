@@ -77,9 +77,9 @@ herein
 	# We do this via draw_imp to avoid a race with
 	# any pending draw requests on the window.
 	#
-	fun destroy_rw_pixmap  (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { draw_fn, ... }, ... } )
+	fun destroy_rw_pixmap  (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { draw_command_sink, ... }, ... } )
             =
-	    draw_fn (di::m::DESTROY (di::d::PIXMAP id));
+	    draw_command_sink (di::m::DESTROY (di::d::PIXMAP id));
 
     };						# package pixmap 
 end;

@@ -52,9 +52,9 @@ herein
 	    =
 	    SCREEN_INFO
 	      {
-		xscreen:    dy::Xscreen,			# Xscreen	def in    src/lib/x-kit/xclient/src/wire/display.pkg
-		imps:       List( Screen_Depth_Imps ),		# The graphics-context and draw imps for the allowed depths.
-				  				# of this screen.
+		xscreen:    dy::Xscreen,				# Xscreen	def in    src/lib/x-kit/xclient/src/wire/display.pkg
+		imps:       List( Screen_Depth_Imps ),			# The graphics-context and draw imps for the allowed depths.
+				  					# of this screen.
 		root_imps:  Screen_Depth_Imps
 	      }
 
@@ -68,18 +68,18 @@ herein
 	    # gc and pixmap be associated with a
 	    # particular screen, visual and depth:
 	    #
-	    SCREEN_DEPTH_IMPS  {				# The graphics context imp and draw_imp
-								# for a given  depth of a screen.
-		depth:      Int,    
+	    SCREEN_DEPTH_IMPS  {					# The graphics context imp and draw_imp
+									# for a given  depth of a screen.
+		depth:      	     Int,    
 
-		gcontext_imp:     gci::Graphics_Context_Cache,	# The graphics context imp for this screen.
+		gcontext_imp:        gci::Graphics_Context_Cache,	# The graphics context imp for this screen.
 
-		draw_fn:    di::m::Draw_Mail -> Void		# The draw-imp connection for
-								# the root  window of the screen. 
+		draw_command_sink:   di::m::Draw_Command -> Void	# The draw-imp connection for
+									# the root  window of the screen. 
 	    }
 
 	also
-	Screen							# A screen handle for users.
+	Screen								# A screen handle for users.
 	    =
 	    SCREEN  {
 		xsession:   Xsession,
@@ -92,12 +92,12 @@ herein
 	    =
 	    WINDOW
 	      {
-		window_id:     xt::Window_Id,
+		window_id:		xt::Window_Id,
 		#
-		screen:        Screen,
-		screen_depth:  Screen_Depth_Imps,
+		screen:			Screen,
+		screen_depth:		Screen_Depth_Imps,
 		#
-		draw_fn:       di::m::Draw_Mail -> Void
+		draw_command_sink:	di::m::Draw_Command -> Void
 	      };
 
 	# Identity tests:
