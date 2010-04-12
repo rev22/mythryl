@@ -206,14 +206,14 @@ api Xdraw {
     #            (Reppy + Gansner's 1993 eXene library manual.)
     #
     package t: api {
-	Text = TEXT (Font, List(Text_Item))
+	#
+	Text      = TEXT         (Font, List(Text_Item))
 	#
 	also
-	Text_Item
-	  = FONT         (Font, List(Text_Item))
-	  | STRING        String
-	  | BLANK_PIXELS  Int			# Skip this many pixels before next STRING.
-	  ;
+	Text_Item = FONT         (Font, List(Text_Item))
+		  | STRING        String
+		  | BLANK_PIXELS  Int			# Skip this many pixels before next STRING.
+		  ;
     };
 	
     draw_opaque_string:        Drawable_Window -> Pen -> Font -> (xg::Point, String ) -> Void;
@@ -225,7 +225,7 @@ api Xdraw {
     #    "The X-protocol provides two operations for copying a rectangle
     #     from one drawable to another: CopyArea and CopyPlane.
     #
-    #    "To further complicate things, these operations can have replied
+    #    "To further complicate things, these operations can have replies
     #     in the form of GraphicsExpose and NoExpose X-events.  When the
     #     source drawable is a window, then it is possible that some or
     #     all of the source rectangle might be obscured; in this case,

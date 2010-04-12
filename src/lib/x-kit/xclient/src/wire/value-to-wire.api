@@ -42,9 +42,9 @@ herein
                                            }
 					   -> v8::Vector;
 
-	encode_change_gc:               { gc:   xt::Xid,    vals: xt::Value_List } -> v8::Vector;
-	encode_change_hosts:            { host: xt::Xhost,  remove: Bool         } -> v8::Vector;
-	encode_change_keyboard_control: { vals: xt::Value_List                   } -> v8::Vector;
+	encode_change_gc:               { gc_id: xt::Xid,    vals: xt::Value_List } -> v8::Vector;
+	encode_change_hosts:            { host:  xt::Xhost,  remove: Bool         } -> v8::Vector;
+	encode_change_keyboard_control: { vals:  xt::Value_List                   } -> v8::Vector;
 
 	encode_change_pointer_control: { acceleration:  Null_Or( { denominator: Int,  numerator: Int } ), 
 					 threshold:     Null_Or( Int )
@@ -111,7 +111,7 @@ herein
                             from_point: ge::Point, 
                             to_point:   ge::Point,
 			    #
-			    gc:         xt::Xid,
+			    gc_id:      xt::Xid,
                             size:       ge::Size
                           }
 			  -> v8::Vector;
@@ -127,7 +127,7 @@ herein
 	encode_copy_plane: { from: xt::Xid,  from_point: ge::Point, 
 			     to:   xt::Xid,  to_point:   ge::Point,
 			     #
-			     gc:    xt::Xid,
+			     gc_id: xt::Xid,
                              plane: Int,
                              size:  ge::Size
                            }
@@ -150,7 +150,7 @@ herein
 			      -> v8::Vector;
 
 	encode_create_gc: { drawable: xt::Xid,
-                            gc:       xt::Xid, 
+                            gc_id:    xt::Xid, 
 			    vals:     xt::Value_List
                           }
 			  -> v8::Vector;
@@ -190,7 +190,7 @@ herein
 	encode_destroy_window:     { window_id: xt::Xid                     } -> v8::Vector;
 
 	encode_fill_poly: { drawable:  xt::Xid,
-                            gc:        xt::Xid, 
+                            gc_id:     xt::Xid, 
 			    points:    List(ge::Point),
                             relative:  Bool, 
 			    shape:     xt::Shape
@@ -207,7 +207,7 @@ herein
 			    -> v8::Vector;
 
 	encode_free_cursor:   { cursor:   xt::Xid  } -> v8::Vector;
-	encode_free_gc:       { gc:       xt::Xid  } -> v8::Vector;
+	encode_free_gc:       { gc_id:    xt::Xid  } -> v8::Vector;
 	encode_free_pixmap:   { pixmap:   xt::Xid  } -> v8::Vector;
      
 	encode_get_atom_name: { atom:     xt::Atom } -> v8::Vector;
@@ -289,14 +289,14 @@ herein
 			     -> v8::Vector;
 
 	encode_image_text16: { drawable: xt::Xid,
-                               gc:       xt::Xid, 
+                               gc_id:    xt::Xid, 
 			       pt:       ge::Point,
                                str:      String
                              }
 			     -> v8::Vector;
 
 	encode_image_text8: { drawable: xt::Xid,
-                              gc:       xt::Xid, 
+                              gc_id:    xt::Xid, 
 			      pt:       ge::Point,
                               str:      String
                             }
@@ -323,58 +323,60 @@ herein
 	encode_open_font:                { font:      xt::Xid, name: String }  -> v8::Vector;
 
 	encode_poly_arc: { drawable: xt::Xid,
-                           gc:       xt::Xid, 
+                           gc_id:    xt::Xid, 
 			   items:    List(ge::Arc)
                          }
 			 -> v8::Vector;
 
 	encode_poly_box: { drawable: xt::Xid,
-                           gc:       xt::Xid, 
+                           gc_id:    xt::Xid, 
 			   items:    List(ge::Box)
                          }
 			 -> v8::Vector;
 
 	encode_poly_fill_arc: { drawable: xt::Xid,
-                                gc:       xt::Xid, 
+                                gc_id:    xt::Xid, 
 				items:    List(ge::Arc)
                               }
 			      -> v8::Vector;
 
 	encode_poly_fill_box: { drawable: xt::Xid,
-                                gc:       xt::Xid, 
+                                gc_id:    xt::Xid, 
 				items:    List(ge::Box)
                               }
 			      -> v8::Vector;
 
 	encode_poly_line:  { drawable: xt::Xid,
-                             gc:       xt::Xid, 
+                             gc_id:    xt::Xid, 
 			     items:    List(ge::Point),
                              relative: Bool
                            }
 			   -> v8::Vector;
 
 	encode_poly_point: { drawable: xt::Xid,
-                             gc: xt::Xid, 
-			     items: List(ge::Point),
+                             gc_id:    xt::Xid, 
+			     items:    List(ge::Point),
                              relative: Bool
                            }
 			   -> v8::Vector;
 
 	encode_poly_segment: { drawable: xt::Xid,
-                               gc: xt::Xid, 
-			       items: List(ge::Line)
+                               gc_id:    xt::Xid, 
+			       items:    List(ge::Line)
                              }
 			     -> v8::Vector;
 
-	encode_poly_text16:  { drawable: xt::Xid,  gc: xt::Xid, 
-			       items: List(xt::Text_Font),  pt: ge::Point
+	encode_poly_text16:  { drawable: xt::Xid,
+                               gc_id:    xt::Xid, 
+			       items:    List(xt::Text_Font),
+                               pt:       ge::Point
                              }
 			     -> v8::Vector;
 
 	encode_poly_text8: { drawable: xt::Xid,
-                             gc: xt::Xid, 
-			     items: List(xt::Text_Font),
-                             pt: ge::Point
+                             gc_id:    xt::Xid, 
+			     items:    List(xt::Text_Font),
+                             pt:       ge::Point
                            }
 			   -> v8::Vector;
 
@@ -388,7 +390,7 @@ herein
                             depth:    Int, 
 			    drawable: xt::Xid,
                             format:   xt::Image_Format, 
-			    gc:       xt::Xid,
+			    gc_id:    xt::Xid,
                             lpad:     Int,
                             size:     ge::Size, 
 			    to:       ge::Point
@@ -432,15 +434,16 @@ herein
 
 	encode_set_clip_boxes:  { boxes:       List(ge::Box), 
 				  clip_origin: ge::Point,
-                                  gc:          xt::Xid, 
+                                  gc_id:       xt::Xid, 
 				  ordering:    xt::Box_Order
                                 }
 				-> v8::Vector;
 
 	encode_set_close_down_mode: { mode: xt::Close_Down_Mode } -> v8::Vector;
 
-	encode_set_dashes: { dash_offset: Int,  dashes: List(Int), 
-			     gc: xt::Xid
+	encode_set_dashes: { dash_offset:  Int,
+                             dashes:       List(Int), 
+			     gc_id:        xt::Xid
                            }
 			   -> v8::Vector;
 

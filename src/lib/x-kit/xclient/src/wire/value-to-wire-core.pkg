@@ -1241,7 +1241,7 @@ herein
 		=
 		make_resource_request (req_free_pixmap, pixmap);
 
-	    fun encode_create_gc { gc, drawable, vals }
+	    fun encode_create_gc { gc_id, drawable, vals }
 		=
 		{   my (nvals, mask, vals)
 			=
@@ -1249,14 +1249,14 @@ herein
 
 		    msg = make_extra_request (req_create_gc, nvals);
 
-		    put_xid      (msg,  4, gc        );
+		    put_xid      (msg,  4, gc_id     );
 		    put_xid      (msg,  8, drawable  );
 		    put_val_list (msg, 12, mask, vals);
 
 		    msg;
 		};
 
-	    fun encode_change_gc { gc, vals }
+	    fun encode_change_gc { gc_id, vals }
 		=
 		{   my (nvals, mask, vals)
 			=
@@ -1264,7 +1264,7 @@ herein
 
 		    msg = make_extra_request (req_change_gc, nvals);
 
-		    put_xid       (msg, 4, gc        );
+		    put_xid       (msg, 4, gc_id     );
 		    put_val_list  (msg, 8, mask, vals);
 
 		    msg;
@@ -1281,13 +1281,13 @@ herein
 		    msg;
 		};
 
-	    fun encode_set_dashes { gc, dash_offset, dashes }
+	    fun encode_set_dashes { gc_id, dash_offset, dashes }
 		=
 		{   n = list::length dashes;
 
 		    msg = make_extra_request (req_set_dashes, (pad n) / 4);
 
-		    put_xid                   (msg,  4, gc         );
+		    put_xid                   (msg,  4, gc_id      );
 		    put_signed16              (msg,  8, dash_offset);
 		    put_signed16              (msg, 10, n          );
 		    put_list (put_signed8, 1) (msg, 12, dashes     );
@@ -1295,7 +1295,7 @@ herein
 		    msg;
 		};
 
-	    fun encode_set_clip_boxes { gc, clip_origin, ordering, boxes }
+	    fun encode_set_clip_boxes { gc_id, clip_origin, ordering, boxes }
 		=
 		{   ordering
 			=
@@ -1310,16 +1310,16 @@ herein
 		    msg = make_extra_request (req_set_clip_boxes, 2 * (list::length boxes));
 
 		    put8      (msg,  1, ordering   );
-		    put_xid   (msg,  4, gc         );
+		    put_xid   (msg,  4, gc_id      );
 		    put_point (msg,  8, clip_origin);
 		    put_boxes (msg, 12, boxes      );
 
 		    msg;
 		};
 
-	    fun encode_free_gc { gc }
+	    fun encode_free_gc { gc_id }
 		=
-		make_resource_request (req_free_gc, gc);
+		make_resource_request (req_free_gc, gc_id);
 
 	    fun encode_clear_area { window_id, box, exposures }
 		=
@@ -1331,12 +1331,12 @@ herein
 		    msg;
 		};
 
-	    fun encode_copy_area { gc, from, to, from_point, size, to_point }
+	    fun encode_copy_area { gc_id, from, to, from_point, size, to_point }
 		=
 		{   msg = make_resource_request (req_copy_area, from);
 
 		    put_xid   (msg,  8, to        );
-		    put_xid   (msg, 12, gc        );
+		    put_xid   (msg, 12, gc_id     );
 		    put_point (msg, 16, from_point);
 		    put_point (msg, 20, to_point  );
 		    put_size  (msg, 24, size      );
@@ -1344,12 +1344,12 @@ herein
 		    msg;
 		};
 
-	    fun encode_copy_plane { gc, from, to, from_point, size, to_point, plane }
+	    fun encode_copy_plane { gc_id, from, to, from_point, size, to_point, plane }
 		=
 		{   msg = make_resource_request (req_copy_plane, from);
 
 		    put_xid    (msg,  8, to                                        );
-		    put_xid    (msg, 12, gc                                        );
+		    put_xid    (msg, 12, gc_id                                     );
 		    put_point  (msg, 16, from_point                                );
 		    put_point  (msg, 20, to_point                                  );
 		    put_size   (msg, 24, size                                      );
@@ -1361,13 +1361,13 @@ herein
 
 	    stipulate
 
-		fun encode_poly  req_info  { drawable, gc, relative, items }
+		fun encode_poly  req_info  { drawable, gc_id, relative, items }
 		    =
 		    {   msg = make_extra_request (req_info, list::length items);
 
 			put_bool   (msg,  1, relative);
 			put_xid    (msg,  4, drawable);
-			put_xid    (msg,  8, gc      );
+			put_xid    (msg,  8, gc_id   );
 			put_points (msg, 12, items   );
 
 			msg;
@@ -1380,12 +1380,12 @@ herein
 
 	    stipulate
 
-		fun encode (info, put_items, size) { drawable, gc, items }
+		fun encode (info, put_items, size) { drawable, gc_id, items }
 		    =
 		    {   msg = make_extra_request (info, size*(list::length items));
 
 			put_xid   (msg,  4, drawable);
-			put_xid   (msg,  8, gc      );
+			put_xid   (msg,  8, gc_id   );
 			put_items (msg, 12, items   );
 
 			msg;
@@ -1412,7 +1412,7 @@ herein
 		encode_poly_fill_arc  = encode (req_poly_fill_arc,  put_arcs,  3);
 	    end;
 
-	    fun encode_fill_poly { drawable, gc, shape, relative, points }
+	    fun encode_fill_poly { drawable, gc_id, shape, relative, points }
 		=
 		{   shape =  case shape
 				 #
@@ -1424,7 +1424,7 @@ herein
 		    msg = make_extra_request (req_fill_poly, list::length points);
 
 		    put_xid    (msg,  4, drawable);
-		    put_xid    (msg,  8, gc      );
+		    put_xid    (msg,  8, gc_id   );
 		    put8       (msg, 12, shape   );
 		    put_bool   (msg, 13, relative);
 		    put_points (msg, 16, points  );
@@ -1438,7 +1438,7 @@ herein
 		    put_image_format (buf, i, xt::ZPIXMAP ) =>  put8 (buf, i, 0u2);
 		end;
 	    herein
-		fun encode_put_image { drawable, gc, depth, size, to, lpad, format, data }
+		fun encode_put_image { drawable, gc_id, depth, size, to, lpad, format, data }
 		    =
 		    {   n = w8v::length data;
 
@@ -1446,7 +1446,7 @@ herein
 
 			put_image_format (msg,  1, format  );
 			put_xid          (msg,  4, drawable);
-			put_xid          (msg,  8, gc      );
+			put_xid          (msg,  8, gc_id   );
 			put_size         (msg, 12, size    );
 			put_point        (msg, 16, to      );
 			put_signed8      (msg, 20, lpad    );
@@ -1474,7 +1474,7 @@ herein
 		    textlen ((xt::TEXT_ITEM(_, s)) ! r, n) =>  textlen (r, n+2+(string::length s));
 		end;
 
-		fun encode (itemlen, req_info) { drawable, gc, pt, items }
+		fun encode (itemlen, req_info) { drawable, gc_id, pt, items }
 		    =
 		    {   fun put (msg, i, [])
 				=>
@@ -1516,7 +1516,7 @@ herein
 			if (p != l)   put8 (msg, 16+l, 0u0);   fi;  /* Xlib does this */ 
 
 			put_xid   (msg,  4, drawable);
-			put_xid   (msg,  8, gc      );
+			put_xid   (msg,  8, gc_id   );
 			put_point (msg, 12, pt      );
 			put       (msg, 16, items   );
 
@@ -1528,7 +1528,7 @@ herein
 	    end;
 
 	    stipulate
-		fun encode (textlen, req_info) { drawable, gc, pt, str }
+		fun encode (textlen, req_info) { drawable, gc_id, pt, str }
 		    =
 		    {   len = string::length str;
 
@@ -1536,7 +1536,7 @@ herein
 
 			put_signed8 (msg,  1, textlen str);
 			put_xid     (msg,  4, drawable   );
-			put_xid     (msg,  8, gc         );
+			put_xid     (msg,  8, gc_id      );
 			put_point   (msg, 12, pt         );
 			put_string  (msg, 16, str        );
 

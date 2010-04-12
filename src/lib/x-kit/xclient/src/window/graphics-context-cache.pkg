@@ -37,6 +37,31 @@
 # Our allocate* and free* functions are however called
 # only from the latter; we are essentially supporting
 # infrastructure for draw-imp.
+#
+# The system will have only one graphics_context_cache,
+# but it may be used by many draw_imp clients.  (This
+# is forced by the the X architecture's requirement that
+# each graphics context etc may be used only on one visual;
+# currently we anyhow allocate a separate draw_imp for every
+# toplevel window.)
+#
+# Consquently we must deal with resource contention between
+# multiple draw_imp instances concurrently trying to use gcs.
+#
+# We handle this by having draw_imps explicitly allocate and
+# free the gcs they use.  This is reasonably reliable because
+# it happens only in draw_batch() in the pattern
+#     
+#   {   gc =   alloc_gc { pen, used => mask };
+#	draw_ops (gc, xid0) ops;
+#	free_gc gc;
+#   };
+#     
+# We then maintain in each In_Use_Gc record an explicit
+# 'refcount' field counting the number of draw_imp clients
+# which currently have that gc allocated;  we cannot
+# rewrite fields in such a gc until the refcount returns
+# to zero.
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6
@@ -61,7 +86,7 @@ stipulate
     package ge  =  geometry;						# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
     package xt  =  xtypes;						# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package pg  =  pen_guts;						# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
-    package x2w =  value_to_wire;					# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+    package v2w =  value_to_wire;					# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package xok =  xsocket;						# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package t2s =  xtype_to_string;					# xtype_to_string		is from   src/lib/x-kit/xclient/src/to-string/xtype-to-string.pkg
     package xtr =  xtracing;						# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
@@ -137,7 +162,7 @@ herein
 	    Free_Gc
               =
               FREE_GC
-                { gc:    xt::Graphics_Context_Id,	# X-server graphics context.
+                { gc_id: xt::Graphics_Context_Id,	# 29-bit integer X id for X-server graphics context.
 		  desc:  pg::Pen,			# A descriptor of the values of the GC.
 		  font:  Font_Status	    		# The current font (if any).
 		};
@@ -145,11 +170,11 @@ herein
 	    In_Use_Gc
 	      =
 	      IN_USE_GC
-		{ gc:    xt::Graphics_Context_Id,	# The X-server graphics context.
+		{ gc_id: xt::Graphics_Context_Id,	# 29-bit integer X id for X-server graphics context.
 		  desc:  pg::Pen,			# A descriptor of the values of the GC.
 		  font:  Ref( Font_Status ),		# The current font (if any).
 		  used:  Ref( Unt ),			# A bit-mask telling which components of the GC are being used.
-		  refcount:  Ref( Int )			# The number of clients using the GC, including those using the font. 
+		  refcount:  Ref( Int )			# The number of draw_imp clients using the GC, including those using the font. 
 		};
 
 	    #  +DEBUG 
@@ -159,11 +184,11 @@ herein
 		font_sts2s (IN_USE_FONT (f, n)) =>  string::cat [ "IN_USE_FONT(", xid_to_string f, ", ", int::to_string n, ")" ];
 	    end;
 
-	    fun in_use_gc_to_string (IN_USE_GC { gc, desc, font, used, refcount } )
+	    fun in_use_gc_to_string (IN_USE_GC { gc_id, desc, font, used, refcount } )
 		=
 		string::cat
                   [
-		    "IN_USE_GC { gc=", xid_to_string gc, ", font=", font_sts2s *font,
+		    "IN_USE_GC { gc_id=", xid_to_string gc_id, ", font=", font_sts2s *font,
 		    ", refcount=", int::to_string *refcount, "}"
 		  ];
 
@@ -183,13 +208,13 @@ herein
        -DEBUG */
 
 	    # Search a list of in-use GCs for
-	    # given gcid and remove if free.
+	    # given gc_id and remove if free.
 	    #
 	    # We return NULL if gc did not become free,
 	    # otherwise the new	FREE_GC plus the input
 	    # list with it removed:	
 	    #
-	    fun find_in_use_gc (gcid, font_used, in_use_gcs)
+	    fun find_in_use_gc (our_gc_id, font_used, in_use_gcs)
 		=
 		find  in_use_gcs
 		where
@@ -197,9 +222,9 @@ herein
 			    =>
 			    xgripe::impossible "[graphics_context_cache: lost in-use graphics context]";
 
-			find ((x as IN_USE_GC { gc, ... } ) ! rest)
+			find ((x as IN_USE_GC { gc_id, ... } ) ! rest)
 			    =>
-			    if (gc != gcid)
+			    if (gc_id != our_gc_id)
 				#	
 				case (find rest)
 				    #
@@ -213,11 +238,11 @@ herein
 				    #
 				    (FALSE, IN_USE_GC { refcount => REF 1, desc, font, ... })
 					=>
-					THE (FREE_GC { gc, desc, font => *font }, rest);		# Removing last reference makes GC free.
+					THE (FREE_GC { gc_id, desc, font => *font }, rest);		# Removing last reference makes GC free.
 
 				    (TRUE,  IN_USE_GC { refcount => REF 1, desc, font => REF (IN_USE_FONT (f, 1)), ... })
 					=>
-					THE (FREE_GC { gc, desc, font => UNUSED_FONT f }, rest);	# Ditto plus marking font as unused.
+					THE (FREE_GC { gc_id, desc, font => UNUSED_FONT f }, rest);	# Ditto plus marking font as unused.
 
 				    (FALSE, IN_USE_GC { refcount as REF n, ... })
 					=>
@@ -434,38 +459,27 @@ herein
 			    =>
 			    ();
 
-			set_dashes (id, THE (pg::IS_WIRE offset, d))
+			set_dashes (gc_id, THE (pg::IS_WIRE offset, dashes))
 			    =>
-			    request (
-				x2w::encode_set_dashes {
-				    gc => id, dash_offset => unt::to_int_x offset, dashes => d
-				  }
-			    );
+			    request (v2w::encode_set_dashes { gc_id, dashes, dash_offset => unt::to_int_x offset });
 
-			set_dashes (id, THE(_, d))
+			set_dashes (gc_id, THE(_, dashes))
 			    =>
-			    request (
-				x2w::encode_set_dashes { gc => id, dash_offset => 0, dashes => d }
-			    );
+			    request (v2w::encode_set_dashes { gc_id, dashes, dash_offset => 0 });
 		    end;
+
 
 		    fun set_clip_boxes (_, NULL)
 			    =>
 			    ();
 
-			set_clip_boxes (id, THE (pg::IS_POINT pt, (order, boxes)))
+			set_clip_boxes (gc_id, THE (pg::IS_POINT pt, (order, boxes)))
 			    =>
-			    request
-			      ( x2w::encode_set_clip_boxes
-				  { gc => id, clip_origin => pt, ordering => order, boxes }
-			      );
+			    request (v2w::encode_set_clip_boxes { gc_id, boxes, clip_origin => pt, ordering => order });
 
-			set_clip_boxes (id, THE(_, (order, boxes)))
+			set_clip_boxes (gc_id, THE(_, (order, boxes)))
 			    =>
-			    request
-			      ( x2w::encode_set_clip_boxes
-				  { gc => id, clip_origin => ge::point_00, ordering => order, boxes }
-			      );
+			    request (v2w::encode_set_clip_boxes { gc_id, clip_origin => ge::point_00, ordering => order, boxes });
 		    end;
 
 
@@ -477,11 +491,11 @@ herein
 
 			    rw_vector::set (vals, font_gcslot, THE fid);
 
-			    request (x2w::encode_change_gc { gc => gc_id, vals => xt::VALUE_LIST vals } );
+			    request (v2w::encode_change_gc { gc_id, vals => xt::VALUE_LIST vals } );
 			};
 
 
-		    # Create a new server GC.
+		    # Create a new X-server GC.
 		    # It is in-use by definition:
 		    #
 		    fun make_gc (pen as pg::PEN { bitmask, ... }, used_mask, font)
@@ -490,15 +504,15 @@ herein
 				=
 				pen_to_gcvals (pen, bitmask, font);
 
-			    gcid = next_xid();
+			    gc_id = next_xid();
 
-			    request (x2w::encode_create_gc { gc=>gcid, drawable, vals } );
+			    request (v2w::encode_create_gc { gc_id, drawable, vals } );
 
-			    set_dashes (gcid, dashes);
-			    set_clip_boxes (gcid, clip_boxes);
+			    set_dashes (gc_id, dashes);
+			    set_clip_boxes (gc_id, clip_boxes);
 
 			    IN_USE_GC
-                              { gc   =>  gcid,
+                              { gc_id,
 				desc =>  pen,
 				#
 				font =>  REF case font    NULL => NO_FONT;  (THE f) => IN_USE_FONT (f, 1); esac,
@@ -510,15 +524,15 @@ herein
 
 		    (make_gc (pg::default_pen, 0ux7FFFFF, NULL))
 			->
-		        default_gc as IN_USE_GC { gc => default_gcid, ... };
+		        default_gc as IN_USE_GC { gc_id => default_gcid, ... };
 
-		    # Update a server GC so that it
-		    # agrees with the given pen
+		    # Update an X-server GC so that
+		    # it agrees with the given pen
 		    # on the used values:
 		    #
 		    fun change_gc
 			(
-			  FREE_GC { gc=>gc_id, font=>cur_font, ... },
+			  FREE_GC { gc_id, font=>cur_font, ... },
                           pen as pg::PEN { bitmask, ... },
 			  used_mask,
                           new_font
@@ -538,38 +552,37 @@ herein
 				    (IN_USE_FONT _,           _) =>  xgripe::impossible "[Gcontext_Imp: used font in free_gcs gc]";
 				esac;
 
-			      if (default_mask != 0u0)
-				  #	
-				  request (
-				      x2w::encode_copy_gc
-					  {  from =>  default_gcid,
-					     to   =>  gc_id,
-					     mask =>  xt::VALUE_MASK (pen_mask_to_gcmask  default_mask)
-					  }
-				  );
-			      fi;
+			    if (default_mask != 0u0)
+				#	
+				request (
+				    v2w::encode_copy_gc
+					{  from =>  default_gcid,
+					   to   =>  gc_id,
+					   mask =>  xt::VALUE_MASK (pen_mask_to_gcmask  default_mask)
+					}
+				);
+			    fi;
 
-			      if (non_default_mask != 0u0
-			      or  different_font)
+			    if (non_default_mask != 0u0
+			    or  different_font)
 
-				    my { vals, dashes, clip_boxes }
-					=
-					pen_to_gcvals (pen, bitmask, new_font);
+				(pen_to_gcvals (pen, bitmask, new_font))
+				    ->
+				    { vals, dashes, clip_boxes };
 
-				    request (x2w::encode_change_gc { gc => gc_id, vals } );
-				    set_dashes (gc_id, dashes);
-				    set_clip_boxes (gc_id, clip_boxes);
+				request (v2w::encode_change_gc { gc_id, vals } );
+				set_dashes (gc_id, dashes);
+				set_clip_boxes (gc_id, clip_boxes);
+			    fi;
 
-			      fi;
-
-			      IN_USE_GC
-                                {
-				  gc       =>  gc_id,
-				  desc     =>  pen,
-				  font     =>  REF font,
-				  used     =>  REF used_mask,
-				  refcount =>  REF 1
-			        };
+			    IN_USE_GC
+			      {
+				gc_id,
+				desc     =>  pen,
+				font     =>  REF font,
+				used     =>  REF used_mask,
+				refcount =>  REF 1
+			      };
 			};
 
 
@@ -623,7 +636,7 @@ herein
 				    =>
 				    if (match arg)
 					#
-					arg ->  IN_USE_GC { gc, refcount, used, ... };
+					arg ->  IN_USE_GC { refcount, used, ... };
 					#
 					refcount := *refcount + 1;
 					used := (*used | used_mask);
@@ -664,14 +677,15 @@ herein
 						=
 						pg::pen_match (used_mask, pen, desc);
 
-					    fun make_used (FREE_GC { gc, desc, font } )
+					    fun make_used (FREE_GC { gc_id, desc, font } )
 						=
-						IN_USE_GC { gc,
-						       desc,
-						       font     =>  REF font,
-						       used     =>  REF used_mask,
-						       refcount =>  REF 1
-						     };
+						IN_USE_GC
+                                                  { gc_id,
+						    desc,
+						    font     =>  REF font,
+						    used     =>  REF used_mask,
+						    refcount =>  REF 1
+						  };
 					end;
 
 				    THE fid					# "fid" may be "font id"
@@ -694,10 +708,10 @@ herein
 						    xgripe::impossible "[Gcontext_Imp: used font in avail gc]";
 					    end;
 
-					    fun make_used (FREE_GC { gc, desc, ... } )
+					    fun make_used (FREE_GC { gc_id, desc, ... } )
 						=
 						IN_USE_GC {
-						    gc,
+						    gc_id,
 						    desc,
 						    font     =>  REF (IN_USE_FONT (fid, 1)),
 						    used     =>  REF used_mask,
@@ -713,7 +727,7 @@ herein
 				    =>
 				    (make_gc (pen, used_mask, font), 0, 0, revappend (l, []));
 
-				f ([last as FREE_GC { gc, ... } ], l)
+				f ([last as FREE_GC _ ], l)
 				    =>
 				    if (match last)
 					#
@@ -770,19 +784,19 @@ herein
 				=>
 				case (match_in_use_gc (pen, used_mask, NULL, in_use_gcs))
 				    #
-				    THE (IN_USE_GC { gc, ... } )
+				    THE (IN_USE_GC { gc_id, ... } )
 					=>
-					{   give (reply_slot, REPLY_GC gc);
+					{   give (reply_slot, REPLY_GC gc_id);
 					    imp_loop (hit+1, miss, in_use_gcs, free_gcs);
 					};
 
 				    NULL
 					=>
-					{   my (x as IN_USE_GC { gc, ... }, h, m, a)
+					{   my (x as IN_USE_GC { gc_id, ... }, h, m, a)
 						=
 						match_free_gc (hit, miss, pen, used_mask, NULL, free_gcs);
 
-					    give (reply_slot, REPLY_GC gc);
+					    give (reply_slot, REPLY_GC gc_id);
 
 					    imp_loop (h, m, x ! in_use_gcs, a);
 					};
@@ -792,46 +806,46 @@ herein
 				=>
 				case (match_in_use_gc (pen, used_mask, NULL, in_use_gcs))
 				    #
-				    THE (IN_USE_GC { gc, font as (REF NO_FONT), ... } )
+				    THE (IN_USE_GC { gc_id, font as (REF NO_FONT), ... } )
 					=>
-					{   set_font (gc, f_id);
+					{   set_font (gc_id, f_id);
 
 					    font := IN_USE_FONT (f_id, 1);
 
-					    give (reply_slot, REPLY_GC_WITH_FONT (gc, f_id));
+					    give (reply_slot, REPLY_GC_WITH_FONT (gc_id, f_id));
 
 					    imp_loop (hit+1, miss, in_use_gcs, free_gcs);
 					};
 
-				    THE (IN_USE_GC { gc, font as (REF (UNUSED_FONT f)), ... } )
+				    THE (IN_USE_GC { gc_id, font as (REF (UNUSED_FONT f)), ... } )
 					=>
 					{   if (f != f_id)
-						  set_font (gc, f_id);
+						  set_font (gc_id, f_id);
 						  font := IN_USE_FONT (f_id, 1);
 					    else  font := IN_USE_FONT (f_id, 1);
 					    fi;
 
-					    give (reply_slot, REPLY_GC_WITH_FONT (gc, f_id));
+					    give (reply_slot, REPLY_GC_WITH_FONT (gc_id, f_id));
 
 					    imp_loop (hit+1, miss, in_use_gcs, free_gcs);
 					};
 
-				    THE (IN_USE_GC { gc, font as (REF (IN_USE_FONT (f, n))), ... } )
+				    THE (IN_USE_GC { gc_id, font as (REF (IN_USE_FONT (f, n))), ... } )
 					=>
 					{   font := IN_USE_FONT (f, n+1);
 
-					    give (reply_slot, REPLY_GC_WITH_FONT (gc, f));
+					    give (reply_slot, REPLY_GC_WITH_FONT (gc_id, f));
 
 					    imp_loop (hit+1, miss, in_use_gcs, free_gcs);
 					};
 
 				    NULL
 					=>
-					{   my (x as IN_USE_GC { gc, ... }, h, m, a)
+					{   my (x as IN_USE_GC { gc_id, ... }, h, m, a)
 						=
 						match_free_gc( hit, miss, pen, used_mask, THE f_id, free_gcs);
 
-					    give (reply_slot, REPLY_GC_WITH_FONT (gc, f_id));
+					    give (reply_slot, REPLY_GC_WITH_FONT (gc_id, f_id));
 
 					    imp_loop (h, m, x ! in_use_gcs, a);
 					};
@@ -841,46 +855,46 @@ herein
 				=>
 				case (match_in_use_gc (pen, used_mask, THE f_id, in_use_gcs))
 				    #
-				    THE (IN_USE_GC { gc, font as (REF NO_FONT), ... } )
+				    THE (IN_USE_GC { gc_id, font as (REF NO_FONT), ... } )
 					=>
-					{   set_font (gc, f_id);
+					{   set_font (gc_id, f_id);
 
 					    font := IN_USE_FONT (f_id, 1);
 
-					    give (reply_slot, REPLY_GC gc);
+					    give (reply_slot, REPLY_GC gc_id);
 
 					    imp_loop (hit+1, miss, in_use_gcs, free_gcs);
 					};
 
-				   THE (IN_USE_GC { gc, font as (REF (UNUSED_FONT f)), ... } )
+				   THE (IN_USE_GC { gc_id, font as (REF (UNUSED_FONT f)), ... } )
 					=>
 					{   if (f != f_id)
-						set_font (gc, f_id);
+						set_font (gc_id, f_id);
 					    fi;
 
 					    font := IN_USE_FONT (f_id, 1);
 
-					    give (reply_slot, REPLY_GC gc);
+					    give (reply_slot, REPLY_GC gc_id);
 
 					    imp_loop (hit+1, miss, in_use_gcs, free_gcs);
 					};
 
-				   THE (IN_USE_GC { gc, font as (REF (IN_USE_FONT (f, n))), ... } )
+				   THE (IN_USE_GC { gc_id, font as (REF (IN_USE_FONT (f, n))), ... } )
 				       =>
 				       {   font := IN_USE_FONT (f, n+1);		#  NOTE: f = fId! 
 
-					   give (reply_slot, REPLY_GC gc);
+					   give (reply_slot, REPLY_GC gc_id);
 
 					   imp_loop (hit+1, miss, in_use_gcs, free_gcs);
 				       };
 
 				   NULL
 				       =>
-				       {   my (x as IN_USE_GC { gc, ... }, h, m, a)
+				       {   my (x as IN_USE_GC { gc_id, ... }, h, m, a)
 					       =
 					       match_free_gc( hit, miss, pen, used_mask, THE f_id, free_gcs);
 
-					   give (reply_slot, REPLY_GC gc);
+					   give (reply_slot, REPLY_GC gc_id);
 
 					   imp_loop (h, m, x ! in_use_gcs, a);
 				       };
@@ -944,9 +958,9 @@ herein
 		};
 
 
-	    fun free_graphics_context (GRAPHICS_CONTEXT_CACHE { plea_slot, ... })  gcid
+	    fun free_graphics_context (GRAPHICS_CONTEXT_CACHE { plea_slot, ... })  gc_id
 		=
-		give  (plea_slot, RELEASE_GC gcid);
+		give  (plea_slot, RELEASE_GC gc_id);
 
 
 	    fun free_graphics_context_and_font

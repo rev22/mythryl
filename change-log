@@ -1,3 +1,5 @@
+2010-04-12-01.23.34: src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg: Work at maintaining clearer distinction between gc records and 29-bit integer gc ID values.
+2010-04-12-01.23.34: src/lib/x-kit/xclient/src/window/draw.pkg: Moved Text+Text_Item into their own package t, dropped the TEXT_ prefixes.
 2010-04-12-01.08.09: src/lib/x-kit/xclient/src/window/draw-types.api: For clarity and namespace sanity, moved Draw_Root into its own package r, renamed DWIN -> WINDOW, DPM -> PIXMAP.
 2010-04-12-00.54.56: src/lib/x-kit/xclient/src/window/draw.pkg: Nuke another bloody include.
 2010-04-11-20.15.01: src/lib/x-kit/xclient/src/window/draw-types.api: Renamed draw_fn -> draw_command_sink for clarity.
