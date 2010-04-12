@@ -1,3 +1,4 @@
+2010-04-11-20.15.01: src/lib/x-kit/xclient/src/window/draw-types.api: Renamed draw_fn -> draw_command_sink for clarity.
 2010-04-11-19.20.27: src/lib/x-kit/xclient/src/window/draw-imp.pkg: More random tidying.
 2010-04-11-18.55.57: src/lib/x-kit/xclient/src/window/draw-imp.api: For clarity renamed package c -> s, within it Config -> Mapped_State, MAP -> TOPWINDOW_IS_NOW_MAPPED, UNMAP -> TOPWINDOW_IS_NOW_UNMAPPED.
 2010-04-11-17.37.23: src/lib/compiler/front/parse/lex/mythryl-token-table-g.pkg: Killed the "&&" and "||" reserved words. These were synonyms of "and" and "or" intended to comfort C programmers, but they do not get used enough to justify keeping them around.

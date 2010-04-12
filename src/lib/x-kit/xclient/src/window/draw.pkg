@@ -220,9 +220,7 @@ herein
 		=
 		draw_fn f
 		where 
-		    include font_base;
-
-		    fun f (pt, TEXT (FONT { id=>font, ... }, items))
+		    fun f (pt, TEXT (fb::FONT { id=>font, ... }, items))
 			=
 			di::o::POLY_TEXT8
 			  ( font,
@@ -242,11 +240,11 @@ herein
 				    =>
 				    flat (font, d+d', r, l);
 
-				flat (_, d, [TEXT_FONT (FONT { id=>font, ... }, items)], l)
+				flat (_, d, [TEXT_FONT (fb::FONT { id=>font, ... }, items)], l)
 				    =>
 				    flat (font, d, items, (di::t::FONT font) ! l);
 
-				flat (font, d, (TEXT_FONT (FONT { id=>font', ... }, items)) ! r, l)
+				flat (font, d, (TEXT_FONT (fb::FONT { id=>font', ... }, items)) ! r, l)
 				    =>
 				    {   my (d', l')
 					    =
