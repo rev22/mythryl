@@ -162,17 +162,20 @@ herein
 	#
 	# these are abstract views of drawable chunks (e.g., windows or pixmaps).
 	#
-	Draw_Root
-          #
-          = DWIN    Window
-          | DPM  Rw_Pixmap
-          ;
+	package r {
+	    #
+	    Draw_Root
+	      #
+	      = WINDOW  Window
+	      | PIXMAP  Rw_Pixmap
+	      ;
+	};
 	#
 	Drawable_Window
 	    =
 	    DRAWABLE_WINDOW
 	      {
-		root:                Draw_Root,
+		root:                r::Draw_Root,
 		draw_command_sink:   di::m::Draw_Command -> Void
 	      };
 
@@ -180,14 +183,14 @@ herein
 	#
 	fun drawable_of_window (w as WINDOW { draw_command_sink, ... } )
 	    =
-	    DRAWABLE_WINDOW { root => DWIN w, draw_command_sink };
+	    DRAWABLE_WINDOW { root => r::WINDOW w, draw_command_sink };
 
 
 	# Make a drawable from a rw_pixmap 
 	#
 	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, screen_depth=>sn::SCREEN_DEPTH_IMPS { draw_command_sink, ... }, ... } )
 	    =
-	    DRAWABLE_WINDOW { root => DPM pm, draw_command_sink=>draw_command' }
+	    DRAWABLE_WINDOW { root => r::PIXMAP pm, draw_command_sink=>draw_command' }
 	    where 
 
 		fun draw_command' (di::m::DRAW { to, pen, op => di::o::CLEAR_AREA (ge::BOX { col, row, wide, high } ) } )
@@ -231,8 +234,8 @@ herein
 		end;
 	    end;
 
-	fun depth_of_drawable (DRAWABLE_WINDOW { root => DWIN w, ... } ) =>   depth_of_window      w;
-	    depth_of_drawable (DRAWABLE_WINDOW { root => DPM pm, ... } ) =>   depth_of_rw_pixmap  pm;
+	fun depth_of_drawable (DRAWABLE_WINDOW { root => r::WINDOW w,  ... } ) =>   depth_of_window      w;
+	    depth_of_drawable (DRAWABLE_WINDOW { root => r::PIXMAP pm, ... } ) =>   depth_of_rw_pixmap  pm;
 	end;
 
 	# An unbuffered drawable is used to provide immediate
@@ -246,7 +249,7 @@ herein
 	#
 	#     src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
 	#
-	fun make_unbuffered_drawable (DRAWABLE_WINDOW { root as DWIN w, draw_command_sink } )
+	fun make_unbuffered_drawable (DRAWABLE_WINDOW { root as r::WINDOW w, draw_command_sink } )
 		=>
 		DRAWABLE_WINDOW
 		  {
@@ -331,7 +334,7 @@ herein
 		     }
 		);
 
-		{ drawable =>   DRAWABLE_WINDOW { root => DWIN w, draw_command_sink => draw_and_flush },
+		{ drawable =>   DRAWABLE_WINDOW { root => r::WINDOW w, draw_command_sink => draw_and_flush },
 		  release  =>   release_fn
 		};
 	    };

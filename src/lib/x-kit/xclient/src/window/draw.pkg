@@ -44,14 +44,14 @@ herein
             #     xid
 	    #     depth
 	    #
-	    fun info_of_drawable (dt::DRAWABLE_WINDOW { draw_command_sink, root => dt::DWIN w } )
+	    fun info_of_drawable (dt::DRAWABLE_WINDOW { draw_command_sink, root => dt::r::WINDOW w } )
 		    =>
 		    {   w ->   dt::WINDOW { window_id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
 			{ draw_command_sink, id => window_id, depth };
 		    };
 
-		info_of_drawable (dt::DRAWABLE_WINDOW { draw_command_sink, root => dt::DPM pm } )
+		info_of_drawable (dt::DRAWABLE_WINDOW { draw_command_sink, root => dt::r::PIXMAP pm } )
 		    =>
 		    {   pm -> dt::RW_PIXMAP { id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
@@ -486,8 +486,8 @@ herein
 		    =
 		    {   from = case drawable
 				  #		        
-				  dt::DRAWABLE_WINDOW { root => dt::DWIN w, ... } =>  dt::FROM_WINDOW     w;
-				  dt::DRAWABLE_WINDOW { root => dt::DPM pm, ... } =>  dt::FROM_RW_PIXMAP pm;
+				  dt::DRAWABLE_WINDOW { root => dt::r::WINDOW w,  ... } =>  dt::FROM_WINDOW     w;
+				  dt::DRAWABLE_WINDOW { root => dt::r::PIXMAP pm, ... } =>  dt::FROM_RW_PIXMAP pm;
 			      esac;
 
 
@@ -501,8 +501,8 @@ herein
 		    =
 		    {   from = case drawable
 				  #		        
-				  dt::DRAWABLE_WINDOW { root => dt::DWIN w, ... } =>  dt::FROM_WINDOW     w;
-				  dt::DRAWABLE_WINDOW { root => dt::DPM pm, ... } =>  dt::FROM_RW_PIXMAP pm;
+				  dt::DRAWABLE_WINDOW { root => dt::r::WINDOW w,  ... } =>  dt::FROM_WINDOW     w;
+				  dt::DRAWABLE_WINDOW { root => dt::r::PIXMAP pm, ... } =>  dt::FROM_RW_PIXMAP pm;
 			      esac;
 
 			pixel_blt_mailop
@@ -511,7 +511,7 @@ herein
 			    { from, to_pos, from_box };
 		    };
 
-	    end; # stipulate
+	    end;							# stipulate
 
 	    # Clear part of a destination drawable.
 	    # For windows, this fills in the background color;

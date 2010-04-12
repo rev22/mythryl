@@ -114,15 +114,18 @@ herein
 	size_of_rw_pixmap:   Rw_Pixmap -> ge::Size;
 	size_of_ro_pixmap:   Ro_Pixmap -> ge::Size;
 
-	Draw_Root = DWIN  Window
-		  | DPM   Rw_Pixmap
-		  ;
+	package r: api {
+	    #
+	    Draw_Root = WINDOW  Window
+		      | PIXMAP  Rw_Pixmap
+		      ;
+	};
 
 	Drawable_Window
 	    =
 	    DRAWABLE_WINDOW
 	      {
-		root:			Draw_Root,
+		root:			r::Draw_Root,
 		draw_command_sink:	di::m::Draw_Command -> Void
 	      };
 
