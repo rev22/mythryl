@@ -184,7 +184,7 @@ api Xdraw {
     fill_circle:   Drawable_Window -> Pen -> { center:  xg::Point, rad:  Int } -> Void;
 
 
-    # Text drawing.
+    # Polytext drawing.
     #
     #    "There are two styles of text drawing: opaque and transparent.
     #
@@ -204,19 +204,21 @@ api Xdraw {
     #
     #	      -- p22-3 http:://mythryl.org/pub/exene/1993-lib.ps
     #            (Reppy + Gansner's 1993 eXene library manual.)
-
-    Text = TEXT (Font, List(Text_Item))
     #
-    also
-    Text_Item
-      = TEXT_FONT   (Font, List(Text_Item))
-      | TEXT_STRING  String
-      | TEXT_BLANK_PIXELS  Int			# Skip this many pixels before next TEXT_STRING.
-      ;
-
-    draw_opaque_string:        Drawable_Window -> Pen -> Font -> (xg::Point, String) -> Void;
-    draw_transparent_string:   Drawable_Window -> Pen -> Font -> (xg::Point, String) -> Void;
-    draw_transparent_text:     Drawable_Window -> Pen ->         (xg::Point, Text  ) -> Void;
+    package t: api {
+	Text = TEXT (Font, List(Text_Item))
+	#
+	also
+	Text_Item
+	  = FONT         (Font, List(Text_Item))
+	  | STRING        String
+	  | BLANK_PIXELS  Int			# Skip this many pixels before next STRING.
+	  ;
+    };
+	
+    draw_opaque_string:        Drawable_Window -> Pen -> Font -> (xg::Point, String ) -> Void;
+    draw_transparent_string:   Drawable_Window -> Pen -> Font -> (xg::Point, String ) -> Void;
+    draw_transparent_text:     Drawable_Window -> Pen ->         (xg::Point, t::Text) -> Void;
 
 
 
