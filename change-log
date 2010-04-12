@@ -1,3 +1,4 @@
+2010-04-11-18.55.57: src/lib/x-kit/xclient/src/window/draw-imp.api: For clarity renamed package c -> s, within it Config -> Mapped_State, MAP -> TOPWINDOW_IS_NOW_MAPPED, UNMAP -> TOPWINDOW_IS_NOW_UNMAPPED.
 2010-04-11-17.37.23: src/lib/compiler/front/parse/lex/mythryl-token-table-g.pkg: Killed the "&&" and "||" reserved words. These were synonyms of "and" and "or" intended to comfort C programmers, but they do not get used enough to justify keeping them around.
 2010-04-11-16.46.00: src/lib/x-kit/xclient/src/window/draw-imp.api: Moved Destroy_Item into its own package d to get rid of distracting DESTROY_ prefix.
 2010-04-11-15.05.02: src/lib/x-kit/xclient/src/window/draw-imp.api: Renamed Dm_Config -> Config, moved it into its own package c to eliminate DM_ prefixes.

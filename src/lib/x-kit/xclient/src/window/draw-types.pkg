@@ -325,7 +325,7 @@ herein
 			_ = ();
 
 		draw_fn (
-		    di::m::MAKE_LOCKED_WINDOW
+		    di::m::LOCK_WINDOW_FOR_RUBBERBANDING
 		     {
 		       draw_slot => new_draw_slot,
 		       release'  => get' release_1shot

@@ -99,7 +99,7 @@ herein
 		  op:    o::Draw_Op
 		}
 	      | FLUSH
-	      | MAKE_LOCKED_WINDOW  {
+	      | LOCK_WINDOW_FOR_RUBBERBANDING  {
 		  draw_slot:       Mailslot( Draw_Mail ),		# Stream of drawing commands for the overlay.
 		  release':        Mailop( Void )			# Overlay release mailop.
 		}
@@ -702,7 +702,7 @@ herein
 					loop buf;
 				    };
 
-				filter (m::MAKE_LOCKED_WINDOW _)
+				filter (m::LOCK_WINDOW_FOR_RUBBERBANDING _)
 				    =>
 				    xgripe::impossible "[multiple overlays not supported]";
 
@@ -732,7 +732,7 @@ herein
 	    #     src/lib/x-kit/xclient/src/window/xsession.pkg
 	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 	    #
-	    fun make_draw_imp (mapmode', gc_cache, lock_imp, xsocket)
+	    fun make_draw_imp (set_mappedstate', gc_cache, lock_imp, xsocket)
 		=
 		{   # Need to check state transitions to insure no deadlock *  XXX BUGGO FIXME
 
@@ -745,17 +745,25 @@ herein
 
 		    destroy      =   destroy_window xsocket;
 
-		    fun imp_unmapped ()
+		    # The draw_imp has two operating states,
+		    # depending on whether its topwindow
+		    # is mapped or unmapped, each represented
+		    # by a loop function.
+
+		    # Unmapped state is easy -- we just
+		    # discard all DRAW commands:   :-)
+		    #	
+		    fun topwindow_is_unmapped_loop ()
 			=
-			{   fun set_mapmode s::TOPWINDOW_IS_NOW_MAPPED
+			{   fun set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED
 				    =>
-				    imp_mapped (0, []);
+				    topwindow_is_mapped_loop (0, []);
 
-				set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED
+				set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED
 				    =>
-				    imp_unmapped ();
+				    topwindow_is_unmapped_loop ();
 
-				set_mapmode _
+				set_mappedstate _
 				    =>
 				    (xgripe::impossible "[draw_mp (unmapped): bad config command]");
 			    end;
@@ -764,59 +772,59 @@ herein
 			    fun do_plea (m::DESTROY id)
 				    =>
 				    {   destroy id;
-					imp_unmapped ();
+					topwindow_is_unmapped_loop ();
 				    };
 
-				do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
+				do_plea (m::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
 				    =>
 				    overlay (FALSE, draw_slot, release');
 
 				do_plea _
 				    =>
-				    imp_unmapped();
+				    topwindow_is_unmapped_loop ();
 			    end;
 
 			    # Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverUnmapped\n"]); 
 			    #
 			    select [
-				plea'    ==>  do_plea,
-				mapmode' ==>  set_mapmode
+				plea'            ==>  do_plea,
+				set_mappedstate' ==>  set_mappedstate
 			    ];
 			 }
 
 		    also
-		    fun imp_mapped (_, [])
+		    fun topwindow_is_mapped_loop (_, [])
 			    =>
-			    {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED
+			    {   fun set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED
 					=>
-					imp_unmapped ();
+					topwindow_is_unmapped_loop ();
 
-				    set_mapmode s::TOPWINDOW_IS_NOW_MAPPED
+				    set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED
 					=>
-					imp_mapped (0, []);
+					topwindow_is_mapped_loop (0, []);
 
-				    set_mapmode _
+				    set_mappedstate _
 					=>
-					(xgripe::impossible "[DM (mapped): bad config command]");
+					(xgripe::impossible "[drawimp (mapped): bad mapped-state command]");
 				end;
 
 
 				fun do_plea (m::DRAW m)
 					=>
-					imp_mapped (1, [m]);
+					topwindow_is_mapped_loop (1, [m]);
 
 				    do_plea (m::FLUSH)
 					=>
-					imp_mapped (0, []);
+					topwindow_is_mapped_loop (0, []);
 
-				    do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
+				    do_plea (m::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
 					=>
 					overlay (TRUE, draw_slot, release');
 
 				    do_plea (m::DESTROY id)
 					=>
 					{   destroy id;
-					    imp_mapped (0, []);
+					    topwindow_is_mapped_loop (0, []);
 					};
 
 				    do_plea _
@@ -828,38 +836,38 @@ herein
 				#  Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverMapped (empty)\n"]); 
 				#
 				select [
-				    plea'    ==>  do_plea,
-				    mapmode' ==>  set_mapmode
+				    plea'            ==>  do_plea,
+				    set_mappedstate' ==>  set_mappedstate
 				];
 			    };
 
-		       imp_mapped (count, buf as (last ! r))
+		       topwindow_is_mapped_loop (count, buf as (last ! r))
 			   =>
-			   {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED
+			   {   fun set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED
 					=>
-					imp_unmapped ();
+					topwindow_is_unmapped_loop ();
 
-				   set_mapmode s::TOPWINDOW_IS_NOW_MAPPED
+				   set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED
 					=>
-					imp_mapped (count, buf);
+					topwindow_is_mapped_loop (count, buf);
 
-				   set_mapmode _
+				   set_mappedstate _
 					=>
-					(xgripe::impossible "[DM (mapped): bad config command]");
+					(xgripe::impossible "[drawimp (mapped): bad mapped-state command]");
 			       end;
 
 
 			       fun do_plea (m::DRAW m)
 					=>
-					imp_mapped (batch_cmd (count, m, last, r));
+					topwindow_is_mapped_loop (batch_cmd (count, m, last, r));
 
 				   do_plea (m::FLUSH)
 					=>
 					{   flush buf;
-					    imp_mapped (0, []);
+					    topwindow_is_mapped_loop (0, []);
 					};
 
-				   do_plea (m::MAKE_LOCKED_WINDOW { draw_slot, release' } )
+				   do_plea (m::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
 					=>
 					{   flush buf;
 					    overlay (TRUE, draw_slot, release');
@@ -869,7 +877,7 @@ herein
 					=>
 					{   flush buf;
 					    destroy id;
-					    imp_mapped (0, []);
+					    topwindow_is_mapped_loop (0, []);
 					};
 
 				   do_plea _
@@ -883,12 +891,12 @@ herein
 			       if (count > full_buffer_size)
 				   #
 				   flush buf;
-				   imp_mapped (0, []);
+				   topwindow_is_mapped_loop (0, []);
 			       else
 				   select [
-				       flush_delay' ==>   (fn _ = {  flush buf;  imp_mapped (0, []);  }),
-				       plea'        ==>   do_plea,
-				       mapmode'     ==>   set_mapmode
+				       flush_delay'     ==>   (fn _ = {  flush buf;  topwindow_is_mapped_loop (0, []);  }),
+				       plea'            ==>   do_plea,
+				       set_mappedstate' ==>   set_mappedstate
 				   ];
 			       fi;
 			  };
@@ -905,80 +913,79 @@ herein
 				=
 				take'  new_slot;
 
-			    fun overlay_unmapped ()
+			    fun topwindow_is_unmapped_overlay_loop ()
 				=
-				{   fun set_mapmode s::TOPWINDOW_IS_NOW_MAPPED   => overlay_mapped (0, []);
-					set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED => overlay_unmapped();
-
-					set_mapmode _ => xgripe::impossible
-					   "[DM (unmapped-overlay): bad config command]";
+				{   fun set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED   => topwindow_is_mapped_overlay_loop (0, []);
+					set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED => topwindow_is_unmapped_overlay_loop();
+					#
+					set_mappedstate _ => xgripe::impossible "[drawimp (unmapped-overlay): bad mapped-state command]";
 				    end;
 
 				    fun do_plea (m::DESTROY id)
 					    =>
 					    {   destroy id;
-						overlay_unmapped ();
+						topwindow_is_unmapped_overlay_loop ();
 					    };
 
 					do_plea _
 					    =>
-					    overlay_unmapped ();
+					    topwindow_is_unmapped_overlay_loop ();
 				    end;
 
 				    #  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayUnmapped\n"]); 
 
 				    select [
-					flush_done'  ==>  (fn _ = FALSE),
-					new_plea'    ==>  do_plea,
-					mapmode'     ==>  set_mapmode
+					flush_done'      ==>  (fn _ = FALSE),
+					new_plea'        ==>  do_plea,
+					set_mappedstate' ==>  set_mappedstate
 				    ];
 				}
 
 			    also
-			    fun overlay_mapped (_, [])
+			    fun topwindow_is_mapped_overlay_loop (_, [])
 				    =>
-				    {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED => overlay_unmapped();
-					    set_mapmode s::TOPWINDOW_IS_NOW_MAPPED   => overlay_mapped (0, []);
-					    set_mapmode _                            => xgripe::impossible "[DM (mapped-overlay): bad config command]";
+				    {   fun set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED => topwindow_is_unmapped_overlay_loop();
+					    set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED   => topwindow_is_mapped_overlay_loop (0, []);
+					    set_mappedstate _                            => xgripe::impossible "[drawimp (mapped-overlay): bad config command]";
 					end;
 
-					fun do_plea (m::DRAW m)     => overlay_mapped (1, [m]);
-					    do_plea (m::FLUSH)      => overlay_mapped (0, []);
-					    do_plea (m::DESTROY id) => { destroy id; overlay_mapped (0, []);};
-					    do_plea _               => xgripe::impossible "[DM (mapped-overlay): bad command]";
+					fun do_plea (m::DRAW m)     => topwindow_is_mapped_overlay_loop (1, [m]);
+					    do_plea (m::FLUSH)      => topwindow_is_mapped_overlay_loop (0, []);
+					    do_plea (m::DESTROY id) => { destroy id; topwindow_is_mapped_overlay_loop (0, []);};
+					    do_plea _               => xgripe::impossible "[drawimp (mapped-overlay): bad command]";
 					end;
 
 					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (empty)\n"]); 
 
 					select [
-					    flush_done' ==>  (fn _ = TRUE),
-					    new_plea'   ==>  do_plea,
-					    mapmode'    ==>  set_mapmode
+					    flush_done'      ==>  (fn _ = TRUE),
+					    new_plea'        ==>  do_plea,
+					    set_mappedstate' ==>  set_mappedstate
 					];
 				    };
 
-				overlay_mapped (count, buf as (last ! r))
+				topwindow_is_mapped_overlay_loop (count, buf as (last ! r))
 				    =>
-				    {   fun set_mapmode s::TOPWINDOW_IS_NOW_UNMAPPED =>  overlay_unmapped();
-					    set_mapmode s::TOPWINDOW_IS_NOW_MAPPED   =>  overlay_mapped (count, buf);
-					    set_mapmode _	                     =>  xgripe::impossible "[DM (mapped): bad config command]";
+				    {   fun set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED =>  topwindow_is_unmapped_overlay_loop();
+					    set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED   =>  topwindow_is_mapped_overlay_loop (count, buf);
+					    set_mappedstate _	                         =>  xgripe::impossible "[drawimp (mapped): bad mapped-state command]";
 					end;
 
 					fun do_plea (m::DRAW m)
 					       =>
-					       overlay_mapped (batch_cmd (count, m, last, r));
+					       topwindow_is_mapped_overlay_loop (batch_cmd (count, m, last, r));
 
 					    do_plea (m::FLUSH)
 						=>
 						{   flush buf;
-						    overlay_mapped (0, []);
+						    topwindow_is_mapped_overlay_loop (0, []);
 						};
 
 					    do_plea (m::DESTROY id)
 						=>
 						{   flush buf;
 						    destroy id;
-						    overlay_mapped (0, []);
+						    topwindow_is_mapped_overlay_loop (0, []);
 						};
 
 					    do_plea _
@@ -989,30 +996,30 @@ herein
 					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (", makestring (length buf), ")\n"]); 
 
 					select [
-					    flush_done'  ==>  (fn _ = {  flush buf;  TRUE;  }),
-					    flush_delay' ==>  (fn _ = {  flush buf;  overlay_mapped (0, []);  }),
-					    new_plea'    ==>  do_plea,
-					    mapmode'     ==>  set_mapmode
+					    flush_done'      ==>  (fn _ = {  flush buf;  TRUE;  }),
+					    flush_delay'     ==>  (fn _ = {  flush buf;  topwindow_is_mapped_overlay_loop (0, []);  }),
+					    new_plea'        ==>  do_plea,
+					    set_mappedstate' ==>  set_mappedstate
 					];
 				    };
 			    end;
 
 			    fun do_overlay ()
 				=
-				is_mapped  ??  overlay_mapped (0, [])
-					   ::  overlay_unmapped ();
+				is_mapped  ??  topwindow_is_mapped_overlay_loop (0, [])
+					   ::  topwindow_is_unmapped_overlay_loop ();
 
 
-			    do_overlay ()  ??  imp_mapped (0, [])
-					   ::  imp_unmapped ();
+			    do_overlay ()  ??  topwindow_is_mapped_loop (0, [])
+					   ::  topwindow_is_unmapped_loop ();
 
 			};			# fun overlay 
 
 		    fun initialize_imp ()
 			=
-			case (do_mailop mapmode')
+			case (do_mailop set_mappedstate')
 			    #
-			    s::FIRST_EXPOSE =>   imp_mapped (0, []);
+			    s::FIRST_EXPOSE =>   topwindow_is_mapped_loop (0, []);
 			     _              =>   initialize_imp();
 			esac;
 
