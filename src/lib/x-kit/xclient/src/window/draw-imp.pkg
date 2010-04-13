@@ -45,7 +45,7 @@ herein
 	};
 
 	package o {
-	    Draw_Op
+	    Draw_Opcode
 	      = POLY_POINT     (Bool, List( ge::Point ))
 	      | POLY_LINE      (Bool, List( ge::Point ))
 	      | FILL_POLY      (xt::Shape, Bool, List( ge::Point ))
@@ -83,7 +83,7 @@ herein
 	      ;
 	};
 
-	package d {
+	package i {
 	    #
 	    Destroy_Item
 	      = WINDOW  xt::Window_Id
@@ -91,19 +91,19 @@ herein
 	      ;
 	};
 
-	package m {
-	    Draw_Command
+	package d {
+	    Draw_Op
 	      = DRAW  {
 		  to:    xt::Xid,
 		  pen:   pg::Pen,
-		  op:    o::Draw_Op
+		  op:    o::Draw_Opcode
 		}
 	      | FLUSH
 	      | LOCK_WINDOW_FOR_RUBBERBANDING  {
-		  draw_slot:       Mailslot( Draw_Command ),		# Stream of drawing commands for the overlay.
+		  draw_slot:       Mailslot( Draw_Op ),		# Stream of drawing commands for the overlay.
 		  release':        Mailop( Void )			# Overlay release mailop.
 		}
-	      | DESTROY  d::Destroy_Item
+	      | DESTROY  i::Destroy_Item
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;
@@ -636,13 +636,13 @@ herein
 		(count+1, cmd ! last ! rest);
 
 
-	    fun destroy_window xsocket (d::WINDOW window_id)
+	    fun destroy_window xsocket (i::WINDOW window_id)
 		    =>
 		    {   xok::request xsocket (v2w::encode_destroy_window { window_id } );
 			xok::flush   xsocket;
 		    };
 
-		destroy_window xsocket (d::PIXMAP pm_id)
+		destroy_window xsocket (i::PIXMAP pm_id)
 		    =>
 		    {   xok::request xsocket (v2w::encode_free_pixmap { pixmap => pm_id } );
 			xok::flush   xsocket;
@@ -666,7 +666,7 @@ herein
 		    fun release buf
 			=
 			{   list::apply (fn msg = give (new_slot, msg)) (list::reverse buf);
-			    give (new_slot, m::FLUSH);
+			    give (new_slot, d::FLUSH);
 			    set (flush_done_1shot, ());
 			};
 
@@ -682,21 +682,21 @@ herein
 				    loop buf;
 				fi;
 
-			    fun filter (m as m::DRAW { to, ... } )
+			    fun filter (m as d::DRAW { to, ... } )
 				    =>
 				    filter_msg (to, m);
 
-				filter (m::FLUSH)
+				filter (d::FLUSH)
 				    =>
-				    {   give  (new_slot, m::FLUSH);
+				    {   give  (new_slot, d::FLUSH);
 					loop buf;
 				    };
 
-				filter (m::LOCK_WINDOW_FOR_RUBBERBANDING _)
+				filter (d::LOCK_WINDOW_FOR_RUBBERBANDING _)
 				    =>
 				    xgripe::impossible "[multiple overlays not supported]";
 
-				filter (m as (m::DESTROY (d::WINDOW wid)))
+				filter (m as (d::DESTROY (i::WINDOW wid)))
 				    =>
 				    filter_msg (wid, m);
 
@@ -759,13 +759,13 @@ herein
 			    end;
 
 
-			    fun do_plea (m::DESTROY id)
+			    fun do_plea (d::DESTROY id)
 				    =>
 				    {   destroy id;
 					topwindow_is_unmapped_loop ();
 				    };
 
-				do_plea (m::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
+				do_plea (d::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
 				    =>
 				    overlay (FALSE, draw_slot, release');
 
@@ -799,19 +799,19 @@ herein
 				end;
 
 
-				fun do_plea (m::DRAW m)
+				fun do_plea (d::DRAW m)
 					=>
 					topwindow_is_mapped_loop (1, [m]);
 
-				    do_plea (m::FLUSH)
+				    do_plea (d::FLUSH)
 					=>
 					topwindow_is_mapped_loop (0, []);
 
-				    do_plea (m::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
+				    do_plea (d::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
 					=>
 					overlay (TRUE, draw_slot, release');
 
-				    do_plea (m::DESTROY id)
+				    do_plea (d::DESTROY id)
 					=>
 					{   destroy id;
 					    topwindow_is_mapped_loop (0, []);
@@ -847,23 +847,23 @@ herein
 			       end;
 
 
-			       fun do_plea (m::DRAW m)
+			       fun do_plea (d::DRAW m)
 					=>
 					topwindow_is_mapped_loop (batch_cmd (count, m, last, r));
 
-				   do_plea (m::FLUSH)
+				   do_plea (d::FLUSH)
 					=>
 					{   flush buf;
 					    topwindow_is_mapped_loop (0, []);
 					};
 
-				   do_plea (m::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
+				   do_plea (d::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
 					=>
 					{   flush buf;
 					    overlay (TRUE, draw_slot, release');
 					};
 
-				   do_plea (m::DESTROY id)
+				   do_plea (d::DESTROY id)
 					=>
 					{   flush buf;
 					    destroy id;
@@ -911,7 +911,7 @@ herein
 					set_mappedstate _ => xgripe::impossible "[drawimp (unmapped-overlay): bad mapped-state command]";
 				    end;
 
-				    fun do_plea (m::DESTROY id)
+				    fun do_plea (d::DESTROY id)
 					    =>
 					    {   destroy id;
 						topwindow_is_unmapped_overlay_loop ();
@@ -939,9 +939,9 @@ herein
 					    set_mappedstate _                            => xgripe::impossible "[drawimp (mapped-overlay): bad config command]";
 					end;
 
-					fun do_plea (m::DRAW m)     => topwindow_is_mapped_overlay_loop (1, [m]);
-					    do_plea (m::FLUSH)      => topwindow_is_mapped_overlay_loop (0, []);
-					    do_plea (m::DESTROY id) => { destroy id; topwindow_is_mapped_overlay_loop (0, []);};
+					fun do_plea (d::DRAW m)     => topwindow_is_mapped_overlay_loop (1, [m]);
+					    do_plea (d::FLUSH)      => topwindow_is_mapped_overlay_loop (0, []);
+					    do_plea (d::DESTROY id) => { destroy id; topwindow_is_mapped_overlay_loop (0, []);};
 					    do_plea _               => xgripe::impossible "[drawimp (mapped-overlay): bad command]";
 					end;
 
@@ -961,17 +961,17 @@ herein
 					    set_mappedstate _	                         =>  xgripe::impossible "[drawimp (mapped): bad mapped-state command]";
 					end;
 
-					fun do_plea (m::DRAW m)
+					fun do_plea (d::DRAW m)
 					       =>
 					       topwindow_is_mapped_overlay_loop (batch_cmd (count, m, last, r));
 
-					    do_plea (m::FLUSH)
+					    do_plea (d::FLUSH)
 						=>
 						{   flush buf;
 						    topwindow_is_mapped_overlay_loop (0, []);
 						};
 
-					    do_plea (m::DESTROY id)
+					    do_plea (d::DESTROY id)
 						=>
 						{   flush buf;
 						    destroy id;

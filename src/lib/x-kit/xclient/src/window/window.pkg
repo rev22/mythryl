@@ -243,7 +243,7 @@ herein
 		    };
 	    end;
 
-	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_window_id, screen, draw_command_sink, screen_depth, ... } )
+	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_window_id, screen, drawop_sink, screen_depth, ... } )
 	    =
 	    create_fn
 	    where 
@@ -258,7 +258,7 @@ herein
                       {
 		        window_id,
 		        screen,
-		        draw_command_sink,
+		        drawop_sink,
 		        screen_depth
 		      };
 
@@ -410,14 +410,14 @@ herein
 	    window
 	    where  
 
-		window ->   dt::WINDOW { window_id=>parent_window_id, screen, screen_depth, draw_command_sink, ... };
+		window ->   dt::WINDOW { window_id=>parent_window_id, screen, screen_depth, drawop_sink, ... };
 		screen ->   sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }, ... };
 
 		window_id = next_xid();
 
-		fun draw_fn (arg as (di::m::DESTROY _))
+		fun draw_fn (arg as (di::d::DESTROY _))
 			=>
-			draw_command_sink arg;
+			drawop_sink arg;
 
 		    draw_fn _
 			=>
@@ -430,7 +430,7 @@ herein
 		      {
 			window_id,
 			screen,
-			draw_command_sink => draw_fn,
+			drawop_sink => draw_fn,
 			screen_depth
 		      };
 
@@ -648,9 +648,9 @@ herein
 	# We do this via draw_imp to avoid a race
 	# with any pending draw requests on the window.
 	#
-	fun destroy_window (dt::WINDOW { window_id, draw_command_sink, ... } )
+	fun destroy_window (dt::WINDOW { window_id, drawop_sink, ... } )
 	    = 
-	    draw_command_sink (di::m::DESTROY (di::d::WINDOW window_id));
+	    drawop_sink (di::d::DESTROY (di::i::WINDOW window_id));
 
 
 	# Map a point in the window's coordinate

@@ -24,12 +24,12 @@ herein
 	    =
 	    WINDOW
 	      {
-		window_id:		xt::Window_Id,
+		window_id:	xt::Window_Id,
 		#
-		screen:			sn::Screen,
-		screen_depth:		sn::Screen_Depth_Imps,
+		screen:		sn::Screen,
+		screen_depth:	sn::Screen_Depth_Imps,
 		#
-		draw_command_sink:	di::m::Draw_Command -> Void
+		drawop_sink:	di::d::Draw_Op -> Void
 	      };
 
 	# An off-screen rectangular array of pixels on the X server:
@@ -125,8 +125,8 @@ herein
 	    =
 	    DRAWABLE_WINDOW
 	      {
-		root:			r::Draw_Root,
-		draw_command_sink:	di::m::Draw_Command -> Void
+		root:		r::Draw_Root,
+		drawop_sink:	di::d::Draw_Op -> Void
 	      };
 
 	drawable_of_window:        Window -> Drawable_Window;

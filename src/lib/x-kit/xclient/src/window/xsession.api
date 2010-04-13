@@ -69,13 +69,10 @@ herein
 	    # particular screen, visual and depth:
 	    #
 	    SCREEN_DEPTH_IMPS  {					# The graphics context imp and draw_imp
-									# for a given  depth of a screen.
-		depth:      	     Int,    
-
-		gcontext_imp:        gci::Graphics_Context_Cache,	# The graphics context imp for this screen.
-
-		draw_command_sink:   di::m::Draw_Command -> Void	# The draw-imp connection for
-									# the root  window of the screen. 
+		#							# for a given  depth of a screen.
+		depth:		Int,    
+		gcontext_imp:	gci::Graphics_Context_Cache,		# The graphics context imp for this screen.
+		drawop_sink:	di::d::Draw_Op -> Void			# The draw-imp connection for the root window of the screen. 
 	    }
 
 	also
@@ -92,12 +89,12 @@ herein
 	    =
 	    WINDOW
 	      {
-		window_id:		xt::Window_Id,
+		window_id:	xt::Window_Id,
 		#
-		screen:			Screen,
-		screen_depth:		Screen_Depth_Imps,
+		screen:		Screen,
+		screen_depth:	Screen_Depth_Imps,
 		#
-		draw_command_sink:	di::m::Draw_Command -> Void
+		drawop_sink:	di::d::Draw_Op -> Void
 	      };
 
 	# Identity tests:

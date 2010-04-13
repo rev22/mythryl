@@ -41,7 +41,7 @@ herein
 	};
 
 	package o: api {
-	    Draw_Op
+	    Draw_Opcode
 	     = POLY_POINT     (Bool, List( ge::Point ))
 	     | POLY_LINE      (Bool, List( ge::Point ))
 	     | FILL_POLY      (xt::Shape, Bool, List( ge::Point ))
@@ -80,7 +80,7 @@ herein
 	     ;
 	};
 
-	package d: api {
+	package i: api {
 	    #
 	    Destroy_Item
 	     = WINDOW  xt::Window_Id
@@ -88,21 +88,21 @@ herein
 	     ;
 	};
 
-	package m: api {
+	package d: api {
 	    #
-	    Draw_Command
+	    Draw_Op
 	      = DRAW
 		  { to:    xt::Xid,
 		    pen:   pg::Pen,
-		    op:    o::Draw_Op
+		    op:    o::Draw_Opcode
 		  }
 
 	      | FLUSH
 	      | LOCK_WINDOW_FOR_RUBBERBANDING  {
-		  draw_slot:       Mailslot( Draw_Command ),	# Stream of drawing commands for the overlay 
+		  draw_slot:       Mailslot( Draw_Op ),	# Stream of drawing commands for the overlay 
 		  release':        Mailop( Void )		# Overlay release mailop
 		}
-	      | DESTROY    d::Destroy_Item
+	      | DESTROY    i::Destroy_Item
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;
@@ -116,7 +116,7 @@ herein
 	     xok::Xsocket
 	   )
 	   ->
-	   m::Draw_Command
+	   d::Draw_Op
 	   ->
 	   Void;
 
