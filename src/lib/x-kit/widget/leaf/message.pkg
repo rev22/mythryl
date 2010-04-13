@@ -334,7 +334,7 @@ herein
 		    +
 		    font_ascent;
 
-		r =  xg::make_box (xg::point::zero, size);
+		r =  xg::box::make (xg::point::zero, size);
 
 		font_high  = font_ascent + font_descent;
 

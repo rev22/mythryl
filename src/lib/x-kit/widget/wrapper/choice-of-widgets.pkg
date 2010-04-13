@@ -313,7 +313,7 @@ herein
 
 			fun make_real' size
 			    =
-			    {   box = xg::make_box (xg::point::zero, size);
+			    {   box = xg::box::make (xg::point::zero, size);
 
 				fn widget
 				    =

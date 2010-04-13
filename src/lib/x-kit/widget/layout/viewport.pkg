@@ -80,7 +80,7 @@ herein
 
 	fun preferred_size_box arg
 	    =
-	    xg::make_box (xg::point::zero, preferred_size arg);
+	    xg::box::make (xg::point::zero, preferred_size arg);
 
 
 	fun view_size_preference (wide, high, child_size_preference)
@@ -275,7 +275,7 @@ herein
 				  #	
 				  child_size
 				      =>
-				      xg::size_of_box
+				      xg::box::size_of
 					  (preferred_size_box
 					      (wg::size_preference_of  child)
 					  )
@@ -325,17 +325,17 @@ herein
 
 					my origin' as xg::POINT { col=>x, row=>y }
 					    =
-					    xg::upperleft_of_box  box';
+					    xg::box::upperleft_of  box';
 
 
-					if (origin' !=  xg::upperleft_of_box box)
+					if (origin' !=  xg::box::upperleft_of box)
 					    #
 					    xw::move_window child_window (xg::POINT { col=> -x, row=> -y } ); 
 					    #
 					    changed { box=>box', child_size };
 					    #
 					else
-					    if (xg::size_of_box box != xg::size_of_box box')
+					    if (xg::box::size_of box != xg::box::size_of box')
 						#
 						changed { box=>box', child_size };
 					    else
@@ -352,7 +352,7 @@ herein
 
 					my origin' as xg::POINT { col, row }
 					    =
-					    xg::upperleft_of_box  box';
+					    xg::box::upperleft_of  box';
 
 					if (child_size == child_size')
 					    #
@@ -418,7 +418,7 @@ herein
 			  {
 			    kidplug =>  ckidplug, 
 			    window  =>  child_window,
-			    size    =>  xg::size_of_box  child_box
+			    size    =>  xg::box::size_of  child_box
 			  };
 
 			make_thread "viewport" .{
@@ -428,8 +428,8 @@ herein
 
 			xw::show_window  child_window;
 
-			changed { box        =>  xg::make_box (xg::POINT { col=>x, row=>y }, size),
-				  child_size =>  xg::size_of_box child_box
+			changed { box        =>  xg::box::make (xg::POINT { col=>x, row=>y }, size),
+				  child_size =>  xg::box::size_of child_box
 				};
 		    };
 

@@ -45,7 +45,7 @@ herein
 
 		    to_pos =  xg::point::subtract (point, origin);
 
-		    xd::clear_box  draww  (xg::make_box (to_pos, size));
+		    xd::clear_box  draww  (xg::box::make (to_pos, size));
 		};
 
 	    dive_index  = 0;

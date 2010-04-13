@@ -116,88 +116,105 @@ herein
 		fun scale    (SIZE { wide,     high     }, s                           ) =  SIZE { wide=>wide*s,  high=>high*s  };
 	    };
 
-	    # Boxes:
-	    #
-	    fun make_box (POINT { col, row }, SIZE { wide, high } )
-		=
-		BOX { col, row, wide, high };
+	    package box {
+
+		fun make (POINT { col, row }, SIZE { wide, high } )
+		    =
+		    BOX { col, row, wide, high };
 
 
-	    fun upperleft_of_box (BOX { col, row, ... } )
-		=
-		POINT { col, row };
+		fun upperleft_of (BOX { col, row, ... } )
+		    =
+		    POINT { col, row };
 
 
-	    fun size_of_box (BOX { wide, high, ... } )
-		=
-		SIZE { wide, high };
+		fun size_of (BOX { wide, high, ... } )
+		    =
+		    SIZE { wide, high };
 
 
-	    fun upperleft_and_size_of_box (BOX { col, row, wide, high } )
-		=
-		(POINT { col, row }, SIZE { wide, high } );
+		fun upperleft_and_size_of (BOX { col, row, wide, high } )
+		    =
+		    (POINT { col, row }, SIZE { wide, high } );
 
 
-	    fun lowerright_of_box r
-		=
-		point::add_size (upperleft_and_size_of_box r);
+		fun lowerright_of r
+		    =
+		    point::add_size (upperleft_and_size_of r);
 
 
-	    fun clip_point (BOX { col=>min_col, row=>min_row, wide, high }, POINT { col, row } )
-		=
-		POINT {
-		    col => if (col <= min_col)  min_col; elif (col < min_col+wide)  col; else (min_col+wide - 1); fi,
-		    row => if (row <= min_row)  min_row; elif (row < min_row+high)  row; else (min_row+high - 1); fi
-		  };
+		fun clip_point (BOX { col=>min_col, row=>min_row, wide, high }, POINT { col, row } )
+		    =
+		    POINT {
+			col => if (col <= min_col)  min_col; elif (col < min_col+wide)  col; else (min_col+wide - 1); fi,
+			row => if (row <= min_row)  min_row; elif (row < min_row+high)  row; else (min_row+high - 1); fi
+		      };
 
-	    fun  translate (BOX { col, row, wide, high }, POINT { col=>px, row=>py } ) =  BOX { col=>col+px, row=>row+py, wide, high };
-	    fun rtranslate (BOX { col, row, wide, high }, POINT { col=>px, row=>py } ) =  BOX { col=>col-px, row=>row-py, wide, high };
+		fun  translate (BOX { col, row, wide, high }, POINT { col=>px, row=>py } ) =  BOX { col=>col+px, row=>row+py, wide, high };
+		fun rtranslate (BOX { col, row, wide, high }, POINT { col=>px, row=>py } ) =  BOX { col=>col-px, row=>row-py, wide, high };
 
-	    fun intersect
-		    (BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
-		     BOX { col=>col2, row=>row2, wide=>w2, high=>h2 }
+		fun middle (BOX { col, row, wide, high } )
+		    =
+		    POINT { col => col+(wide / 2),
+			    row => row+(high / 2)
+			  };
+
+		fun intersect
+			(BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
+			 BOX { col=>col2, row=>row2, wide=>w2, high=>h2 }
+			)
+		    =
+		    (   (col1 < (col2+w2)) and (row1 < (row2+h2))
+		    and (col2 < (col1+w1)) and (row2 < (row1+h1)));
+
+		exception INTERSECTION;
+
+		fun intersection
+			( BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
+			  BOX { col=>col2, row=>row2, wide=>w2, high=>h2 } )
+		    =
+		    {   col = max (col1, col2);
+			row = max (row1, row2);
+
+			cx = min (col1+w1, col2+w2);
+			cy = min (row1+h1, row2+h2);
+
+			if (col < cx  and  row < cy)
+			     BOX { col, row, wide=>(cx-col), high=>(cy-row) };
+			else
+			     raise exception INTERSECTION;
+			fi;
+		      };
+
+		fun union (
+		      r1 as BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
+		      r2 as BOX { col=>col2, row=>row2, wide=>w2, high=>h2 }
 		    )
-		=
-		(   (col1 < (col2+w2)) and (row1 < (row2+h2))
-		and (col2 < (col1+w1)) and (row2 < (row1+h1)));
-
-	    exception INTERSECTION;
-
-	    fun intersection
-		    ( BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
-		      BOX { col=>col2, row=>row2, wide=>w2, high=>h2 } )
-		=
-		{   col = max (col1, col2);
-		    row = max (row1, row2);
-
-		    cx = min (col1+w1, col2+w2);
-		    cy = min (row1+h1, row2+h2);
-
-		    if (col < cx  and  row < cy)
-			 BOX { col, row, wide=>(cx-col), high=>(cy-row) };
+		    =
+		    if   (w1 == 0  or  h1 == 0)    r2;
+		    elif (w2 == 0  or  h2 == 0)    r1;
 		    else
-			 raise exception INTERSECTION;
+
+			col = min (col1, col2);
+			row = min (row1, row2);
+
+			cx = max (col1+w1, col2+w2);
+			cy = max (row1+h1, row2+h2);
+
+			BOX { col, row, wide=>(cx-col), high=>(cy-row) };
 		    fi;
-		  };
 
-	    fun union (
-		  r1 as BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
-		  r2 as BOX { col=>col2, row=>row2, wide=>w2, high=>h2 }
-		)
-		=
-		if   (w1 == 0  or  h1 == 0)    r2;
-		elif (w2 == 0  or  h2 == 0)    r1;
-		else
 
-		    col = min (col1, col2);
-		    row = min (row1, row2);
-
-		    cx = max (col1+w1, col2+w2);
-		    cy = max (row1+h1, row2+h2);
-
-		    BOX { col, row, wide=>(cx-col), high=>(cy-row) };
-		fi;
-
+		fun inside
+		    ( BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
+		      BOX { col=>col2, row=>row2, wide=>w2, high=>h2 }
+		    )
+		    =
+		    col1 >= col2        and
+		    row1 >= row2        and
+		    col1+w1 <= col2+w2  and
+		    row1+h1 <= row2+h2;
+	    };
 
 	    fun within (POINT { col=>px, row=>py }, BOX { col, row, wide, high } )
 		=
@@ -205,16 +222,6 @@ herein
 		py >=  row    and
 		px < col+wide and
 		py < row+high;
-
-	    fun inside
-		( BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
-		  BOX { col=>col2, row=>row2, wide=>w2, high=>h2 }
-		)
-		=
-		col1 >= col2        and
-		row1 >= row2        and
-		col1+w1 <= col2+w2  and
-		row1+h1 <= row2+h2;
 
 	    fun bounding_box []
 		    =>

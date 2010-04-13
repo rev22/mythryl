@@ -199,7 +199,7 @@ herein
 		    =
 		    xd::bitblt  dw  copy_pen  { from     =>  xd::FROM_RW_PIXMAP  pixmap,
 			   		        from_box =>  r,
-					        to_pos   =>  xg::upperleft_of_box  r
+					        to_pos   =>  xg::box::upperleft_of  r
 					      };
 
 

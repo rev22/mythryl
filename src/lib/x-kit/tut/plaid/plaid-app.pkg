@@ -31,11 +31,6 @@ herein
 		high => 0
 	      };
 
-	fun middle_of_box (xg::BOX { col, row, wide, high } )
-	    =
-	    xg::POINT { col => col+(wide / 2),
-		        row => row+(high / 2)
-		      };
 
 	fun center_box (xg::BOX { wide, high, ... }, xg::POINT { col, row } )
 	    = 
@@ -63,7 +58,7 @@ herein
 		    =
 		    {   my xg::BOX { col=>ix, row=>iy, wide=>iwide, high=>ihigh }		# "i-" for "intersection-".
 			    =
-			    xg::intersection (r, r');
+			    xg::box::intersection (r, r');
 
 			icx = ix + iwide;		# Opposite corner of
 			icy = iy + ihigh;		# intersection box.
@@ -90,7 +85,7 @@ herein
 			pare (x, y, x+wide, y+high, result_list);
 		    }
 		    except
-			xg::INTERSECTION = r ! result_list;
+			xg::box::INTERSECTION = r ! result_list;
 
 	    end;
 
@@ -141,7 +136,7 @@ herein
 			    where
 				my middle as (xg::POINT { col=>midx, row=>midy } )
 				    = 
-				    middle_of_box (xg::make_box (xg::point::zero, size));
+				    xg::box::middle (xg::box::make (xg::point::zero, size));
 
 
 				# Given a point (x,y) with a velocity (dx,dy),

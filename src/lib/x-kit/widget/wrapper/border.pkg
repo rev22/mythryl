@@ -208,12 +208,12 @@ herein
 			      {
 				kidplug =>  ckidplug, 
 				window  =>  cwin,
-				size    =>  xg::size_of_box  crect
+				size    =>  xg::box::size_of  crect
 			      };
 
 			    xw::show_window cwin;
 
-			    main (xg::make_box (xg::point::zero, size), color, FALSE);
+			    main (xg::box::make (xg::point::zero, size), color, FALSE);
 			};
 
 		fun init_loop color

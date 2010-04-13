@@ -101,7 +101,7 @@ herein
 			    =
 			    xw::make_input_only_window
 				window
-				(xg::make_box (xg::point::zero, size));
+				(xg::box::make (xg::point::zero, size));
 
 			xw::set_cursor
 			    overwin
@@ -224,7 +224,7 @@ herein
 
 			overwin = xw::make_input_only_window
 				      window
-				      (xg::make_box (xg::point::zero, size));
+				      (xg::box::make (xg::point::zero, size));
 
 			xw::set_cursor  overwin  (THE box_cursor);
 			xw::show_window  overwin;
@@ -344,7 +344,7 @@ herein
 				else                                   oy + dely;
 				fi;
 
-			    newr = xg::make_box (mkPoint (newox, newoy), rsize);
+			    newr = xg::box::make (mkPoint (newox, newoy), rsize);
 
 			    # Redraw only if new rectangle:
 			    #

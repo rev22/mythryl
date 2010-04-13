@@ -101,7 +101,7 @@ herein
 	    =
 	    {   my  xg::SIZE { wide, high }
 		    =
-		    xg::size_of_box  box;
+		    xg::box::size_of  box;
 
 		if (wide <= 0  or  high <= 0) 
 		    #
@@ -119,8 +119,8 @@ herein
 		    border_color     =>  NULL,		# Not used.
 		    #	
 		    site =>  xg::WINDOW_SITE
-			       { upperleft    =>  xg::upperleft_of_box  box,
-			         size         =>  xg::size_of_box  box,
+			       { upperleft    =>  xg::box::upperleft_of  box,
+			         size         =>  xg::box::size_of       box,
 				 border_width =>  0
 			       }
 		  };

@@ -109,8 +109,6 @@ api Xgeometry {
     };
 
 
-    # Sizes:
-    #
     package size:  api {
 	#
 	add:        (Size, Size) -> Size;
@@ -120,27 +118,28 @@ api Xgeometry {
     #
 
 
+    package box:  api {
 
-    # Boxes:
-    #
-    make_box:         (Point, Size) -> Box;
-    upperleft_of_box:  Box -> Point;
-    lowerright_of_box: Box -> Point;
-    size_of_box:       Box -> Size;
-    #
-    upperleft_and_size_of_box:  Box -> (Point, Size);
-    #
-    clip_point:    (Box, Point) -> Point;		# Clip point to be within box, using orthogonal projection.
-    translate:     (Box, Point) -> Box;			# box.upperleft += point.
-    rtranslate:    (Box, Point) -> Box;			# box.upperleft -= point.
-    intersect:     (Box, Box) -> Bool;			# TRUE iff the boxes overlap.
+        make:         (Point, Size) -> Box;
+        upperleft_of:  Box -> Point;
+        lowerright_of: Box -> Point;
+        size_of:       Box -> Size;
+	middle:	       Box -> Point;
 
-    exception INTERSECTION;
-    intersection:  (Box,   Box) -> Box;			# Construct largest box contained by both input boxes.
-    union:         (Box,   Box) -> Box;			# Construct smallest box containing  both input boxes.
+        upperleft_and_size_of:  Box -> (Point, Size);
+
+	clip_point:    (Box, Point) -> Point;		# Clip point to be within box, using orthogonal projection.
+	translate:     (Box, Point) -> Box;			# box.upperleft += point.
+	rtranslate:    (Box, Point) -> Box;			# box.upperleft -= point.
+	intersect:     (Box, Box) -> Bool;			# TRUE iff the boxes overlap.
+	exception INTERSECTION;
+	intersection:  (Box,   Box) -> Box;			# Construct largest box contained by both input boxes.
+	union:         (Box,   Box) -> Box;			# Construct smallest box containing  both input boxes.
+
+        inside:        (Box,   Box) -> Bool;		# TRUE iff fixt box is within second.
+    };
 
     within:        (Point, Box) -> Bool;		# TRUE iff point is within box.
-    inside:        (Box,   Box) -> Bool;		# TRUE iff fixt box is within second.
 
     bounding_box:   List(Point)  -> Box;		# Construct bounding box for given points.
 							# Empty list returns BOX { col=>0, row=>0, wide=>0, high=>0 };

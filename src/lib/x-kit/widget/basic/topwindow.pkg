@@ -249,7 +249,7 @@ herein
 
 			cwin =  wg::make_child_window
                                   ( twin,
-                                    xg::make_box (xg::point::zero, size),
+                                    xg::box::make (xg::point::zero, size),
                                     wg::args_of  widget
                                   );
 

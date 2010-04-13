@@ -142,8 +142,8 @@ herein
 			   xd::FUNCTION    xd::OP_AND
 			 ]; 
 
-		xd::fill_box (xd::drawable_of_rw_pixmap  off_pattern) spen (xg::make_box (xg::point::zero, size));
-		xd::fill_box (xd::drawable_of_rw_pixmap   on_pattern) spen (xg::make_box (xg::point::zero, size));
+		xd::fill_box (xd::drawable_of_rw_pixmap  off_pattern) spen (xg::box::make (xg::point::zero, size));
+		xd::fill_box (xd::drawable_of_rw_pixmap   on_pattern) spen (xg::box::make (xg::point::zero, size));
 
 		inactive_on_mask  = xc::make_readonly_pixmap_from_readwrite_pixmap   on_pattern;
 		inactive_off_mask = xc::make_readonly_pixmap_from_readwrite_pixmap  off_pattern;

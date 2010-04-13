@@ -376,13 +376,13 @@ herein
 	    =
 	    {   #  Clip from_box to clientside window:
 		#
-		from_box' = ge::intersection (from_box, ge::make_box (ge::point::zero, size));
+		from_box' = ge::box::intersection (from_box, ge::box::make (ge::point::zero, size));
 
 		delta
 		    =
 		    ge::point::subtract
-		      ( ge::upperleft_of_box  from_box',
-			ge::upperleft_of_box  from_box
+		      ( ge::box::upperleft_of  from_box',
+			ge::box::upperleft_of  from_box
 		      );
 
 		depth =  list::length data;
@@ -577,7 +577,7 @@ herein
 		    pixmap
 		    {
 		      from     =>  cs_pixmap, 
-		      from_box =>  ge::make_box (ge::point::zero, size), 
+		      from_box =>  ge::box::make (ge::point::zero, size), 
 		      to_point =>  ge::point::zero
 		    };
 	    end;
@@ -617,7 +617,7 @@ herein
 		msg =   v2w::encode_get_image
 			  { 
 			    drawable => id, 
-			    box => ge::make_box (ge::point::zero, size),
+			    box => ge::box::make (ge::point::zero, size),
 			    plane_mask => xt::PLANEMASK all_planes, 
 			    format => xt::XYPIXMAP
 			  };

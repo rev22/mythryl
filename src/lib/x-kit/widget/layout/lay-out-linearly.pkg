@@ -394,7 +394,7 @@ herein
 
 		fits = wg::is_within_size_limits
                          ( bnds_of  bnds_t,
-                           xg::size_of_box  box
+                           xg::box::size_of  box
                          );
 
 		l = case bnds_t   

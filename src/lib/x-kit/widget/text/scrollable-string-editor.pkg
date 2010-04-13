@@ -292,9 +292,9 @@ herein
 			    ();
 			};
 
-			l_realize { kidplug=>lkidplug, window=>lwin, size=>xg::size_of_box lrect };
-			c_realize { kidplug=>ckidplug, window=>cwin, size=>xg::size_of_box crect };
-			r_realize { kidplug=>rkidplug, window=>rwin, size=>xg::size_of_box rrect };
+			l_realize { kidplug=>lkidplug, window=>lwin, size=>xg::box::size_of lrect };
+			c_realize { kidplug=>ckidplug, window=>cwin, size=>xg::box::size_of crect };
+			r_realize { kidplug=>rkidplug, window=>rwin, size=>xg::box::size_of rrect };
 
 			if active
 			    #
