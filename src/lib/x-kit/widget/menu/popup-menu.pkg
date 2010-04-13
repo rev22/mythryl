@@ -342,7 +342,7 @@ herein
 
 		fun in_menu  p
 		    =
-		    xg::within (p, all_box);
+		    xg::point::in_box (p, all_box);
 
 
 		fun close ()
@@ -424,8 +424,8 @@ herein
 
 		fun select_item (pt as xg::POINT { col=>x, row=>y } )
 		    =
-		    xg::within (pt, items_box)   ??   THE (list::nth (items, int::quot (y - items_y, item_high)))
-						 ::   NULL;
+		    xg::point::in_box (pt, items_box)   ??   THE (list::nth (items, int::quot (y - items_y, item_high)))
+						        ::   NULL;
 
 		case label
 		    #
@@ -576,7 +576,7 @@ herein
 						#
 						fun prior pt
 						    =
-						    (leave_pred pt) or xg::within (pt, box);
+						    (leave_pred pt) or xg::point::in_box (pt, box);
 
 						answer = popup (menu, PUT_POPUP_MENU_ITEM_BENEATH_MOUSE 0, pt, prior);
 

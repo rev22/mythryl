@@ -898,11 +898,11 @@ herein
 				    };
 
 
-				fun do_pick (p, state as { visible_nodes, picked, ... }: View_Data)
+				fun do_pick (point, state as { visible_nodes, picked, ... }: View_Data)
 				    =
 				    {   fun accept ( { bbox, ... }: Viewnode)
 					    =
-					    xg::within (p, bbox);
+					    xg::point::in_box (point, bbox);
 
 					case (list_fns::find_first accept visible_nodes)
 					    #

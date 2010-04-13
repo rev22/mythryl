@@ -100,7 +100,7 @@ herein
 
 		    fun select_item (pt as xg::POINT { row=>y, ... } )
 			=
-			if (not (xg::within (pt, xg::BOX { col => 0, row => 0, wide, high } )))
+			if (not (xg::point::in_box (pt, xg::BOX { col => 0, row => 0, wide, high } )))
 			    #
 			    NULL;
 			else

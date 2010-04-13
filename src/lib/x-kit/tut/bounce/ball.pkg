@@ -173,8 +173,8 @@ herein
 								   high =>  2 * ball_radius
 								 };
 
-							   if (xg::within (pos, death_zone))   draw_ball (seqn, pos);
-							   else                                loop (seqn, pos, vec, clip_fn);
+							   if (xg::point::in_box (pos, death_zone))   draw_ball (seqn, pos);
+							   else                                       loop (seqn, pos, vec, clip_fn);
 							   fi;
 						       };
 
