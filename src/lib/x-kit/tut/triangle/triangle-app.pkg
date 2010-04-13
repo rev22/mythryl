@@ -232,8 +232,8 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 
 			fun check_triangle_list1  [ point ]
 				=>
-				if (xg::same_point (point, midpoint))  selfcheck_tests_passed := *selfcheck_tests_passed + 1;
-				else                                   selfcheck_tests_failed := *selfcheck_tests_failed + 1;
+				if (xg::point_eq (point, midpoint))  selfcheck_tests_passed := *selfcheck_tests_passed + 1;
+				else                                 selfcheck_tests_failed := *selfcheck_tests_failed + 1;
 				fi;
 
 			    check_triangle_list1  _

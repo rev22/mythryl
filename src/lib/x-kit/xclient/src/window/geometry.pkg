@@ -82,13 +82,6 @@ herein
                         row => 0
                       };
 
-	    fun same_point
-		(   POINT { row => row1,  col => col1 },
-		    POINT { row => row2,  col => col2 }
-		)
-		=
-		row1 == row2   and
-		col1 == col2;
 
 	    fun col_coord_of_pt (POINT { col, ... } ) =  col;
 	    fun row_coord_of_pt (POINT { row, ... } ) =  row;
@@ -98,8 +91,12 @@ herein
 
 	    fun scale_point (s, POINT { col, row } ) = POINT { col=>s*col, row=>s*row };
 
-	    fun less_than_pt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  (col1 <  col2) and (row1 <  row2);
-	    fun less_eq_pt   (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  (col1 <= col2) and (row1 <= row2);
+	    fun point_ne (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 != col2) or  (row1 != row2);
+	    fun point_eq (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 == col2) and (row1 == row2);
+	    fun point_lt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 <  col2) and (row1 <  row2);
+	    fun point_le (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 <= col2) and (row1 <= row2);
+	    fun point_gt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >  col2) and (row1 >  row2);
+	    fun point_ge (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >= col2) and (row1 >= row2);
 
 	    # Size operations:
 	    #
