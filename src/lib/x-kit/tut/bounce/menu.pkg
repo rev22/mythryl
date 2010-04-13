@@ -40,19 +40,19 @@ herein
 		trans
 		where
 		    fun trans (xi::MOUSE_MOTION { screen_point, timestamp, window_point } )
-			    => xi::MOUSE_MOTION { screen_point, timestamp, window_point => xg::add_pt (window_point, delta) };
+			    => xi::MOUSE_MOTION { screen_point, timestamp, window_point => xg::add_points (window_point, delta) };
 
 			trans (xi::MOUSE_UP         { button, screen_point, state, timestamp, window_point } )
-			    => xi::MOUSE_UP         { button, screen_point, state, timestamp, window_point => xg::add_pt (window_point, delta) };
+			    => xi::MOUSE_UP         { button, screen_point, state, timestamp, window_point => xg::add_points (window_point, delta) };
 
 			trans (xi::MOUSE_LAST_UP    { button, screen_point,        timestamp, window_point } )
-			    => xi::MOUSE_LAST_UP    { button, screen_point,        timestamp, window_point => xg::add_pt (window_point, delta) };
+			    => xi::MOUSE_LAST_UP    { button, screen_point,        timestamp, window_point => xg::add_points (window_point, delta) };
 
 			trans (xi::MOUSE_DOWN       { button, screen_point, state, timestamp, window_point } )
-			    => xi::MOUSE_DOWN       { button, screen_point, state, timestamp, window_point => xg::add_pt (window_point, delta) };
+			    => xi::MOUSE_DOWN       { button, screen_point, state, timestamp, window_point => xg::add_points (window_point, delta) };
 
 			trans (xi::MOUSE_FIRST_DOWN { button, screen_point,        timestamp, window_point } )
-			    => xi::MOUSE_FIRST_DOWN { button, screen_point,        timestamp, window_point => xg::add_pt (window_point, delta) };
+			    => xi::MOUSE_FIRST_DOWN { button, screen_point,        timestamp, window_point => xg::add_points (window_point, delta) };
 
 			trans m
 			    =>
@@ -149,7 +149,7 @@ herein
 			    border_color     =>  xc::black,
 			    #
 			    site =>  xg::WINDOW_SITE
-				       { upperleft    =>  xg::sub_pt (menu_origin, xg::POINT { col=>1, row=>1 } ),
+				       { upperleft    =>  xg::subtract_points (menu_origin, xg::POINT { col=>1, row=>1 } ),
 					 size         =>  menu_sz,
 					 border_width =>  1
 				       }
@@ -193,7 +193,7 @@ herein
 			=
 			xc::get_standard_xcursor  xsession  xcursors::sb_left_arrow;
 
-		    fun do_menu (menu_but, pt, time, m_mailop)
+		    fun do_menu (menu_but, point, time, m_mailop)
 			=
 			{	xc::change_active_grab_cursor  xsession  menu_cursor;
 
@@ -203,7 +203,7 @@ herein
 			}
 			where
 
-			    win_origin
+			    window_topleft
 				=
 				xw::window_point_to_screen_point  window  xg::point_00;
 
@@ -215,14 +215,14 @@ herein
 
 			    my (menu_origin, menu_win, menu_dict, select_item)
 				=
-				create (xg::add_pt (win_origin, pt), fore_pen, font, menu_items);
+				create (xg::add_points (window_topleft, point), fore_pen, font, menu_items);
 
 
 			    m_mailop
 				=
 				m_mailop
 				    ==>
-				    (translate_mouse (xg::sub_pt (win_origin, menu_origin)));
+				    (translate_mouse (xg::subtract_points (window_topleft, menu_origin)));
 
 
 			    fun send_selection NULL
@@ -256,11 +256,11 @@ herein
 				};
 
 
-			    fun mouse_loop (cur_item, pt)
+			    fun mouse_loop (cur_item, point)
 				=
 				{   cur_item
 					=
-					case (cur_item, select_item pt)
+					case (cur_item, select_item point)
 					    #
 					    (THE a, THE b)
 						=>
@@ -304,11 +304,11 @@ herein
 					(xi::MOUSE_UP { button, state, ... } )
 					    =>
 					    if (button == menu_but)   (cur_item, FALSE);
-					    else                   mouse_loop (cur_item, pt);
+					    else                   mouse_loop (cur_item, point);
 					    fi;
 
 					_   =>
-					    mouse_loop (cur_item, pt);
+					    mouse_loop (cur_item, point);
 				    esac;
 				};
 
@@ -326,7 +326,7 @@ herein
 				=
 				{   my (selection, last_up)
 					=
-					mouse_loop (NULL, xg::add_pt (pt, xg::sub_pt (win_origin, menu_origin)));
+					mouse_loop (NULL, xg::add_points (point, xg::subtract_points (window_topleft, menu_origin)));
 
 				    xw::destroy_window  menu_win;
 

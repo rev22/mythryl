@@ -90,13 +90,14 @@ api Xgeometry {
     row_coord_of_pt:  Point -> Int;
     col_coord_of_pt:  Point -> Int;
 
-    scale_pt:      (Int,   Point) -> Point;
+    scale_point:     (Int,   Point) -> Point;
 
-    add_pt:        (Point, Point) -> Point;
-    sub_pt:        (Point, Point) -> Point;
+    add_points:      (Point, Point) -> Point;
+    subtract_points: (Point, Point) -> Point;
 
-    less_than_pt:  (Point, Point) -> Bool;	# x1 <  x2 and y1 <  y2.
-    less_eq_pt:    (Point, Point) -> Bool;	# x1 <= x2 and y1 <= y2
+    same_point:      (Point, Point) -> Bool;
+    less_than_pt:    (Point, Point) -> Bool;	# x1 <  x2 and y1 <  y2.
+    less_eq_pt:      (Point, Point) -> Bool;	# x1 <= x2 and y1 <= y2
 
 
 

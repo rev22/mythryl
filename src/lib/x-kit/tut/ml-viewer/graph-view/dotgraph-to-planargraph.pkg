@@ -36,7 +36,7 @@ herein
 				*(dg::info_of_node  n);
 
 			    bbox = xg::make_box
-				     ( xg::sub_pt (center, divscale (2, size)),
+				     ( xg::subtract_points (center, divscale (2, size)),
 				       size
 				     );
 

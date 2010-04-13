@@ -229,7 +229,7 @@ herein
 					        row =>  stepy-(step*i)
 					      };
 
-				dive_pt
+				dive_point
 				    =
 				    xg::POINT
 				      { col =>  stepy+1,
@@ -238,7 +238,7 @@ herein
 
 				splash_pt
 				    =
-				    xg::sub_pt (dive_pt, xg::POINT { col=>0, row=>1 } );
+				    xg::subtract_points (dive_point, xg::POINT { col=>0, row=>1 } );
 
 
 				fun put_top ()
@@ -293,7 +293,7 @@ herein
 
 				fun make_dive i
 				    =
-				    {  dive_pt ->  xg::POINT { col=>dive_x, row=>dive_y };
+				    {  dive_point ->  xg::POINT { col=>dive_x, row=>dive_y };
 
 				       init_x = midx - 2;
 				       init_y = (stepy-(step*i)) + 16;

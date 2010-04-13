@@ -291,7 +291,7 @@ herein
 
 		my (xg::POINT { col=>dx, row=>dy } )
                     =
-                    xg::sub_pt (p2, p1);
+                    xg::subtract_points (p2, p1);
 
 		my (dy, dy_neg) =  if (dy < 0)  (-dy, TRUE);  else (dy, FALSE);  fi;
 		my (dx, dx_neg) =  if (dx < 0)  (-dx, TRUE);  else (dx, FALSE);  fi;
@@ -319,8 +319,8 @@ herein
               b1 as (xg::POINT { col=>b1x, row=>b1y } ), b2
             )
 	    =
-	    {   my xg::POINT { col=>ax, row=>ay } = xg::sub_pt (a2, a1);
-		my xg::POINT { col=>bx, row=>by } = xg::sub_pt (b2, b1);
+	    {   my xg::POINT { col=>ax, row=>ay } = xg::subtract_points (a2, a1);
+		my xg::POINT { col=>bx, row=>by } = xg::subtract_points (b2, b1);
 
 		axby = ax * by;
 		bxay = bx * ay;
@@ -446,7 +446,7 @@ herein
 		    fun calc_off_points (v1, v2)
 			=
 			{   b1 = shift_line (v1, v2, width);
-			    (b1, xg::add_pt (b1, xg::sub_pt (v2, v1)));
+			    (b1, xg::add_points (b1, xg::subtract_points (v2, v1)));
 			};
 
 		    fun find_intersect (p1, p2, newb1, newb2, b1, b2)
@@ -465,7 +465,7 @@ herein
 				    my THE c     = intersect (p1, perp, newb1, newb2);
 
 				    shift1       = shift_line (p1, perp, width);
-				    shift2       = xg::add_pt (shift1, xg::sub_pt (perp, p1));
+				    shift2       = xg::add_points (shift1, xg::subtract_points (perp, p1));
 
 				    my THE poly3 = intersect (p1, p2, shift1, shift2);
 
@@ -476,7 +476,7 @@ herein
 			=
 			{   my  xg::POINT { col=>dx, row=>dy }
 				=
-				xg::sub_pt (p3, p0);
+				xg::subtract_points (p3, p0);
 
 			    pen = if   (dx > 0)   if (dy <= dx) bottom; else top;   fi;
 				  elif (dy < dx)                bottom; else top;   fi;

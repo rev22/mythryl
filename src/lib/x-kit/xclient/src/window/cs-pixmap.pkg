@@ -380,7 +380,7 @@ herein
 
 		delta
 		    =
-		    ge::sub_pt
+		    ge::subtract_points
 		      ( ge::upperleft_of_box  from_box',
 			ge::upperleft_of_box  from_box
 		      );
@@ -513,7 +513,7 @@ herein
 			fi;
 		    };
 
-		put_sub_image (from_box', ge::add_pt (to_point, delta));
+		put_sub_image (from_box', ge::add_points (to_point, delta));
 
 	    };				# fun copy_from_clientside_pixmap_to_pixmap 
 

@@ -53,9 +53,12 @@ herein
 	# will 'give' the displayed triangle list
 	# to this slot each time it changes:
 	#
-	my  drawing_window_watcher:	Null_Or( Mailslot( List( xg::Point )))
+	my  triangle_list_watcher_slot:		Null_Or( Mailslot( List( xg::Point )))
 	    =
 	    NULL;	
+
+	selfcheck_tests_passed =  REF 0;
+	selfcheck_tests_failed =  REF 0;
 
 	# Put button window at bottom of topwindow:
 	# 
@@ -205,6 +208,11 @@ my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row 
 # trace .{ "slept    for one second"; };
 
 trace .{ sprintf "Sending midwindow downclick to X server."; };
+			
+			triangle_list_slot =  make_mailslot ();
+
+#			triangle_list_watcher_slot :=  THE triangle_list_slot;
+
 			# Simulate a mouseclick in center of drawing window:
 			#
 			xw::send_mousebutton_press_xevent
@@ -219,6 +227,28 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
                             button => xi::MOUSEBUTTON 1,
 			    point  => midpoint
 			  };
+
+			timeout' =   timeout_in' (time::from_milliseconds 2000);
+
+			fun check_triangle_list1  [ point ]
+				=>
+				if (xg::same_point (point, midpoint))  selfcheck_tests_passed := *selfcheck_tests_passed + 1;
+				else                                   selfcheck_tests_failed := *selfcheck_tests_failed + 1;
+				fi;
+
+			    check_triangle_list1  _
+				=>
+				selfcheck_tests_failed := *selfcheck_tests_failed + 1;
+			end;
+
+			fun do_timeout1 ()
+			    =
+			    selfcheck_tests_failed := *selfcheck_tests_failed + 1;
+
+#			select [
+#			    take' triangle_list_slot =>  check_triangle_list1,
+#			    timeout'                 =>  do_timeout1
+#			];
 		    };
 
 		xtr::make_thread "tri-app selfcheck" selfcheck;
@@ -582,7 +612,7 @@ trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
 };
 			        draw_triangle  point;
 
-				case drawing_window_watcher
+				case triangle_list_watcher_slot
 				    #
 				    THE slot =>	 give (slot, (point ! triangles));
 				    NULL     =>  ();

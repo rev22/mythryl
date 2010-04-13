@@ -286,7 +286,7 @@ herein
 			border_color     =>  black,
 			#
 			site =>  xg::WINDOW_SITE
-				   { upperleft => xg::sub_pt (menu_position, xg::POINT { col=>border_width, row=>border_width } ),
+				   { upperleft => xg::subtract_points (menu_position, xg::POINT { col=>border_width, row=>border_width } ),
 				     size,
 				     border_width
 				   }

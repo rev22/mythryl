@@ -229,7 +229,7 @@ herein
 		      }
 
 		    also
-		    fun down_loop (seqn, size, p0, t0)
+		    fun down_loop (seqn, size, point0, t0)
 			=
 			{
 
@@ -240,7 +240,7 @@ herein
 
 					my xg::POINT { col=>x, row=>y }
 					    =
-					    xg::sub_pt (window_point, p0);
+					    xg::subtract_points (window_point, point0);
 
 					dt = sec * (real bl::updates_per_sec);
 
@@ -279,7 +279,7 @@ herein
 
 				do_mouse _
 				    =>
-				    down_loop (seqn, size, p0, t0);
+				    down_loop (seqn, size, point0, t0);
 			    end;
 
 

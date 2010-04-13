@@ -170,7 +170,7 @@ herein
 					#	
 					my (p' as xg::POINT { col=>x, row=>y }, delta_p')
 					    =
-					    adjust (xg::add_pt (p, delta_p), delta_p);
+					    adjust (xg::add_points (p, delta_p), delta_p);
 
 					box = xg::BOX
 						 { col  => 0,

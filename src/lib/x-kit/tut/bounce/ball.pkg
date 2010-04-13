@@ -121,14 +121,14 @@ herein
 					       row => ball_radius
 					     };
 
-			  fun draw_ball (n, pos)
+			  fun draw_ball (n, position)
 			      =
-			      give (draw_slot, bd::DRAW_BALL (n, ball_icon, xg::sub_pt (pos, offset)));
+			      give (draw_slot, bd::DRAW_BALL (n, ball_icon, xg::subtract_points (position, offset)));
 
-			  fun move_ball (n, old_pos, new_pos)
+			  fun move_ball (n, old_position, new_position)
 			      =
-			      {   draw_ball (n, old_pos);
-				  draw_ball (n, new_pos);
+			      {   draw_ball (n, old_position);
+				  draw_ball (n, new_position);
 			      };
 
 			  clip_fn = clip (ball_radius, size);

@@ -82,13 +82,21 @@ herein
                         row => 0
                       };
 
+	    fun same_point
+		(   POINT { row => row1,  col => col1 },
+		    POINT { row => row2,  col => col2 }
+		)
+		=
+		row1 == row2   and
+		col1 == col2;
+
 	    fun col_coord_of_pt (POINT { col, ... } ) =  col;
 	    fun row_coord_of_pt (POINT { row, ... } ) =  row;
 
-	    fun add_pt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1+col2), row=>(row1+row2) };
-	    fun sub_pt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1-col2), row=>(row1-row2) };
+	    fun add_points      (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1+col2), row=>(row1+row2) };
+	    fun subtract_points (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1-col2), row=>(row1-row2) };
 
-	    fun scale_pt (s, POINT { col, row } ) = POINT { col=>s*col, row=>s*row };
+	    fun scale_point (s, POINT { col, row } ) = POINT { col=>s*col, row=>s*row };
 
 	    fun less_than_pt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  (col1 <  col2) and (row1 <  row2);
 	    fun less_eq_pt   (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  (col1 <= col2) and (row1 <= row2);
