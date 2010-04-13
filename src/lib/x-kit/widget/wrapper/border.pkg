@@ -208,7 +208,7 @@ herein
 			      {
 				kidplug =>  ckidplug, 
 				window  =>  cwin,
-				size    =>  xg::box::size_of  crect
+				size    =>  xg::box::size  crect
 			      };
 
 			    xw::show_window cwin;

@@ -77,8 +77,8 @@ herein
 
 	fun wuproj_box (projfn:  Wuprojfn) r
 	    =
-	    {   my gf::POINT { x=>ox, y=>oy } =  projfn (xg::box::upperleft_of  r);
-		my gf::POINT { x=>cx, y=>cy } =  projfn (xg::box::lowerright_of r);
+	    {   my gf::POINT { x=>ox, y=>oy } =  projfn (xg::box::upperleft  r);
+		my gf::POINT { x=>cx, y=>cy } =  projfn (xg::box::lowerright r);
 
 		gf::BOX { x=>ox, y=>oy, wide=>cx-ox, high=>cy-oy };
 	    };

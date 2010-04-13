@@ -1,3 +1,4 @@
+2010-04-13-17.28.33: src/lib/x-kit/xclient/xgeometry.api: Renamed bounding_box -> point::bounding_box, within -> point::in_box.
 2010-04-13-17.07.53: src/lib/x-kit/xclient/xgeometry.api: Similarly established (sub) package box.
 2010-04-13-16.26.26: src/lib/x-kit/xclient/xgeometry.api: Established (sub) package size, moved into it add_size, sub_size, scale_size as add, subtract, scale.
 2010-04-13-16.09.01: src/lib/x-kit/xclient/xgeometry.api: Moved limit_pt into package point as clip; Moved add_size_to_pt into package point as add_size. Re-ordered arguments to point::scale to put point first.

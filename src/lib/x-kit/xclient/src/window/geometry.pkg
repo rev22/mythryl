@@ -80,8 +80,8 @@ herein
 		#
 		zero = POINT { col => 0, row => 0 };
 
-		fun col_of (POINT { col, ... } ) =  col;
-		fun row_of (POINT { row, ... } ) =  row;
+		fun col (POINT { col, ... } ) =  col;
+		fun row (POINT { row, ... } ) =  row;
 
 		fun add      (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1+col2), row=>(row1+row2) };
 		fun subtract (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1-col2), row=>(row1-row2) };
@@ -152,24 +152,24 @@ herein
 		    BOX { col, row, wide, high };
 
 
-		fun upperleft_of (BOX { col, row, ... } )
+		fun upperleft (BOX { col, row, ... } )
 		    =
 		    POINT { col, row };
 
 
-		fun size_of (BOX { wide, high, ... } )
+		fun size (BOX { wide, high, ... } )
 		    =
 		    SIZE { wide, high };
 
 
-		fun upperleft_and_size_of (BOX { col, row, wide, high } )
+		fun upperleft_and_size (BOX { col, row, wide, high } )
 		    =
 		    (POINT { col, row }, SIZE { wide, high } );
 
 
-		fun lowerright_of r
+		fun lowerright r
 		    =
-		    point::add_size (upperleft_and_size_of r);
+		    point::add_size (upperleft_and_size r);
 
 
 		fun clip_point (BOX { col=>min_col, row=>min_row, wide, high }, POINT { col, row } )
@@ -234,7 +234,7 @@ herein
 		    fi;
 
 
-		fun inside
+		fun in_box
 		    ( BOX { col=>col1, row=>row1, wide=>w1, high=>h1 },
 		      BOX { col=>col2, row=>row2, wide=>w2, high=>h2 }
 		    )

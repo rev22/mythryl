@@ -277,7 +277,7 @@ herein
 			    =>
 			    {   my (p, size)
 				    =
-				    ge::box::upperleft_and_size_of  box;
+				    ge::box::upperleft_and_size  box;
 
 				request_with_exposures (v2w::encode_copy_area { gc_id, from, to, from_point=>p, size, to_point=>pt }, sync_v);
 			    };
@@ -286,7 +286,7 @@ herein
 			    =>
 			    {   my (p, size)
 				    =
-				    ge::box::upperleft_and_size_of  box;
+				    ge::box::upperleft_and_size  box;
 
 				request_with_exposures (v2w::encode_copy_plane { gc_id, from, to, from_point=>p, size, to_point=>pt, plane }, sync_v);
 			    };
@@ -295,7 +295,7 @@ herein
 			    =>
 			    {   my (p, size)
 				    =
-				    ge::box::upperleft_and_size_of  box;
+				    ge::box::upperleft_and_size  box;
 
 				request (v2w::encode_copy_area { gc_id, from, to, from_point=>p, size, to_point=>pt });
 			    };
@@ -304,7 +304,7 @@ herein
 			    =>
 			    {   my (p, size)
 				    =
-				    ge::box::upperleft_and_size_of  box;
+				    ge::box::upperleft_and_size  box;
 
 				request (v2w::encode_copy_plane { gc_id, from, to, from_point=>p, size, to_point=>pt, plane });
 			    };

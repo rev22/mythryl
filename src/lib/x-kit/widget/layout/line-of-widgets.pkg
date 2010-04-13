@@ -369,7 +369,7 @@ herein
 				{ 
 				    box  =  rectfn  widget;
 
-				    size =  xg::box::size_of  box;
+				    size =  xg::box::size  box;
 
 				    my { kidplug, momplug => momplug as MOMPLUG { from_kid', ... } }
 					=
@@ -462,7 +462,7 @@ herein
 
 			    fun do_mom (me:  Layout_Rep, ETC_RESIZE r)
 				   =>
-				   {   nrect =  xg::box::make (xg::point::zero, xg::box::size_of r);
+				   {   nrect =  xg::box::make (xg::point::zero, xg::box::size r);
 
 				       nlist =  #2 (lo::compute_layout (nrect, get_vis me));
 

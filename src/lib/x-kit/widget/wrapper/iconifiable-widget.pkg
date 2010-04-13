@@ -494,7 +494,7 @@ herein
 
 			{ kidplug =>  ckidplug, 
 			  window  =>  cwin,
-			  size    =>  xg::box::size_of  crect
+			  size    =>  xg::box::size  crect
 			};
 
 		    main (FALSE, FALSE, drawfn (dr, size, result));

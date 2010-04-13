@@ -381,8 +381,8 @@ herein
 		delta
 		    =
 		    ge::point::subtract
-		      ( ge::box::upperleft_of  from_box',
-			ge::box::upperleft_of  from_box
+		      ( ge::box::upperleft  from_box',
+			ge::box::upperleft  from_box
 		      );
 
 		depth =  list::length data;
