@@ -29,7 +29,7 @@ herein
 		screen:		sn::Screen,
 		screen_depth:	sn::Screen_Depth_Imps,
 		#
-		drawop_sink:	di::d::Draw_Op -> Void
+		to_drawimp:	di::d::Draw_Op -> Void
 	      };
 
 	# An off-screen rectangular array of pixels on the X server:
@@ -126,7 +126,7 @@ herein
 	    DRAWABLE_WINDOW
 	      {
 		root:		r::Draw_Root,
-		drawop_sink:	di::d::Draw_Op -> Void
+		to_drawimp:	di::d::Draw_Op -> Void
 	      };
 
 	drawable_of_window:        Window -> Drawable_Window;

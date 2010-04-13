@@ -44,18 +44,18 @@ herein
             #     xid
 	    #     depth
 	    #
-	    fun info_of_drawable (dt::DRAWABLE_WINDOW { drawop_sink, root => dt::r::WINDOW w } )
+	    fun info_of_drawable (dt::DRAWABLE_WINDOW { to_drawimp, root => dt::r::WINDOW w } )
 		    =>
 		    {   w ->   dt::WINDOW { window_id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
-			{ drawop_sink, id => window_id, depth };
+			{ to_drawimp, id => window_id, depth };
 		    };
 
-		info_of_drawable (dt::DRAWABLE_WINDOW { drawop_sink, root => dt::r::PIXMAP pm } )
+		info_of_drawable (dt::DRAWABLE_WINDOW { to_drawimp, root => dt::r::PIXMAP pm } )
 		    =>
 		    {   pm -> dt::RW_PIXMAP { id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
-			{ drawop_sink, id, depth };
+			{ to_drawimp, id, depth };
 		    };
 	    end;
 
@@ -84,20 +84,20 @@ herein
 	    #
 	    fun draw_fn f drawable pen
 		=
-		{   my { drawop_sink, id, ... }
+		{   my { to_drawimp, id, ... }
 			=
 			info_of_drawable drawable;
 
-		    fn x =  drawop_sink (di::d::DRAW { to => id, pen, op => (f x) } );
+		    fn x =  to_drawimp (di::d::DRAW { to => id, pen, op => (f x) } );
 		};
 
 	    fun draw_fn2 f drawable pen
 		=
-		{   my { drawop_sink, id, ... }
+		{   my { to_drawimp, id, ... }
 			=
 			info_of_drawable  drawable;
 
-		    fn x =   fn x' =   drawop_sink (di::d::DRAW { to => id, pen, op => (f x x') } );
+		    fn x =   fn x' =   to_drawimp (di::d::DRAW { to => id, pen, op => (f x x') } );
 		};
 
 	    fun check_list chkfn l
@@ -287,7 +287,7 @@ herein
 
 		fun copy_area_fn  msg_fn  (to, pen, to_pos, from, from_box)
 		    =
-		    {   my { id=>to_id, drawop_sink, depth=>to_depth }
+		    {   my { id=>to_id, to_drawimp, depth=>to_depth }
 			    =
 			    info_of_drawable  to;
 
@@ -304,14 +304,14 @@ herein
 			    raise exception DEPTH_MISMATCH;
 			fi;
 
-			drawop_sink (di::d::DRAW { to => to_id, pen, op => msg } );
+			to_drawimp (di::d::DRAW { to => to_id, pen, op => msg } );
 
 			result;
 		    };
 
 		fun copy_plane_fn msg_fn (to, pen, to_pos, from, from_box, plane)
 		    =
-		    {   my { id=>to_id, drawop_sink, ... }
+		    {   my { id=>to_id, to_drawimp, ... }
 			    =
 			    info_of_drawable  to;
 
@@ -331,7 +331,7 @@ herein
 			    raise exception BAD_PLANE;
 			fi;
 
-			drawop_sink (di::d::DRAW { to => to_id, pen, op => msg } );
+			to_drawimp (di::d::DRAW { to => to_id, pen, op => msg } );
 
 			result;
 		    };
@@ -363,7 +363,7 @@ herein
 
 									# "They made us many promises,
 									#  more than I can remember,
-		fun promise_event (drawop_sink, sync_1shot)		#  but they never kept but one;
+		fun promise_event (to_drawimp, sync_1shot)		#  but they never kept but one;
 		    =                                   		#  they promised to take our land,
 		    {   sync_mailop                     		#  and they took it." -- Red Cloud
 			    =
@@ -381,7 +381,7 @@ herein
 
 				NULL
 				    =>
-				    {   drawop_sink (di::d::FLUSH);
+				    {   to_drawimp (di::d::FLUSH);
 
 					sync_mailop
 					    ==>
@@ -394,11 +394,11 @@ herein
 
 		fun pixel_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { drawop_sink, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
 
 			    sync_1shot = copy_area (to, pen, to_pos, from, from_box);
 
-			    drawop_sink (di::d::FLUSH);
+			    to_drawimp (di::d::FLUSH);
 
 			    (get  sync_1shot) ();
 			};
@@ -412,11 +412,11 @@ herein
 
 		fun pixel_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { drawop_sink, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
 
 			    sync_v = copy_area (to, pen, to_pos, from, from_box);
 
-			    promise_event (drawop_sink, sync_v);
+			    promise_event (to_drawimp, sync_v);
 			};
 
 		    pixel_blt_mailop to pen { from, from_box, to_pos }
@@ -429,11 +429,11 @@ herein
 
 		fun plane_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { drawop_sink, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
 
 			    sync_1shot = copy_plane (to, pen, to_pos, from, from_box, plane);
 
-			    drawop_sink (di::d::FLUSH);
+			    to_drawimp (di::d::FLUSH);
 
 			    (get  sync_1shot) ();
 			};
@@ -447,11 +447,11 @@ herein
 
 		fun plane_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { drawop_sink, ... };
+			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
 
 			    sync_v = copy_plane (to, pen, to_pos, from, from_box, plane);
 
-			    promise_event (drawop_sink, sync_v);
+			    promise_event (to_drawimp, sync_v);
 			};	    
 
 		    plane_blt_mailop to pen { from, from_box, to_pos, plane }
@@ -545,13 +545,13 @@ herein
 
 		fun clear_box drawable
 		    =
-		    {   my { drawop_sink, id, ... }
+		    {   my { to_drawimp, id, ... }
 			    =
 			    info_of_drawable  drawable;
 
 			fn box
 			    =
-			    drawop_sink (
+			    to_drawimp (
 				di::d::DRAW
                                    { to  => id,
 				     pen => clear_pen,

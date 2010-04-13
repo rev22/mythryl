@@ -387,7 +387,7 @@ herein
 
 		depth =  list::length data;
 
-		pm  -> dt::RW_PIXMAP { id, screen, screen_depth=>sn::SCREEN_DEPTH_IMPS { drawop_sink, ... }, ... };
+		pm  -> dt::RW_PIXMAP { id, screen, screen_depth=>sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... };
 
 		screen -> sn::SCREEN { xsession=>sn::XSESSION { xdisplay as dy::XDISPLAY dpy_info, ... }, ... } ;
 
@@ -457,7 +457,7 @@ herein
 
 			xdata =  map  extract_box  data;
 
-			drawop_sink
+			to_drawimp
 			    (di::d::DRAW
 			      {
 				to  => id,
@@ -604,13 +604,13 @@ herein
 	#
 	fun make_clientside_pixmap_from_readwrite_pixmap (dt::RW_PIXMAP { id, size => size as ge::SIZE szinfo, screen_depth, screen } )
 	    =
-	    {   screen_depth -> sn::SCREEN_DEPTH_IMPS { depth, drawop_sink, ... };
+	    {   screen_depth -> sn::SCREEN_DEPTH_IMPS { depth, to_drawimp, ... };
 
 		my sn::XSESSION { xdisplay => dy::XDISPLAY dpy_info, ... }
 		    =
 		    sn::xsession_of_screen screen;
 
-		drawop_sink (di::d::FLUSH);
+		to_drawimp  di::d::FLUSH;
 
 		all_planes = unt::bitwise_not 0u0;
 

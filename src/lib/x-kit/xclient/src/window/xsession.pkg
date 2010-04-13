@@ -208,7 +208,7 @@ herein
 									# for a given  depth of a screen.
 		depth:		Int,    
 		gcontext_imp:	gci::Graphics_Context_Cache,		# The graphics context imp for this screen.
-		drawop_sink:	di::d::Draw_Op -> Void			# The draw-imp connection for the root  window of the screen. 
+		to_drawimp:	di::d::Draw_Op -> Void			# The draw-imp connection for the root  window of the screen. 
 	    }
 
 	also
@@ -230,7 +230,7 @@ herein
 		screen:		Screen,
 		screen_depth:	Screen_Depth_Imps,
 		#
-		drawop_sink:	di::d::Draw_Op -> Void
+		to_drawimp:	di::d::Draw_Op -> Void
 	      };
 
 	# Identity tests:
@@ -300,7 +300,7 @@ herein
 				SCREEN_DEPTH_IMPS {
 				    depth,
 				    gcontext_imp,
-				    drawop_sink
+				    to_drawimp
 					=>
 					di::make_draw_imp
 					  ( take'  drawimp_mappedstate_slot,

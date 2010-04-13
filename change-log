@@ -1,3 +1,4 @@
+2010-04-12-22.48.29: src/lib/x-kit/xclient/src/window/xsession.api: Rename draw_command_sink -> drawop_sink for brevity.
 2010-04-12-14.59.02: src/lib/x-kit/xclient/src/wire/value-to-wire.api: More work establishing a clear distinction between gc records and 29-bit gc IDs.
 2010-04-12-01.23.34: src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg: Work at maintaining clearer distinction between gc records and 29-bit integer gc ID values.
 2010-04-12-01.23.34: src/lib/x-kit/xclient/src/window/draw.pkg: Moved Text+Text_Item into their own package t, dropped the TEXT_ prefixes.
