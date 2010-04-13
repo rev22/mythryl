@@ -109,12 +109,12 @@ herein
 			};
 	    };
 
-	    # Size operations:
-	    #
-	    fun add_size (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  SIZE { wide=>(w1+w2), high=>(h1+h2) };
-	    fun sub_size (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  SIZE { wide=>(w1-w2), high=>(h1-h2) };
-	    #
-	    fun scale_size (s, SIZE { wide, high } ) = SIZE { wide=>s*wide, high=>s*high };
+	    package size {
+		#
+		fun add      (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  SIZE { wide=>(w1+w2), high=>(h1+h2) };
+		fun subtract (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  SIZE { wide=>(w1-w2), high=>(h1-h2) };
+		fun scale    (SIZE { wide,     high     }, s                           ) =  SIZE { wide=>wide*s,  high=>high*s  };
+	    };
 
 	    # Boxes:
 	    #

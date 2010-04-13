@@ -111,9 +111,12 @@ api Xgeometry {
 
     # Sizes:
     #
-    add_size:   (Size, Size) -> Size;
-    sub_size:   (Size, Size) -> Size;
-    scale_size:  (Int, Size) -> Size;
+    package size:  api {
+	#
+	add:        (Size, Size) -> Size;
+	subtract:   (Size, Size) -> Size;
+	scale:      (Size, Int ) -> Size;
+    };
     #
 
 
