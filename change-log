@@ -1,3 +1,4 @@
+2010-04-13-02.06.49: src/lib/x-kit/xclient/src/wire/value-to-wire.api: For clarity renamed pt -> point, str -> string various places.
 2010-04-13-01.50.00: src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api: Renamed note_window's_seen_first_expose_oneshot -> note_window's_''seen_first_expose''_oneshot for clarity -- and because I can. :-)
 2010-04-12-23.11.53: src/lib/x-kit/xclient/src/window/xsession.api: Renamed drawop_sink -> to_drawimp, which is both shorter and clearer.
 2010-04-12-22.48.29: src/lib/x-kit/xclient/src/window/xsession.api: Rename draw_command_sink -> drawop_sink for brevity.

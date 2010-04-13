@@ -531,10 +531,10 @@ trace .{ sprintf "xsession: send_mousebutton_press_event/MID screen_point = { ro
 		root_window_id	=  root_window_id;
 		event_window_id	=  window_id;				# Window handling the mouse-button release event.
 		child_window_id	=  NULL;				# We'll assume specified window is a leaf.
-		root_x		=  screen_row;				# Mouse position on root window at time of button release.
-		root_y		=  screen_col;
-		event_x		=  row;					# Mouse position on recipient window at time of button release.
-		event_y		=  col;
+		root_x		=  screen_col;				# Mouse position on root window at time of button release.
+		root_y		=  screen_row;
+		event_x		=  col;					# Mouse position on recipient window at time of button release.
+		event_y		=  row;
 		buttons		=  xt::MOUSEBUTTON_STATE 0u0;
 
 trace .{ "xsession: send_mousebutton_press_event/YYY calling s2w::encode_send_button_press_xevent"; };
@@ -587,10 +587,10 @@ trace .{ sprintf "xsession: send_mousebutton_release_event/MID screen_point = { 
 		root_window_id	=  root_window_id;
 		event_window_id	=  window_id;				# Window handling the mouse-button release event.
 		child_window_id	=  NULL;				# We'll assume specified window is a leaf.
-		root_x		=  screen_row;				# Mouse position on root window at time of button release.
-		root_y		=  screen_col;
-		event_x		=  row;					# Mouse position on recipient window at time of button release.
-		event_y		=  col;
+		root_x		=  screen_col;				# Mouse position on root window at time of button release.
+		root_y		=  screen_row;
+		event_x		=  col;					# Mouse position on recipient window at time of button release.
+		event_y		=  row;
 
 trace .{ "xsession: send_mousebutton_release_event/YYY calling s2w::encode_send_button_press_xevent"; };
 		command

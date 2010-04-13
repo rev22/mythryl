@@ -48,6 +48,15 @@ herein
 
 	button_corner_radius = 8;
 
+	# This is a hack to support selfcheck;
+	# if it is set non-NULL, drawing_window_imp
+	# will 'give' the displayed triangle list
+	# to this slot each time it changes:
+	#
+	my  drawing_window_watcher:	Null_Or( Mailslot( List( xg::Point )))
+	    =
+	    NULL;	
+
 	# Put button window at bottom of topwindow:
 	# 
 	fun button_window_site  (topwindow_size as { wide: Int, high: Int })
@@ -117,7 +126,7 @@ herein
 	# Thread to exercise the app by simulating user
 	# mouseclicks and verifying their effects:
 	#
-	fun make_selftest_thread
+	fun make_selfcheck_thread
             { topwindow:        xw::Window,
               drawing_window:   xw::Window,
               button_window:    xw::Window
@@ -161,7 +170,7 @@ herein
 			get  seen_first_drawing_window_expose_oneshot;
 		    };
 
-		fun selftest ()
+		fun selfcheck ()
 		    =
 		    {   # First order of business is to wait
 			# until things are up and running:
@@ -180,12 +189,12 @@ trace .{ sprintf "drawing window box = { row %d, col %d, high %d, wide %d }." ro
 			# Define midpoint of drawing window:
 			#
 			stipulate
-			    row   =  high / 2;
-			    col   =  wide / 2;
+			    row =  high / 2;
+			    col =  wide / 2;
+my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row  col ;  };
 			herein
 			    midpoint =  xg::POINT { row, col };
 			end;
-trace .{ sprintf "drawing window midpoint = { row %d, col %d }." row col; };
 # Sleep for one second in the hope that all pending
 # initialization stuff will have time to run, making
 # the tracelog of the following stuff easier to interpret:
@@ -212,7 +221,7 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 			  };
 		    };
 
-		xtr::make_thread "tri-app selftest" selftest;
+		xtr::make_thread "tri-app selfcheck" selfcheck;
 	    };
 
 	fun make_topwindow  xdisplay  xauthentication
@@ -453,10 +462,10 @@ trace .{ "button loop TOP"; };
 	# a triangle at each spot the user
 	# clicks on:
 	#
-	fun make_draw_threads (drawing_window, reset', draw_kidplug)
+	fun make_drawing_window_threads (drawing_window, reset', draw_kidplug)
 	    =
-	    {   xtr::make_thread "triangle draw mouse"  mouse_thread;
-		xtr::make_thread "triangle draw"       .{ loop []; };
+	    {   xtr::make_thread "drawing window mouse"  mouse_thread;
+		xtr::make_thread "drawing window"       .{ drawing_window_imp []; };
 		();
 	    }
 	    where
@@ -467,7 +476,7 @@ trace .{ "button loop TOP"; };
 		mouse' =   from_mouse' ==> xi::envelope_contents;
 		other' =   from_other' ==> xi::envelope_contents;
 
-		draw_slot = make_mailslot ();
+		add_triangle_slot = make_mailslot ();
 
 		fun mouse_thread ()
 		    =
@@ -478,13 +487,13 @@ trace .{ "mouse thread/TOP"; };
 			    #
 			    xi::MOUSE_FIRST_DOWN { window_point, ... }
 				=>
-				give (draw_slot, window_point);
+				give (add_triangle_slot, window_point);
 			    #
 			    _   => ();
 			esac;
 		    };
 
-		draw' = take' draw_slot;
+		add_triangle' = take' add_triangle_slot;
 
 		drawable = xd::drawable_of_window  drawing_window;
 
@@ -518,7 +527,10 @@ trace .{ "drawing_window draw_trianbel/BOT"; };
     };
 
 
-		fun loop state
+		# "triangles" is the list of points at which we
+		# show triangles in the drawing window:
+		#
+		fun drawing_window_imp  triangles
 		    =
 		    {   fun do_reset ()
 			    =
@@ -526,7 +538,7 @@ trace .{ "drawing_window draw_trianbel/BOT"; };
 trace .{ "drawing_window loop do_reset()/TOP -- clearing drawable"; };
                                 xd::clear_drawable  drawable;
 trace .{ "drawing_window loop do_reset()/BOT"; };
-				loop [];
+				drawing_window_imp [];
 			    };
 
 
@@ -537,10 +549,10 @@ trace .{ "drawing_window loop do_other/ETC_REDRAW/TOP -- clearing drawable"; };
                                     xd::clear_drawable  drawable;
 
 trace .{ "drawing_window loop do_other/ETC_REDRAW/MID -- drawing triangles"; };
-				    apply draw_triangle state;
+				    apply  draw_triangle  triangles;
 
 trace .{ "drawing_window loop do_other/ETC_REDRAW/BOT"; };
-				    loop state;
+				    drawing_window_imp  triangles;
 				};
 
 			    do_other xi::ETC_OWN_DEATH
@@ -554,29 +566,41 @@ trace .{ "drawing_window loop do_other/ETC_OWN_DEATH"; };
 				=>
 				{
 trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
-				    loop state;
+				    drawing_window_imp  triangles;
 				};
 			end;
 
 
-			fun do_draw  point
+			# In response to a mouse downclick at a point,
+			# add a triangle to our list and draw it:
+			#
+			fun add_triangle  point
 			    =
 			    {
-trace .{ "drawing_window loop do_draw/TOP -- drawing_triangle being called"; };
+{ point -> xg::POINT { row, col };
+  trace .{ sprintf "add_triangle (POINT { row %d, col %d })/TOP" row col; };
+};
 			        draw_triangle  point;
+
+				case drawing_window_watcher
+				    #
+				    THE slot =>	 give (slot, (point ! triangles));
+				    NULL     =>  ();
+				esac;
+
 trace .{ "drawing_window loop do_draw/BOT -- adding point to list and continuing"; };
-				loop (point ! state);
+				drawing_window_imp (point ! triangles);
 			    };
 
 trace .{ "drawing_window loop -- doing select []"; };
 			select [
 			    #
-			    reset' ==>  do_reset,
-			    other' ==>  do_other,
-			    draw'  ==>  do_draw
+			    reset'         ==>  do_reset,
+			    other'         ==>  do_other,
+			    add_triangle'  ==>  add_triangle
 			];
-		    };					# fun loop
-	    end;					# fun make_draw_threads 
+		    };					# fun drawing_window_imp
+	    end;					# fun make_drawing_window_threads 
 
 	fun make_toplevel_threads
             {
@@ -686,14 +710,14 @@ trace .{ "run_triangle_app -- above make_toplevel_threads ()"; };
 		    { button_kidplug, draw_kidplug };
 		    
 
-trace .{ "run_triangle_app -- above make_draw_threads ()"; };
-		make_draw_threads
+trace .{ "run_triangle_app -- above make_drawing_window_threads ()"; };
+		make_drawing_window_threads
 		  ( drawing_window,
 		    make_button_threads (button_window, button_kidplug),
 		    draw_kidplug
 		  );
 
-		make_selftest_thread  { topwindow, drawing_window, button_window };
+		make_selfcheck_thread  { topwindow, drawing_window, button_window };
 trace .{ "run_triangle_app -- DONE"; };
 	    };
 
