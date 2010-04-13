@@ -1,3 +1,4 @@
+2010-04-13-15.50.50: src/lib/x-kit/xclient/xgeometry.api: Established (sub) package point; moved into it point_00, row_coord_of_pt, col_coord_of_pt, scale_point, add_points, subtract_points, point_ne, point_eq, point_gt, point_lt, point_ge, point_le as zero, row_coord_of, col_coord_of, scale, add, subtract, ne, eq, gt, lt, ge, le.
 2010-04-13-15.34.20: src/lib/x-kit/xclient/xgeometry.api: Added point_ne, point_ge, point_gt to complete the traditional (hence expected) set.
 2010-04-13-15.09.29: src/lib/x-kit/xclient/xgeometry.api: Renamed less_than_pt, less_eq_point -> point_lt, point_le; added point_eq.
 2010-04-13-15.09.29: src/lib/x-kit/xclient/xgeometry.api: Renamed add_pt, sub_pt -> add_points, subtract_points.

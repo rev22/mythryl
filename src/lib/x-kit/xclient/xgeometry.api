@@ -87,22 +87,25 @@ api Xgeometry {
     #
     package point:  api {
 
-	zero:  Point;			# Point (0,0).
+	zero:      Point;			# Point (0,0).
 
-	row_coord_of:  Point -> Int;
-	col_coord_of:  Point -> Int;
+	row_of:    Point -> Int;
+	col_of:    Point -> Int;
 
-	scale:     (Int,   Point) -> Point;
+	scale:    (Point, Int  ) -> Point;
 
 	add:      (Point, Point) -> Point;
 	subtract: (Point, Point) -> Point;
 
-	ne:        (Point, Point) -> Bool;	# x1 != x2 or  y1 != y2.
-	eq:        (Point, Point) -> Bool;	# x1 == x2 and y1 == y2.
-	lt:        (Point, Point) -> Bool;	# x1 <  x2 and y1 <  y2.
-	le:        (Point, Point) -> Bool;	# x1 <= x2 and y1 <= y2
-	gt:        (Point, Point) -> Bool;	# x1 >  x2 and y1 >  y2
-	ge:        (Point, Point) -> Bool;	# x1 >= x2 and y1 >= y2
+	add_size: (Point, Size ) -> Point;
+        clip:     (Point, Size ) -> Point;	# Clip point to be within box defined by point::zero and size, using orthogonal projection..
+
+	ne:       (Point, Point) -> Bool;	# x1 != x2 or  y1 != y2.
+	eq:       (Point, Point) -> Bool;	# x1 == x2 and y1 == y2.
+	lt:       (Point, Point) -> Bool;	# x1 <  x2 and y1 <  y2.
+	le:       (Point, Point) -> Bool;	# x1 <= x2 and y1 <= y2
+	gt:       (Point, Point) -> Bool;	# x1 >  x2 and y1 >  y2
+	ge:       (Point, Point) -> Bool;	# x1 >= x2 and y1 >= y2
     };
 
 
@@ -112,8 +115,6 @@ api Xgeometry {
     sub_size:   (Size, Size) -> Size;
     scale_size:  (Int, Size) -> Size;
     #
-    add_size_to_pt:  (Point, Size) -> Point;
-    limit_pt:        (Size, Point) -> Point;		# Clip point to be within box defined by point::zero and size, using orthogonal projection..
 
 
 

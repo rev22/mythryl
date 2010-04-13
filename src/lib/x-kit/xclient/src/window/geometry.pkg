@@ -80,13 +80,13 @@ herein
 		#
 		zero = POINT { col => 0, row => 0 };
 
-		fun col_coord_of (POINT { col, ... } ) =  col;
-		fun row_coord_of (POINT { row, ... } ) =  row;
+		fun col_of (POINT { col, ... } ) =  col;
+		fun row_of (POINT { row, ... } ) =  row;
 
 		fun add      (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1+col2), row=>(row1+row2) };
 		fun subtract (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1-col2), row=>(row1-row2) };
 
-		fun scale (s, POINT { col, row } ) = POINT { col=>s*col, row=>s*row };
+		fun scale (POINT { col, row }, s ) =  POINT { col=>s*col, row=>s*row };
 
 		fun ne (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 != col2) or  (row1 != row2);
 		fun eq (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 == col2) and (row1 == row2);
@@ -94,6 +94,19 @@ herein
 		fun le (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 <= col2) and (row1 <= row2);
 		fun gt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >  col2) and (row1 >  row2);
 		fun ge (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >= col2) and (row1 >= row2);
+
+		fun add_size (POINT { col, row }, SIZE { wide, high } )
+		    =
+		    POINT { col =>  col + wide,
+                            row =>  row + high
+                          };
+		#
+		fun clip (POINT { col, row }, SIZE { wide, high })
+		    =
+		    POINT {
+			  col =>  if (col <= 0)  0; elif (col < wide)  col; else (wide - 1); fi,
+			  row =>  if (row <= 0)  0; elif (row < high)  row; else (high - 1); fi
+			};
 	    };
 
 	    # Size operations:
@@ -102,14 +115,6 @@ herein
 	    fun sub_size (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  SIZE { wide=>(w1-w2), high=>(h1-h2) };
 	    #
 	    fun scale_size (s, SIZE { wide, high } ) = SIZE { wide=>s*wide, high=>s*high };
-	    fun add_size_to_pt (POINT { col, row }, SIZE { wide, high } ) = POINT { col=>col+wide, row=>row+high };
-	    #
-	    fun limit_pt (SIZE { wide, high }, POINT { col, row } )
-		=
-		POINT {
-		      col =>  if (col <= 0)  0; elif (col < wide)  col; else (wide - 1); fi,
-		      row =>  if (row <= 0)  0; elif (row < high)  row; else (high - 1); fi
-		    };
 
 	    # Boxes:
 	    #
@@ -135,7 +140,7 @@ herein
 
 	    fun lowerright_of_box r
 		=
-		add_size_to_pt (upperleft_and_size_of_box r);
+		point::add_size (upperleft_and_size_of_box r);
 
 
 	    fun clip_point (BOX { col=>min_col, row=>min_row, wide, high }, POINT { col, row } )

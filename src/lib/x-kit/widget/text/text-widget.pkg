@@ -1861,7 +1861,7 @@ herein
 		size;
 	    };
 
-	fun pt_to_coord tw pt
+	fun pt_to_coord tw point
 	    =
 	    {   my  TEXT_SIZE { size, char_high, char_wide, ... }
 		    =
@@ -1869,7 +1869,7 @@ herein
 
 		my  xg::POINT { col, row }
 		    =
-		    xg::limit_pt (size, pt);
+		    xg::point::clip (point, size);
 
 		CHAR_COORD {
 		    row => int::quot (row - pad, char_high),
