@@ -290,15 +290,15 @@ herein
 
 	encode_image_text16: { drawable: xt::Xid,
                                gc_id:    xt::Xid, 
-			       pt:       ge::Point,
-                               str:      String
+			       point:    ge::Point,
+                               string:   String
                              }
 			     -> v8::Vector;
 
 	encode_image_text8: { drawable: xt::Xid,
                               gc_id:    xt::Xid, 
-			      pt:       ge::Point,
-                              str:      String
+			      point:    ge::Point,
+                              string:   String
                             }
 			    -> v8::Vector;
 
@@ -369,14 +369,14 @@ herein
 	encode_poly_text16:  { drawable: xt::Xid,
                                gc_id:    xt::Xid, 
 			       items:    List(xt::Text_Font),
-                               pt:       ge::Point
+                               point:    ge::Point
                              }
 			     -> v8::Vector;
 
 	encode_poly_text8: { drawable: xt::Xid,
                              gc_id:    xt::Xid, 
 			     items:    List(xt::Text_Font),
-                             pt:       ge::Point
+                             point:    ge::Point
                            }
 			   -> v8::Vector;
 

@@ -559,13 +559,13 @@ trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
 			end;
 
 
-			fun do_draw pt
+			fun do_draw  point
 			    =
 			    {
 trace .{ "drawing_window loop do_draw/TOP -- drawing_triangle being called"; };
-			        draw_triangle pt;
+			        draw_triangle  point;
 trace .{ "drawing_window loop do_draw/BOT -- adding point to list and continuing"; };
-				loop (pt ! state);
+				loop (point ! state);
 			    };
 
 trace .{ "drawing_window loop -- doing select []"; };
@@ -732,8 +732,8 @@ printf "triangle-app: do_it': Creating new %s file...\n" tracefile;
 			#
 			case display_name
 			    #
-			    "" => NULL;
-			    _  => THE display_name;
+			    "" =>  NULL;
+			    _  =>  THE display_name;
 			esac;
 
 trace .{ sprintf "triangle-app: DISPLAY variable is set to '%s'" xdisplay; };

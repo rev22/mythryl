@@ -328,7 +328,7 @@ herein
 			          }
                                 );
 
-			(to, gc_id, cur_fid, o::POLY_TEXT8 (fid, pt, txt_items))
+			(to, gc_id, cur_fid, o::POLY_TEXT8 (fid, point, txt_items))
 			    =>
 			    {   last_fid
 				    =
@@ -428,15 +428,15 @@ herein
 					{
 					  drawable=>to,
 					  gc_id,
-					  pt,
+					  point,
 					  items=>(do_items txt_items)
 					}
 				    );
 			    };
 
-			(to, gc_id, _, o::IMAGE_TEXT8(_, pt, txt))
+			(to, gc_id, _, o::IMAGE_TEXT8(_, point, string))
 			    =>
-			    request (v2w::encode_image_text8 { drawable=>to, gc_id, pt, str=>txt } );
+			    request (v2w::encode_image_text8 { drawable=>to, gc_id, point, string } );
 		    end;
 
 #	    end;				# stipulate

@@ -1474,7 +1474,7 @@ herein
 		    textlen ((xt::TEXT_ITEM(_, s)) ! r, n) =>  textlen (r, n+2+(string::length s));
 		end;
 
-		fun encode (itemlen, req_info) { drawable, gc_id, pt, items }
+		fun encode (itemlen, req_info) { drawable, gc_id, point, items }
 		    =
 		    {   fun put (msg, i, [])
 				=>
@@ -1517,7 +1517,7 @@ herein
 
 			put_xid   (msg,  4, drawable);
 			put_xid   (msg,  8, gc_id   );
-			put_point (msg, 12, pt      );
+			put_point (msg, 12, point   );
 			put       (msg, 16, items   );
 
 			msg;
@@ -1528,17 +1528,17 @@ herein
 	    end;
 
 	    stipulate
-		fun encode (textlen, req_info) { drawable, gc_id, pt, str }
+		fun encode (textlen, req_info) { drawable, gc_id, point, string }
 		    =
-		    {   len = string::length str;
+		    {   len =  string::length  string;
 
 			msg = make_extra_request (req_info, (pad len) / 4);
 
-			put_signed8 (msg,  1, textlen str);
-			put_xid     (msg,  4, drawable   );
-			put_xid     (msg,  8, gc_id      );
-			put_point   (msg, 12, pt         );
-			put_string  (msg, 16, str        );
+			put_signed8 (msg,  1, textlen string);
+			put_xid     (msg,  4, drawable      );
+			put_xid     (msg,  8, gc_id         );
+			put_point   (msg, 12, point         );
+			put_string  (msg, 16, string        );
 
 			msg;
 		    };
