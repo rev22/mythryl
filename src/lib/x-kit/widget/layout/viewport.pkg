@@ -80,7 +80,7 @@ herein
 
 	fun preferred_size_box arg
 	    =
-	    xg::make_box (xg::point_00, preferred_size arg);
+	    xg::make_box (xg::point::zero, preferred_size arg);
 
 
 	fun view_size_preference (wide, high, child_size_preference)

@@ -479,7 +479,7 @@ herein
 
 			set_clip_boxes (gc_id, THE(_, (order, boxes)))
 			    =>
-			    request (v2w::encode_set_clip_boxes { gc_id, clip_origin => ge::point_00, ordering => order, boxes });
+			    request (v2w::encode_set_clip_boxes { gc_id, clip_origin => ge::point::zero, ordering => order, boxes });
 		    end;
 
 

@@ -143,7 +143,7 @@ herein
 
 	fun placement (NULL, size)
 		=>
-		(xg::point_00, size);
+		(xg::point::zero, size);
 
 	    placement (THE (xg::BOX { col, row, wide, high } ), xg::SIZE { wide=>default_wide, high=>default_high } )
 		=>
@@ -249,7 +249,7 @@ herein
 
 			cwin =  wg::make_child_window
                                   ( twin,
-                                    xg::make_box (xg::point_00, size),
+                                    xg::make_box (xg::point::zero, size),
                                     wg::args_of  widget
                                   );
 

@@ -213,7 +213,7 @@ herein
 
 			    xw::show_window cwin;
 
-			    main (xg::make_box (xg::point_00, size), color, FALSE);
+			    main (xg::make_box (xg::point::zero, size), color, FALSE);
 			};
 
 		fun init_loop color

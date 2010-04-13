@@ -240,7 +240,7 @@ herein
 
 	fun preferred_size_box w
 	    =
-	    xg::make_box (xg::point_00, wg::preferred_size w);
+	    xg::make_box (xg::point::zero, wg::preferred_size w);
 
 
 	fun update_box (w as { box, window, widget, from_kid' }, nrect)
@@ -305,7 +305,7 @@ herein
 				=
 				getvis me.clist;
 
-			    box = xg::make_box (xg::point_00, size);
+			    box = xg::make_box (xg::point::zero, size);
 
 			    places = #2 (lo::compute_layout (box, getvis ctree));
 
@@ -462,7 +462,7 @@ herein
 
 			    fun do_mom (me:  Layout_Rep, ETC_RESIZE r)
 				   =>
-				   {   nrect =  xg::make_box (xg::point_00, xg::size_of_box r);
+				   {   nrect =  xg::make_box (xg::point::zero, xg::size_of_box r);
 
 				       nlist =  #2 (lo::compute_layout (nrect, get_vis me));
 

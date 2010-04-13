@@ -53,7 +53,7 @@ package dot_subgraph_tree_attributes: (weak) Dot_Subgraph_Tree_Attributes {
 
     default_node_info
 	=
-	{ center =>  g::point_00,
+	{ center =>  g::point::zero,
           size   =>  g::SIZE { wide=>0, high=>0 },
           shape  =>  ELLIPSE,
           label  =>  ""
@@ -62,7 +62,7 @@ package dot_subgraph_tree_attributes: (weak) Dot_Subgraph_Tree_Attributes {
     default_edge_info
 	=
 	{ pts   =>  [],
-          arrow =>  g::point_00
+          arrow =>  g::point::zero
         };
 };
 

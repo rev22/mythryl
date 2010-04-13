@@ -242,7 +242,7 @@ herein
 			good_count = choose_good ();
 			bad_count  = x_size*y_size - good_count;
 
-			delta =  bk::show_and_flood (brick_at  xg::point_00,  brick_at);
+			delta =  bk::show_and_flood (brick_at  xg::point::zero,  brick_at);
 
 			set_msg  main_msg;
 

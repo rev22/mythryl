@@ -66,8 +66,8 @@ herein
 		    pen::default_pen
 		    #
 		    { from     =>  dt::FROM_RW_PIXMAP pm,
-		      from_box =>  ge::make_box (ge::point_00, size),
-		      to_pos   =>  ge::point_00
+		      from_box =>  ge::make_box (ge::point::zero, size),
+		      to_pos   =>  ge::point::zero
 		    };
 
 		dt::RO_PIXMAP new_pixmap;

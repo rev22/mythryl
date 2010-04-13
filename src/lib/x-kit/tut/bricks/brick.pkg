@@ -208,8 +208,8 @@ herein
 	    =
 	    BRICK
 	      { 
-		bv    =>  bv::make_brick_view  root_window  (xg::point_00, make_mailslot(), palette),
-		p     =>  xg::point_00,
+		bv    =>  bv::make_brick_view  root_window  (xg::point::zero, make_mailslot(), palette),
+		p     =>  xg::point::zero,
 		good  =>  REF FALSE,
 		shown =>  REF TRUE,
 		state =>  REF bu::NO_BRICK_STATE

@@ -74,29 +74,27 @@ herein
 		    border_width:  Int
 		  };
 
-	    # Points:
-	    #
-	    point_00
-		=
-		POINT { col => 0,
-                        row => 0
-                      };
+	    package point {
 
+		# Points:
+		#
+		zero = POINT { col => 0, row => 0 };
 
-	    fun col_coord_of_pt (POINT { col, ... } ) =  col;
-	    fun row_coord_of_pt (POINT { row, ... } ) =  row;
+		fun col_coord_of (POINT { col, ... } ) =  col;
+		fun row_coord_of (POINT { row, ... } ) =  row;
 
-	    fun add_points      (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1+col2), row=>(row1+row2) };
-	    fun subtract_points (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1-col2), row=>(row1-row2) };
+		fun add      (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1+col2), row=>(row1+row2) };
+		fun subtract (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 } ) =  POINT { col=>(col1-col2), row=>(row1-row2) };
 
-	    fun scale_point (s, POINT { col, row } ) = POINT { col=>s*col, row=>s*row };
+		fun scale (s, POINT { col, row } ) = POINT { col=>s*col, row=>s*row };
 
-	    fun point_ne (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 != col2) or  (row1 != row2);
-	    fun point_eq (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 == col2) and (row1 == row2);
-	    fun point_lt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 <  col2) and (row1 <  row2);
-	    fun point_le (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 <= col2) and (row1 <= row2);
-	    fun point_gt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >  col2) and (row1 >  row2);
-	    fun point_ge (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >= col2) and (row1 >= row2);
+		fun ne (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 != col2) or  (row1 != row2);
+		fun eq (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 == col2) and (row1 == row2);
+		fun lt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 <  col2) and (row1 <  row2);
+		fun le (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 <= col2) and (row1 <= row2);
+		fun gt (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >  col2) and (row1 >  row2);
+		fun ge (POINT { col=>col1, row=>row1 }, POINT { col=>col2, row=>row2 }) =  (col1 >= col2) and (row1 >= row2);
+	    };
 
 	    # Size operations:
 	    #

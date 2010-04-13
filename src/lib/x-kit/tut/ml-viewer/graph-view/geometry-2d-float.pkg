@@ -45,7 +45,7 @@ herein
                          high:  Float
                        };
 
-	point_00
+	point_zero
             =
             POINT { x => 0.0,
                     y => 0.0

@@ -33,7 +33,7 @@ herein
 			=
 			xc::size_of_ro_pixmap  data;
 
-		    to_pos =  xg::subtract_points (point, origin);
+		    to_pos =  xg::point::subtract (point, origin);
 
 		    xd::texture_blt draww pen { from => data, to_pos };
 		};
@@ -43,7 +43,7 @@ herein
 		=
 		{   size =  xc::size_of_ro_pixmap  data;
 
-		    to_pos =  xg::subtract_points (point, origin);
+		    to_pos =  xg::point::subtract (point, origin);
 
 		    xd::clear_box  draww  (xg::make_box (to_pos, size));
 		};

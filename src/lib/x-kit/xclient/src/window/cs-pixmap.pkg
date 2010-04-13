@@ -376,11 +376,11 @@ herein
 	    =
 	    {   #  Clip from_box to clientside window:
 		#
-		from_box' = ge::intersection (from_box, ge::make_box (ge::point_00, size));
+		from_box' = ge::intersection (from_box, ge::make_box (ge::point::zero, size));
 
 		delta
 		    =
-		    ge::subtract_points
+		    ge::point::subtract
 		      ( ge::upperleft_of_box  from_box',
 			ge::upperleft_of_box  from_box
 		      );
@@ -513,7 +513,7 @@ herein
 			fi;
 		    };
 
-		put_sub_image (from_box', ge::add_points (to_point, delta));
+		put_sub_image (from_box', ge::point::add (to_point, delta));
 
 	    };				# fun copy_from_clientside_pixmap_to_pixmap 
 
@@ -577,8 +577,8 @@ herein
 		    pixmap
 		    {
 		      from     =>  cs_pixmap, 
-		      from_box =>  ge::make_box (ge::point_00, size), 
-		      to_point =>  ge::point_00
+		      from_box =>  ge::make_box (ge::point::zero, size), 
+		      to_point =>  ge::point::zero
 		    };
 	    end;
 
@@ -617,7 +617,7 @@ herein
 		msg =   v2w::encode_get_image
 			  { 
 			    drawable => id, 
-			    box => ge::make_box (ge::point_00, size),
+			    box => ge::make_box (ge::point::zero, size),
 			    plane_mask => xt::PLANEMASK all_planes, 
 			    format => xt::XYPIXMAP
 			  };

@@ -58,7 +58,7 @@ herein
 
 			    del_point = xg::POINT { col, row };			# "del_point" may be "delta_point"...?
 
-			    pts' =  map (fn p = xg::subtract_points (p, del_point))
+			    pts' =  map (fn p = xg::point::subtract (p, del_point))
 					pts;
 
 			    pixmap =  xc::make_readwrite_pixmap  screen  (xg::SIZE { wide, high }, 1);

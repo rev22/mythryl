@@ -1,3 +1,4 @@
+2010-04-13-15.34.20: src/lib/x-kit/xclient/xgeometry.api: Added point_ne, point_ge, point_gt to complete the traditional (hence expected) set.
 2010-04-13-15.09.29: src/lib/x-kit/xclient/xgeometry.api: Renamed less_than_pt, less_eq_point -> point_lt, point_le; added point_eq.
 2010-04-13-15.09.29: src/lib/x-kit/xclient/xgeometry.api: Renamed add_pt, sub_pt -> add_points, subtract_points.
 2010-04-13-03.11.59: src/lib/x-kit/xclient/src/window/xsession.pkg: send_mousebutton_press_xevent, send_mousebutton_release_xevent: I had x=row, y=col, oops. Fixed by reversing them.

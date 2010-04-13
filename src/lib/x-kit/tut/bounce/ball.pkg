@@ -123,7 +123,7 @@ herein
 
 			  fun draw_ball (n, position)
 			      =
-			      give (draw_slot, bd::DRAW_BALL (n, ball_icon, xg::subtract_points (position, offset)));
+			      give (draw_slot, bd::DRAW_BALL (n, ball_icon, xg::point::subtract (position, offset)));
 
 			  fun move_ball (n, old_position, new_position)
 			      =

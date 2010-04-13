@@ -101,7 +101,7 @@ herein
 			    =
 			    xw::make_input_only_window
 				window
-				(xg::make_box (xg::point_00, size));
+				(xg::make_box (xg::point::zero, size));
 
 			xw::set_cursor
 			    overwin
@@ -224,7 +224,7 @@ herein
 
 			overwin = xw::make_input_only_window
 				      window
-				      (xg::make_box (xg::point_00, size));
+				      (xg::make_box (xg::point::zero, size));
 
 			xw::set_cursor  overwin  (THE box_cursor);
 			xw::show_window  overwin;

@@ -36,7 +36,7 @@ herein
 				*(dg::info_of_node  n);
 
 			    bbox = xg::make_box
-				     ( xg::subtract_points (center, divscale (2, size)),
+				     ( xg::point::subtract (center, divscale (2, size)),
 				       size
 				     );
 
@@ -204,7 +204,7 @@ herein
 
 		default_node_info
 		    =
-		    { pos   =>  gf::point_00,
+		    { pos   =>  gf::point_zero,
 		      bbox  =>  gf::BOX { x=>0.0, y=>0.0, wide=>0.0, high=>0.0 },
 		      shape =>  da::BOX,
 		      base  =>  picknode,

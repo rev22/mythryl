@@ -291,7 +291,7 @@ herein
 	    =
 	    pg::fold_nodes  chk_vis_node g []
 	    where
-		winr =  xg::make_box (xg::point_00, size);
+		winr =  xg::make_box (xg::point::zero, size);
 
 		projr = uwproj_box utowin;
 
@@ -751,7 +751,7 @@ herein
 
 		fun scale_font proj
 		    =
-		    {    my xg::POINT { row=>y,  ... } =  proj gf::point_00;
+		    {    my xg::POINT { row=>y,  ... } =  proj gf::point_zero;
 			 my xg::POINT { row=>y', ... } =  proj (gf::POINT { x=>0.0, y=> float::from_int  fontsize } );
 
 			 pix2pts (y' - y);
@@ -803,7 +803,7 @@ herein
 			set_select   =  set_select   (window, line_pen, pick_pen);
 			unset_select =  unset_select (window, line_pen, draw_pen);
 
-			winrect = xg::make_box (xg::point_00, size);
+			winrect = xg::make_box (xg::point::zero, size);
 
 			initstate
 			    =
@@ -816,7 +816,7 @@ herein
 
 				fun scroll_mailop (horz, newst, { wintou, picked, ... }: View_Data)
 				    =
-				    {   winr = xg::make_box (xg::point_00, size);
+				    {   winr = xg::make_box (xg::point::zero, size);
 
 					my gf::BOX { x, y, wide, high }
 					    =
@@ -847,10 +847,10 @@ herein
 				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ),{ utowin, wintou, picked, ... } )
 					=>
 					{   newsz   = xg::SIZE { wide, high };
-					    winrect = xg::make_box (xg::point_00, newsz);
+					    winrect = xg::make_box (xg::point::zero, newsz);
 
 					    newr = wuproj_box  wintou  winrect;
-					    oldr = wuproj_box  wintou  (xg::make_box (xg::point_00, size));
+					    oldr = wuproj_box  wintou  (xg::make_box (xg::point::zero, size));
 
 					    new_state = set_view (newsz, winrect, do_resize (bbox, newr, oldr), picked);
 
@@ -867,7 +867,7 @@ herein
 
 				fun zoom_in (r, { wintou, picked, ... }: View_Data)
 				    =
-				    {   winr  =  xg::make_box (xg::point_00, size);
+				    {   winr  =  xg::make_box (xg::point::zero, size);
 					urect =  wuproj_box wintou r;
 
 					fun check (r as gf::BOX { x, y, wide, high } )
@@ -885,7 +885,7 @@ herein
 
 				fun zoom_out (r, { wintou, picked, ... }: View_Data)
 				    =
-				    {   winr      =  xg::make_box (xg::point_00, size);
+				    {   winr      =  xg::make_box (xg::point::zero, size);
 					urect     =  wuproj_box wintou winr;
 					new_state =  set_state (size, gf::to_box (make_similar (gf::from_box r, winr)), urect, picked);
 
@@ -938,7 +938,7 @@ herein
 
 				fun reset ( { picked, ... }: View_Data)
 				    =
-				    {   winrect   =  xg::make_box (xg::point_00, size);
+				    {   winrect   =  xg::make_box (xg::point::zero, size);
 
 					new_state
 					    =

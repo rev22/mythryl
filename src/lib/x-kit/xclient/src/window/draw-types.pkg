@@ -122,7 +122,7 @@ herein
 
 	fun shape_of_rw_pixmap (RW_PIXMAP { size, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )
 	    =
-	    { upperleft => ge::point_00,
+	    { upperleft => ge::point::zero,
 	      size,
 	      depth,
 	      border_width => 0

@@ -37,7 +37,7 @@ herein
 	    =
 	    draw
 	    where
-		r = xg::make_box (xg::point_00, size);
+		r = xg::make_box (xg::point::zero, size);
 
 		draw_box = d3::draw3drect d (r, bwid);
 

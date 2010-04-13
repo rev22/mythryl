@@ -240,7 +240,7 @@ herein
 
 					my xg::POINT { col=>x, row=>y }
 					    =
-					    xg::subtract_points (window_point, point0);
+					    xg::point::subtract (window_point, point0);
 
 					dt = sec * (real bl::updates_per_sec);
 
