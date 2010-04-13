@@ -123,13 +123,13 @@ herein
               button_window:    xw::Window
             }
 	    =
-	    {   fun get_seen_first_expose_oneshot
+	    {   fun get_''seen_first_expose''_oneshot
 			window
 		    =
-		    case (xw::seen_first_expose_oneshot_of  window)
+		    case (xw::get_''seen_first_expose''_oneshot_of  window)
 			#
 			THE oneshot =>  oneshot;
-			NULL        =>  get_seen_first_expose_oneshot window;		# Cannot actually happen.
+			NULL        =>  get_''seen_first_expose''_oneshot window;		# Cannot actually happen.
 		    esac;
 
 		# Wait for drawing window to
@@ -154,7 +154,7 @@ herein
 			# 
 			seen_first_drawing_window_expose_oneshot
 			    =
-			    get_seen_first_expose_oneshot
+			    get_''seen_first_expose''_oneshot
 				#
 				drawing_window;
 
@@ -289,7 +289,7 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 		      };
 
 trace .{ "make_drawing_and_button_windows noting drawing window oneshot..."; };
-		xw::note_seen_first_expose_oneshot
+		xw::note_''seen_first_expose''_oneshot
 		    drawing_window
 		    (make_oneshot_maildrop ());
 
@@ -304,7 +304,7 @@ trace .{ "make_drawing_and_button_windows noting drawing window oneshot..."; };
 		      };
 
 trace .{ "make_drawing_and_button_windows noting button window oneshot..."; };
-		xw::note_seen_first_expose_oneshot
+		xw::note_''seen_first_expose''_oneshot
 		    button_window
 		    (make_oneshot_maildrop ());
 

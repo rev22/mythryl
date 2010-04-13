@@ -1005,16 +1005,19 @@ herein
 
 			};			# fun overlay 
 
-		    fun initialize_imp ()
+		    fun start_draw_imp ()
 			=
+			# Wait for FIRST_EXPOSE,
+			# then enter main loop:
+			#
 			case (do_mailop set_mappedstate')
 			    #
 			    s::FIRST_EXPOSE =>   topwindow_is_mapped_loop (0, []);
-			     _              =>   initialize_imp();
+			     _              =>   start_draw_imp ();
 			esac;
 
 
-		    xtracing::make_thread  "draw_imp"  initialize_imp;
+		    xtracing::make_thread  "draw_imp"  start_draw_imp;
 
 		    fn msg =   give  (plea_slot, msg);
 

@@ -808,19 +808,19 @@ herein
 	# This ensures that we have the onehost on hand
 	# when we recieve a window's first EXPOSE event.
 	#
-	fun note_seen_first_expose_oneshot
+	fun note_''seen_first_expose''_oneshot
 		(dt::WINDOW { window_id, screen => sn::SCREEN { xsession as sn::XSESSION  { xsocket_to_topwindow_router, ... }, ... }, ... })
 		seen_first_redraw
 	    =
-	    s2t::note_window's_seen_first_expose_oneshot
+	    s2t::note_window's_''seen_first_expose''_oneshot
 		#
 		(xsocket_to_topwindow_router,  window_id,  seen_first_redraw);
 
-	fun seen_first_expose_oneshot_of
+	fun get_''seen_first_expose''_oneshot_of
 		#
 		(dt::WINDOW { window_id, screen => sn::SCREEN { xsession as sn::XSESSION  { xsocket_to_topwindow_router, ... }, ... }, ... })
 	    =
-	    s2t::seen_first_expose_oneshot_of
+	    s2t::get_''seen_first_expose''_oneshot_of
 		#
 		(xsocket_to_topwindow_router,  window_id);
 

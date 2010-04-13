@@ -264,25 +264,25 @@ herein
               xauthentication:  Null_Or( xt::Xauthentication )				# Xauthentication info comes ultimately from ~/.Xauthority
             )
 	    =
-	    {   my (display as dy::XDISPLAY { default_screen, screens, xsocket, next_xid, ... } )
+	    {   my (xdisplay as dy::XDISPLAY { default_screen, screens, xsocket, next_xid, ... } )
 		    =
 		    dy::open_xdisplay { display_name, xauthentication };
 
-		keymap_imp =   ki::make_keymap_imp  display;
-		atom_imp   =   ai::make_atom_imp    display;
+		keymap_imp =   ki::make_keymap_imp  xdisplay;
+		atom_imp   =   ai::make_atom_imp    xdisplay;
 
-		(wpi::make_window_property_imp (display, atom_imp))
+		(wpi::make_window_property_imp (xdisplay, atom_imp))
 		    ->
 		    (to_window_property_imp_slot, window_property_imp);
 
-		(si::make_selection_imp  display)
+		(si::make_selection_imp  xdisplay)
 		    ->
 		    (to_selection_imp_slot,  selection_imp);
 
 		xsocket_to_topwindow_router
 		    =
 		    s2t::make_xsocket_to_topwindow_router
-		      { display,
+		      { xdisplay,
 			keymap_imp,
 			#
 			to_window_property_imp_slot,
@@ -291,11 +291,11 @@ herein
 
 		fun make_screen_info (xscreen as dy::XSCREEN { root_window_id, root_visual, visuals, ... } )
 		    =
-		    {   fun make_screen_depth (depth, gcontext_imp)
+		    {   fun make_screen_depth_imps (depth, gcontext_imp)
 			    =
 			    {   drawimp_mappedstate_slot =  make_mailslot ();
 
-				make_thread  "display make_screen_info"  .{   give (drawimp_mappedstate_slot, di::s::FIRST_EXPOSE);   };
+				make_thread  "send FIRST_EXPOSE"  .{   give (drawimp_mappedstate_slot, di::s::FIRST_EXPOSE);   };
 
 				SCREEN_DEPTH_IMPS {
 				    depth,
@@ -336,8 +336,8 @@ herein
 				                  }
                                               );
 
-					    make_screen_depth
-						(d, gci::make_graphics_context_cache (display, xid));
+					    make_screen_depth_imps
+						(d, gci::make_graphics_context_cache (xdisplay, xid));
 				        };
 
 
@@ -358,35 +358,33 @@ herein
 
 			root_imps
 			    =
-			    make_screen_depth
+			    make_screen_depth_imps
 			      (
 				dy::depth_of_visual  root_visual,
-				gci::make_graphics_context_cache  (display, root_window_id)
+				gci::make_graphics_context_cache  (xdisplay, root_window_id)
 			      );
 
 			imps = make_gcontext_imps (visuals, [root_imps]);
-			imps = make_gcontext_imps([xt::NO_VISUAL_FOR_THIS_DEPTH 1], imps);
+			imps = make_gcontext_imps ([xt::NO_VISUAL_FOR_THIS_DEPTH 1], imps);
 
-			SCREEN_INFO {
+			SCREEN_INFO
+                          {
 			    xscreen,
 			    imps,
 			    root_imps
-			};
+			  };
 		    };
 
-		screens
-		    =
-		    map  make_screen_info
-			 screens;
+		screens =  map  make_screen_info  screens;
 
 		XSESSION
 		  {
-		    xdisplay => display,
-		    default_screen => list::nth (screens, default_screen),
+		    xdisplay,
+		    default_screen =>  list::nth (screens, default_screen),
 		    screens,
 		    xsocket_to_topwindow_router,
 		    atom_imp,
-		    font_imp =>  fti::make_font_imp  display,
+		    font_imp =>  fti::make_font_imp  xdisplay,
 		    window_property_imp,
 		    selection_imp,
 		    keymap_imp

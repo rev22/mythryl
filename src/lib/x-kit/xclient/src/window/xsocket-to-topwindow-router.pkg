@@ -127,8 +127,8 @@ herein
 		Mail
 		  = NOTE_NEW_TOPWINDOW             (xt::Window_Id, ge::Window_Site)
 		  | GET_WINDOW_SITE                (xt::Window_Id, Oneshot_Maildrop(ge::Box))
-		  | GET_SEEN_FIRST_EXPOSE_ONESHOT  (xt::Window_Id, Oneshot_Maildrop(Null_Or(Oneshot_Maildrop(Void))))
-		  | NOTE_SEEN_FIRST_EXPOSE_ONESHOT (xt::Window_Id, Oneshot_Maildrop(Void))
+		  | GET_''SEEN_FIRST_EXPOSE''_ONESHOT  (xt::Window_Id, Oneshot_Maildrop(Null_Or(Oneshot_Maildrop(Void))))
+		  | NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT (xt::Window_Id, Oneshot_Maildrop(Void))
 		  #
 		  | LOCK_WINDOW                     xt::Window_Id
 		  | UNLOCK_WINDOW                   xt::Window_Id
@@ -405,7 +405,7 @@ trace .{ sprintf "pick_xevent_action/CREATE_NOTIFY: parent_window_id s=%s create
 	    #
 	    fun make_xsocket_to_topwindow_router
 		{
-		  display => dy::XDISPLAY { xsocket, ... },
+		  xdisplay => dy::XDISPLAY { xsocket, ... },
 		  keymap_imp,
 		  to_window_property_imp_slot,
 		  to_selection_imp_slot
@@ -452,7 +452,7 @@ trace .{ sprintf "pick_xevent_action/CREATE_NOTIFY: parent_window_id s=%s create
 		    drop_oneshot =  hash_xid::remove  window_id_to_oneshot_map;
 			#
 			# There is an unfortunate race condition in which
-			# 	  NOTE_SEEN_FIRST_EXPOSE_ONESHOT
+			# 	  NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT
 			# requests on a window_id may arrive from a client
 			# thread before we have seen the
 			#     NOTE_NEW_WINDOW
@@ -504,11 +504,11 @@ trace .{ sprintf "pick_xevent_action/CREATE_NOTIFY: parent_window_id s=%s create
 			    }
 			    except hash_xid::XID_NOT_FOUND = ();
 
-		        do_plea (plea::NOTE_SEEN_FIRST_EXPOSE_ONESHOT  (window_id, oneshot))
+		        do_plea (plea::NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT  (window_id, oneshot))
 			    =>
 			    {   # Note the oneshot used to signal receipt
 				# of the first EXPOSE event on a window:
-trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/TOP: window_id s=%s" (xtype_to_string::xid_to_string window_id); };
+trace .{ sprintf "NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT/TOP: window_id s=%s" (xtype_to_string::xid_to_string window_id); };
 
 				{   (get_info  window_id)
 					->
@@ -518,7 +518,7 @@ trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/TOP: window_id s=%s" (xtype_to_
 					    ...
 					};
 
-trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/MID: window_id s=%s, first_expose b=%s" (xtype_to_string::xid_to_string window_id) case seen_first_expose TRUE => "TRUE"; _ => "FALSE"; esac; };
+trace .{ sprintf "NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT/MID: window_id s=%s, first_expose b=%s" (xtype_to_string::xid_to_string window_id) case seen_first_expose TRUE => "TRUE"; _ => "FALSE"; esac; };
 				    seen_first_expose_oneshot :=   THE oneshot;
 
 				    if seen_first_expose
@@ -529,11 +529,11 @@ trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/MID: window_id s=%s, first_expo
 				except hash_xid::XID_NOT_FOUND
                                     =
 				    {
-trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/MUD: window_id s=%s: WINDOW_INFO record does not exist yet, parking the oneshot" (xtype_to_string::xid_to_string window_id); };
+trace .{ sprintf "NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT/MUD: window_id s=%s: WINDOW_INFO record does not exist yet, parking the oneshot" (xtype_to_string::xid_to_string window_id); };
 				        set_oneshot (window_id, oneshot);		# WINDOW_INFO record doesn't exist yet, so park oneshot for now.
 				    };
 				    	
-trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/BOT: window_id s=%s" (xtype_to_string::xid_to_string window_id); };
+trace .{ sprintf "NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT/BOT: window_id s=%s" (xtype_to_string::xid_to_string window_id); };
 			    };
 			    
 
@@ -574,7 +574,7 @@ trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/BOT: window_id s=%s" (xtype_to_
 # them into circulation, so as to basically eliminate the possibility of this error.
 				    };
 
-			do_plea (plea::GET_SEEN_FIRST_EXPOSE_ONESHOT (window_id, reply_oneshot))
+			do_plea (plea::GET_''SEEN_FIRST_EXPOSE''_ONESHOT (window_id, reply_oneshot))
 			    =>
 			    {   (get_info  window_id)
 				    ->
@@ -588,7 +588,7 @@ trace .{ sprintf "NOTE_SEEN_FIRST_EXPOSE_ONESHOT/BOT: window_id s=%s" (xtype_to_
 				    except
 					hash_xid::XID_NOT_FOUND
 					    =
-					    {   trace .{ sprintf "ERROR!!  GET_SEEN_FIRST_EXPOSE_ONESHOT: window_id %s not yet registered" (xtype_to_string::xid_to_string window_id); };
+					    {   trace .{ sprintf "ERROR!!  GET_''SEEN_FIRST_EXPOSE''_ONESHOT: window_id %s not yet registered" (xtype_to_string::xid_to_string window_id); };
 						set (reply_oneshot,  NULL);		# We probably should be generating an exception in client thread here.  XXX BUGGO FIXME
 # XXX BUGGO FIXME I think maybe we should be registering window ids here before putting
 # them into circulation, so as to basically eliminate the possibility of this error.
@@ -873,21 +873,21 @@ trace .{ sprintf "maybe_note_first_expose_event: window_id s=%s, first_expose b=
 	    # This ensures that we have the onehost on hand
 	    # when we recieve a window's first EXPOSE event.
 	    #
-	    fun note_window's_seen_first_expose_oneshot
+	    fun note_window's_''seen_first_expose''_oneshot
                     (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, ... }, window_id, oneshot)
 		=
 		{
 trace .{ sprintf "note_window's_seen_first_expose_oneshot/TOP: window_id s=%s" (xtype_to_string::xid_to_string window_id); };
-		    give (plea_slot, plea::NOTE_SEEN_FIRST_EXPOSE_ONESHOT (window_id, oneshot));
+		    give (plea_slot, plea::NOTE_''SEEN_FIRST_EXPOSE''_ONESHOT (window_id, oneshot));
 trace .{ sprintf "note_window's_seen_first_expose_oneshot/BOT: window_id s=%s" (xtype_to_string::xid_to_string window_id); };
 		};
 
 
-	    fun seen_first_expose_oneshot_of (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, ... }, window_id)
+	    fun get_''seen_first_expose''_oneshot_of (XSOCKET_TO_TOPWINDOW_ROUTER { plea_slot, ... }, window_id)
 		=
 		{   reply_oneshot = make_oneshot_maildrop ();
 
-		    give (plea_slot, plea::GET_SEEN_FIRST_EXPOSE_ONESHOT (window_id, reply_oneshot));
+		    give (plea_slot, plea::GET_''SEEN_FIRST_EXPOSE''_ONESHOT (window_id, reply_oneshot));
 		    #
 		    get reply_oneshot;
 		};

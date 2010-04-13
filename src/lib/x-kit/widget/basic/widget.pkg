@@ -124,7 +124,7 @@ herein
 		#
 		#     seen_first_redraw_oneshot_of
 		#
-		xw::note_seen_first_expose_oneshot  window  seen_first_redraw;
+		xw::note_''seen_first_expose''_oneshot  window  seen_first_redraw;
 
                	realize arg;
 	    };

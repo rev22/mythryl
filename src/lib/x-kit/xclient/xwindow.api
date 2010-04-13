@@ -202,11 +202,11 @@ herein
 
 	get_window_site:    Window -> xg::Box;
 
-	note_seen_first_expose_oneshot: Window -> Oneshot_Maildrop(Void) -> Void;
+	note_''seen_first_expose''_oneshot: Window -> Oneshot_Maildrop(Void) -> Void;
 	    #
 	    # Infrastructure -- see comments in src/lib/x-kit/xclient/src/window/window.pkg
 
-	seen_first_expose_oneshot_of:     Window -> Null_Or(Oneshot_Maildrop(Void));
+	get_''seen_first_expose''_oneshot_of:     Window -> Null_Or(Oneshot_Maildrop(Void));
 	    #
 	    # This function makes the above oneshot
 	    # available to clients with access to
