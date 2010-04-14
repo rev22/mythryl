@@ -1,3 +1,4 @@
+2010-04-13-20.06.16: src/lib/x-kit/tut/xkit-tut-unit-test.pkg: triangle_app::selfcheck () now runs sucessfully.
 2010-04-13-19.49.37: src/lib/x-kit/tut/xkit-tut-unit-test.pkg:  Establish this new unit test file, integrate into make check framework.
 2010-04-13-18.03.37: src/lib/x-kit/xclient/xgeometry.api: Dropped various now-unneeded _of suffixes.
 2010-04-13-17.28.33: src/lib/x-kit/xclient/xgeometry.api: Renamed bounding_box -> point::bounding_box, within -> point::in_box.
