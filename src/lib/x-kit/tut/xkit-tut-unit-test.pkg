@@ -1,0 +1,32 @@
+## xkit-tut-unit-test.pkg
+
+# Compiled by:
+#     src/lib/test/unit-tests.make6
+
+
+# Run by:
+#     src/lib/test/all-unit-tests.pkg
+
+stipulate
+    include unit_test;
+    include make7::scripting_globals;
+herein
+
+    package xkit_tut_unit_test {
+
+	name = "src/lib/x-kit/tut/xkit-tut-unit-test.pkg";
+
+	fun run ()
+	    =
+	    {   printf "\nDoing %s:\n" name;   
+
+		(triangle_app::selfcheck ()) ->  { passed, failed };
+
+		for (i = 0; i < passed; ++i) {   assert TRUE;    };  
+		for (i = 0; i < failed; ++i) {   assert FALSE;   };  
+
+		summarize_unit_tests  name;
+	    };
+    };
+
+end;

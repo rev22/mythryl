@@ -48,6 +48,8 @@ package all_unit_tests {
 	    gtk_via_pipe_unit_test::run ();
 	    gtk_unit_test::run ();
 
+	    xkit_tut_unit_test::run ();
+
             unit_test::summarize_all_tests ();
         };
 

@@ -48,17 +48,32 @@ herein
 
 	button_corner_radius = 8;
 
+
+	run_selfcheck =  REF FALSE;
+
 	# This is a hack to support selfcheck;
 	# if it is set non-NULL, drawing_window_imp
 	# will 'give' the displayed triangle list
 	# to this slot each time it changes:
 	#
-	my  triangle_list_watcher_slot:		Null_Or( Mailslot( List( xg::Point )))
+	my  triangle_list_watcher_slot:		Ref (Null_Or( Mailslot( List( xg::Point ))))
 	    =
-	    NULL;	
+	    REF NULL;	
 
-	selfcheck_tests_passed =  REF 0;
-	selfcheck_tests_failed =  REF 0;
+	stipulate
+	    selfcheck_tests_passed =  REF 0;
+	    selfcheck_tests_failed =  REF 0;
+	herein
+	    fun test_passed () =  selfcheck_tests_passed :=  *selfcheck_tests_passed + 1;
+	    fun test_failed () =  selfcheck_tests_failed :=  *selfcheck_tests_failed + 1;
+	    #
+	    fun test_stats  ()
+		=
+                { passed => *selfcheck_tests_passed,
+                  failed => *selfcheck_tests_failed
+                };
+	end;
+
 
 	# Put button window at bottom of topwindow:
 	# 
@@ -130,7 +145,8 @@ herein
 	# mouseclicks and verifying their effects:
 	#
 	fun make_selfcheck_thread
-            { topwindow:        xw::Window,
+            { xsession:         xc::Xsession,
+	      topwindow:        xw::Window,
               drawing_window:   xw::Window,
               button_window:    xw::Window
             }
@@ -211,7 +227,7 @@ trace .{ sprintf "Sending midwindow downclick to X server."; };
 			
 			triangle_list_slot =  make_mailslot ();
 
-#			triangle_list_watcher_slot :=  THE triangle_list_slot;
+			triangle_list_watcher_slot :=  THE triangle_list_slot;
 
 			# Simulate a mouseclick in center of drawing window:
 			#
@@ -232,23 +248,40 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 
 			fun check_triangle_list1  [ point ]
 				=>
-				if (xg::point::eq (point, midpoint))  selfcheck_tests_passed := *selfcheck_tests_passed + 1;
-				else                                  selfcheck_tests_failed := *selfcheck_tests_failed + 1;
-				fi;
+				{
+				    if (xg::point::eq (point, midpoint))  test_passed ();
+				    else                                  test_failed ();
+				    fi;
+
+				    triangle_list_watcher_slot :=  NULL;
+				};
 
 			    check_triangle_list1  _
 				=>
-				selfcheck_tests_failed := *selfcheck_tests_failed + 1;
+				{   test_failed ();
+
+				    triangle_list_watcher_slot :=  NULL;
+				};
 			end;
 
 			fun do_timeout1 ()
 			    =
-			    selfcheck_tests_failed := *selfcheck_tests_failed + 1;
+			    {   test_failed ();
 
-#			select [
-#			    take' triangle_list_slot =>  check_triangle_list1,
-#			    timeout'                 =>  do_timeout1
-#			];
+				triangle_list_watcher_slot :=  NULL;
+			    };	
+
+			select [
+			    take' triangle_list_slot ==>  check_triangle_list1,
+			    timeout'                 ==>  do_timeout1
+			];
+
+			(test_stats ()) ->  { passed, failed };
+trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
+
+			xc::close_xsession  xsession;
+
+			shut_down_thread_scheduler  winix::process::success;
 		    };
 
 		xtr::make_thread "tri-app selfcheck" selfcheck;
@@ -256,7 +289,8 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 
 	fun make_topwindow  xdisplay  xauthentication
 	    =
-	    ( screen,
+	    ( xsession,
+              screen,
               window,
               kidplug
             )
@@ -612,7 +646,7 @@ trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
 };
 			        draw_triangle  point;
 
-				case triangle_list_watcher_slot
+				case *triangle_list_watcher_slot
 				    #
 				    THE slot =>	 give (slot, (point ! triangles));
 				    NULL     =>  ();
@@ -629,6 +663,7 @@ trace .{ "drawing_window loop -- doing select []"; };
 			    other'         ==>  do_other,
 			    add_triangle'  ==>  add_triangle
 			];
+
 		    };					# fun drawing_window_imp
 	    end;					# fun make_drawing_window_threads 
 
@@ -724,7 +759,8 @@ trace .{ "main router for (;;) -- above select []"; };
 trace .{ "run_triangle_app -- above make_topwindow ()"; };
 		(make_topwindow  xdisplay  xauthentication)
 		    ->
-		    ( screen,
+		    ( xsession,
+		      screen,
 		      topwindow,
 		      kidplug
 		    );
@@ -747,7 +783,11 @@ trace .{ "run_triangle_app -- above make_drawing_window_threads ()"; };
 		    draw_kidplug
 		  );
 
-		make_selfcheck_thread  { topwindow, drawing_window, button_window };
+		if *run_selfcheck
+		    #
+		    make_selfcheck_thread  { xsession, topwindow, drawing_window, button_window };
+		    ();
+		fi;
 trace .{ "run_triangle_app -- DONE"; };
 	    };
 
@@ -807,6 +847,13 @@ trace .{ "triangle-app: Back from run_triangle_app call."; };
 	fun do_it s
 	    =
 	    do_it' ([], s);
+
+	fun selfcheck ()
+	    =
+	    {   run_selfcheck :=  TRUE;
+		do_it' ([], "");
+		test_stats ();
+	    };	
 
 	fun main (program, server ! _) =>  do_it  server;
 	    main _                     =>  do_it  "";

@@ -1,3 +1,5 @@
+2010-04-13-19.49.37: src/lib/x-kit/tut/xkit-tut-unit-test.pkg:  Establish this new unit test file, integrate into make check framework.
+2010-04-13-18.03.37: src/lib/x-kit/xclient/xgeometry.api: Dropped various now-unneeded _of suffixes.
 2010-04-13-17.28.33: src/lib/x-kit/xclient/xgeometry.api: Renamed bounding_box -> point::bounding_box, within -> point::in_box.
 2010-04-13-17.07.53: src/lib/x-kit/xclient/xgeometry.api: Similarly established (sub) package box.
 2010-04-13-16.26.26: src/lib/x-kit/xclient/xgeometry.api: Established (sub) package size, moved into it add_size, sub_size, scale_size as add, subtract, scale.

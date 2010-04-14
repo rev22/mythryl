@@ -81,4 +81,7 @@ LIBRARY_COMPONENTS
 #   because it needs access to xclient library internals:
 #    $ROOT/src/lib/x-kit/xclient/src/stuff/xclient-unit-test.pkg
 
+    $ROOT/src/lib/x-kit/tut/xkit-tut-unit-test.pkg
+    $ROOT/src/lib/x-kit/tut/triangle/triangle-app.make6
+
     $ROOT/src/lib/test/all-unit-tests.pkg
