@@ -8,7 +8,7 @@ The application directories are:
   calc		- a desk-top calculator
   get-display	- code to get the display string in x-kit format
   mixer		- a color mixer
-  plaid		-
+  plaid		- Draws screensaver-like rectangular patterns in a window.
   triangle	- Draws a triangle each time you click the mouse.
   widgets	- miscellaneous widget examples
 

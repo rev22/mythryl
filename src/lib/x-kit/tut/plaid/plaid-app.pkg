@@ -1,5 +1,14 @@
 ## plaid-app.pkg
 #
+# This app draws screensaver-like rectangular patterns in a window.
+#
+# It has two modes, "idle" and "active";  clicking anywhere in the
+# window toggles it between modes.
+#
+# This app uses the "unbuffered" window mode designed to support
+# rubber-banding and also the XOR drawing mode used by rubber-banding;
+# this makes it a useful unit test for rubber-banding functionality.
+#
 # One way to run this app from the base-directory commandline is:
 #
 #     linux% my
@@ -42,7 +51,12 @@ herein
 	      };
 
 
-	fun center_box (xg::BOX { wide, high, ... }, xg::POINT { col, row } )
+	# Center given box on given point:
+	#
+	fun center_box
+            ( xg::BOX   { wide, high, ... },
+              xg::POINT { col, row }
+            )
 	    = 
 	    xg::BOX
 	      { wide,
@@ -169,48 +183,77 @@ trace .{ "do_active/BBB..."; };
 				# by appropriately adjusting point and velocity
 				# whenever it strays outside that area:	
 				#
-				fun adjust (arg as ( xg::POINT { col=>x,  row=>y },
-						     xg::POINT { col=>dx, row=>dy }
-					   )       )
+				fun bounce_if_outside_box
+                                    (arg as ( xg::POINT { col=>x,  row=>y },		# Position.
+					      xg::POINT { col=>dx, row=>dy }		# Velocity.
+				    )       )
 				    =
-				    if   (x < 0)     adjust (xg::POINT { col=> -x,             row=>  y             }, xg::POINT { col=> -dx, row=>  dy } );
-				    elif (x >= wide) adjust (xg::POINT { col=> 2*wide - x - 2, row=>  y             }, xg::POINT { col=> -dx, row=>  dy } );
-				    elif (y < 0)     adjust (xg::POINT { col=> x,              row=> -y             }, xg::POINT { col=>  dx, row=> -dy } );
-				    elif (y >= high) adjust (xg::POINT { col=> x,              row=> 2*high - y - 2 }, xg::POINT { col=>  dx, row=> -dy } );
+				    if   (x < 0)     bounce_if_outside_box (xg::POINT { col=> -x,             row=>  y             }, xg::POINT { col=> -dx, row=>  dy } );
+				    elif (x >= wide) bounce_if_outside_box (xg::POINT { col=> 2*wide - x - 2, row=>  y             }, xg::POINT { col=> -dx, row=>  dy } );
+				    elif (y < 0)     bounce_if_outside_box (xg::POINT { col=> x,              row=> -y             }, xg::POINT { col=>  dx, row=> -dy } );
+				    elif (y >= high) bounce_if_outside_box (xg::POINT { col=> x,              row=> 2*high - y - 2 }, xg::POINT { col=>  dx, row=> -dy } );
 				    else arg;
 				    fi;
 
 
-				fun update { p, delta_p, prev_box, odd_cycle }
+				# Move point one increment, bouncing
+				# off any wall(s) encountered:
+				#
+				fun move_point (point, velocity)
+				    =
+				    {   point = xg::point::add (point, velocity);		# Move point one increment.
+					#
+					my (point, velocity)
+					    =
+					    bounce_if_outside_box (point, velocity);
+
+					(point, velocity);
+				    };
+		
+				fun update { point, velocity, last_box, odd_cycle }
 				    =
 				    {   # Move the point per velocity,
 					# bouncing off walls appropriately:
 					#	
 trace .{ "update/AAA..."; };
-					my (p' as xg::POINT { col=>x, row=>y }, delta_p')
-					    =
-					    adjust (xg::point::add (p, delta_p), delta_p);
+					(move_point (point, velocity))
+					    ->
+					    ( point  as  xg::POINT { col, row },
+                                              velocity
+                                            );
+					    
 
 trace .{ "update/BBB..."; };
+					# Map 'point' into the fourth quadrant, then
+					# define a box with that as one corner and
+					# (0,0) as the other:
+					#
 					box = xg::BOX
 						 { col  => 0,
 						   row  => 0,
 						   #
-						   wide => 2*abs (x - midx),
-						   high => 2*abs (y - midy)
+						   wide => 2 * abs(col - midx),
+						   high => 2 * abs(row - midy)
 						 };
 
 trace .{ "update/CCC..."; };
+
+					# Center above box on middle of drawing_window:
+					#
 					box = center_box (box, middle);
 
 trace .{ "update/DDD..."; };
 					if odd_cycle
 					    #
-					    fill (symmetric_difference (box, prev_box));
+					    fill (symmetric_difference (box, last_box));
 					fi;
 
 trace .{ "update/EEE..."; };
-					{ p=>p', delta_p=>delta_p', prev_box=>box, odd_cycle=>not odd_cycle };
+					{ point,
+                                          velocity,
+                                          last_box  =>  box,
+                                          odd_cycle =>  not odd_cycle
+                                        };
 				    };
 
 
@@ -228,26 +271,26 @@ trace .{ "update/EEE..."; };
 				end
 
 				also
-				fun loop me
+				fun loop state
 				    = 
 				    select [
 					#
 					timeout'
 					    ==>
-					   .{  loop (update me);  },
+					   .{  loop (update state);  },
 
 					from_mouse'
 					    ==>
-					    (fn mailop
+					    (fn mail
 						=
-						case (xi::envelope_contents  mailop)
+						case (xi::envelope_contents  mail)
 						    #
 						    xi::MOUSE_FIRST_DOWN _
 							=>
 							do_idle size;
 
 						    _   =>
-							loop me;
+							loop state;
 						esac
 					    ),
 
@@ -259,17 +302,16 @@ trace .{ "update/EEE..."; };
 				also
 				fun start_over ()
 				    =
-				    for (;;) {
-					#
+				    {
 trace .{ "start_over/AAA..."; };
 					xd::clear_drawable  drawwin;
 
 trace .{ "start_over/BBB..."; };
 					loop
-					  { p         =>  middle,
-					    prev_box  =>  empty_box,
+					  { point     =>  middle,
+					    last_box  =>  empty_box,
 					    odd_cycle =>  FALSE,
-					    delta_p   =>  xg::POINT { col=>1, row=>1 }
+					    velocity  =>  xg::POINT { col=>1, row=>1 }
 					  };
 				    };
 			    end			# fun do_active
@@ -289,12 +331,12 @@ trace .{ "do_idle: redraw/AAA..."; };
 				    }
 				    where	
 trace .{ "do_idle: redraw/BBB..."; };
-					bnd = int::min (wide, high) / 2;
+					bound = int::min (wide, high) / 2;
 trace .{ "do_idle: redraw/CCC..."; };
 
 					fun redraw_loop i
 					    = 
-					    if (i <= bnd)
+					    if (i <= bound)
 						#
 trace .{ "do_idle: redraw_loop/AAA..."; };
 						idle_fill
