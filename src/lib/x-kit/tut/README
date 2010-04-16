@@ -9,6 +9,7 @@ The application directories are:
   get-display	- code to get the display string in x-kit format
   mixer		- a color mixer
   plaid		-
+  triangle	- Draws a triangle each time you click the mouse.
   widgets	- miscellaneous widget examples
 
 When loaded, each application has a function ``do_it'' which takes

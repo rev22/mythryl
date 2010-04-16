@@ -1226,13 +1226,13 @@ herein
 		    msg;
 		};
 
-	    fun encode_create_pixmap { pixmap, drawable, depth, size }
+	    fun encode_create_pixmap { pixmap_id, drawable_id, depth, size }
 		=
-		{   msg = make_resource_request (req_create_pixmap, pixmap);
+		{   msg = make_resource_request (req_create_pixmap, pixmap_id);
 
-		    put_signed8 (msg,  1, depth);
-		    put_xid     (msg,  8, drawable);
-		    put_size    (msg, 12, size);
+		    put_signed8 (msg,  1, depth		);
+		    put_xid     (msg,  8, drawable_id	);
+		    put_size    (msg, 12, size		);
 
 		    msg;
 		};

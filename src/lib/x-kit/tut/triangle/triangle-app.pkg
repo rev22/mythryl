@@ -4,7 +4,7 @@
 # It puts a triangle wherever the user clicks in the drawing window;
 # It clears the drawing window when the RESET button is clicked.
 #
-# One way to run this app from the commandline is:
+# One way to run this app from the base-directory commandline is:
 #
 #     linux% my
 #     eval: make "src/lib/x-kit/tut/triangle/triangle-app.make6";
@@ -32,11 +32,11 @@ stipulate
     package ib  =  icon_bitmap;				# icon_bitmap		is from   src/lib/x-kit/tut/triangle/icon-bitmap.pkg
     #
     tracefile   =  "triangle-app.trace.log";
+    trace	=  xtr::print_if  xtr::io_tracing;	# Conditionally write strings to tracing.log or whatever.
 herein
 
     package triangle_app: Triangle_App {		# Triangle_App		is from   src/lib/x-kit/tut/triangle/triangle-app.api
 
-	trace =  xtr::print_if  xtr::io_tracing;	# Conditionally write strings to tracing.log or whatever.
 
 	min_wide =  300;
 	min_high =  300;
@@ -189,6 +189,20 @@ herein
 			get  seen_first_drawing_window_expose_oneshot;
 		    };
 
+		# Fetch from the X server the pixel contents of a
+		# given rectangle on a given window.  (This is so
+		# that we can check that something actually drew.)
+		#
+		fun get_cs_pixmap_from_window  window
+		    =
+		    {   drawable =  xd::drawable_of_window  window;
+			#
+			
+			#
+			xd::depth_of_drawable  drawable;
+# Unfinished code; The above is a quick test hack mid-development.
+		    };	
+
 		fun selfcheck ()
 		    =
 		    {   # First order of business is to wait
@@ -198,12 +212,13 @@ trace .{ "Waiting for first drawing window EXPOSE..."; };
 			wait_for_first_drawing_window_expose ();
 trace .{ "Seen first drawing window EXPOSE."; };
 
+window_depth = get_cs_pixmap_from_window  drawing_window;
 			# Get size of drawing window:
 			#
 			(xw::get_window_site  drawing_window)
 			    ->
 			    xg::BOX { row, col, high, wide };
-trace .{ sprintf "drawing window box = { row %d, col %d, high %d, wide %d }." row col high wide; };
+trace .{ sprintf "drawing window box = { row %d, col %d, high %d, wide %d }; depth = %d." row col high wide window_depth; };
 
 			# Define midpoint of drawing window:
 			#

@@ -57,11 +57,11 @@ herein
 	    =
 	    {   make_descendant_window
 		    =
-		    {   top_window ->  dt::WINDOW { screen, screen_depth, to_drawimp, ... };
+		    {   top_window ->  dt::WINDOW { screen, screen_depth_imps, to_drawimp, ... };
 
 			fn window_id
 			    =
-                            dt::WINDOW { window_id, screen, screen_depth, to_drawimp };
+                            dt::WINDOW { window_id, screen, screen_depth_imps, to_drawimp };
 		    };
 
 		my { kidplug, momplug }
@@ -367,8 +367,8 @@ herein
 	#
 	fun make_topwindow_to_widget_router
 	    (
-              screen       as sn::SCREEN { xsession, ... },
-	      screen_depth as sn::SCREEN_DEPTH_IMPS  { gcontext_imp, ... },
+              screen             as  sn::SCREEN { xsession, ... },
+	      screen_depth_imps  as  sn::SCREEN_DEPTH_IMPS  { gcontext_imp, ... },
 	      window_id,
               site
 	    )
@@ -400,7 +400,7 @@ herein
 
 		top_window
 		    =
-		    dt::WINDOW { window_id, screen, screen_depth, to_drawimp => draw_imp };
+		    dt::WINDOW { window_id, screen, screen_depth_imps, to_drawimp => draw_imp };
 
 		my (kidplug, router, delete_slot)
 		    =

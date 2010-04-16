@@ -89,12 +89,12 @@ herein
 	    =
 	    WINDOW
 	      {
-		window_id:	xt::Window_Id,
+		window_id:		xt::Window_Id,
 		#
-		screen:		Screen,
-		screen_depth:	Screen_Depth_Imps,
+		screen:			Screen,
+		screen_depth_imps:	Screen_Depth_Imps,
 		#
-		to_drawimp:	di::d::Draw_Op -> Void
+		to_drawimp:		di::d::Draw_Op -> Void
 	      };
 
 	# Identity tests:
@@ -365,7 +365,7 @@ herein
 	# Extract the graphics-context imp
         # for a given depth:
 	#
-	servers_of_screen_depth:  (Screen, Int) ->  Screen_Depth_Imps;
+	screen_depth_imps_of:  (Screen, Int) ->  Screen_Depth_Imps;
 
 	# Map a point in the window's coordinate system
 	# to the screen's coordinate system

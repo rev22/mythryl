@@ -387,7 +387,7 @@ herein
 
 		depth =  list::length data;
 
-		pm  -> dt::RW_PIXMAP { id, screen, screen_depth=>sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... };
+		pm  -> dt::RW_PIXMAP { pixmap_id, screen, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... };
 
 		screen -> sn::SCREEN { xsession=>sn::XSESSION { xdisplay as dy::XDISPLAY dpy_info, ... }, ... } ;
 
@@ -460,7 +460,7 @@ herein
 			to_drawimp
 			    (di::d::DRAW
 			      {
-				to  => id,
+				to  => pixmap_id,
 				pen => pen::default_pen,
 				op  => di::o::PUT_IMAGE {
 				    to_point,
@@ -602,9 +602,9 @@ herein
 	# draw_imp flush has occurred before we
 	# ask for the clientside window.	XXX BUGGO FIXME
 	#
-	fun make_clientside_pixmap_from_readwrite_pixmap (dt::RW_PIXMAP { id, size => size as ge::SIZE szinfo, screen_depth, screen } )
+	fun make_clientside_pixmap_from_readwrite_pixmap (dt::RW_PIXMAP { pixmap_id, size => size as ge::SIZE szinfo, screen_depth_imps, screen } )
 	    =
-	    {   screen_depth -> sn::SCREEN_DEPTH_IMPS { depth, to_drawimp, ... };
+	    {   screen_depth_imps -> sn::SCREEN_DEPTH_IMPS { depth, to_drawimp, ... };
 
 		my sn::XSESSION { xdisplay => dy::XDISPLAY dpy_info, ... }
 		    =
@@ -616,7 +616,7 @@ herein
 
 		msg =   v2w::encode_get_image
 			  { 
-			    drawable => id, 
+			    drawable => pixmap_id, 
 			    box => ge::box::make (ge::point::zero, size),
 			    plane_mask => xt::PLANEMASK all_planes, 
 			    format => xt::XYPIXMAP

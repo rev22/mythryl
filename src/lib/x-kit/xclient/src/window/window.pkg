@@ -115,13 +115,13 @@ herein
 		=>
 		xt::a::BACKGROUND_PIXMAP_PARENT_RELATIVE;
 
-	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RW_PIXMAP (dt::RW_PIXMAP { pixmap_id, ... } ))
 		=>
-		xt::a::BACKGROUND_PIXMAP id;
+		xt::a::BACKGROUND_PIXMAP pixmap_id;
 
-	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } ))) 
+	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { pixmap_id, ... } ))) 
 	       => 
-		xt::a::BACKGROUND_PIXMAP id;
+		xt::a::BACKGROUND_PIXMAP pixmap_id;
 
 	    user_window_attribute_to_internal_window_attribute (a::BACKGROUND_COLOR color)
 		=>
@@ -131,13 +131,13 @@ herein
 		=>
 		xt::a::BORDER_PIXMAP_COPY_FROM_PARENT;
 
-	    user_window_attribute_to_internal_window_attribute (a::BORDER_RW_PIXMAP (dt::RW_PIXMAP { id, ... } ))
+	    user_window_attribute_to_internal_window_attribute (a::BORDER_RW_PIXMAP (dt::RW_PIXMAP { pixmap_id, ... } ))
 		=>
-		xt::a::BORDER_PIXMAP id;
+		xt::a::BORDER_PIXMAP pixmap_id;
 
-	    user_window_attribute_to_internal_window_attribute (a::BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, ... } )))
+	    user_window_attribute_to_internal_window_attribute (a::BORDER_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { pixmap_id, ... } )))
 		=>
-		xt::a::BORDER_PIXMAP id;
+		xt::a::BORDER_PIXMAP pixmap_id;
 
 	    user_window_attribute_to_internal_window_attribute (a::BORDER_COLOR color)
 		=>
@@ -243,7 +243,7 @@ herein
 		    };
 	    end;
 
-	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_window_id, screen, to_drawimp, screen_depth, ... } )
+	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_window_id, screen, to_drawimp, screen_depth_imps, ... } )
 	    =
 	    create_fn
 	    where 
@@ -259,10 +259,10 @@ herein
 		        window_id,
 		        screen,
 		        to_drawimp,
-		        screen_depth
+		        screen_depth_imps
 		      };
 
-		screen_depth ->   sn::SCREEN_DEPTH_IMPS { depth, ... };
+		screen_depth_imps ->   sn::SCREEN_DEPTH_IMPS { depth, ... };
 
 		fun create_fn { site, border_color, background_color }
 		    =
@@ -410,7 +410,7 @@ herein
 	    window
 	    where  
 
-		window ->   dt::WINDOW { window_id=>parent_window_id, screen, screen_depth, to_drawimp, ... };
+		window ->   dt::WINDOW { window_id=>parent_window_id, screen, screen_depth_imps, to_drawimp, ... };
 		screen ->   sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }, ... };
 
 		window_id = next_xid();
@@ -431,7 +431,7 @@ herein
 			window_id,
 			screen,
 			to_drawimp => draw_fn,
-			screen_depth
+			screen_depth_imps
 		      };
 
 		wio::create_window  xsocket

@@ -78,7 +78,7 @@ herein
 		fun widget_id_loop i
 		    =
 		    {   give  (widget_id_slot,  i);
-
+			#
 			widget_id_loop (i+1);
 		    };
 

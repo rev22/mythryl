@@ -167,10 +167,10 @@ herein
                                     }
 				    -> v8::Vector;
 
-	encode_create_pixmap: { depth:    Int,
-                                drawable: xt::Xid, 
-				pixmap:   xt::Xid,
-                                size:     ge::Size
+	encode_create_pixmap: { depth:		Int,
+                                drawable_id:	xt::Xid, 
+				pixmap_id:	xt::Xid,
+                                size:		ge::Size
                               }
 			      -> v8::Vector;
 

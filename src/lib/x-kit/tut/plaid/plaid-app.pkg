@@ -1,26 +1,36 @@
 ## plaid-app.pkg
+#
+# One way to run this app from the base-directory commandline is:
+#
+#     linux% my
+#     eval: make "src/lib/x-kit/tut/plaid/plaid-app.make6";
+#     eval: plaid_app::do_it ();
 
 # Compiled by:
 #     src/lib/x-kit/tut/plaid/plaid-app.make6
 
 stipulate
-    include threadkit;				# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
-
-    package rx  =  run_xkit;			# run_xkit			is from   src/lib/x-kit/widget/lib/run-xkit.pkg
-    package xc  =  xcore;			# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
-    package xd  =  xdraw;			# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
-    package xg  =  xgeometry;			# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
-    package xi  =  xinput;			# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
-
-    package top =  topwindow;			# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
-    package wg  =  widget;			# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
-    package wa  =  widget_attribute;		# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
-    package wy  =  widget_style;		# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
-
-    package sz  =  size_preference_wrapper;	# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    include threadkit;					# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    #
+    package rx  =  run_xkit;				# run_xkit			is from   src/lib/x-kit/widget/lib/run-xkit.pkg
+    package xc  =  xcore;				# xcore				is from   src/lib/x-kit/xclient/xcore.pkg
+    package xd  =  xdraw;				# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
+    package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xi  =  xinput;				# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+    package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    #
+    package top =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
+    package wg  =  widget;				# widget			is from   src/lib/x-kit/widget/basic/widget.pkg
+    package wa  =  widget_attribute;			# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
+    package wy  =  widget_style;			# widget_style			is from   src/lib/x-kit/widget/lib/widget-style.pkg
+    #
+    package sz  =  size_preference_wrapper;		# size_preference_wrapper	is from   src/lib/x-kit/widget/wrapper/size-preference-wrapper.pkg
+    #
+    tracefile   =  "plaid-app.trace.log";
+    trace	=  xtr::print_if  xtr::io_tracing;	# Conditionally write strings to tracing.log or whatever.
 herein
 
-    package plaid_app: Plaid_App {		# Plaid_App			is from   src/lib/x-kit/tut/plaid/plaid-app.api
+    package plaid_app: Plaid_App {			# Plaid_App			is from   src/lib/x-kit/tut/plaid/plaid-app.api
 
 	empty_box
 	    =
@@ -105,12 +115,17 @@ herein
 	    }
 	    where
 		screen = wg::screen_of root_window;
+trace .{ "make_plaid/AAA..."; };
 
-		pen = xd::make_pen [ xd::FOREGROUND xc::rgb8_color1,
+		pen = xd::make_pen [
+#                                     xd::FOREGROUND xc::rgb8_color1,
+                                     xd::FOREGROUND (xc::rgb8_from_int 0x00FF00),
 				     xd::FUNCTION   xd::OP_XOR
 				   ];
+trace .{ "make_plaid/BBB..."; };
 		idle_pen = pen;
 
+trace .{ "make_plaid/CCC..."; };
 		timeout' =  timeout_in' (time::from_milliseconds 100);
 
 		fun realize_plaid { window, size, kidplug }
@@ -119,26 +134,34 @@ herein
 			();
 		    }
 		    where
+trace .{ "realize_plaid/AAA..."; };
 			drawwin     = xd::drawable_of_window  window;
 
+trace .{ "realize_plaid/BBB..."; };
 			autodrawwin = xd::make_unbuffered_drawable  drawwin;
 
+trace .{ "realize_plaid/CCC..."; };
 			idle_fill = xd::fill_boxes drawwin     idle_pen;
+trace .{ "realize_plaid/DDD..."; };
 			fill      = xd::fill_boxes autodrawwin idle_pen;
 
+trace .{ "realize_plaid/EEE..."; };
 			my xi::KIDPLUG { from_mouse', from_other', ... }
 			    =
 			    xi::ignore_keyboard  kidplug;
 
+trace .{ "realize_plaid/FFF..."; };
 			fun do_active (size as xg::SIZE { wide, high } )
 			    =
 			    start_over ()
 			    where
+trace .{ "do_active/AAA..."; };
 				my middle as (xg::POINT { col=>midx, row=>midy } )
 				    = 
 				    xg::box::middle (xg::box::make (xg::point::zero, size));
 
 
+trace .{ "do_active/BBB..."; };
 				# Given a point (x,y) with a velocity (dx,dy),
 				# make it bounce off walls to stay within
 				#    0 < x < wide
@@ -163,10 +186,12 @@ herein
 				    {   # Move the point per velocity,
 					# bouncing off walls appropriately:
 					#	
+trace .{ "update/AAA..."; };
 					my (p' as xg::POINT { col=>x, row=>y }, delta_p')
 					    =
 					    adjust (xg::point::add (p, delta_p), delta_p);
 
+trace .{ "update/BBB..."; };
 					box = xg::BOX
 						 { col  => 0,
 						   row  => 0,
@@ -175,13 +200,16 @@ herein
 						   high => 2*abs (y - midy)
 						 };
 
+trace .{ "update/CCC..."; };
 					box = center_box (box, middle);
 
+trace .{ "update/DDD..."; };
 					if odd_cycle
 					    #
 					    fill (symmetric_difference (box, prev_box));
 					fi;
 
+trace .{ "update/EEE..."; };
 					{ p=>p', delta_p=>delta_p', prev_box=>box, odd_cycle=>not odd_cycle };
 				    };
 
@@ -233,8 +261,10 @@ herein
 				    =
 				    for (;;) {
 					#
+trace .{ "start_over/AAA..."; };
 					xd::clear_drawable  drawwin;
 
+trace .{ "start_over/BBB..."; };
 					loop
 					  { p         =>  middle,
 					    prev_box  =>  empty_box,
@@ -252,16 +282,21 @@ herein
 
 				fun redraw ()
 				    =
-				    {   xd::clear_drawable  drawwin;
+				    {
+trace .{ "do_idle: redraw/AAA..."; };
+					xd::clear_drawable  drawwin;
 					redraw_loop 1;
 				    }
 				    where	
+trace .{ "do_idle: redraw/BBB..."; };
 					bnd = int::min (wide, high) / 2;
+trace .{ "do_idle: redraw/CCC..."; };
 
 					fun redraw_loop i
 					    = 
 					    if (i <= bnd)
 						#
+trace .{ "do_idle: redraw_loop/AAA..."; };
 						idle_fill
 						  [
 						    xg::BOX { col=>i,            row=>i,            wide=>1,          high=>high-(2*i) },
@@ -270,6 +305,7 @@ herein
 						    xg::BOX { col=>i,            row=>high - i - 1, wide=>wide-(2*i), high=>1 }
 						  ];
 
+trace .{ "do_idle: redraw_loop/BBB..."; };
 						redraw_loop (i+2);
 					    fi;
 
@@ -278,15 +314,24 @@ herein
 
 				fun do_mom (xi::ETC_REDRAW _)
 					=>
-					redraw ();
+					{
+trace .{ "do_idle: do_mom/ETC_REDRAW/AAA..."; };
+					    redraw ();
+					};
 
 				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
 					=>
-					do_idle (xg::SIZE { wide, high } );
+					{
+trace .{ "do_idle: do_mom/ETC_RESIZE/AAA..."; };
+					    do_idle (xg::SIZE { wide, high } );
+					};
 
 				    do_mom _
 					=>
-					();
+					{
+trace .{ "do_idle: do_mom/other (ignored)"; };
+					    ();
+					};
 				end;
 
 
@@ -302,16 +347,26 @@ herein
 						    #
 						    xi::MOUSE_FIRST_DOWN _
 							=>
-							do_active size;
+							{
+trace .{ "do_idle: loop/from_mouse'/MOUSE_FIRST_DOWN/AAA..."; };
+							    do_active size;
+							};
 
-						    _   => loop ();
+						    _   =>
+							{
+trace .{ "do_idle: loop/from_mouse'/other (ignored)..."; };
+							    loop ();
+							};
 						esac
 
 					    ),
 
 					from_other'
 					    ==>
-					    loop  o  do_mom  o  xi::envelope_contents
+					    {
+trace .{ "do_idle: loop/from_other': sending envolope contents to do_mom."; };
+					        loop  o  do_mom  o  xi::envelope_contents;
+					    }
 				    ];
 			    end;					# fun do_idle
 		    end;						# fun realize_plaid
@@ -342,10 +397,23 @@ herein
 		top::start  topwindow;
 	    };
 
+	fun set_up_tracing ()
+	    =
+	    {   # Open tracelog file and
+		# select tracing level:
+		#
+		include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+		#
+printf "plaid-app: do_it': Creating new %s file...\n" tracefile;
+		log_trace_messages  (TO_FILE tracefile);
+		enable all_tracing;				# Gross overkill.
+	    };
 
 	fun do_it' (debug_flags, server)
 	    =
-	    {   xtracing::init debug_flags;
+	    {   set_up_tracing ();
+
+		xtracing::init debug_flags;
 
 		rx::run_xkit'
 		    #
@@ -359,7 +427,10 @@ herein
 
 	fun do_it ()
 	    =
-	    rx::run_xkit  plaid;
+	    {   set_up_tracing ();
+		#
+		rx::run_xkit  plaid;
+	    };
 
 
 	fun main (program ! server ! _, _)

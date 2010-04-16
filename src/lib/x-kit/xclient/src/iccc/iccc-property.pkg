@@ -185,19 +185,19 @@ herein
 			    wh::HINT_NORMAL_STATE    => {  upd (2, 0u1);  m | 0u2;  };
 			    wh::HINT_ICONIC_STATE    => {  upd (2, 0u3);  m | 0u2;  };
 
-			    wh::HINT_ICON_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id=>xt::XID pix, ... } ))
+			    wh::HINT_ICON_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { pixmap_id => xt::XID pix, ... } ))
 				=>
 				{   upd (3, pix);
 				    m | 0u4;
 				};
 
-			    wh::HINT_ICON_PIXMAP (dt::RW_PIXMAP { id=>xt::XID pix, ... } )
+			    wh::HINT_ICON_PIXMAP (dt::RW_PIXMAP { pixmap_id => xt::XID pix, ... } )
 				=>
 				{   upd (3, pix);
 				    m | 0u4;
 				};
 
-			    wh::HINT_ICON_WINDOW (dt::WINDOW { window_id=>xt::XID window, ... } )
+			    wh::HINT_ICON_WINDOW (dt::WINDOW { window_id => xt::XID window, ... } )
 				=>
 				{   upd (4, window);
 				    m | 0u8;
@@ -210,13 +210,13 @@ herein
 				    m | 0u16;
 				};
 
-			    wh::HINT_ICON_MASK (dt::RW_PIXMAP { id=>xt::XID pix, ... } )
+			    wh::HINT_ICON_MASK (dt::RW_PIXMAP { pixmap_id => xt::XID pix, ... } )
 				=>
 				{   upd (7, pix);
 				    m | 0u32;
 				};
 
-			    wh::HINT_WINDOW_GROUP (dt::WINDOW { window_id=>xt::XID window, ... } )
+			    wh::HINT_WINDOW_GROUP (dt::WINDOW { window_id => xt::XID window, ... } )
 				=>
 				{   upd (8, window);
 				    m | 0u64;

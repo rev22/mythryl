@@ -24,12 +24,12 @@ herein
 	    =
 	    WINDOW
 	      {
-		window_id:	xt::Window_Id,
+		window_id:		xt::Window_Id,
 		#
-		screen:		sn::Screen,
-		screen_depth:	sn::Screen_Depth_Imps,
+		screen:			sn::Screen,
+		screen_depth_imps:	sn::Screen_Depth_Imps,
 		#
-		to_drawimp:	di::d::Draw_Op -> Void
+		to_drawimp:		di::d::Draw_Op -> Void
 	      };
 
 	# An off-screen rectangular array of pixels on the X server:
@@ -37,10 +37,10 @@ herein
 	Rw_Pixmap
 	    =
 	    RW_PIXMAP
-	      { id:           xt::Pixmap_Id,
-		screen:       sn::Screen,
-		size:         ge::Size,
-		screen_depth: sn::Screen_Depth_Imps
+	      { pixmap_id:		xt::Pixmap_Id,
+		screen:			sn::Screen,
+		size:			ge::Size,
+		screen_depth_imps:	sn::Screen_Depth_Imps
 	      };
 
 	# An off-screen read-only rectangular array of pixels on the X server: 

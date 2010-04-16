@@ -225,12 +225,12 @@ herein
 	    =
 	    WINDOW
 	      {
-		window_id:	xt::Window_Id,
+		window_id:		xt::Window_Id,
 		#
-		screen:		Screen,
-		screen_depth:	Screen_Depth_Imps,
+		screen:			Screen,
+		screen_depth_imps:	Screen_Depth_Imps,
 		#
-		to_drawimp:	di::d::Draw_Op -> Void
+		to_drawimp:		di::d::Draw_Op -> Void
 	      };
 
 	# Identity tests:
@@ -322,22 +322,22 @@ herein
 
 				    fun make_server ()
 					=
-					{   xid = next_xid ();
+					{   pixmap_id = next_xid ();
 
 					    # Make a pixmap to serve as the
 					    # witness drawable for the GC server:
 					    #	
 					    xok::request xsocket
 					      ( value_to_wire::encode_create_pixmap
-						  { pixmap => xid,
-						    drawable => root_window_id,
+						  { pixmap_id,
+						    drawable_id => root_window_id,
 						    size => ge::SIZE { wide=>1, high=>1 },
 						    depth => d
 				                  }
                                               );
 
 					    make_screen_depth_imps
-						(d, gci::make_graphics_context_cache (xdisplay, xid));
+						(d, gci::make_graphics_context_cache (xdisplay, pixmap_id));
 				        };
 
 
@@ -708,7 +708,7 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 	# Extract the graphics-context imp
         # for a given depth:
 	#
-	fun servers_of_screen_depth (SCREEN { screen=>SCREEN_INFO { imps, ... }, ... }, d)
+	fun screen_depth_imps_of (SCREEN { screen=>SCREEN_INFO { imps, ... }, ... }, d)
 	    =
 	    f imps
 	    where
@@ -718,7 +718,9 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 
 		    f ((sd as SCREEN_DEPTH_IMPS { depth, ... } ) ! r)
 			=>
-			if (depth == d)  sd; else (f r);fi;
+			if (depth == d)  sd;
+                        else             f r;
+                        fi;
 		end;
 	    end;
 

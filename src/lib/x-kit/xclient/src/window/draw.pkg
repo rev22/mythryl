@@ -46,33 +46,33 @@ herein
 	    #
 	    fun info_of_drawable (dt::DRAWABLE_WINDOW { to_drawimp, root => dt::r::WINDOW w } )
 		    =>
-		    {   w ->   dt::WINDOW { window_id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
+		    {   w ->   dt::WINDOW { window_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
 			{ to_drawimp, id => window_id, depth };
 		    };
 
 		info_of_drawable (dt::DRAWABLE_WINDOW { to_drawimp, root => dt::r::PIXMAP pm } )
 		    =>
-		    {   pm -> dt::RW_PIXMAP { id, screen_depth => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
+		    {   pm -> dt::RW_PIXMAP { pixmap_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
-			{ to_drawimp, id, depth };
+			{ to_drawimp, id => pixmap_id, depth };
 		    };
 	    end;
 
 
 	    # Extract the xid and depth of a source drawable 
 	    #
-	    fun info_of_src (dt::FROM_WINDOW    (dt::WINDOW    { window_id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
+	    fun info_of_src (dt::FROM_WINDOW    (dt::WINDOW    { window_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
 		    =>
 		    (window_id, depth);
 
-		info_of_src (dt::FROM_RW_PIXMAP (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
+		info_of_src (dt::FROM_RW_PIXMAP (dt::RW_PIXMAP { pixmap_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } ))
 		    =>
-		    (id, depth);
+		    (pixmap_id, depth);
 
-		info_of_src (dt::FROM_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { id, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )))
+		info_of_src (dt::FROM_RO_PIXMAP (dt::RO_PIXMAP (dt::RW_PIXMAP { pixmap_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )))
 		    =>
-		    (id, depth);
+		    (pixmap_id, depth);
 	    end;
 
 

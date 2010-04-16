@@ -41,10 +41,10 @@ herein
 			   =
 			   WINDOW
 			     {
-			       window_id:	xt::Window_Id,
-			       screen:		sn::Screen,
-			       screen_depth:	sn::Screen_Depth_Imps,
-			       to_drawimp:	di::d::Draw_Op -> Void
+			       window_id:		xt::Window_Id,
+			       screen:			sn::Screen,
+			       screen_depth_imps:	sn::Screen_Depth_Imps,
+			       to_drawimp:		di::d::Draw_Op -> Void
 			     };
 	           } = xsession;
 	include xsession;    
@@ -56,10 +56,10 @@ herein
 	    =
 	    RW_PIXMAP
 	      {  
-		id:            xt::Pixmap_Id,
-		screen:        sn::Screen,
-		size:          ge::Size,
-		screen_depth:  sn::Screen_Depth_Imps
+		pixmap_id:		xt::Pixmap_Id,
+		screen:			sn::Screen,
+		size:			ge::Size,
+		screen_depth_imps:	sn::Screen_Depth_Imps
 	      };
 
 	# Immutable pixmaps 
@@ -72,8 +72,8 @@ herein
 
 	fun same_rw_pixmap
             (
-              RW_PIXMAP { id=>id1, screen=>s1, ... }, 
-	      RW_PIXMAP { id=>id2, screen=>s2, ... }
+              RW_PIXMAP { pixmap_id=>id1, screen=>s1, ... }, 
+	      RW_PIXMAP { pixmap_id=>id2, screen=>s2, ... }
             )
 	    =
 	    (id1 == id2) and sn::same_screen (s1, s2);
@@ -93,9 +93,9 @@ herein
 	  | FROM_RO_PIXMAP    Ro_Pixmap
 	  ;
 
-	fun depth_of_window                   (WINDOW { screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )  = depth;
-	fun depth_of_rw_pixmap             (RW_PIXMAP { screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )  = depth;
-	fun depth_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )) = depth;
+	fun depth_of_window                   (WINDOW { screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )  = depth;
+	fun depth_of_rw_pixmap             (RW_PIXMAP { screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )  = depth;
+	fun depth_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )) = depth;
 
 	fun depth_of_draw_src (FROM_WINDOW    w) =>  depth_of_window     w;
 	    depth_of_draw_src (FROM_RW_PIXMAP w) =>  depth_of_rw_pixmap  w;
@@ -120,7 +120,7 @@ herein
 		{ upperleft, size, depth, border_width };
 	    };
 
-	fun shape_of_rw_pixmap (RW_PIXMAP { size, screen_depth=>sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )
+	fun shape_of_rw_pixmap (RW_PIXMAP { size, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )
 	    =
 	    { upperleft => ge::point::zero,
 	      size,
@@ -132,8 +132,8 @@ herein
 	    =
 	    shape_of_rw_pixmap  pm;
 
-	fun shape_of_draw_src (FROM_WINDOW w)       =>  shape_of_window     w;
-	    shape_of_draw_src (FROM_RW_PIXMAP pm)   =>  shape_of_rw_pixmap  pm;
+	fun shape_of_draw_src (FROM_WINDOW w)                 =>  shape_of_window     w;
+	    shape_of_draw_src (FROM_RW_PIXMAP pm)             =>  shape_of_rw_pixmap  pm;
 	    shape_of_draw_src (FROM_RO_PIXMAP (RO_PIXMAP pm)) =>  shape_of_rw_pixmap  pm;
 	end;
 
@@ -188,7 +188,7 @@ herein
 
 	# Make a drawable from a rw_pixmap 
 	#
-	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, screen_depth=>sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... } )
+	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... } )
 	    =
 	    DRAWABLE_WINDOW { root => r::PIXMAP pm, to_drawimp=>draw_command' }
 	    where 
