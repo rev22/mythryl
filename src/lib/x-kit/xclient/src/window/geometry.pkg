@@ -243,6 +243,56 @@ herein
 		    row1 >= row2        and
 		    col1+w1 <= col2+w2  and
 		    row1+h1 <= row2+h2;
+
+
+		# The symmetric difference of two sets is essentially
+		# a geometric XOR operation;  it contains all elements
+		# in either set but not both sets -- in other words,
+		# the union minus the intersection:
+		#
+		#     http://en.wikipedia.org/wiki/Symmetric_difference
+		#
+		# Here we compute the symmetric difference of two
+		# rectangles and return it as a list of rectangles:
+		# 
+		fun xor (r, r')
+		    =
+		    difference (r', r, difference (r, r',[]))
+		    where
+			fun difference (r as BOX { col=>x, row=>y, wide, high }, r', result_list)
+			    =
+			    {   my BOX { col=>ix, row=>iy, wide=>iwide, high=>ihigh }		# "i-" for "intersection-".
+				    =
+				    intersection (r, r');
+
+				icx = ix + iwide;		# Opposite corner of
+				icy = iy + ihigh;		# intersection box.
+
+				# (x,y) is one corner of a rectangle,
+				# (cx,cy is the opposite corner.
+				#	
+				# Cyclically identify all parts of the rectangle
+				# which project outside the borders of the above
+				# intersection rectangle, adding each of them to
+				# the result list and then shrinking the argument
+				# rectangle correspondingly:
+				#
+				fun pare (x, y, cx, cy, result_list)
+				    =
+				    if   (  x < ix)  pare (ix,  y,  cx,  cy, (BOX { col=>x,   row=>y,   high=>cy-y,   wide=>ix-x   } ) ! result_list);	# Pare off the part to the left.
+				    elif (  y < iy)  pare ( x, iy,  cx,  cy, (BOX { col=>x,   row=>y,   high=>iy-y,   wide=>cx-x   } ) ! result_list);	# Pare off the part above. (Assuming y==0 is at top.)
+				    elif (icx < cx)  pare ( x,  y, icx,  cy, (BOX { col=>icx, row=>y,   high=>cy-y,   wide=>cx-icx } ) ! result_list);	# Pare off the part to the right.
+				    elif (icy < cy)  pare ( x,  y,  cx, icy, (BOX { col=>x,   row=>icy, high=>cy-icy, wide=>cx-x   } ) ! result_list);	# Pare off the part below.
+				    else
+					result_list;
+				    fi;
+
+				pare (x, y, x+wide, y+high, result_list);
+			    }
+			    except
+				INTERSECTION = r ! result_list;
+
+		    end;
 	    };
 
 

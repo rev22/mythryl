@@ -140,7 +140,7 @@ api Xgeometry {
 	exception INTERSECTION;
 	intersection:  (Box,   Box) -> Box;		# Construct largest box contained by both input boxes.
 	union:         (Box,   Box) -> Box;		# Construct smallest box containing  both input boxes.
-
+        xor:           (Box,   Box) -> List(Box);	# Construct the symmetric difference of two boxes.
         in_box:        (Box,   Box) -> Bool;		# TRUE iff fixt box is within second.
     };
 

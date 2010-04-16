@@ -2,8 +2,17 @@
 #
 # This app draws screensaver-like rectangular patterns in a window.
 #
-# It has two modes, "idle" and "active";  clicking anywhere in the
-# window toggles it between modes.
+# It has two modes, "idle" and "active".
+#
+# In "idle" mode it uses normal buffered xd::fill_boxes XOR-draw
+# commands to fill the window with a rectangular pattern and stops.
+#
+# In "active" mode is uses unbuffered xd::fill_boxes XOR-draw
+# commands to draw a continuously changing (another draw every
+# 100ms) pattern.
+#
+# Clicking any mouse button anywhere in the window toggles
+# the app between these two modes.
 #
 # This app uses the "unbuffered" window mode designed to support
 # rubber-banding and also the XOR drawing mode used by rubber-banding;
@@ -65,53 +74,6 @@ herein
 		row => row - (high / 2)
 	      };
 
-	# The symmetric difference of two sets contains all
-	# elements in either set but not both sets -- in other
-	# words, the union minus the intersection:
-	#
-	#     http://en.wikipedia.org/wiki/Symmetric_difference
-	#
-	# Here we compute the symmetric difference of two
-	# rectangles and return it as a list of rectangles:
-	# 
-	fun symmetric_difference (r, r')
-	    =
-	    difference (r', r, difference (r, r',[]))
-	    where
-		fun difference (r as xg::BOX { col=>x, row=>y, wide, high }, r', result_list)
-		    =
-		    {   my xg::BOX { col=>ix, row=>iy, wide=>iwide, high=>ihigh }		# "i-" for "intersection-".
-			    =
-			    xg::box::intersection (r, r');
-
-			icx = ix + iwide;		# Opposite corner of
-			icy = iy + ihigh;		# intersection box.
-
-			# (x,y) is one corner of a rectangle,
-			# (cx,cy is the opposite corner.
-			#	
-			# Cyclically identify all parts of the rectangle
-			# which project outside the borders of the above
-			# intersection rectangle, adding each of them to
-			# the result list and then shrinking the argument
-			# rectangle correspondingly:
-			#
-			fun pare (x, y, cx, cy, result_list)
-			    =
-			    if   (  x < ix)  pare (ix,  y,  cx,  cy, (xg::BOX { col=>x,   row=>y,   high=>cy-y,   wide=>ix-x   } ) ! result_list);	# Pare off the part to the left.
-			    elif (  y < iy)  pare ( x, iy,  cx,  cy, (xg::BOX { col=>x,   row=>y,   high=>iy-y,   wide=>cx-x   } ) ! result_list);	# Pare off the part above. (Assuming y==0 is at top.)
-			    elif (icx < cx)  pare ( x,  y, icx,  cy, (xg::BOX { col=>icx, row=>y,   high=>cy-y,   wide=>cx-icx } ) ! result_list);	# Pare off the part to the right.
-			    elif (icy < cy)  pare ( x,  y,  cx, icy, (xg::BOX { col=>x,   row=>icy, high=>cy-icy, wide=>cx-x   } ) ! result_list);	# Pare off the part below.
-			    else
-				result_list;
-			    fi;
-
-			pare (x, y, x+wide, y+high, result_list);
-		    }
-		    except
-			xg::box::INTERSECTION = r ! result_list;
-
-	    end;
 
 	fun make_plaid root_window
 	    =
@@ -196,10 +158,10 @@ trace .{ "do_active/BBB..."; };
 				    fi;
 
 
-				# Move point one increment, bouncing
-				# off any wall(s) encountered:
+				# Step point by one velocity increment,
+				# bouncing off any wall(s) encountered:
 				#
-				fun move_point (point, velocity)
+				fun step_point (point, velocity)
 				    =
 				    {   point = xg::point::add (point, velocity);		# Move point one increment.
 					#
@@ -210,20 +172,23 @@ trace .{ "do_active/BBB..."; };
 					(point, velocity);
 				    };
 		
-				fun update { point, velocity, last_box, odd_cycle }
+				# Step point, bouncing off walls,
+				# and on odd cycles draw to display:
+				#
+				fun step_state { point, velocity, last_box, odd_cycle }
 				    =
 				    {   # Move the point per velocity,
 					# bouncing off walls appropriately:
 					#	
-trace .{ "update/AAA..."; };
-					(move_point (point, velocity))
+trace .{ "step_state/AAA..."; };
+					(step_point (point, velocity))
 					    ->
 					    ( point  as  xg::POINT { col, row },
                                               velocity
                                             );
 					    
 
-trace .{ "update/BBB..."; };
+trace .{ "step_state/BBB..."; };
 					# Map 'point' into the fourth quadrant, then
 					# define a box with that as one corner and
 					# (0,0) as the other:
@@ -236,19 +201,19 @@ trace .{ "update/BBB..."; };
 						   high => 2 * abs(row - midy)
 						 };
 
-trace .{ "update/CCC..."; };
+trace .{ "step_state/CCC..."; };
 
 					# Center above box on middle of drawing_window:
 					#
 					box = center_box (box, middle);
 
-trace .{ "update/DDD..."; };
+trace .{ "step_state/DDD..."; };
 					if odd_cycle
 					    #
-					    fill (symmetric_difference (box, last_box));
+					    fill (xg::box::xor (box, last_box));
 					fi;
 
-trace .{ "update/EEE..."; };
+trace .{ "step_state/EEE..."; };
 					{ point,
                                           velocity,
                                           last_box  =>  box,
@@ -257,46 +222,22 @@ trace .{ "update/EEE..."; };
 				    };
 
 
-				fun do_mom (xi::ETC_REDRAW _)
-					=>
-					start_over ();
-
-				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
-					=>
-					do_active (xg::SIZE { wide, high } );
-
-				    do_mom _
-					=>
-					();
+				fun do_mom (xi::ETC_REDRAW _)                              =>  start_over ();
+				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } )) =>  do_active (xg::SIZE { wide, high } );
+				    do_mom _					           =>  ();
 				end
 
 				also
-				fun loop state
+				fun active_loop state
 				    = 
-				    select [
-					#
-					timeout'
-					    ==>
-					   .{  loop (update state);  },
-
-					from_mouse'
-					    ==>
-					    (fn mail
-						=
-						case (xi::envelope_contents  mail)
-						    #
-						    xi::MOUSE_FIRST_DOWN _
-							=>
-							do_idle size;
-
-						    _   =>
-							loop state;
-						esac
-					    ),
-
-					from_other'
-					    ==>
-					    do_mom o xi::envelope_contents
+				    select [    timeout'     ==>  .{  active_loop (step_state state);  },
+						from_other'  ==>  do_mom o xi::envelope_contents,
+						from_mouse'  ==>  (fn mail =  case (xi::envelope_contents  mail)
+										  #
+										  xi::MOUSE_FIRST_DOWN _ =>  do_idle      size;
+										  _                      =>  active_loop  state;
+									      esac
+								  )
 				    ]
 
 				also
@@ -307,8 +248,9 @@ trace .{ "start_over/AAA..."; };
 					xd::clear_drawable  drawwin;
 
 trace .{ "start_over/BBB..."; };
-					loop
-					  { point     =>  middle,
+					active_loop
+					  {
+					    point     =>  middle,
 					    last_box  =>  empty_box,
 					    odd_cycle =>  FALSE,
 					    velocity  =>  xg::POINT { col=>1, row=>1 }
@@ -319,7 +261,7 @@ trace .{ "start_over/BBB..."; };
 			also
 			fun do_idle (size as xg::SIZE { wide, high } )
 			    =
-			    loop ()
+			    idle_loop ()
 			    where
 
 				fun redraw ()
@@ -354,61 +296,24 @@ trace .{ "do_idle: redraw_loop/BBB..."; };
 				    end;
 
 
-				fun do_mom (xi::ETC_REDRAW _)
-					=>
-					{
-trace .{ "do_idle: do_mom/ETC_REDRAW/AAA..."; };
-					    redraw ();
-					};
-
-				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
-					=>
-					{
-trace .{ "do_idle: do_mom/ETC_RESIZE/AAA..."; };
-					    do_idle (xg::SIZE { wide, high } );
-					};
-
-				    do_mom _
-					=>
-					{
-trace .{ "do_idle: do_mom/other (ignored)"; };
-					    ();
-					};
+				fun do_mom (xi::ETC_REDRAW _)                              =>  redraw ();
+				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } )) =>  do_idle (xg::SIZE { wide, high } );
+				    do_mom _						   =>  ();
 				end;
 
 
-				fun loop ()
+				fun idle_loop ()
 				    = 
-				    select [
-					#
-					from_mouse'
-					    ==>
-					    (fn envelope
-						=
-						case (xi::envelope_contents  envelope)
-						    #
-						    xi::MOUSE_FIRST_DOWN _
-							=>
-							{
-trace .{ "do_idle: loop/from_mouse'/MOUSE_FIRST_DOWN/AAA..."; };
-							    do_active size;
-							};
+				    select [ from_other' ==>  idle_loop  o  do_mom  o  xi::envelope_contents,
+					     #
+					     from_mouse' ==>  (fn envelope = case (xi::envelope_contents  envelope)
+										  #
+										  xi::MOUSE_FIRST_DOWN _ =>  do_active size;
+										  _                      =>  idle_loop ();
+									      esac
 
-						    _   =>
-							{
-trace .{ "do_idle: loop/from_mouse'/other (ignored)..."; };
-							    loop ();
-							};
-						esac
+							      )
 
-					    ),
-
-					from_other'
-					    ==>
-					    {
-trace .{ "do_idle: loop/from_other': sending envolope contents to do_mom."; };
-					        loop  o  do_mom  o  xi::envelope_contents;
-					    }
 				    ];
 			    end;					# fun do_idle
 		    end;						# fun realize_plaid

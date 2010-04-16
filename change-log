@@ -1,3 +1,4 @@
+2010-04-15-23.25.16: src/lib/x-kit/tut/plaid/plaid-app.pkg: Random cleaning and commenting.
 2010-04-15-22.25.10: src/lib/x-kit/xclient/src/window/draw-types.api etc: Renamed screen_depth -> screen_depth_imps because the former sounds like an integer; renamed id -> pixmap_id various places for clarity.
 2010-04-14-13.33.59: src/lib/x-kit/tut/triangle/: Deleted tri.out, tri.out1. These were apparently years-old object code files or some such. Junk.
 2010-04-13-20.06.16: src/lib/x-kit/tut/xkit-tut-unit-test.pkg: triangle_app::selfcheck () now runs sucessfully.
