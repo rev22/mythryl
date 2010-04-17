@@ -227,9 +227,13 @@ sig, vsp->vp_handlerPending, vsp->vp_inSigHandler);
 
 /* SetSignalMask:
  *
- * Set the signal mask to the given list of signals.  The sigList has the
- * type: "sysconst list option", with the following semantics (see
- * signals.pkg):
+ * Set the signal mask to the given list of signals.
+ * The sigList has the type
+ *
+ *     "sysconst list option"
+ *
+ * with the following semantics -- see src/lib/std/src/nj/signals.pkg
+ *
  *	NULL	-- the empty mask
  *	THE[]	-- mask all signals
  *	THE l	-- the signals in l are the mask
@@ -243,13 +247,17 @@ void SetSignalMask (lib7_val_t sigList)
 
     if (sigList != OPTION_NONE) {
 	sigList = OPTION_get(sigList);
+
 	if (LIST_isNull(sigList)) {
-	  /* THE[] -- mask all signals */
+
+	    /* THE [] -- mask all signals
+            */
 	    for (i = 0;  i < NUM_SYSTEM_SIGS;  i++) {
 		SIG_AddToMask(mask, SigInfo[i].id);
 	    }
-	}
-	else {
+
+	} else {
+
 	    while (sigList != LIST_nil) {
 		lib7_val_t	car = LIST_hd(sigList);
 		int		sig = REC_SELINT(car, 0);
@@ -259,6 +267,10 @@ void SetSignalMask (lib7_val_t sigList)
 	}
     }
 
+    /* Do the actual host OS syscall to change the signal mask.
+     * This is our only invocation of this syscall:
+     */
+print_if("unix-signal.c/SetSignalMask: setting host signal mask for process to x=%x\n", mask );
     SIG_SetMask(mask);
 }
 

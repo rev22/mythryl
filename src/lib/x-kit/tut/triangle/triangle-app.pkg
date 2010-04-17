@@ -141,6 +141,32 @@ herein
 #		xtr::make_thread "mouse watcher" mouse_watcher;
 #	    };
 
+	# Temporary hack to test out
+	# periodic operation:
+	#
+	fun make_periodic_prints  ()
+	    =
+	    {   fun periodic_prints ()
+		    =
+		    loop ()
+		    where
+			fun loop ()
+			    =
+			    {
+
+print "triangle_app: periodic_prints/AAA\n";
+
+trace .{ "periodic_print sleeping for 1/3 second..."; };
+				sleep_for (time::from_milliseconds 333);
+trace .{ "periodic_print back from 1/3 second sleep."; };
+
+				loop ();
+			    };		
+		    end;
+
+		xtr::make_thread "periodic prints" periodic_prints;
+	    };
+
 	# Thread to exercise the app by simulating user
 	# mouseclicks and verifying their effects:
 	#
@@ -352,6 +378,7 @@ trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
 		    commandline_arguments =>  commandline::get_arguments ()
 		  };
 
+make_periodic_prints  ();
 # make_mouse_watcher  xsession  window;
 
 		xw::show_window  window;

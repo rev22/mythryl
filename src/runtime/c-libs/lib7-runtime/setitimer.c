@@ -35,7 +35,7 @@
 #include "runtime-heap.h"
 #include "cfun-proto-list.h"
 
-
+#include "../lib7-socket/print-if.h"
 
 lib7_val_t   _lib7_runtime_setitimer   (   lib7_state_t*   lib7_state,
                                            lib7_val_t      arg
@@ -54,6 +54,7 @@ lib7_val_t   _lib7_runtime_setitimer   (   lib7_state_t*   lib7_state,
 
     if (arg == OPTION_NONE) {
 
+print_if("setitimer.c: Turning OFF SIGALRM interval timer\n");
         /* Turn off the timer:
         */
 	new_itv.it_interval.tv_sec	=
@@ -72,6 +73,8 @@ lib7_val_t   _lib7_runtime_setitimer   (   lib7_state_t*   lib7_state,
 
 	new_itv.it_interval.tv_usec	=
 	new_itv.it_value.tv_usec	= REC_SELINT(tmp, 1);
+
+print_if("setitimer.c: Turning ON SIGALRM interval itimer, sec,usec = (%d,%d)\n",new_itv.it_value.tv_sec, new_itv.it_value.tv_usec);
     }
 
     status = setitimer (ITIMER_REAL, &new_itv, NULL);			/* See setitimer(2), Linux Reference Manual. */
