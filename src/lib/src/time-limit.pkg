@@ -15,7 +15,7 @@
 package time_limit: (weak)
 api {
     exception TIME_OUT;
-     time_limit:  time::Time -> (X -> Y) -> X -> Y;
+    time_limit:  time::Time -> (X -> Y) -> X -> Y;
 }
 {
     exception TIME_OUT;

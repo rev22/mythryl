@@ -9,26 +9,13 @@ stipulate
 
     package int   = int_guts;					# int_guts		is from   src/lib/std/src/bind-int-32.pkg
     package int32 = int32_guts;					# int32_guts		is from   src/lib/std/src/int32.pkg
-
+    #
+    fun cfun x
+	=
+	c_interface::c_function "Lib7-Runtime" x;
 herein
 
     package interval_timer: (weak)  Interval_Timer {		# Interval_Timer	is from   src/lib/std/src/nj/interval-timer.api
-
-	fun cfun x
-            =
-            c_interface::c_function "Lib7-Runtime" x;
-
-
-	my tick' : Void -> ((int32::Int, Int))
-            =
-            cfun "intervalTick";				# Ultimately invokes   _lib7_runtime_itick   in   src/runtime/c-libs/lib7-runtime/itick.c
-								# This is currently UNIMPLEMENTED.
-
-
-	my set_itimer:   Null_Or( (int32::Int, Int) ) -> Void
-            =
-            cfun "setIntTimer";					# Ultimately invokes   _lib7_runtime_setitimer   in   src/runtime/c-libs/lib7-runtime/setitimer.c
-
 
 	fun tick ()
 	    =
@@ -38,7 +25,13 @@ herein
 
 		time_guts::from_microseconds
 		    (int32::to_large s * 1000000 + int::to_large us);
-	    };
+	    }
+	    where
+		my tick' : Void -> ((int32::Int, Int))
+		    =
+		    cfun "intervalTick";				# Ultimately invokes   _lib7_runtime_itick   in   src/runtime/c-libs/lib7-runtime/itick.c
+									# This is currently UNIMPLEMENTED.
+	    end;
 
 
 	fun from_time_opt (THE time)
@@ -63,8 +56,12 @@ herein
 
 	fun set_interval_timer  tim_opt
 	    =
-	    set_itimer (from_time_opt  tim_opt);
-
+	    set_interval_timer' (from_time_opt  tim_opt)
+	    where
+		my set_interval_timer':   Null_Or( (int32::Int, Int) ) -> Void
+		    =
+		    cfun "setIntervalTimer";				# Ultimately invokes   _lib7_runtime_setitimer   in   src/runtime/c-libs/lib7-runtime/setitimer.c
+	    end;
     };
 end;
 

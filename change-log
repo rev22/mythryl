@@ -1,3 +1,4 @@
+2010-04-17-14.54.02: src/lib/x-kit/xclient/src/window/xsession.api: Added some TO-DO rumination on suporting David Patternson's warthog/trampoline capability/interface model in the evolving Mythryl concurrency/OOP paradigm.
 2010-04-16-23.55.16: src/runtime/c-libs/lib7-runtime/setitimer.c, src/runtime/machine-dependent/unix-signal.c: Additional instrumentation via print_if.
 2010-04-16-13.30.00: src/lib/x-kit/xclient/src/window/geometry.pkg: Import src/lib/x-kit/tut/plaid/plaid-app.pkg: symmetric_difference(box,box) as box::xor, since it is of general utility.
 2010-04-15-23.25.16: src/lib/x-kit/tut/plaid/plaid-app.pkg: Random cleaning and commenting.

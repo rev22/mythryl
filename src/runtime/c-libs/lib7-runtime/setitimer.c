@@ -106,7 +106,6 @@ print_if("setitimer.c: Turning ON SIGALRM interval itimer, sec,usec = (%d,%d)\n"
 }
 
 
-
 /* COPYRIGHT (c) 1995 AT&T Bell Laboratories.
  * Subsequent changes by Jeff Prothero Copyright (c) 2010,
  * released under Gnu Public Licence version 3.
