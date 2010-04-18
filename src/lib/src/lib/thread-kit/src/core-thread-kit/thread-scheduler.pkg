@@ -20,7 +20,6 @@ stipulate
     package r   =  internal_threadkit_types;			# internal_threadkit_types	is from   src/lib/thread-kit/src/core-thread-kit/internal-threadkit-types.pkg
     package sig =  signals;					# signals			is from   src/lib/std/src/nj/signals.pkg
     package it  =  interval_timer;				# interval_timer		is from   src/lib/std/src/nj/interval-timer.pkg
-#    package tr  =  tracing;					# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
 herein
 
     package thread_scheduler: (weak) Thread_Scheduler {		# Thread_Scheduler		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.api
@@ -32,8 +31,19 @@ herein
 	call_with_current_fate =  fate::call_with_current_fate;
 	resume_fate            =  fate::resume_fate;
 
-	# Conditionally write strings to tracing.log or whatever:
-#	trace =  tr::print_if  tr::make_trace_tree_leaf { parent => tr::all_tracing, name => "thread_scheduler_tracing" };
+	# Conditionally write strings to tracing.log or whatever.
+	# Normally we'd write here
+	#
+	#     trace =  tr::print_if  tr::make_trace_tree_leaf { parent => tr::all_tracing, name => "thread_scheduler_tracing" };
+	#
+	# but that produces a package cycle, so instead we set up a
+	# refcell with a dummy initial value that we backpatch in
+	#
+	#     src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+	#
+	my trace_backpatchfn:   Ref( (Void -> String) -> Void )    =   REF (fn _ = ());
+	#
+	fun trace printfn =  *trace_backpatchfn  printfn;
 
 	# Some utility functions that should be inlined 
 	#
@@ -623,14 +633,14 @@ herein
 		    :=
 		    new_time_quantum;
 
-# trace .{ "thread_scheduler.pkg: start_timer: setting SIGARLM to be handled"; };
+trace .{ "thread_scheduler.pkg: start_timer: setting SIGARLM to be handled"; };
 		sig::set_signal_handler
 		    (
 		      sig::alarm_signal,
 		      sig::HANDLER alarm_handler
 		    );
 
-# trace .{ sprintf "thread_scheduler.pkg: start_timer: calling set_interval_timer (THE %s)" (time::to_string new_time_quantum); };
+trace .{ sprintf "thread_scheduler.pkg: start_timer: calling set_interval_timer (THE %s)" (time::to_string new_time_quantum); };
 		it::set_interval_timer (THE new_time_quantum);
 
 		();
@@ -640,10 +650,10 @@ herein
 	fun stop_timer ()
 	    =
 	    {
-# trace .{ "thread_scheduler.pkg: stop_timer: calling set_interval_timer NULL"; };
+trace .{ "thread_scheduler.pkg: stop_timer: calling set_interval_timer NULL"; };
 		it::set_interval_timer  NULL;
 
-# trace .{ "thread_scheduler.pkg: stop_timer: setting SIGARLM to IGNORE"; };
+trace .{ "thread_scheduler.pkg: stop_timer: setting SIGARLM to IGNORE"; };
 		sig::set_signal_handler
 		    (sig::alarm_signal, sig::IGNORE);
 

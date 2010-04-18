@@ -120,6 +120,10 @@ api Thread_Scheduler {
     start_timer:    time::Time -> Void;
     stop_timer:     Void -> Void;
     restart_timer:  Void -> Void;
+
+    # A tracelog kludge of no general interest:
+    #
+    trace_backpatchfn: Ref( (Void -> String) -> Void );
 };
 
 

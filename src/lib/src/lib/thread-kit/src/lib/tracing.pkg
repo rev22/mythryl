@@ -527,18 +527,17 @@ herein
 	herein
 
 	    fun make_trace_tree_leaf arg           = carefully' (fn () =  make_trace_tree_leaf' arg);
-	    fun enable tm                          = carefully  (fn () =  enable' tm);		# Enable tracing per trace subtree.
-	    fun disable tm                         = carefully  (fn () =  disable' tm);		# Disable tracing per trace subtree.
+	    fun enable tm                          = carefully  (fn () =  enable' tm);			# Enable tracing per trace subtree.
+	    fun disable tm                         = carefully  (fn () =  disable' tm);			# Disable tracing per trace subtree.
 	    fun enable_node tm                     = carefully  (fn () =  enable_node' tm);		# Enable tracing per trace node.
 	    fun log_trace_messages f               = carefully  (fn () =  log_trace_messages' f);	# Select destination file/whatever.
 	    fun subtree_nodes_and_trace_flags root = carefully' (fn () =  subtree_nodes_and_trace_flags' root);
 
 	end;
 
-	fun print_if (TRACE_TREE_NODE { tracing, name, ... })  make_message_string_fn
-	    =
-	    if (tc::thread_scheduler_is_running ()  and  *tracing)
-		#
+	fun make_trace_string (TRACE_TREE_NODE { name, ... },  make_message_string_fn)
+	    =	
+	    {
 		# Construct the 'print_if' string to print,
 		# and then pass it to the trace imp.
 		#
@@ -548,8 +547,8 @@ herein
 		# if we're not going to print it (i.e., if
 		# tracing is disabled for that call).
 
-    #           time_string  =  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()));	# "2010-01-05:14:17:23" or such.
-		time_string  =  time::format 6 (time::get());						# "1262722876.273621"   or such.
+#               time_string  =  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()));	# "2010-01-05:14:17:23" or such.
+		time_string  =  time::format 6 (time::get());							# "1262722876.273621"   or such.
 		    #
 		    # NB: If you change the time_string content/format you
 		    #     should probably make corresponding changes in
@@ -562,9 +561,42 @@ herein
 			     + "    \t(" + name
 			     + ")\n";
 
-		give (print_if_slot, trace_string);
+		trace_string;
+	    };
 
+	fun print_if (trace_node as TRACE_TREE_NODE { tracing, name, ... })  make_message_string_fn
+	    =
+	    if (tc::thread_scheduler_is_running ()  and  *tracing)
+		#
+		trace_string = make_trace_string  (trace_node, make_message_string_fn);
+		#
+		give (print_if_slot, trace_string);
 	    fi;
+
+
+	# This is an ugly little hack to solve a package cycle problem in
+	#     src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
+	#
+	stipulate
+	    # This is going to be called at weird places
+	    # within the thread scheduler, so we skip going
+	    # through the print_if_slot	and our print_if thread
+	    # in favor of direct write to output stream:
+	    #
+	    fun print_if (trace_node as TRACE_TREE_NODE { tracing, name, ... })  make_message_string_fn
+		=
+		if *tracing
+		    #
+		    trace_string = make_trace_string  (trace_node, make_message_string_fn);
+		    #
+		    trace_print  trace_string;
+		fi;
+
+	    thread_scheduler_tracing =   make_trace_tree_leaf { parent => all_tracing, name => "thread_scheduler_tracing" };
+	    trace                    =   print_if  thread_scheduler_tracing;
+	herein
+	    my _ =   (thread_scheduler::trace_backpatchfn  :=  trace);
+	end;
     };							# package tracing
 
 end;
