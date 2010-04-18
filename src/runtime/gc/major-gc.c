@@ -12,6 +12,13 @@
  */
 
 
+/* When we go to parallel garbage collection, would it
+ * help to segregate all REF cells in a separate area,
+ * as a special-case?  This would localize all heap
+ * side effects to arrays, segregated REF cells and
+ * maybe activation records. (Not sure how those are
+ * currently handled.)
+*/
 
 #ifdef PAUSE_STATS		/* GC pause statistics are UNIX dependent */
 #  include "runtime-unixdep.h"

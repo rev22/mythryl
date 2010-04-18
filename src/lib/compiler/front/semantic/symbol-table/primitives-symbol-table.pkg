@@ -111,51 +111,93 @@ package primitives_symbol_table
 
 	prim_types
             =
-	    { prim_tycs
+	    {   prim_tycs
                     =
 		    [] :-:
-		       ("Bool",             bt::bool_tycon) :-:
-		       ("List",             bt::list_tycon) :-:
-		       ("Ref",              bt::ref_tycon) :-:
-		       ("Void",             bt::void_tycon) :-:
-		       ("Int",              bt::int_tycon) :-:
-		       ("Int32",            bt::int32tycon) :-:
-		       ("Int64",            bt::int64tycon) :-:
-		       ("Intinf",           bt::intinf_tycon) :-:
-		       ("Float",             bt::real_tycon) :-:
-		       ("Unt",              bt::word_tycon) :-:
-		       ("Unt8",             bt::word8tycon) :-:
-		       ("Unt32",            bt::word32tycon) :-:
-		       ("Unt64",            bt::word64tycon) :-:
-		       ("Fate",     bt::fate_type) :-:
-		       ("Control_Fate", bt::control_fate_type) :-:
-		       ("Rw_Vector",        bt::array_tycon) :-:
-		       ("Vector",           bt::vector_tycon) :-:
-		       ("Chunk",            bt::chunk_tycon) :-:
-		       ("Cfunction",        bt::c_function_tycon) :-:
-		       ("Unt8_Rw_Vector",   bt::word8array_tycon) :-:
-		       ("Float64_Rw_Vector", bt::real64array_tycon) :-:
-		       ("Spin_Lock",        bt::spinlock_tycon) :-:
-		       ("String",           bt::string_tycon) :-:
-		       ("Char",             bt::char_tycon) :-:
-		       ("Exception",        bt::exn_tycon) :-:
-		       ("Fragment",         bt::frag_tycon) :-:
-		       ("Suspension",       bt::susp_tycon);
+			("Bool",              bt::bool_tycon		) :-:
+			("List",              bt::list_tycon		) :-:
+			#	
+			("Ref",               bt::ref_tycon		) :-:
+			("Void",              bt::void_tycon		) :-:
+			#	
+			("Int",               bt::int_tycon		) :-:
+			("Int32",             bt::int32tycon		) :-:
+			("Int64",             bt::int64tycon		) :-:
+			("Intinf",            bt::intinf_tycon		) :-:
+			#	
+			("Float",             bt::real_tycon		) :-:
+			#	
+			("Unt",               bt::word_tycon		) :-:
+			("Unt8",              bt::word8tycon		) :-:
+			("Unt32",             bt::word32tycon		) :-:
+			("Unt64",             bt::word64tycon		) :-:
+			#	
+			("Fate",		     bt::fate_type	) :-:
+			("Control_Fate",      bt::control_fate_type	) :-:
+			#	
+			("Rw_Vector",         bt::array_tycon		) :-:
+			("Vector",            bt::vector_tycon		) :-:
+			("Unt8_Rw_Vector",    bt::word8array_tycon	) :-:
+			("Float64_Rw_Vector", bt::real64array_tycon	) :-:
+			#	
+			("Chunk",             bt::chunk_tycon		) :-:
+			("Cfunction",         bt::c_function_tycon	) :-:
+			#	
+			("String",            bt::string_tycon		) :-:
+			("Char",              bt::char_tycon		) :-:
+			#	
+			("Exception",         bt::exn_tycon		) :-:
+			#	
+			("Spin_Lock",         bt::spinlock_tycon	) :-:
+			("Fragment",          bt::frag_tycon		) :-:
+			("Suspension",        bt::susp_tycon		)
+		;
 
 		prim_cons
                     = 
 		    [] :-:
-		       ("TRUE", bt::true_dcon) :-:
-		       ("FALSE", bt::false_dcon) :-:
-		       ("!",  bt::cons_dcon) :-:
-		       ("NIL", bt::nil_dcon) :-:
-		       ("REF", bt::ref_dcon) :-:
-		       ("QUOTE", bt::quotedcon) :-:
-		       ("ANTIQUOTE", bt::antiquotedcon) :-:
-		       ("@@@", bt::dollar_dcon);
+			("TRUE",      bt::true_dcon	) :-:
+			("FALSE",     bt::false_dcon	) :-:
+			("!",         bt::cons_dcon	) :-:
+			#	
+			("NIL",       bt::nil_dcon	) :-:
+			("REF",       bt::ref_dcon	) :-:
+			#	
+			("QUOTE",     bt::quotedcon	) :-:
+			("ANTIQUOTE", bt::antiquotedcon	) :-:
+			("@@@",       bt::dollar_dcon	)
+		;
+
+		    # To do:
+		    #
+		    # At some point it would be nice to have
+		    # Ro_Ref -- a read-only version of Ref where
+		    #
+		    #     *ref
+		    #
+		    # is allowed but not
+		    #
+		    #     ref := ... ;
+		    #
+		    # In concurrent code, this would allow us to publish stuff
+		    # via an Ro_Ref while having typesafe assurance that the
+		    # the single thread retaining a Ref version of the refcell
+		    # is the only one entitled to modify it.  This would provide
+		    # essentially a lighter weight alternative to Maildrop.
+		    # 
+		    # Presumably we would do this by doing
+		    #     Ro_Ref = Ref;	# Probably at a higher level than this file
+		    # and then exporting Ro_Ref as opaque plus
+		    # exporting a Ref -> Ro_Ref cast operator
+		    # together with dereference ops on both types
+		    # and finally making prefix '*' overloaded on both deref ops...?
+		    # 
+		    # XXX BUGGO FIXME.
+
+
 
 		tyc_elements   =   map make_type_constructor_element prim_tycs;
-		con_elements   =   map make_constructor_element     prim_cons;
+		con_elements   =   map make_constructor_element      prim_cons;
 
 		all_elements   =   tyc_elements @ con_elements;
 		all_symbols    =   map #1 all_elements;
