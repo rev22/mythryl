@@ -389,7 +389,7 @@ herein
 					  #     easily wind up trying to log trace stuff after
 					  #     the tracelog has already been closed.
 					  #	
-					  #	  o Unix will close all open files at program exit()
+					  #   o Unix will close all open files at program exit()
 					  #     anyhow, and since we're doing unbuffered I/O on
 					  #     the tracelog fd, there is not even any buffer
 					  #     flushing needing to be done.
@@ -566,22 +566,50 @@ herein
 
 	fun print_if (trace_node as TRACE_TREE_NODE { tracing, name, ... })  make_message_string_fn
 	    =
-	    if (tc::thread_scheduler_is_running ()  and  *tracing)
+	    if (*tracing)
 		#
-		trace_string = make_trace_string  (trace_node, make_message_string_fn);
+		# Originally here we always did
 		#
-		give (print_if_slot, trace_string);
-	    fi;
+		#     trace_print (make_trace_string  (trace_node, make_message_string_fn));
+		#
+		# thus doing the print via our thread for mutual exclusion
+		# in standard concurrent-programming style.  Unfortunately,
+		# this produces problems when trying to trace through oddball
+		# code like the thread_scheduler itself, where thread-scheduling
+		# is off or SIGARLM is disabled or such.
+		#
+		# Since we're mostly just doing a single unbuffered write to a
+		# unix file descriptor on these calls, which unix semantics
+		# guarantees to be atomic anyhow, there is actually vanishingly
+		# little need for mutual exclusion except when we're actually
+		# opening the file (TO_FILE case).
+		#	
+		# Consequently, we currently avoid going through print_if_slot
+		# and the print_if thread in all cases except TO_FILE:
 
+		trace_string =  make_trace_string  (trace_node, make_message_string_fn);
+
+		if (not (tc::thread_scheduler_is_running ()))
+		    #
+		    trace_print  trace_string;
+		else
+		    case *trace_to
+			#
+			TO_NULL   =>  ();
+			TO_FILE _ =>  give (print_if_slot, trace_string);
+			_         =>  trace_print          trace_string;
+		    esac;
+		fi;
+	    fi;
 
 	# This is an ugly little hack to solve a package cycle problem in
 	#     src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
 	#
 	stipulate
 	    # This is going to be called at weird places
-	    # within the thread scheduler, so we skip going
-	    # through the print_if_slot	and our print_if thread
-	    # in favor of direct write to output stream:
+	    # within the thread scheduler, so we COMPLETELY
+	    # skip going through the print_if_slot and our
+	    # print_if thread:
 	    #
 	    fun print_if (trace_node as TRACE_TREE_NODE { tracing, name, ... })  make_message_string_fn
 		=
