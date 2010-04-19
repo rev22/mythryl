@@ -319,66 +319,71 @@ herein
 	# Socket management:
 	#
 	stipulate
-
 	    my accept'  : Int -> (Int, Internet_Address)	= socket_fn  "accept";		# accept	is in    src/runtime/c-libs/lib7-socket/accept.c
 	    my bind'    : (Int, Internet_Address) -> Void	= socket_fn  "bind";		# bind		is in    src/runtime/c-libs/lib7-socket/bind.c
 	    my connect' : (Int, Internet_Address) -> Void	= socket_fn  "connect";		# connect	is in    src/runtime/c-libs/lib7-socket/connect.c
 	    my listen'  : (Int, Int) -> Void			= socket_fn  "listen";		# listen	is in    src/runtime/c-libs/lib7-socket/listen.c
 	    my close'   : Int -> Void				= socket_fn  "close";		# close		is in    src/runtime/c-libs/lib7-socket/close.c
-
 	herein
 
 	    fun bind (SOCKET { file_descriptor, ... }, ADDRESS address)
 		=
 		bind' (file_descriptor, address);
 
+
 	    fun listen (SOCKET { file_descriptor, ... }, back_log)
 		=
 		listen' (file_descriptor, back_log);		# Should do some range checking on back_log  XXX BUGGO FIXME
 
-	    fun accept0 (socket, coerce_blocking_status) s
-		=
-		{   my (new_fd, address)
-			=
-			accept' (coerce_blocking_status s);
 
-		    ( socket new_fd,
-		      ADDRESS address
-		    );
-		};
+	    stipulate
+		fun accept0 (socket, coerce_blocking_status) s
+		    =
+		    {   my (new_fd, address)
+			    =
+			    accept' (coerce_blocking_status s);
 
-	    fun accept s
-		=
-		accept0 (sock_b, to_blocking_fd) s;
+			( socket new_fd,
+			  ADDRESS address
+			);
+		    };
+	    herein
 
-
-	    fun accept_nonblocking s
-		=
-		wrap_nb_o (accept0 (sock_nb, to_nonblocking_fd)) s;
+		fun accept s
+		    =
+		    accept0 (sock_b, to_blocking_fd) s;
 
 
-	    fun connect0  coerce_blocking_status  (s, ADDRESS address)
-		=
-		connect' (coerce_blocking_status s, address);
+		fun accept_nonblocking s
+		    =
+		    wrap_nb_o (accept0 (sock_nb, to_nonblocking_fd)) s;
+	    end;
 
 
-	    fun connect arg
-		=
-		connect0  to_blocking_fd  arg;
+	    stipulate
+		fun connect0  coerce_blocking_status  (s, ADDRESS address)
+		    =
+		    connect' (coerce_blocking_status s, address);
+	    herein
+
+		fun connect arg
+		    =
+		    connect0  to_blocking_fd  arg;
 
 
-	    fun connect_nonblocking arg
-		=
-		wrap_nb_b (connect0 to_nonblocking_fd) arg;
+		fun connect_nonblocking arg
+		    =
+		    wrap_nb_b (connect0 to_nonblocking_fd) arg;
+	    end;
 
 
 	    fun close (SOCKET { file_descriptor, ... } )
 		=
 		close' file_descriptor;
-	end;						# with
+	end;							# stipulate
+
 
 	stipulate
-
 	    my  shutdown' : (Int, Int) -> Void
 		=
 		socket_fn "shutdown";
@@ -387,7 +392,6 @@ herein
 		how NO_SENDS          => 1;
 		how NO_RECVS_OR_SENDS => 2;
 	    end;
-
 	herein
 
 	    fun shutdown (SOCKET { file_descriptor, ... }, mode)
@@ -425,9 +429,11 @@ herein
 	    =
 	    io_descriptor;
 
+
 	fun same_descriptor (d1, d2)
 	    =
 	    wg::io::compare (d1, d2) == EQUAL;
+
 
 	fun select { readable, writable, oobdable, timeout }
 	    =
@@ -492,9 +498,10 @@ herein
 	abuf = rw_unt8_vector_slice::base;
 
 	# Default flags 
-	default_don't_route = FALSE;
-	default_oob = FALSE;
-	default_peek = FALSE;
+	#
+	default_don't_route =  FALSE;
+	default_oob         =  FALSE;
+	default_peek        =  FALSE;
 
 	# Socket output operations 
 	#

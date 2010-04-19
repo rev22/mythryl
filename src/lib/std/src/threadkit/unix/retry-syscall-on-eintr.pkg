@@ -60,6 +60,13 @@ herein
 	fun do_atomic_syscall f x
 	    =
 	    {
+		# Note that stopping the timer will stop all
+		# thread_scheduler timeslicing dead in its
+		# tracks, including all threads attempting to
+		# maintain periodic user interface stuff etc.
+		#
+		# This is probably a REALLY BAD IDEA. 		XXX BUGGO FIXME
+		#
 trace .{ "do_atomic_syscall stopping timer"; };
 	        ts::stop_timer();
 		    #

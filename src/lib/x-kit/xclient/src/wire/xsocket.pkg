@@ -312,6 +312,52 @@ herein
 
 		stipulate
 
+		    fun is_intr err
+			=
+			err == posix::error::intr;		# == posix EINTR.
+
+		    # Receive vector without blocking, because
+		    # if we block we lock up the whole GUI:
+		    #
+		    fun receive_vector_nonblocking  (arg as (socket, maxbytes))
+			=
+			case (socket::receive_vector_nonblocking  arg)
+			    #
+			    THE vector
+				=>
+				vector;
+
+			    NULL =>
+				# We got EWOULDBLOCK/EAGAIN or EINPROGRESS
+				# so wait and retry:
+				#
+				{   sleep_for (time::from_milliseconds 50);	# Wait.
+				    receive_vector_nonblocking  arg;		# Retry.
+				};
+				    #
+				    # Spinning like this is pretty ugly,
+				    # albeit fairly cheap, and hugely
+				    # better than blocking on the socket,
+				    # since this way other threads can
+				    # run while we're waiting.
+				    #
+				    # It would be much nicer to have a
+				    # dedicated POSIX thread which did a
+				    # select/poll/whatever on the set of
+				    # fds we're waiting for input from
+				    # and then sets "input available flags
+				    # in C-side memory.
+				    #
+				    # Our gc-probe logic could then check
+				    # those flags and ping the scheduler
+				    # to wake threads waiting on such I/O.
+				    #
+				    # Since gc-probe is the only time we
+				    # respond to such thread I/O opportunities,
+				    # this is a minimum-latency solution.		XXX BUGGO FIXME.
+			esac;
+			    
+
 		    # Read n bytes from the socket:
 		    #
 		    fun read_vector (n, header)
