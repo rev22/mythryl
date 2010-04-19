@@ -3,320 +3,328 @@
 # Compiled by:
 #     src/lib/std/stdlib.make6
 
+stipulate
+    package tr =  thread_scheduler_is_running;		# thread_scheduler_is_running	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler-is-running.pkg
+    package ts =  thread_scheduler;			# thread_scheduler		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
+    package tt =  internal_threadkit_types;		# internal_threadkit_types	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/internal-threadkit-types.pkg
+herein
 
-package thread: (weak)
-api {
-    include Thread;					# Thread			is from   src/lib/thread-kit/src/core-thread-kit/thread.api
-    default_exception_handler:  Ref (Exception -> Void);
-    reset:  Bool -> Void;
-}
+    package thread: (weak)
+    api {
+	include Thread;					# Thread			is from   src/lib/thread-kit/src/core-thread-kit/thread.api
+	default_exception_handler:  Ref (Exception -> Void);
+	reset:  Bool -> Void;
+    }
 
-{
-    package s = thread_scheduler;			# thread_scheduler		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
-    package t = internal_threadkit_types;		# internal_threadkit_types	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/internal-threadkit-types.pkg
+    {
+	Thread_Id                ==  tt::Thread_Id;
+	Condition_Variable       ==  tt::Condition_Variable;
+	Condition_Variable_State ==  tt::Condition_Variable_State;
 
-    Thread_Id                ==  t::Thread_Id;
-    Condition_Variable       ==  t::Condition_Variable;
-    Condition_Variable_State ==  t::Condition_Variable_State;
+	Mailop(X) = tt::Mailop(X);
 
-    Mailop(X) = t::Mailop(X);
+	stipulate
 
-    stipulate
+	    tid_count = REF 0;
 
-        tid_count = REF 0;
+	    fun cvar ()
+		=
+		CONDITION_VARIABLE (REF (CVAR_UNSET []));
+	herein
 
-        fun cvar ()
-            =
-            CONDITION_VARIABLE (REF (CVAR_UNSET []));
-    herein
+	    fun reset running
+		=
+		{   tid_count := 0;
+		    ts::reset running;
+		};
 
-	fun reset running
-            =
-            {   tid_count := 0;
-		s::reset running;
-            };
+	    fun exception_handler (x:  Exception)
+		=
+		();
 
-	fun exception_handler (x:  Exception)
-            =
-            ();
+	    default_exception_handler
+		=
+		REF exception_handler;
 
-	default_exception_handler
+	    fun make_thread_id name
+		=
+		{   n = *tid_count;
+
+		    tid_count := n+1;
+
+		    THREAD_ID
+		      { name,
+			id          =>  n,
+			did_mail    =>  REF FALSE,
+			exception_handler =>  REF *default_exception_handler,
+			properties  =>  REF [],
+			dead        =>  cvar ()
+		      };
+		};
+
+	end;
+
+	fun same_thread_id (THREAD_ID { id=>a, ... }, THREAD_ID { id=>b, ... } )
 	    =
-	    REF exception_handler;
+	    a == b;
 
-	fun make_thread_id name
-            =
-            {   n = *tid_count;
+	fun compare_thread_id (THREAD_ID { id=>a, ... }, THREAD_ID { id=>b, ... } )
+	    =
+	    int::compare (a, b);
 
-		tid_count := n+1;
+	fun hash_thread_id (THREAD_ID { id, ... } )
+	    =
+	    unt::from_int id;
 
-		THREAD_ID
-                  { name,
-                    id          =>  n,
-		    did_mail    =>  REF FALSE,
-		    exception_handler =>  REF *default_exception_handler,
-		    properties  =>  REF [],
-		    dead        =>  cvar ()
-		  };
+	fun thread_id_to_name (THREAD_ID { name, ... } )
+	    =
+	    name;
+
+	thread_id_to_string
+	    =
+	    tt::thread_id_to_string;
+
+	fun notify_and_dispatch (THREAD_ID { dead, ... } )
+	    =
+	    {   ts::disable_thread_switching ();
+		mailop::atomic_cvar_set dead;
+		ts::reenable_thread_switching_and_dispatch_next_thread ();
 	    };
 
-    end;
+	fun do_handler (THREAD_ID { exception_handler, ... }, exn)
+	    =
+	    *exception_handler exn
+	    except
+		_ = ();
 
-    fun same_thread_id (THREAD_ID { id=>a, ... }, THREAD_ID { id=>b, ... } )
-        =
-        a == b;
+    /** Eventually, this should be:
 
-    fun compare_thread_id (THREAD_ID { id=>a, ... }, THREAD_ID { id=>b, ... } )
-        =
-        int::compare (a, b);
+	fun make_thread' name f x
+	    =
+	    id
+	    where
+	      ts::disable_thread_switching ();
+	      id = make_thread_id name;
+	      fun thread ()
+		  =
+		  (   (f x)
+		      except
+			  ex =  do_handler (id, ex);
 
-    fun hash_thread_id (THREAD_ID { id, ... } )
-        =
-        unt::from_int id;
+		      notify_and_dispatch id;
+		  );
 
-    fun thread_id_to_name (THREAD_ID { name, ... } )
-        =
-        name;
+		fate::callcc
+		  (fn parentK
+		      =
+		      ( ts::enqueue_and_switch_current_thread (parentK, id);
+			ts::reenable_thread_switching ();
+			fate::throw (fate::isolate thread) ();
+		      )
+		  );
+	      end;
+     **/
 
-    thread_id_to_string
-	=
-	t::thread_id_to_string;
+	fun make_thread' name f x
+	    =
+	    {   ts::disable_thread_switching ();
 
-    fun notify_and_dispatch (THREAD_ID { dead, ... } )
-        =
-        {   s::disable_thread_switching ();
-	    mailop::atomic_cvar_set dead;
-	    s::reenable_thread_switching_and_dispatch_next_thread ();
-        };
+		id = make_thread_id  name;
 
-    fun do_handler (THREAD_ID { exception_handler, ... }, exn)
-        =
-	*exception_handler exn
-        except
-            _ = ();
+		fate::call_with_current_fate
+		    (fn parent_fate
+			=
+			{   ts::enqueue_and_switch_current_thread (parent_fate, id);
+			    ts::reenable_thread_switching ();
 
-/** Eventually, this should be:
+			    f x
+			    except
+				ex =  do_handler (id, ex);
 
-    fun make_thread' name f x
-        =
-	id
-        where
-	  s::disable_thread_switching ();
-	  id = make_thread_id name;
-	  fun thread ()
-              =
-              (   (f x)
-                  except
-                      ex =  do_handler (id, ex);
+			    notify_and_dispatch id;
+			}
+		    );
+		id;
+	    };
 
-		  notify_and_dispatch id;
-              );
 
-	    fate::callcc
-              (fn parentK
-                  =
-                  ( s::enqueue_and_switch_current_thread (parentK, id);
-	            s::reenable_thread_switching ();
-	            fate::throw (fate::isolate thread) ();
-                  )
-              );
-	  end;
- **/
+	fun make_thread name f
+	    =
+	    make_thread' name f ();
 
-    fun make_thread' name f x
-        =
-        {   s::disable_thread_switching ();
 
-	    id = make_thread_id  name;
-	  
+	fun thread_death_mailop  (THREAD_ID { dead, ... } )
+	    =
+	    mailop::cvar_get_mailop  dead;
+
+
+	get_thread_id
+	    =
+	    ts::get_current_thread;
+
+
+	fun get_thread_name ()
+	    =
+	    if *tr::thread_scheduler_is_running    thread_id_to_name (get_thread_id ());
+	    else				   "[nothread]";
+	    fi;
+		# When thread_scheduler is not running
+		# get_thread_id() returns garbage		XXX BUGGO FIXME
+		# and using that result will SEGV us.
+
+
+
+	fun thread_done ()
+	    =
+	    {   my (tid as THREAD_ID { properties, ... } )
+		    =
+		    get_thread_id ();
+
+		properties := [];
+
+		notify_and_dispatch  tid;
+	    };
+
+
+	fun yield ()
+	    =
 	    fate::call_with_current_fate
-                (fn parent_fate
-                    =
-                    {   s::enqueue_and_switch_current_thread (parent_fate, id);
-	                s::reenable_thread_switching ();
-
-	                f x
-                        except
-                            ex =  do_handler (id, ex);
-
-	                notify_and_dispatch id;
-                    }
-                );
-	    id;
-	};
-
-
-    fun make_thread name f
-        =
-        make_thread' name f ();
-
-
-    fun thread_death_mailop  (THREAD_ID { dead, ... } )
-        =
-        mailop::cvar_get_mailop  dead;
-
-
-    get_thread_id
-	=
-	s::get_current_thread;
-
-
-    get_thread_name
-	=
-	thread_id_to_name
-        o
-        get_thread_id;
-
-
-    fun thread_done ()
-        =
-        {   my (tid as THREAD_ID { properties, ... } )
-                =
-                get_thread_id ();
-	  
-	    properties := [];
-
-	    notify_and_dispatch  tid;
-	};
-
-    fun yield ()
-        =
-        fate::call_with_current_fate
-            (fn fate
-                =
-                {   s::disable_thread_switching  ();
-	            s::reenable_thread_switching_and_yield_to_next_thread  fate;
-                }
-            );
-
-    # Thread-local data 
-    #
-    stipulate
-
-	fun make_property ()
-	    =
-	    {   exception EXCEPTION  X; 
-
-		fun cons (a, l)
+		(fn fate
 		    =
-		    EXCEPTION a ! l; 
+		    {   ts::disable_thread_switching  ();
+			ts::reenable_thread_switching_and_yield_to_next_thread  fate;
+		    }
+		);
 
-		fun peek []                =>  NULL;
-		    peek (EXCEPTION a ! _) =>  THE a;
-		    peek (_ ! l)           =>  peek l;
-		end;
+	# Thread-local data 
+	#
+	stipulate
 
-		fun delete []                =>  [];
-		    delete (EXCEPTION a ! r) =>  r;
-		    delete (x ! r)           =>  x ! delete r;
-		end;
+	    fun make_property ()
+		=
+		{   exception EXCEPTION  X; 
 
-		{ cons, peek, delete };
-	    };
+		    fun cons (a, l)
+			=
+			EXCEPTION a ! l; 
 
-	fun make_bool ()
-	    =
-	    {   exception EXCEPTION;
-
-		fun peek [] => FALSE;
-		    peek (EXCEPTION ! _) => TRUE;
-		    peek (_ ! l) => peek l;
-		end;
-
-		fun set (l, flag)
-		    =
-		    set (l, [])
-		    where
-			fun set ([], _)             =>  if flag  EXCEPTION ! l; else l;fi;
-			    set (EXCEPTION ! r, xs) =>  if flag  l; else list::reverse_and_prepend (xs, r);fi;
-			    set (x ! r, xs)         =>  set (r, x ! xs);
-			end;
+		    fun peek []                =>  NULL;
+			peek (EXCEPTION a ! _) =>  THE a;
+			peek (_ ! l)           =>  peek l;
 		    end;
 
-		{ set, peek };
-	    };
+		    fun delete []                =>  [];
+			delete (EXCEPTION a ! r) =>  r;
+			delete (x ! r)           =>  x ! delete r;
+		    end;
 
-	fun get_properties ()
-	    =
-	    {   my THREAD_ID { properties, ... }
-                    =
-                    get_thread_id ();
+		    { cons, peek, delete };
+		};
 
-		properties;
-	    };
+	    fun make_bool ()
+		=
+		{   exception EXCEPTION;
 
-    herein
+		    fun peek [] => FALSE;
+			peek (EXCEPTION ! _) => TRUE;
+			peek (_ ! l) => peek l;
+		    end;
 
-	fun make_per_thread_property (init:  Void -> Y)
-            =
-            {   my { peek, cons, delete }
-                    =
-                    make_property (); 
+		    fun set (l, flag)
+			=
+			set (l, [])
+			where
+			    fun set ([], _)             =>  if flag  EXCEPTION ! l; else l;fi;
+				set (EXCEPTION ! r, xs) =>  if flag  l; else list::reverse_and_prepend (xs, r);fi;
+				set (x ! r, xs)         =>  set (r, x ! xs);
+			    end;
+			end;
 
-		fun peek_fn ()
-                    =
-                    peek (*(get_properties ()));
+		    { set, peek };
+		};
 
-		fun get_f ()
-                    =
-                    {   h = get_properties ();
+	    fun get_properties ()
+		=
+		{   my THREAD_ID { properties, ... }
+			=
+			get_thread_id ();
 
-			case (peek *h)
+		    properties;
+		};
 
-			    THE b => b;
+	herein
 
-			    NULL  => {   b = init ();
-                                         h := cons (b, *h);
-                                         b;
-                                     };
-                        esac;
+	    fun make_per_thread_property (init:  Void -> Y)
+		=
+		{   my { peek, cons, delete }
+			=
+			make_property (); 
+
+		    fun peek_fn ()
+			=
+			peek (*(get_properties ()));
+
+		    fun get_f ()
+			=
+			{   h = get_properties ();
+
+			    case (peek *h)
+
+				THE b => b;
+
+				NULL  => {   b = init ();
+					     h := cons (b, *h);
+					     b;
+					 };
+			    esac;
+			};
+
+		    fun clr_f ()
+			=
+			{   h = get_properties ();
+
+			    h := delete *h;
+			};
+
+		    fun set_fn x
+			=
+			{   h =  get_properties ();
+
+			    h :=  cons (x, delete *h);
+			};
+
+		    { peek  => peek_fn,
+		      get   => get_f,
+		      clear => clr_f,
+		      set   => set_fn
 		    };
+		};
 
-		fun clr_f ()
-                    =
-                    {   h = get_properties ();
+	    fun make_boolean_per_thread_property ()
+		=
+		{   my { peek, set }
+			=
+			make_bool ();
 
-			h := delete *h;
+		    fun get_f ()
+			=
+			peek(*(get_properties ()));
+
+		    fun set_f flag
+			=
+			{   h = get_properties ();
+
+			    h := set (*h, flag);
+			};
+
+		    { get => get_f,
+		      set => set_f
 		    };
+		};
 
-		fun set_fn x
-		    =
-		    {   h =  get_properties ();
-
-			h :=  cons (x, delete *h);
-		    };
-
-		{ peek  => peek_fn,
-                  get   => get_f,
-                  clear => clr_f,
-                  set   => set_fn
-                };
-	    };
-
-	fun make_boolean_per_thread_property ()
-	    =
-	    {   my { peek, set }
-		    =
-		    make_bool ();
-
-		fun get_f ()
-		    =
-		    peek(*(get_properties ()));
-
-		fun set_f flag
-                    =
-                    {   h = get_properties ();
-
-			h := set (*h, flag);
-		    };
-
-		{ get => get_f,
-                  set => set_f
-                };
-	    };
-
-    end;					# stipulate
-};
+	end;					# stipulate
+    };
+end;
 
 
 ##########################################################################

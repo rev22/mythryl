@@ -31,12 +31,12 @@
 
 
 stipulate
-    include threadkit;				# threadkit	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
+    include threadkit;				# threadkit			is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
-    package tc = thread_scheduler_control;
+    package tc = thread_scheduler_control;	# thread_scheduler_control	is from   src/lib/src/lib/thread-kit/src/unix/thread-scheduler-control.pkg
 herein
 
-    package tracing: (weak)  Tracing {		# Tracing	is from   src/lib/thread-kit/threadkit-lib/tracing.api
+    package tracing: (weak)  Tracing {		# Tracing			is from   src/lib/thread-kit/threadkit-lib/tracing.api
 
 	# Where trace output goes:
 	#
@@ -555,12 +555,8 @@ herein
 		    #
 		    #          src/runtime/c-libs/lib7-socket/print-if.c
 
-		thread_name =  tc::thread_scheduler_is_running ()
-                                ?? thread::get_thread_name ()			# Calling this when thread_scheduler is not running will SEGV =8^(
-			        :: "[nothread]";
-	
 		trace_string =  time_string + ":  "
-			     +  (sprintf "%-20s" (thread_name + ": "))
+			     +  (sprintf "%-20s" (thread::get_thread_name() + ": "))
 			     + make_message_string_fn()
 			     + "    \t(" + name
 			     + ")\n";
@@ -573,14 +569,6 @@ herein
 	    if (*tracing)
 		if (not (tc::thread_scheduler_is_running ()))
 		    #
-		    # 2010-04-18 CrT: If I uncomment the next line, recompile and reinstall and do
-		    #                     linux% my
-		    #			  eval: make "src/lib/x-kit/tut/triangle/triangle-app.make6";
-		    #                     eval: triangle_app::do_it "";
-		    #                 I get actual SEGVs and such. No clue why.
-		    #                     Patient: Doc, it hurts when I do this.
-		    #                     Doctor:  So don't do that.
-		    #		      So for now I'm just not doing that. ;-)		
 		    trace_string = make_trace_string  (trace_node, make_message_string_fn);
 		    trace_print  trace_string;
 		    ();
