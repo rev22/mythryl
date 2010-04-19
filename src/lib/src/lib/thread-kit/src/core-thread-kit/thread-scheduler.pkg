@@ -57,7 +57,7 @@ herein
 	# This is a real register on RISC architectures but a memory location
 	# on the register-starved x86 architecture -- see current_thread_ptr in src/lib/compiler/codegen/x86/x86-fps-registers.pkg
 	#
-	my get_current_thread:  Void -> Thread_Id =  unsafe::get_current_thread_register;
+	my get_current_thread:  Void -> Thread_Id =  unsafe::get_current_thread_register;	# CALLING THIS (AND USING RETURN VALUE) WHEN THREAD SCHEDULER IS NOT RUNNING CAN SEGV!! XXX BUGGO FIXME
 	my set_current_thread:  Thread_Id -> Void =  unsafe::set_current_thread_register;
 
 	# The scheduler defines three fate "hooks":

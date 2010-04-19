@@ -555,8 +555,12 @@ herein
 		    #
 		    #          src/runtime/c-libs/lib7-socket/print-if.c
 
+		thread_name =  tc::thread_scheduler_is_running ()
+                                ?? thread::get_thread_name ()			# Calling this when thread_scheduler is not running will SEGV =8^(
+			        :: "[nothread]";
+	
 		trace_string =  time_string + ":  "
-			     +  (sprintf "%-20s" (thread::get_thread_name() + ": "))
+			     +  (sprintf "%-20s" (thread_name + ": "))
 			     + make_message_string_fn()
 			     + "    \t(" + name
 			     + ")\n";
@@ -567,40 +571,74 @@ herein
 	fun print_if (trace_node as TRACE_TREE_NODE { tracing, name, ... })  make_message_string_fn
 	    =
 	    if (*tracing)
-		#
-		# Originally here we always did
-		#
-		#     trace_print (make_trace_string  (trace_node, make_message_string_fn));
-		#
-		# thus doing the print via our thread for mutual exclusion
-		# in standard concurrent-programming style.  Unfortunately,
-		# this produces problems when trying to trace through oddball
-		# code like the thread_scheduler itself, where thread-scheduling
-		# is off or SIGARLM is disabled or such.
-		#
-		# Since we're mostly just doing a single unbuffered write to a
-		# unix file descriptor on these calls, which unix semantics
-		# guarantees to be atomic anyhow, there is actually vanishingly
-		# little need for mutual exclusion except when we're actually
-		# opening the file (TO_FILE case).
-		#	
-		# Consequently, we currently avoid going through print_if_slot
-		# and the print_if thread in all cases except TO_FILE:
-
-		trace_string =  make_trace_string  (trace_node, make_message_string_fn);
-
 		if (not (tc::thread_scheduler_is_running ()))
 		    #
+		    # 2010-04-18 CrT: If I uncomment the next line, recompile and reinstall and do
+		    #                     linux% my
+		    #			  eval: make "src/lib/x-kit/tut/triangle/triangle-app.make6";
+		    #                     eval: triangle_app::do_it "";
+		    #                 I get actual SEGVs and such. No clue why.
+		    #                     Patient: Doc, it hurts when I do this.
+		    #                     Doctor:  So don't do that.
+		    #		      So for now I'm just not doing that. ;-)		
+		    trace_string = make_trace_string  (trace_node, make_message_string_fn);
 		    trace_print  trace_string;
+		    ();
 		else
-		    case *trace_to
-			#
-			TO_NULL   =>  ();
-			TO_FILE _ =>  give (print_if_slot, trace_string);
-			_         =>  trace_print          trace_string;
-		    esac;
+		    #
+		    # Originally here we always did
+		    #
+		    #     trace_print (make_trace_string  (trace_node, make_message_string_fn));
+		    #
+		    # thus doing the print via our thread for mutual exclusion
+		    # in standard concurrent-programming style.  Unfortunately,
+		    # this produces problems when trying to trace through oddball
+		    # code like the thread_scheduler itself, where thread-scheduling
+		    # is off or SIGARLM is disabled or such.
+		    #
+		    # Since we're mostly just doing a single unbuffered write to a
+		    # unix file descriptor on these calls, which unix semantics
+		    # guarantees to be atomic anyhow, there is actually vanishingly
+		    # little need for mutual exclusion except when we're actually
+		    # opening the file (TO_FILE case).
+		    #	
+		    # Consequently, we currently avoid going through print_if_slot
+		    # and the print_if thread in all cases except TO_FILE:
+		    #
+		    #
+		    trace_string = make_trace_string  (trace_node, make_message_string_fn);
+		    #
+ 		    case *trace_to
+ 			#
+ 			TO_NULL   =>  ();
+ 			TO_FILE _ =>  give (print_if_slot, trace_string);
+ 			_         =>  trace_print          trace_string;
+ 		    esac;
 		fi;
 	    fi;
+
+#    	    if (*tracing)
+#    
+#    
+#    		if (tc::thread_scheduler_is_running ())
+#    		    #
+#    		    trace_string =  make_trace_string  (trace_node, make_message_string_fn);
+#    		    give (print_if_slot, trace_string);
+#    		fi;
+#    
+#    # 		if (not (tc::thread_scheduler_is_running ()))
+#    # 		    #
+#    # #		    trace_print  trace_string;
+#    # 		    ();
+#    # 		else
+#    # 		    case *trace_to
+#    # 			#
+#    # 			TO_NULL   =>  ();
+#    # 			TO_FILE _ =>  give (print_if_slot, trace_string);
+#    # 			_         =>  trace_print          trace_string;
+#    # 		    esac;
+#    # 		fi;
+#    	    fi;
 
 	# This is an ugly little hack to solve a package cycle problem in
 	#     src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
