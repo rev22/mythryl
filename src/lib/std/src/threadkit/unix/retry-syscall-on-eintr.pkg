@@ -60,6 +60,7 @@ herein
 	fun do_atomic_syscall f x
 	    =
 	    {
+trace .{ "do_atomic_syscall stopping timer"; };
 	        ts::stop_timer();
 		    #
 		    # XXX BUGGO FIXME this is still pretty slapdash;
@@ -67,12 +68,16 @@ herein
 		    #                 signals like SIGCHLD, and if we
 		    #                 do we're screwed.
 
+trace .{ "do_atomic_syscall making the syscall"; };
 		y = (f x)
 		    except
-			x = {   ts::restart_timer ();
+			x = {
+trace .{ "do_atomic_syscall restarting timer after syscall exception return"; };
+				ts::restart_timer ();
 				raise exception x;
 			    };
 
+trace .{ "do_atomic_syscall restarting timer after syscall normal return"; };
 		ts::restart_timer();
 
 		y;

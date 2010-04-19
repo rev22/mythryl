@@ -152,10 +152,10 @@ herein
 
 	# Socket input operations 
 	#
-	receive_vector      : (Socket( X, Stream( Active ) ), Int                                  ) -> unt8_vector::Vector;
-	receive_rw_vector   : (Socket( X, Stream( Active ) ), rw_unt8_vector_slice::Slice          ) -> Int;
-	receive_vector'     : (Socket( X, Stream( Active ) ), Int,                         In_Flags) -> unt8_vector::Vector;
-	receive_rw_vector'  : (Socket( X, Stream( Active ) ), rw_unt8_vector_slice::Slice, In_Flags) -> Int;
+	receive_vector      : (Socket( X, Stream(Active) ), Int                                  ) -> unt8_vector::Vector;
+	receive_rw_vector   : (Socket( X, Stream(Active) ), rw_unt8_vector_slice::Slice          ) -> Int;
+	receive_vector'     : (Socket( X, Stream(Active) ), Int,                         In_Flags) -> unt8_vector::Vector;
+	receive_rw_vector'  : (Socket( X, Stream(Active) ), rw_unt8_vector_slice::Slice, In_Flags) -> Int;
 
 	receive_vector_from:      (Socket( X, Datagram ), Int)			             -> (unt8_vector::Vector, Socket_Address( Y ));
 	receive_rw_vector_from:   (Socket( X, Datagram ), rw_unt8_vector_slice::Slice)           -> (Int, Socket_Address( X ));
@@ -183,10 +183,10 @@ herein
 	send_vector_to_nonblocking'   : (Socket( X, Datagram ), Socket_Address( X ),    unt8_vector_slice::Slice, Out_Flags) -> Bool;
 	send_rw_vector_to_nonblocking': (Socket( X, Datagram ), Socket_Address( X ), rw_unt8_vector_slice::Slice, Out_Flags) -> Bool;
 
-	receive_vector_nonblocking    : (Socket( X, Stream( Active ) ), Int                                  ) -> Null_Or( unt8_vector::Vector );
-	receive_rw_vector_nonblocking : (Socket( X, Stream( Active ) ), rw_unt8_vector_slice::Slice          ) -> Null_Or( Int );
-	receive_vector_nonblocking'   : (Socket( X, Stream( Active ) ), Int,                         In_Flags) -> Null_Or( unt8_vector::Vector );
-	receive_rw_vector_nonblocking': (Socket( X, Stream( Active ) ), rw_unt8_vector_slice::Slice, In_Flags) -> Null_Or( Int );
+	receive_vector_nonblocking    : (Socket( X, Stream(Active) ), Int                                  ) -> Null_Or( unt8_vector::Vector );
+	receive_rw_vector_nonblocking : (Socket( X, Stream(Active) ), rw_unt8_vector_slice::Slice          ) -> Null_Or( Int );
+	receive_vector_nonblocking'   : (Socket( X, Stream(Active) ), Int,                         In_Flags) -> Null_Or( unt8_vector::Vector );
+	receive_rw_vector_nonblocking': (Socket( X, Stream(Active) ), rw_unt8_vector_slice::Slice, In_Flags) -> Null_Or( Int );
 
 	receive_vector_from_nonblocking    : (Socket( X, Datagram ), Int                                  ) -> Null_Or( (unt8_vector::Vector, Socket_Address( Y )) );
 	receive_rw_vector_from_nonblocking : (Socket( X, Datagram ), rw_unt8_vector_slice::Slice          ) -> Null_Or( (Int,                 Socket_Address( X )) );

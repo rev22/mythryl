@@ -338,7 +338,6 @@ trace  .{  "read_vector: BELOW call to socket::receive_vector";  };
 					    0   =>  raise exception FAIL "Socket closed"; 	# *** NOTE: we need a more graceful way to signal that the socket has closed!! ** XXX BUGGO FIXME
 					    len =>  read (n - len, v ! vl);
 					esac;
-
 				    };
 			    end;
 			end;

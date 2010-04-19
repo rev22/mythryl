@@ -254,43 +254,48 @@ herein
 	};				# package control 
 
 
-	my set_nbio'   : (Socket_Fd, Bool) -> Void
+	my set_nbio': (Socket_Fd, Bool) -> Void		# "nbio" == "non-blocking I/O"
 	    =
-	    socket_fn "setNBIO";
+	    socket_fn "setNBIO";			# setNBIO	is in    src/runtime/c-libs/lib7-socket/setNBIO.c
 
 #	fun setNBIO (SOCKET fd, flag) = setNBIO'(fd, flag)
 
 
-	# Extract a blocking file descriptor;
-	# implicitly set socket to
-	# blocking mode if necessary:			# "fd" == "file descriptor"
+	# Extract a blocking file descriptor;		# "nbr" == "nonblocking ref"
+	# implicitly set socket to			# "nb"  == "nonblocking"
+	# blocking mode if necessary:			# "fd"  == "file descriptor"
 	#
-	fun to_blocking_fd (SOCKET { file_descriptor, nonblocking => nbr as REF nb } )
+	fun to_blocking_fd (SOCKET { file_descriptor, nonblocking => nbr as REF nonblocking } )
 	    =
-	    if nb
-		 set_nbio' (file_descriptor, FALSE);
-		 nbr := FALSE;
-		 file_descriptor;
+	    if nonblocking
+		#
+		set_nbio' (file_descriptor, FALSE);
+		nbr := FALSE;
+		file_descriptor;
 	    else
-		 file_descriptor;
+		file_descriptor;
 	    fi;
 
 	# Same for non-blocking:
 	#
-	fun to_nonblocking_fd (SOCKET { file_descriptor, nonblocking => nbr as REF nb } )
+	fun to_nonblocking_fd (SOCKET { file_descriptor, nonblocking => nbr as REF nonblocking } )
 	    =
-	    {   if (not nb)
-		     set_nbio' (file_descriptor, TRUE);
-		     nbr := TRUE;
+	    {   if (not nonblocking)
+		    #	
+		    set_nbio' (file_descriptor, TRUE);
+		    nbr := TRUE;
 		fi;
 
 		file_descriptor;
 	    };
 
-						    # opsys_details		is from   src/lib/std/src/socket/unix-details.pkg
+							# opsys_details		is from   src/lib/std/src/socket/unix-details.pkg
 
-	wrap_nb_o =  opsys_details::wrap_nb_o;
-	wrap_nb_b =  opsys_details::wrap_nb_b;
+	# These two fns wrap an "f(x)" evaluation,	# "nb" is "nonblocking":
+	# while trapping some exceptions:
+	#
+	wrap_nb_o =  opsys_details::wrap_nb_o;		# Traps EWOULDBLOCK/EINPROGRESS/EAGAIN and returns NULL.
+	wrap_nb_b =  opsys_details::wrap_nb_b;		# Traps EWOULDBLOCK/EINPROGRESS/EAGAIN and returns FALSE.
 
 	fun sock_b  file_descriptor =  SOCKET { file_descriptor, nonblocking => REF FALSE };
 	fun sock_nb file_descriptor =  SOCKET { file_descriptor, nonblocking => REF TRUE };

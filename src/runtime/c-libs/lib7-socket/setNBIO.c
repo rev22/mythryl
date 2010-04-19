@@ -1,5 +1,6 @@
-/* setNBIO.c
+/* setNBIO.c	-- "NBIO" == "non-blocking I/O"
  *
+ * Set/clear nonblocking status on given socket.
  */
 
 #include "../../config.h"
@@ -28,24 +29,23 @@
 
 
 
-/* _lib7_Sock_setNBIO : (socket * Bool) -> Void
+/* _lib7_Sock_setNBIO:  (Socket_Fd, Bool) -> Void
  *
  * This function gets imported into the Mythryl world via:
  *     src/lib/std/src/socket/socket-guts.pkg
  */
-lib7_val_t _lib7_Sock_setNBIO (lib7_state_t *lib7_state, lib7_val_t arg)
+lib7_val_t   _lib7_Sock_setNBIO   (lib7_state_t  *lib7_state,   lib7_val_t  arg)
 {
-    int		n, status;
-    int		socket = REC_SELINT(arg, 0);
+    int	socket = REC_SELINT(arg, 0);
+    int status;
 
 #ifdef USE_FCNTL_FOR_NBIO
-    n = fcntl(F_GETFL, socket);
-    if (n < 0)
-        return RAISE_SYSERR (lib7_state, n);
-    if (REC_SEL(arg, 1) == LIB7_true)
-	n |= O_NONBLOCK;
-    else
-	n &= ~O_NONBLOCK;
+    int n = fcntl(F_GETFL, socket);
+
+    if (n < 0)   return RAISE_SYSERR (lib7_state, n);
+
+    if (REC_SEL(arg, 1) == LIB7_true)	n |=  O_NONBLOCK;
+    else				n &= ~O_NONBLOCK;
 
 /*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
 
@@ -54,7 +54,7 @@ lib7_val_t _lib7_Sock_setNBIO (lib7_state_t *lib7_state, lib7_val_t arg)
 /*  } while (status < 0 && errno == EINTR);	*/	/* Restart if interrupted by a SIGALRM or SIGCHLD or whatever.	*/
 
 #else
-    n = (REC_SEL(arg, 1) == LIB7_true);
+    int n = (REC_SEL(arg, 1) == LIB7_true);
 
 /*  do { */	/* Backed out 2010-02-26 CrT: See discussion at bottom of src/runtime/c-libs/lib7-socket/connect.c	*/
 
@@ -64,8 +64,7 @@ lib7_val_t _lib7_Sock_setNBIO (lib7_state_t *lib7_state, lib7_val_t arg)
 #endif
 
     CHECK_RETURN_UNIT(lib7_state, status);
-
-} /* end of _lib7_Sock_setNBIO */
+}
 
 
 /* COPYRIGHT (c) 1995 AT&T Bell Laboratories.
