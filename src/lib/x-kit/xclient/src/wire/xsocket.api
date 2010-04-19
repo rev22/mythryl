@@ -31,11 +31,11 @@ herein
 
 	same_xsocket:      (Xsocket, Xsocket) -> Bool;
 
-	request:            Xsocket -> unt8_vector::Vector -> Void;
-	request_and_check:  Xsocket -> unt8_vector::Vector -> Mailop( Void );
-	request_reply:      Xsocket -> unt8_vector::Vector -> Mailop( unt8_vector::Vector );
+	send_xrequest:				Xsocket -> unt8_vector::Vector -> Void;
+	send_xrequest_and_verify_success:	Xsocket -> unt8_vector::Vector -> Mailop( Void );
+	send_xrequest_and_read_reply:		Xsocket -> unt8_vector::Vector -> Mailop( unt8_vector::Vector );
 
-	request_replies
+	sent_xrequest_and_read_replies
 	    :
 	    Xsocket
 	    ->
@@ -43,7 +43,7 @@ herein
 	    ->
 	    Mailop( unt8_vector::Vector );
 
-	request_with_exposures
+	send_xrequest_and_handle_exposures
 	    :
 	    Xsocket
 	    ->

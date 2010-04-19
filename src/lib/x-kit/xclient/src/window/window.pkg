@@ -48,7 +48,7 @@ herein
 	#
 	fun set_property (xsession, window_id, name, value)
 	    =
-	    sn::request  xsession
+	    sn::send_xrequest  xsession
 		#
 		(v2w::encode_change_property
 		  {
@@ -576,7 +576,7 @@ herein
 
 	fun configure_window (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } ) vals
 	    =
-	    sn::request  xsession
+	    sn::send_xrequest  xsession
 	      ( v2w::encode_configure_window
 		  {
 		    window_id,
@@ -598,7 +598,7 @@ herein
 	#
 	fun show_window (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
-	    {   sn::request    xsession  (v2w::encode_map_window { window_id } );
+	    {   sn::send_xrequest    xsession  (v2w::encode_map_window { window_id } );
 		sn::flush_out  xsession;
 	    };
 
@@ -606,7 +606,7 @@ herein
 	#
 	fun hide_window (dt::WINDOW { window_id, screen => sn::SCREEN { xsession, ... }, ... } )
 	    =
-	    {   sn::request    xsession  (v2w::encode_unmap_window { window_id } );
+	    {   sn::send_xrequest    xsession  (v2w::encode_unmap_window { window_id } );
 
 		sn::flush_out  xsession;
 	    };
@@ -625,7 +625,7 @@ herein
 		=
 		{   xscreen ->  dy::XSCREEN { root_window_id, ... };
 
-		    sn::request  xsession
+		    sn::send_xrequest  xsession
 			#
 			(s2w::encode_send_unmap_notify
 			  {
@@ -750,7 +750,7 @@ herein
 	    {   ans = ( /* w2v::decode_grab_keyboard_reply */
 
 			(do_mailop
-			  (sn::request_reply
+			  (sn::send_xrequest_and_read_reply
 			    xsession
 			    (v2w::encode_ungrab_keyboard
 			      { time=>xt::CURRENT_TIME }

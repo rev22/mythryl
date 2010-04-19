@@ -356,7 +356,7 @@ herein
 			    fi;
 			};
 
-		    request = xok::request  xsocket;
+		    send_xrequest = xok::send_xrequest  xsocket;
 
 		    # Map the values of a pen to an X-server
 		    # GC initialization rw_vector.
@@ -461,11 +461,11 @@ herein
 
 			set_dashes (gc_id, THE (pg::IS_WIRE offset, dashes))
 			    =>
-			    request (v2w::encode_set_dashes { gc_id, dashes, dash_offset => unt::to_int_x offset });
+			    send_xrequest (v2w::encode_set_dashes { gc_id, dashes, dash_offset => unt::to_int_x offset });
 
 			set_dashes (gc_id, THE(_, dashes))
 			    =>
-			    request (v2w::encode_set_dashes { gc_id, dashes, dash_offset => 0 });
+			    send_xrequest (v2w::encode_set_dashes { gc_id, dashes, dash_offset => 0 });
 		    end;
 
 
@@ -475,11 +475,11 @@ herein
 
 			set_clip_boxes (gc_id, THE (pg::IS_POINT pt, (order, boxes)))
 			    =>
-			    request (v2w::encode_set_clip_boxes { gc_id, boxes, clip_origin => pt, ordering => order });
+			    send_xrequest (v2w::encode_set_clip_boxes { gc_id, boxes, clip_origin => pt, ordering => order });
 
 			set_clip_boxes (gc_id, THE(_, (order, boxes)))
 			    =>
-			    request (v2w::encode_set_clip_boxes { gc_id, clip_origin => ge::point::zero, ordering => order, boxes });
+			    send_xrequest (v2w::encode_set_clip_boxes { gc_id, clip_origin => ge::point::zero, ordering => order, boxes });
 		    end;
 
 
@@ -491,7 +491,7 @@ herein
 
 			    rw_vector::set (vals, font_gcslot, THE fid);
 
-			    request (v2w::encode_change_gc { gc_id, vals => xt::VALUE_LIST vals } );
+			    send_xrequest (v2w::encode_change_gc { gc_id, vals => xt::VALUE_LIST vals } );
 			};
 
 
@@ -506,7 +506,7 @@ herein
 
 			    gc_id = next_xid();
 
-			    request (v2w::encode_create_gc { gc_id, drawable, vals } );
+			    send_xrequest (v2w::encode_create_gc { gc_id, drawable, vals } );
 
 			    set_dashes (gc_id, dashes);
 			    set_clip_boxes (gc_id, clip_boxes);
@@ -554,7 +554,7 @@ herein
 
 			    if (default_mask != 0u0)
 				#	
-				request (
+				send_xrequest (
 				    v2w::encode_copy_gc
 					{  from =>  default_gcid,
 					   to   =>  gc_id,
@@ -570,7 +570,7 @@ herein
 				    ->
 				    { vals, dashes, clip_boxes };
 
-				request (v2w::encode_change_gc { gc_id, vals } );
+				send_xrequest (v2w::encode_change_gc { gc_id, vals } );
 				set_dashes (gc_id, dashes);
 				set_clip_boxes (gc_id, clip_boxes);
 			    fi;

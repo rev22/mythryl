@@ -48,11 +48,13 @@ herein
 	#
 	fun query (encode, decode) display
 	    =
-	    {   request_reply = sn::request_reply display;
+	    {   send_xrequest_and_read_reply
+		    =
+		    sn::send_xrequest_and_read_reply  display;
 
 		fun ask msg
 		    =
-		    (decode (do_mailop (request_reply (encode msg))))
+		    (decode (do_mailop (send_xrequest_and_read_reply (encode msg))))
 		    except
 			xok::LOST_REPLY
 			    =>
@@ -80,19 +82,19 @@ herein
 
 	fun rotate_props display arg
 	    =
-	    sn::request  display
+	    sn::send_xrequest  display
 		(v2w::encode_rotate_properties arg);
 
 
 	fun delete_prop display arg
 	    =
-	    sn::request  display
+	    sn::send_xrequest  display
 		(v2w::encode_delete_property arg);
 
 
 	fun change_property  display  arg
 	    =
-	    {   ack = sn::request_and_check
+	    {   ack = sn::send_xrequest_and_verify_success
 			  display
 			  (v2w::encode_change_property arg);
 

@@ -200,11 +200,11 @@ herein
 	# These just forward to the
         # Xsocket embedded in the Xsession:
 	#
-	request:           Xsession -> unt8_vector::Vector -> Void;
-	request_and_check: Xsession -> unt8_vector::Vector -> Mailop( Void );
+	send_xrequest:				Xsession -> unt8_vector::Vector -> Void;
+	send_xrequest_and_verify_success:	Xsession -> unt8_vector::Vector -> Mailop( Void );
 	#
-	request_reply:     Xsession -> unt8_vector::Vector -> Mailop( unt8_vector::Vector );
-	request_replies:   Xsession -> (unt8_vector::Vector, (unt8_vector::Vector -> Int)) -> Mailop( unt8_vector::Vector );
+	send_xrequest_and_read_reply:		Xsession -> unt8_vector::Vector -> Mailop( unt8_vector::Vector );
+	sent_xrequest_and_read_replies:   Xsession -> (unt8_vector::Vector, (unt8_vector::Vector -> Int)) -> Mailop( unt8_vector::Vector );
 	#
 	flush_out:         Xsession -> Void;
 	close_xsession:    Xsession -> Void;

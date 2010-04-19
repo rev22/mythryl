@@ -628,7 +628,7 @@ herein
 			(
 			do_mailop
 			    (
-			    xok::request_reply  dpy_info.xsocket  msg
+			    xok::send_xrequest_and_read_reply  dpy_info.xsocket  msg
 			    )
 			);
 

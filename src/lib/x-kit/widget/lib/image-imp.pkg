@@ -78,28 +78,25 @@ herein
 		fun do_plea (GET_IMAGE n)
 			=>
 			case (image_find n)
-			     NULL  => ERROR; 
-			     THE i => IMAGE i;
+			    #
+			    NULL  => ERROR; 
+			    THE i => IMAGE i;
 			esac;
 
 		    do_plea (ADD_IMAGE (q, i))
 			=>
 			case (image_find q )
-			     NULL => { image_ins (q, i);   OKAY; };
-			     THE _ => ERROR;
+			    #
+			    NULL => { image_ins (q, i);   OKAY; };
+			    THE _ => ERROR;
 			esac;
 		end;
 
 		fun loop ()
 		    =
 		    for (;;) {
-
-			give
-			  (
-			    reply_slot,
-			    #
-			    do_plea  (take  plea_slot)
-			  );
+			#
+			give (reply_slot,   do_plea  (take  plea_slot));
 		    };
 
 		apply image_ins inits;

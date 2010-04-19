@@ -35,7 +35,7 @@ herein
               attributes:	List( xt::a::Window_Attribute )
             }
 	    =
-	    xok::request  xsocket  msg
+	    xok::send_xrequest  xsocket  msg
 	    where 
 		msg =   v2w::encode_create_window
 			  {
@@ -53,12 +53,12 @@ herein
 
 	fun map_window  xsocket  window_id
 	    =
-	    xok::request xsocket (v2w::encode_map_window { window_id } );
+	    xok::send_xrequest  xsocket  (v2w::encode_map_window { window_id } );
 
 
 	fun change_window_attributes  xsocket  (window_id, attributes)
 	    =
-	    {   xok::request  xsocket
+	    {   xok::send_xrequest  xsocket
 		      #
 		      (v2w::encode_change_window_attributes  { window_id, attributes });
 

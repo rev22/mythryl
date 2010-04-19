@@ -239,7 +239,7 @@ herein
 
 #	    herein
 
-		fun request_draw_op (request, request_with_exposures)
+		fun request_draw_op (request, send_xrequest_and_handle_exposures)
 		    =
 		    fn  (to, gc_id, _, o::POLY_POINT (rel, points))
 			    =>
@@ -279,7 +279,7 @@ herein
 				    =
 				    ge::box::upperleft_and_size  box;
 
-				request_with_exposures (v2w::encode_copy_area { gc_id, from, to, from_point=>p, size, to_point=>pt }, sync_v);
+				send_xrequest_and_handle_exposures (v2w::encode_copy_area { gc_id, from, to, from_point=>p, size, to_point=>pt }, sync_v);
 			    };
 
 			(to, gc_id, _, o::COPY_PLANE (pt, from, box, plane, sync_v))
@@ -288,7 +288,7 @@ herein
 				    =
 				    ge::box::upperleft_and_size  box;
 
-				request_with_exposures (v2w::encode_copy_plane { gc_id, from, to, from_point=>p, size, to_point=>pt, plane }, sync_v);
+				send_xrequest_and_handle_exposures (v2w::encode_copy_plane { gc_id, from, to, from_point=>p, size, to_point=>pt, plane }, sync_v);
 			    };
 
 			(to, gc_id, _, o::COPY_PMAREA (pt, from, box))
@@ -468,8 +468,8 @@ herein
 		    request_dop
 			=
 			request_draw_op
-			  ( xok::request                 connection,
-			    xok::request_with_exposures  connection
+			  ( xok::send_xrequest                 connection,
+			    xok::send_xrequest_and_handle_exposures  connection
 			  );
 
 		    # Our first argument is a list of X drawing operations
@@ -638,14 +638,14 @@ herein
 
 	    fun destroy_window xsocket (i::WINDOW window_id)
 		    =>
-		    {   xok::request xsocket (v2w::encode_destroy_window { window_id } );
-			xok::flush   xsocket;
+		    {   xok::send_xrequest xsocket (v2w::encode_destroy_window { window_id } );
+			xok::flush         xsocket;
 		    };
 
 		destroy_window xsocket (i::PIXMAP pm_id)
 		    =>
-		    {   xok::request xsocket (v2w::encode_free_pixmap { pixmap => pm_id } );
-			xok::flush   xsocket;
+		    {   xok::send_xrequest xsocket (v2w::encode_free_pixmap { pixmap => pm_id } );
+			xok::flush         xsocket;
 		    };
 	    end;
 

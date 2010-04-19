@@ -82,13 +82,13 @@ herein
 	    =
 	    ask
 	    where
-		request_reply
+		send_xrequest_and_read_reply
 		    =
-		    xok::request_reply  connection;
+		    xok::send_xrequest_and_read_reply  connection;
 
 		fun ask msg
 		    =
-		    (decode (do_mailop (request_reply (encode msg))))
+		    (decode (do_mailop (send_xrequest_and_read_reply (encode msg))))
 		    except
 			xok::LOST_REPLY      =>  raise exception (xgripe::XERROR "[reply lost]");
 			xok::ERROR_REPLY err =>  raise exception (xgripe::XERROR (e2s::xerror_to_string err));
@@ -107,19 +107,19 @@ herein
 
 	fun set_selection_owner connection arg
 	    =
-	    xok::request
+	    xok::send_xrequest
 		connection
 		(v2w::encode_set_selection_owner  arg);
 
 
 	fun convert_selection connection arg
 	    =
-	    xok::request connection (v2w::encode_convert_selection arg);
+	    xok::send_xrequest connection (v2w::encode_convert_selection arg);
 
 
 	fun selection_notify connection { requesting_window_id, selection, target, property, timestamp }
 	    =
-	    xok::request
+	    xok::send_xrequest
 		connection
 		(s2w::encode_send_selection_notify
 		  {
@@ -147,7 +147,7 @@ herein
 
 	fun change_property connection arg
 	    =
-	    xok::request connection (v2w::encode_change_property arg);
+	    xok::send_xrequest connection (v2w::encode_change_property arg);
 
 
 	# Get a property value, which may require several requests 

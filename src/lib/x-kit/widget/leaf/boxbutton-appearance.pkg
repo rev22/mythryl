@@ -5,7 +5,10 @@
 # Compiled by:
 #     src/lib/x-kit/widget/xkit-widget.make6
 
-
+#######################################################################################
+# NB: "appearance" should be shortened to "skin" in all these packages. XXX BUGGO FIXME
+#     (The complementary class should maybe be "skeleton" or "bones"?)
+#######################################################################################
 
 					# button_appearance_from_shape_g	is from   src/lib/x-kit/widget/leaf/button-appearance-from-shape-g.pkg
 					# boxbutton_shape			is from   src/lib/x-kit/widget/leaf/boxbutton-shape.pkg

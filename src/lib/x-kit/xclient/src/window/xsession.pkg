@@ -327,7 +327,7 @@ herein
 					    # Make a pixmap to serve as the
 					    # witness drawable for the GC server:
 					    #	
-					    xok::request xsocket
+					    xok::send_xrequest xsocket
 					      ( value_to_wire::encode_create_pixmap
 						  { pixmap_id,
 						    drawable_id => root_window_id,
@@ -402,11 +402,11 @@ herein
 
 	herein
 
-	    request            =  apply_to_xsocket  xok::request;
-	    request_and_check  =  apply_to_xsocket  xok::request_and_check;
+	    send_xrequest  		      =  apply_to_xsocket  xok::send_xrequest;
+	    send_xrequest_and_verify_success  =  apply_to_xsocket  xok::send_xrequest_and_verify_success;
 
-	    request_reply      =  apply_to_xsocket  xok::request_reply;
-	    request_replies    =  apply_to_xsocket  xok::request_replies;
+	    send_xrequest_and_read_reply      =  apply_to_xsocket  xok::send_xrequest_and_read_reply;
+	    sent_xrequest_and_read_replies    =  apply_to_xsocket  xok::sent_xrequest_and_read_replies;
 
 	    flush_out          =  apply_to_xsocket  xok::flush;
 
@@ -472,7 +472,7 @@ herein
 			from_box					# Ignored because 'from' is NULL.
                       };
 
-		xok::request  xsocket  command;
+		xok::send_xrequest  xsocket  command;
 	    };
 
 	# Map a point in the window's coordinate
@@ -487,7 +487,7 @@ herein
 		    w2v::decode_translate_coordinates_reply
 		      (
 			do_mailop
-			  (request_reply
+			  (send_xrequest_and_read_reply
 			      xsession
 			      (v2w::encode_translate_coordinates { from_window=>window_id, to_window=>root_window_id, from_point=>pt } )
 			  )
@@ -546,7 +546,7 @@ trace .{ "xsession: send_mousebutton_press_event/YYY calling s2w::encode_send_bu
 			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button, buttons
 		      };		
 
-		xok::request xsocket command;
+		xok::send_xrequest xsocket command;
 
 trace .{ "xsession: send_mousebutton_press_event/BOT called  s2w::encode_send_button_press_xevent -- DONE"; };
 		();
@@ -601,7 +601,7 @@ trace .{ "xsession: send_mousebutton_release_event/YYY calling s2w::encode_send_
 			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button
 		      };		
 
-		xok::request xsocket command;
+		xok::send_xrequest  xsocket  command;
 trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_button_press_xevent -- DONE"; };
 		();
 	    };
@@ -659,7 +659,7 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 
 	fun ring_bell xsession percent
 	    =
-	    request  xsession
+	    send_xrequest  xsession
 		(value_to_wire::encode_bell { percent => int::min (100, int::max(-100, percent)) } );
 
 

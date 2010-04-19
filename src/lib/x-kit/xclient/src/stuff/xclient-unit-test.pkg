@@ -117,8 +117,8 @@ herein
 				    ]
 			      };
 
-			    xok::request  xsocket  (v2w::encode_map_window { window_id });
-			    xok::flush    xsocket;
+			    xok::send_xrequest  xsocket  (v2w::encode_map_window { window_id });
+			    xok::flush          xsocket;
 
 			    do_mailop (timeout_in' (time::from_milliseconds 100));
 

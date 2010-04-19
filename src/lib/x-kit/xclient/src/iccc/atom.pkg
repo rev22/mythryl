@@ -49,7 +49,7 @@ package atom: (weak)  api {
 	    (
 	    threadkit::do_mailop
 		(
-                sn::request_reply
+                sn::send_xrequest_and_read_reply
                     xsession
                     (value_to_wire::encode_intern_atom  arg)
 		)
@@ -75,7 +75,7 @@ package atom: (weak)  api {
 	    (
 	    threadkit::do_mailop
 		(
-	        sn::request_reply
+	        sn::send_xrequest_and_read_reply
 		    xsession
 		    (value_to_wire::encode_get_atom_name { atom } )
                 )

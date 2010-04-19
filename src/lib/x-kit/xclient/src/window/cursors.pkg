@@ -144,7 +144,7 @@ herein
 		# glyph; so character position 0 contains a shape, 1 the mask for 0,
 		# 2 a shape, etc.
 		#
-		sn::request xsession
+		sn::send_xrequest  xsession
 		  (
 		    v2w::encode_create_glyph_cursor
 		      {
@@ -174,7 +174,7 @@ herein
 	      background_rgb:  rgb::Rgb
 	    }
 	    =
-	    sn::request xsession
+	    sn::send_xrequest  xsession
 	      (
 		v2w::encode_recolor_cursor
 		  {
@@ -189,7 +189,7 @@ herein
 	#
 	fun change_active_grab_cursor  xsession  cursor
 	    =
-	    sn::request  xsession
+	    sn::send_xrequest  xsession
 	      (
 		v2w::encode_change_active_pointer_grab
 		  {

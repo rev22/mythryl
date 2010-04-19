@@ -102,13 +102,13 @@ herein
 
 	fun query (encode, decode) xsocket
 	    =
-	    {   request_reply
+	    {   send_xrequest_and_read_reply
 		    =
-		    xok::request_reply  xsocket;
+		    xok::send_xrequest_and_read_reply  xsocket;
 
 		fn request
 		    =
-		    decode (do_mailop (request_reply (encode request)));
+		    decode (do_mailop (send_xrequest_and_read_reply (encode request)));
 	    };
 
 	get_keyboard_mapping

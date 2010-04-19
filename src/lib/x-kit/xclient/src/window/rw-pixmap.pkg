@@ -60,7 +60,7 @@ herein
                     raise exception BAD_PIXMAP_PARAMETER;
                 fi;
 
-		xok::request  xsocket
+		xok::send_xrequest  xsocket
 		  ( value_to_wire::encode_create_pixmap
 		      {
 		        pixmap_id,

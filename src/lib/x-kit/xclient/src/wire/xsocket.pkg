@@ -1448,7 +1448,7 @@ trace  .{  "make_xsocket/BOTTOM -- returning XSOCKET record.";  };
 	    =
 	    a == b;
 
-	fun request (XSOCKET { plea_slot, ... } ) s
+	fun send_xrequest (XSOCKET { plea_slot, ... } ) s
 	    =
 	    give (plea_slot, PLEA s);
 
@@ -1483,7 +1483,7 @@ trace  .{  "xsocket::unwrap_reply/REPLY.";  };
 	# This is a workhorse call,
 	# request-with-single-reply:
 	# 
-	fun request_reply (XSOCKET { plea_slot, ... } ) s
+	fun send_xrequest_and_read_reply (XSOCKET { plea_slot, ... } ) s
 	    =
 	    {   reply_slot = make_mailslot ();
 
@@ -1509,7 +1509,7 @@ trace  .{  "xsocket::unwrap_reply/REPLY.";  };
 	# successful completion of the op before
 	# continuing.
 	#
-	fun request_and_check (XSOCKET { plea_slot, ... } ) s
+	fun send_xrequest_and_verify_success (XSOCKET { plea_slot, ... } ) s
 	    =
 	    {   reply_slot1 = make_mailslot ();
 		reply_slot2 = make_mailslot ();
@@ -1522,11 +1522,11 @@ trace  .{  "xsocket::unwrap_reply/REPLY.";  };
 #		    fn (REPLY_ERROR s) =>  raise exception ERROR_REPLY (wire_to_value::decode_error s);
 #		       _               =>  ();
 		    fn (REPLY_ERROR s) => {
-trace  .{  "xsocket::request_and_check:  Raising exception ERROR_REPLY.";  };
+trace  .{  "xsocket::send_xrequest_and_verify_success:  Raising exception ERROR_REPLY.";  };
                                            raise exception ERROR_REPLY (wire_to_value::decode_error s);
                                           };
 		       _               => {
-trace  .{  "xsocket::request_and_check:  Normal return, returning Void.";  };
+trace  .{  "xsocket::send_xrequest_and_verify_success:  Normal return, returning Void.";  };
                                            ();
 					  }; 
 		    end;
@@ -1534,7 +1534,7 @@ trace  .{  "xsocket::request_and_check:  Normal return, returning Void.";  };
 
 	# I cannot find any code which actually uses this:
 	#
-	fun request_replies
+	fun sent_xrequest_and_read_replies
 		(XSOCKET { plea_slot, ... } )
 		(s, remain)
 	    =
@@ -1552,7 +1552,7 @@ trace  .{  "xsocket::request_and_check:  Normal return, returning Void.";  };
 	# used twice, by DOP_COPY_AREA and DOP_COPY_PLANE
 	# in draw_imp:
 	#
-	fun request_with_exposures
+	fun send_xrequest_and_handle_exposures
 		(XSOCKET { plea_slot, ... } )
 		(s, sync_v)
 	    =
@@ -1596,11 +1596,11 @@ trace  .{  "xsocket::request_and_check:  Normal return, returning Void.";  };
 	    =
 	    ask
 	    where
-		request_reply' =  request_reply  xsocket;
+		send_xrequest_and_read_reply' =  send_xrequest_and_read_reply  xsocket;
 
 		fun ask msg
 		    =
-		    decode (do_mailop (request_reply' (encode msg)))
+		    decode (do_mailop (send_xrequest_and_read_reply' (encode msg)))
 		    except
 			LOST_REPLY      => raise exception (xgripe::XERROR "[reply lost]");
 			ERROR_REPLY err => raise exception (xgripe::XERROR (e2s::xerror_to_string err));
