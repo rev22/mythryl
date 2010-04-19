@@ -719,12 +719,10 @@ herein
 		    =>
 		    w8v::from_list [];
 
-		recv_v getfd (socket, nbytes, peek, oob)
+		recv_v  getfd  (socket, nbytes, peek, oob)
 		    =>
-		    if (nbytes < 0)
-			raise exception SIZE;
-		    else
-                        recv_v' (getfd socket, nbytes, peek, oob);
+		    if (nbytes < 0)  raise exception SIZE;
+		    else             recv_v' (getfd socket, nbytes, peek, oob);
 		    fi;
 	    end;
 
@@ -734,81 +732,106 @@ herein
 
 	herein
 
-	    fun recv_vec0 getfd (socket, size)
-		=
-		recv_v getfd (socket, size, default_peek, default_oob);
+	    stipulate	
+		fun recv_vec0  getfd  (socket, size)
+		    =
+		    recv_v getfd (socket, size, default_peek, default_oob);
+	    herein
+
+		# Set socket to blocking if not already blocking
+		# and read given number of bytes from given socket.
+		#
+		# Return resulting bytevector.
+		# 
+		fun receive_vector  arg
+		    =
+		    recv_vec0  to_blocking_fd  arg;
 
 
-	    fun receive_vector arg
-		=
-		recv_vec0  to_blocking_fd  arg;
+		# Set socket to nonblocking if not already nonblocking
+		# and read given number of bytes from given socket.
+		#
+		# Return                               THE result_bytevector.
+		# If no input was available return     NULL.
+		# 
+		fun receive_vector_nonblocking  arg
+		    =
+		    wrap_nb_o  (recv_vec0 to_nonblocking_fd)  arg;
+	    end;
 
 
-	    fun receive_vector_nonblocking arg
-		=
-		wrap_nb_o (recv_vec0 to_nonblocking_fd) arg;
+	    stipulate
+		fun receive_vector'0  getfd  (socket, size, { peek, oob } )
+		    =
+		    recv_v getfd (socket, size, peek, oob);
+	    herein
+
+		# Same as receive_vector above,
+		# but with explicit PEEK and OOB flags:
+		#
+		fun receive_vector'  arg
+		    =
+		    receive_vector'0  to_blocking_fd  arg;
 
 
-	    fun receive_vector'0 getfd (socket, size, { peek, oob } )
-		=
-		recv_v getfd (socket, size, peek, oob);
+		# Same as receive_vector_nonblokcing above,
+		# but with explicit PEEK and OOB flags:
+		#
+		fun receive_vector_nonblocking' arg
+		    =
+		    wrap_nb_o (receive_vector'0 to_nonblocking_fd)  arg;
+	    end;
 
 
-	    fun receive_vector'  arg
-		=
-		receive_vector'0  to_blocking_fd  arg;
+	    stipulate
+		fun recv_arr0 getfd (socket, buffer)
+		    =
+		    {   fd = getfd socket;
+
+			my (buf, i, size)
+			    =
+			    abuf buffer;
+
+			if (size > 0)   recv_a (fd, buf, i, size, default_peek, default_oob);
+			else 	        0;
+			fi;
+		    };
+	    herein
+
+		fun receive_rw_vector    arg
+		    =
+		    recv_arr0  to_blocking_fd  arg;
 
 
-	    fun receive_vector_nonblocking' arg
-		=
-		wrap_nb_o (receive_vector'0 to_nonblocking_fd)  arg;
+		fun receive_rw_vector_nonblocking arg
+		    =
+		    wrap_nb_o (recv_arr0 to_nonblocking_fd) arg;
+	    end;
 
 
-	    fun recv_arr0 getfd (socket, buffer)
-		=
-		{   fd = getfd socket;
+	    stipulate
+		fun receive_rw_vector'0 getfd (socket, buffer, { peek, oob } )
+		    =
+		    {   fd = getfd socket;
 
-		    my (buf, i, size)
-			=
-			abuf buffer;
+			my (buf, i, size)
+			    =
+			    abuf buffer;
 
-		    if (size > 0)   recv_a (fd, buf, i, size, default_peek, default_oob);
-		    else 	    0;
-		    fi;
-		};
-
-
-	    fun receive_rw_vector    arg
-		=
-		recv_arr0  to_blocking_fd  arg;
-
-
-	    fun receive_rw_vector_nonblocking arg
-		=
-		wrap_nb_o (recv_arr0 to_nonblocking_fd) arg;
+			if (size > 0)   recv_a (fd, buf, i, size, peek, oob);
+			else            0;
+			fi;
+		    };
+	    herein
+		fun receive_rw_vector' arg
+		    =
+		    receive_rw_vector'0  to_blocking_fd  arg;
 
 
-	    fun receive_rw_vector'0 getfd (socket, buffer, { peek, oob } )
-		=
-		{   fd = getfd socket;
-
-		    my (buf, i, size)
-			=
-			abuf buffer;
-
-		    if (size > 0)   recv_a (fd, buf, i, size, peek, oob);
-		    else            0;
-		    fi;
-		};
-
-	    fun receive_rw_vector' arg
-		=
-		receive_rw_vector'0  to_blocking_fd  arg;
-
-
-	    fun receive_rw_vector_nonblocking' arg
-		=
-		wrap_nb_o (receive_rw_vector'0 to_nonblocking_fd) arg;
+		fun receive_rw_vector_nonblocking' arg
+		    =
+		    wrap_nb_o (receive_rw_vector'0 to_nonblocking_fd) arg;
+	    end;
 
 	end;					# stipulate
 
