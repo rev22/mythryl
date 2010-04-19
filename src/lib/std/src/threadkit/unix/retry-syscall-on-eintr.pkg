@@ -22,7 +22,8 @@
 
 
 stipulate
-    package s = thread_scheduler;		# thread_scheduler	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
+    package tr =  tracing;					# tracing		is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+    package ts = thread_scheduler;				# thread_scheduler	is from   src/lib/src/lib/thread-kit/src/core-thread-kit/thread-scheduler.pkg
 herein
 
     package retry_syscall_on_eintr: (weak)    api {
@@ -44,6 +45,12 @@ herein
 
     } {
 
+	stipulate
+            retry_syscall_tracing =  tr::make_trace_tree_leaf { parent => tr::all_tracing, name => "retry_syscall_tracing" };
+	herein
+	    trace =  tr::print_if  retry_syscall_tracing;			# Conditionally write strings to tracing.log or whatever.
+	end;
+
 	fun is_intr err
 	    =
 	    err == posix::error::intr;		# == posix EINTR.
@@ -52,7 +59,8 @@ herein
 	
 	fun do_atomic_syscall f x
 	    =
-	    {   s::stop_timer();
+	    {
+	        ts::stop_timer();
 		    #
 		    # XXX BUGGO FIXME this is still pretty slapdash;
 		    #                 we can still get interrupted by
@@ -61,11 +69,11 @@ herein
 
 		y = (f x)
 		    except
-			x = {   s::restart_timer ();
+			x = {   ts::restart_timer ();
 				raise exception x;
 			    };
 
-		s::restart_timer();
+		ts::restart_timer();
 
 		y;
 	    };
