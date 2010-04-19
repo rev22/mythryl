@@ -316,73 +316,56 @@ herein
 			=
 			err == posix::error::intr;		# == posix EINTR.
 
-		    # Receive vector without blocking, because
+		    # Read at most 'maxbytes' bytes from
+		    # X server socket without blocking,
+		    # return as a byte-vector.	
+		    #
+		    # This needs to be a nonblocking read because
 		    # if we block we lock up the whole GUI:
 		    #
 		    fun receive_vector_nonblocking  (arg as (socket, maxbytes))
 			=
 			case (socket::receive_vector_nonblocking  arg)
 			    #
-			    THE vector
+			    THE vector							# We got some bytes -- return them.
 				=>
 				vector;
 
-			    NULL =>
-				# We got EWOULDBLOCK/EAGAIN or EINPROGRESS
-				# so wait and retry:
-				#
-				{   sleep_for (time::from_milliseconds 50);	# Wait.
-				    receive_vector_nonblocking  arg;		# Retry.
+			    NULL =>				    			# We got EWOULDBLOCK/EAGAIN or EINPROGRESS, so wait and retry.
+				{   sleep_for (time::from_milliseconds 50);		# Wait.		(Ugly but servicable -- see note [2] at bottom of file.)
+				    receive_vector_nonblocking  arg;			# Retry.
 				};
-				    #
-				    # Spinning like this is pretty ugly,
-				    # albeit fairly cheap, and hugely
-				    # better than blocking on the socket,
-				    # since this way other threads can
-				    # run while we're waiting.
-				    #
-				    # It would be much nicer to have a
-				    # dedicated POSIX thread which did a
-				    # select/poll/whatever on the set of
-				    # fds we're waiting for input from
-				    # and then sets "input available flags
-				    # in C-side memory.
-				    #
-				    # Our gc-probe logic could then check
-				    # those flags and ping the scheduler
-				    # to wake threads waiting on such I/O.
-				    #
-				    # Since gc-probe is the only time we
-				    # respond to such thread I/O opportunities,
-				    # this is a minimum-latency solution.		XXX BUGGO FIXME.
 			esac;
-			    
 
-		    # Read n bytes from the socket:
+
+		    # Read exactly n bytes from the X server socket
+		    # and return it as a byte-vector:
 		    #
-		    fun read_vector (n, header)
+		    fun read_vector (bytes_to_read, header)
 			=
-			read (n, header)
+			read (bytes_to_read, header)
 			where
-			    fun read (0, [v])
+			    fun read (0, [result_bytevector])
 				    =>
-				    v;
+				    result_bytevector;
 
-				read (0, vl)
+				read (0, bytevectors)
 				    =>
-				    v8::cat (list::reverse vl);
+				    v8::cat (list::reverse bytevectors);
 
-				read (n, vl)
+				read (remaining_bytes_to_read, result_bytevectors)
 				    =>
-				    {
-trace  .{  "read_vector: ABOVE call to socket::receive_vector";  };
-                                        v = rse::do_syscall_retry_on_eintr socket::receive_vector (socket, n);	# 2010-03-15 CrT: Added rse::do_syscall_retry_on_eintr here, not sure why it was apparently not needed in SML/NJ version.
-trace  .{  "read_vector: BELOW call to socket::receive_vector";  };
+				    {   bytevector =  receive_vector_nonblocking (socket, remaining_bytes_to_read);		# See note [1] at bottom of file.
 
-					case (v8::length v)
+					case (v8::length bytevector)
 					    #
-					    0   =>  raise exception FAIL "Socket closed"; 	# *** NOTE: we need a more graceful way to signal that the socket has closed!! ** XXX BUGGO FIXME
-					    len =>  read (n - len, v ! vl);
+					    0   =>  raise exception FAIL "Socket closed"; 					# We need a more graceful way to signal that the socket has closed.  XXX BUGGO FIXME
+					    #
+					    bytes_read
+						=>
+						read ( remaining_bytes_to_read - bytes_read,
+                                                       bytevector ! result_bytevectors
+                                                     );
 					esac;
 				    };
 			    end;
@@ -1637,6 +1620,69 @@ trace  .{  "xsocket::request_and_check:  Normal return, returning Void.";  };
 
     };						# package xsocket
 end;
+
+##########################################################################
+# NOTES
+#
+############
+# Note [1]
+#
+# This
+#
+#     v =  receive_vector_nonblocking (socket, n);
+#
+# was originally
+#
+#     v = socket::receive_vector (socket, n);
+#
+# which didn't work due to EINTR errors from
+# the 50Hz setitimer SIGALRM, propagaged up
+# as posix::error::intr exceptions.
+#
+# I don't know why the SML/NJ version did not have this
+# problem.  Maybe it did.  Maybe it didn't and I broke
+# something.  Maybe it worked on the original Solaris
+# OS and this problem manifests only on Linux.
+#
+# Changing the original code to
+#
+#     v = rse::do_syscall_retry_on_eintr socket::receive_vector (socket, n);
+#
+# trapped the EINTR-derived exceptions and retried, but
+# that call turns off the 50Hz SIGALRM after a retry or
+# two, which shuts down all GUI activity until the next
+# X event arrives to unblock things.
+#
+# Either way, the system would be spending a significant
+# fraction of its time read-blocked on the X server socket
+# even if there are threads ready to run, which sucks.
+#
+# The current code does nonblocking reads to avoid losing
+# valuable cycles sitting blocked on the socket fd.  It
+# then does a wait and retry.  This does increase system
+# user-input response latency by the wait time, which is
+# suboptimal.
+#
+#
+#
+############
+# Note [2]
+#
+# Spinning like this is pretty ugly, albeit fairly cheap, and hugely
+# better than blocking on the socket, since this way other threads can
+# run while we're waiting.
+#
+# It would be much nicer to have a dedicated POSIX thread which did a
+# select/poll/whatever on the set of fds we're waiting for input from
+# and then sets "input available flags in C-side memory.
+#
+# Our gc-probe logic could then check those flags and ping the scheduler
+# to wake threads waiting on such I/O.
+#
+# Since gc-probe is the only time we respond to such thread I/O opportunities,
+# this is a minimum-latency solution, short of having a Mythryl ppread blocked
+# and ready to run -- possible only once we have parallel computing support.		XXX BUGGO FIXME.
+
 
 
 ##########################################################################
