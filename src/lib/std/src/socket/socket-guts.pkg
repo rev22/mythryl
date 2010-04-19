@@ -336,11 +336,11 @@ herein
 		=
 		listen' (file_descriptor, back_log);		# Should do some range checking on back_log  XXX BUGGO FIXME
 
-	    fun accept0 (socket, getfd) s
+	    fun accept0 (socket, coerce_blocking_status) s
 		=
 		{   my (new_fd, address)
 			=
-			accept' (getfd s);
+			accept' (coerce_blocking_status s);
 
 		    ( socket new_fd,
 		      ADDRESS address
@@ -357,9 +357,9 @@ herein
 		wrap_nb_o (accept0 (sock_nb, to_nonblocking_fd)) s;
 
 
-	    fun connect0 getfd (s, ADDRESS address)
+	    fun connect0  coerce_blocking_status  (s, ADDRESS address)
 		=
-		connect' (getfd s, address);
+		connect' (coerce_blocking_status s, address);
 
 
 	    fun connect arg
@@ -503,9 +503,9 @@ herein
 	    my send_a:  (Int, Wy8Array,  Int, Int, Bool, Bool) -> Int	= socket_fn "sendBuf";
 	herein
 
-	    fun send_vec0 getfd (s, buffer)
+	    fun send_vec0  coerce_blocking_status  (s, buffer)
 		=
-		{   fd = getfd s;
+		{   fd = coerce_blocking_status s;
 
 		    my (vec, i, len)
 			=
@@ -535,9 +535,9 @@ herein
 		=
 		wrap_nb_o (send_vec0 to_nonblocking_fd) arg;
 
-	    fun send_vector'0 getfd (socket, buffer, { don't_route, oob } )
+	    fun send_vector'0  coerce_blocking_status  (socket, buffer, { don't_route, oob } )
 		=
-		{   fd = getfd socket;
+		{   fd = coerce_blocking_status socket;
 
 		    my (vec, i, len)
 			=
@@ -556,10 +556,11 @@ herein
 		=
 		wrap_nb_o (send_vector'0 to_nonblocking_fd) arg;
 
-	    fun send_arr0 getfd (socket, buffer)
+	    fun send_arr0  coerce_blocking_status  (socket, buffer)
 		=
-		{   fd = getfd socket;
-		    my (arr, i, len) = abuf buffer;
+		{   fd = coerce_blocking_status socket;
+
+		    my (arr, i, len) =  abuf buffer;
 
 		    if (len > 0)  send_a (fd, arr, i, len, default_don't_route, default_oob);
 		    else          0;
@@ -574,9 +575,9 @@ herein
 		=
 		wrap_nb_o (send_arr0 to_nonblocking_fd) arg;
 
-	    fun send_rw_vector'0 getfd (socket, buffer, { don't_route, oob } )
+	    fun send_rw_vector'0  coerce_blocking_status  (socket, buffer, { don't_route, oob } )
 		=
-		{   fd = getfd socket;
+		{   fd =  coerce_blocking_status  socket;
 
 		    my (arr, i, len)
 			=
@@ -602,9 +603,9 @@ herein
 	    my send_to_a:  (Int, Wy8Array,  Int, Int, Bool, Bool, Internet_Address) -> Int   = socket_fn "sendBufTo";
 	herein
 
-	    fun send_vec_to0 getfd (socket, ADDRESS address, buffer)
+	    fun send_vec_to0  coerce_blocking_status  (socket, ADDRESS address, buffer)
 		=
-		{   fd = getfd socket;
+		{   fd =  coerce_blocking_status  socket;
 
 		    my (vec, i, len)
 			=
@@ -628,9 +629,9 @@ herein
 		wrap_nb_b (send_vec_to0 to_nonblocking_fd) arg;
 
 
-	    fun send_vector_to'0 getfd (socket, ADDRESS address, buffer, { don't_route, oob } )
+	    fun send_vector_to'0  coerce_blocking_status  (socket, ADDRESS address, buffer, { don't_route, oob } )
 		=
-		{   fd = getfd socket;
+		{   fd =  coerce_blocking_status  socket;
 
 		    my (vec, i, len)
 			=
@@ -654,9 +655,9 @@ herein
 		wrap_nb_b (send_vector_to'0 to_nonblocking_fd) arg;
 
 
-	    fun send_arr_to0 getfd (socket, ADDRESS address, buffer)
+	    fun send_arr_to0  coerce_blocking_status  (socket, ADDRESS address, buffer)
 		=
-		{   fd = getfd socket;
+		{   fd =  coerce_blocking_status  socket;
 
 		    my (arr, i, len)
 			=
@@ -679,9 +680,9 @@ herein
 		wrap_nb_b (send_arr_to0 to_nonblocking_fd) arg;
 
 
-	    fun send_rw_vector_to'0 getfd (socket, ADDRESS address, buffer, { don't_route, oob } )
+	    fun send_rw_vector_to'0  coerce_blocking_status  (socket, ADDRESS address, buffer, { don't_route, oob } )
 		=
-		{   fd = getfd socket;
+		{   fd =  coerce_blocking_status  socket;
 
 		    my (arr, i, len)
 			=
@@ -719,10 +720,10 @@ herein
 		    =>
 		    w8v::from_list [];
 
-		recv_v  getfd  (socket, nbytes, peek, oob)
+		recv_v  coerce_blocking_status  (socket, nbytes, peek, oob)
 		    =>
 		    if (nbytes < 0)  raise exception SIZE;
-		    else             recv_v' (getfd socket, nbytes, peek, oob);
+		    else             recv_v' (coerce_blocking_status socket, nbytes, peek, oob);
 		    fi;
 	    end;
 
@@ -733,9 +734,9 @@ herein
 	herein
 
 	    stipulate	
-		fun recv_vec0  getfd  (socket, size)
+		fun recv_vec0  coerce_blocking_status  (socket, size)
 		    =
-		    recv_v getfd (socket, size, default_peek, default_oob);
+		    recv_v  coerce_blocking_status  (socket, size, default_peek, default_oob);
 	    herein
 
 		# Set socket to blocking if not already blocking
@@ -761,9 +762,9 @@ herein
 
 
 	    stipulate
-		fun receive_vector'0  getfd  (socket, size, { peek, oob } )
+		fun receive_vector'0  coerce_blocking_status  (socket, size, { peek, oob } )
 		    =
-		    recv_v getfd (socket, size, peek, oob);
+		    recv_v  coerce_blocking_status  (socket, size, peek, oob);
 	    herein
 
 		# Same as receive_vector above,
@@ -784,9 +785,9 @@ herein
 
 
 	    stipulate
-		fun recv_arr0 getfd (socket, buffer)
+		fun recv_arr0  coerce_blocking_status  (socket, buffer)
 		    =
-		    {   fd = getfd socket;
+		    {   fd =  coerce_blocking_status  socket;
 
 			my (buf, i, size)
 			    =
@@ -810,9 +811,9 @@ herein
 
 
 	    stipulate
-		fun receive_rw_vector'0 getfd (socket, buffer, { peek, oob } )
+		fun receive_rw_vector'0  coerce_blocking_status  (socket, buffer, { peek, oob } )
 		    =
-		    {   fd = getfd socket;
+		    {   fd =  coerce_blocking_status  socket;
 
 			my (buf, i, size)
 			    =
@@ -847,12 +848,12 @@ herein
 		    =>
 		    (w8v::from_list [], (ADDRESS (w8v::from_list [])));
 
-		recv_from_v getfd (socket, size, peek, oob)
+		recv_from_v  coerce_blocking_status  (socket, size, peek, oob)
 		    =>
 		    if (size < 0)
 			raise exception SIZE;
 		    else
-			fd = getfd socket;
+			fd =  coerce_blocking_status  socket;
 
 			my (data, address)
 			    =
@@ -869,86 +870,93 @@ herein
 
 	herein
 
-	    fun recv_vec_from0 getfd (socket, size)
-		=
-		recv_from_v getfd (socket, size, default_peek, default_oob);
+	    stipulate
+		fun recv_vec_from0  coerce_blocking_status  (socket, size)
+		    =
+		    recv_from_v  coerce_blocking_status  (socket, size, default_peek, default_oob);
+	    herein
+
+		fun receive_vector_from arg
+		    =
+		    recv_vec_from0  to_blocking_fd  arg;
 
 
-	    fun receive_vector_from arg
-		=
-		recv_vec_from0  to_blocking_fd  arg;
+		fun receive_vector_from_nonblocking arg
+		    =
+		    wrap_nb_o (recv_vec_from0 to_nonblocking_fd) arg;
+
+	    end;
+
+	    stipulate
+		fun receive_vector_from'0  coerce_blocking_status  (socket, size, { peek, oob } )
+		    =
+		    recv_from_v  coerce_blocking_status  (socket, size, peek, oob);
+	    herein
+
+		fun receive_vector_from' arg
+		    =
+		    receive_vector_from'0  to_blocking_fd  arg;
 
 
-	    fun receive_vector_from_nonblocking arg
-		=
-		wrap_nb_o (recv_vec_from0 to_nonblocking_fd) arg;
+		fun receive_vector_from_nonblocking' arg
+		    =
+		    wrap_nb_o (receive_vector_from'0 to_nonblocking_fd) arg;
+	    end;
 
 
-	    fun receive_vector_from'0 getfd (socket, size, { peek, oob } )
-		=
-		recv_from_v getfd (socket, size, peek, oob);
+	    stipulate
+		fun recv_arr_from0  coerce_blocking_status  (socket, asl)
+		    =
+		    {   fd =  coerce_blocking_status  socket;
 
-
-	    fun receive_vector_from' arg
-		=
-		receive_vector_from'0  to_blocking_fd  arg;
-
-
-	    fun receive_vector_from_nonblocking' arg
-		=
-		wrap_nb_o (receive_vector_from'0 to_nonblocking_fd) arg;
-
-
-	    fun recv_arr_from0 getfd (socket, asl)
-		=
-		{   fd = getfd socket;
-
-		    my (buf, i, size)
-			=
-			abuf asl;
-
-		    if (size > 0)
-
-			my (n, address)
+			my (buf, i, size)
 			    =
-			    recv_from_a (fd, buf, i, size, default_peek, default_oob);
+			    abuf asl;
 
-			(n, ADDRESS address);
-		    else
-			(0, ADDRESS (w8v::from_list [] ));
-		    fi;
-		};
+			if (size > 0)
+
+			    my (n, address)
+				=
+				recv_from_a (fd, buf, i, size, default_peek, default_oob);
+
+			    (n, ADDRESS address);
+			else
+			    (0, ADDRESS (w8v::from_list [] ));
+			fi;
+		    };
+	    herein
+
+		fun receive_rw_vector_from arg
+		    =
+		    recv_arr_from0  to_blocking_fd  arg;
 
 
-	    fun receive_rw_vector_from arg
-		=
-		recv_arr_from0  to_blocking_fd  arg;
+		fun receive_rw_vector_from_nonblocking arg
+		    =
+		    wrap_nb_o (recv_arr_from0 to_nonblocking_fd) arg;
+	    end;
 
+	    stipulate
+		fun receive_rw_vector_from'0  coerce_blocking_status  (socket, asl, { peek, oob } )
+		    =
+		    {   fd =  coerce_blocking_status  socket;
 
-	    fun receive_rw_vector_from_nonblocking arg
-		=
-		wrap_nb_o (recv_arr_from0 to_nonblocking_fd) arg;
-
-
-	    fun receive_rw_vector_from'0 getfd (socket, asl, { peek, oob } )
-		=
-		{   fd = getfd socket;
-
-		    my (buf, i, size)
-			=
-			abuf asl;
-
-		    if (size > 0)
-
-			my (n, address)
+			my (buf, i, size)
 			    =
-			    recv_from_a (fd, buf, i, size, peek, oob);
+			    abuf asl;
 
-			(n, ADDRESS address);
-		    else
-			(0, (ADDRESS (w8v::from_list [])));
-		    fi;
-		};
+			if (size > 0)
+
+			    my (n, address)
+				=
+				recv_from_a (fd, buf, i, size, peek, oob);
+
+			    (n, ADDRESS address);
+			else
+			    (0, (ADDRESS (w8v::from_list [])));
+			fi;
+		    };
+	    herein
 
 		fun receive_rw_vector_from'    arg
 		    =
@@ -958,6 +966,7 @@ herein
 		fun receive_rw_vector_from_nonblocking' arg
 		    =
 		    wrap_nb_o (receive_rw_vector_from'0 to_nonblocking_fd) arg;
+	    end;	
 
 	end;			# stipulate
     };				# package socket 

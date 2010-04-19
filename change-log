@@ -1,3 +1,4 @@
+2010-04-18-23.19.20: src/lib/std/src/socket/socket-guts.pkg: Cleaning and commenting.
 2010-04-18-22.54.31: src/lib/std/src/socket/socket-guts.pkg, src/runtime/c-libs/lib7-socket/setNBIO.c: Cleaning and commenting.
 2010-04-18-21.40.49: src/lib/std/src/threadkit/unix/retry-syscall-on-eintr.pkg: Added tracelog support.
 2010-04-18-21.06.51: src/lib/src/lib/thread-kit/src/core-thread-kit/thread.pkg: Changed get_thread_name to not call get_thread_id (and thus not SEGV) when thread scheduler is not running. This is a workaround not a fix, but much better than nothing.
