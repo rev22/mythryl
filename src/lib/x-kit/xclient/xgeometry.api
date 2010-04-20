@@ -119,6 +119,7 @@ api Xgeometry {
 	add:        (Size, Size) -> Size;
 	subtract:   (Size, Size) -> Size;
 	scale:      (Size, Int ) -> Size;
+        eq:         (Size, Size) -> Bool;
     };
     #
 

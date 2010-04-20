@@ -64,6 +64,18 @@ herein
 		data:  List(  List(  unt8_vector::Vector ) )
 	      };
 
+	fun same_cs_pixmap
+	    ( CS_PIXMAP { size => size1, data => data1 },
+              CS_PIXMAP { size => size2, data => data2 }
+	    )
+	    =
+	    if (not (ge::size::eq (size1, size2)))
+		#
+		FALSE;
+	    else
+		TRUE;
+	    fi;
+
 	# Map a row of data coded as
 	# a string to a bit representation.
 	# The data may be either encoded

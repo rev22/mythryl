@@ -1,3 +1,4 @@
+2010-04-19-20.03.12: src/lib/x-kit/xclient/src/window/cs-pixmap.api: Added make_clientside_pixmap_from_window().
 2010-04-19-14.30.49: src/lib/x-kit/xclient/src/wire/xsocket.api: Renaming for clarity: request_reply -> send_xrequest_and_read_reply, etc.
 2010-04-19-02.01.12: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Tweaked inbuf_imp to do nonblocking reads from X server socket. Now background tasks continue to run properly while x-kit is waiting for user X-event input -- much better!
 2010-04-19-00.31.19: src/lib/x-kit/xclient/src/wire/xsocket.pkg: inbuf_imp: Add receive_vector_nonblocking fn as alternative to existing blocking-read X input call.

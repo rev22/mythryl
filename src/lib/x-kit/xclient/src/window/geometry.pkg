@@ -143,6 +143,8 @@ herein
 		fun add      (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  SIZE { wide=>(w1+w2), high=>(h1+h2) };
 		fun subtract (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  SIZE { wide=>(w1-w2), high=>(h1-h2) };
 		fun scale    (SIZE { wide,     high     }, s                           ) =  SIZE { wide=>wide*s,  high=>high*s  };
+		#
+		fun eq       (SIZE { wide=>w1, high=>h1 }, SIZE { wide=>w2, high=>h2 } ) =  (w1==w2 and h1==h2);
 	    };
 
 	    package box {
