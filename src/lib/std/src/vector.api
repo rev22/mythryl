@@ -16,7 +16,7 @@
 
 api Vector {
 
-    eqtype Vector X;
+    eqtype Vector(X);
 
     max_len:    Int;
 

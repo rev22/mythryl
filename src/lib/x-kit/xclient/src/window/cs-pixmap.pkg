@@ -64,6 +64,9 @@ herein
 		data:  List(  List(  unt8_vector::Vector ) )
 	      };
 
+	# Two cs_pixmaps   are the same
+	# iff their fields are the same:
+	#
 	fun same_cs_pixmap
 	    ( CS_PIXMAP { size => size1, data => data1 },
               CS_PIXMAP { size => size2, data => data2 }
@@ -73,7 +76,34 @@ herein
 		#
 		FALSE;
 	    else
-		TRUE;
+		same_planes (data1, data2)
+		where
+		    fun same_plane ([], []) =>   TRUE;
+		        same_plane (_,  []) =>   FALSE;
+		        same_plane ([], _ ) =>   FALSE;
+
+		        same_plane ( scanline1 ! rest1,
+				     scanline2 ! rest2
+				   )
+			    =>
+			    scanline1 == scanline2
+			    and
+			    same_plane (rest1, rest2);
+		    end;
+
+		    fun same_planes ([], []) =>   TRUE;
+		        same_planes (_,  []) =>   FALSE;
+		        same_planes ([], _ ) =>   FALSE;
+
+		        same_planes ( plane1 ! rest1,
+				      plane2 ! rest2
+				    )
+			    =>
+			    same_plane (plane1, plane2)
+			    and
+			    same_planes (rest1, rest2);
+		    end;
+		end;
 	    fi;
 
 	# Map a row of data coded as
