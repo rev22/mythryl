@@ -292,9 +292,11 @@ api  Xcore {
     make_readonly_pixmap_from_clientside_pixmap:    Screen -> Cs_Pixmap         	-> Ro_Pixmap;		# make_ro_pixmal_from_clientside_pixmap		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
     make_readonly_pixmap_from_readwrite_pixmap:	    Rw_Pixmap                           -> Ro_Pixmap;		# make_ro_pixmal_from_rw_pixmap			def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
 
-    make_clientside_pixmap_from_readwrite_pixmap:   Rw_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readwrite_pixmap			def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-    make_clientside_pixmap_from_readonly_pixmap:    Ro_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readonly_pixmap			def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_clientside_pixmap_from_readwrite_pixmap:   Rw_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readwrite_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_clientside_pixmap_from_readonly_pixmap:    Ro_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readonly_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+    make_clientside_pixmap_from_window:   (xg::Box, Window)   -> Cs_Pixmap;					# make_clientside_pixmap_from_window		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
 
+    same_cs_pixmap:				    (Cs_Pixmap, Cs_Pixmap) -> Bool;				# same_cs_pixmap				def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
 
     # Window hash tables:
 

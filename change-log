@@ -1,3 +1,4 @@
+2010-04-19-21.28.05: src/lib/x-kit/xclient/src/window/cs-pixmap.api: Added same_cs_pixmap call.
 2010-04-19-21.08.12: src/lib/x-kit/xclient/xgeometry.api: package size: Added eq: (Size, Size) -> Bool.
 2010-04-19-20.03.12: src/lib/x-kit/xclient/src/window/cs-pixmap.api: Added make_clientside_pixmap_from_window().
 2010-04-19-14.30.49: src/lib/x-kit/xclient/src/wire/xsocket.api: Renaming for clarity: request_reply -> send_xrequest_and_read_reply, etc.

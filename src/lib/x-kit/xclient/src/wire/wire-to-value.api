@@ -231,8 +231,14 @@ herein
 	      to_point:  ge::Point
 	    };
 
-	decode_xevent: (unt8::Unt, v8::Vector)
-		       ->
-		       (Bool, event_types::x::Event);
+	decode_xevent
+	    :
+	    ( unt8::Unt,		# Type byte -- byte 0 of next.
+              v8::Vector		# The encoded X event in verbatim wire format as received from X server socket.
+	    )
+	    ->
+	    ( Bool,			# If FALSE, event was generated via SendEvent rather than via normal mechanisms such as user input.
+              event_types::x::Event	# Decoded X event.
+            );
     };
 end;

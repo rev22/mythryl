@@ -215,6 +215,32 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 			get  seen_first_drawing_window_expose_oneshot;
 		    };
 
+		fun clear_drawing_window ()
+		    =
+		    {   drawable = xd::drawable_of_window  drawing_window;
+                        xd::clear_drawable  drawable;
+		    };
+
+		fun wait_for_x_server_to_complete_queued_commands ()
+		    =
+		    {   # This idea here is to make sure that pending
+			# draw commands have been executed by the X
+			# server before we try reading back pixel
+			# values from it.
+			#
+			# The assumption here if we make any X server
+			# request and then wait for its reply, that
+			# all pending drawing will have completed by
+			# the time we get that reply.  If the X server
+			# has a lot of asynchronous internal stuff,
+			# that may be dubious, but I don't know a better
+			# solution at the moment:
+			# 
+			(xc::get_mouse_location  xsession)
+			    ->
+			    xg::POINT { row, col };
+		    };	
+
 		# Fetch from the X server the pixel contents of a
 		# given rectangle on a given window.  (This is so
 		# that we can check that something actually drew.)
@@ -246,14 +272,17 @@ window_depth = get_cs_pixmap_from_window  drawing_window;
 			    xg::BOX { row, col, high, wide };
 trace .{ sprintf "drawing window box = { row %d, col %d, high %d, wide %d }; depth = %d." row col high wide window_depth; };
 
-			# Define midpoint of drawing window:
+			# Define midpoint of drawing window,
+			# and a 9x9 box enclosing it:
 			#
 			stipulate
 			    row =  high / 2;
 			    col =  wide / 2;
 my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row  col ;  };
 			herein
-			    midpoint =  xg::POINT { row, col };
+			    midpoint      =  xg::POINT { row, col };
+
+			    midwindow_box =  xg::BOX { row => row - 4, col => col - 4, high => 9, wide => 9 };
 			end;
 # Sleep for one second in the hope that all pending
 # initialization stuff will have time to run, making
@@ -264,14 +293,34 @@ my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row 
 #		        sleep_for (time::from_milliseconds 1000);
 # trace .{ "slept    for one second"; };
 
-trace .{ sprintf "Sending midwindow downclick to X server."; };
-			
-			triangle_list_slot =  make_mailslot ();
+#			# Clear drawing window.  The drawing window
+#			# thread does this anyhow, but doing it here
+#			# saves us worrying about race conditions between
+#			# us and the drawing window threads:
+#			#
+#			clear_drawing_window ();
+#
+#			wait_for_x_server_to_complete_queued_commands ();	# This probably accomplishes nothing.
+#
+#			# Fetch from X server the mid-window pixels
+#			# over which we are about to draw a triangle.
+#			# These should be all all background color (black)
+#			# at the moment, due to above clear_drawing_window():
+#			#
+#			antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
 
-			triangle_list_watcher_slot :=  THE triangle_list_slot;
+			# Do it again, verify that they compare equal:			
+			#
+#			{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+#			    #
+#			    if (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2))   test_passed ();
+#			    else									    test_failed ();	
+#			    fi;
+#			};
 
 			# Simulate a mouseclick in center of drawing window:
 			#
+trace .{ sprintf "Sending midwindow downclick to X server."; };
 			xw::send_mousebutton_press_xevent
                           { window => drawing_window,
                             button => xi::MOUSEBUTTON 1,
@@ -285,37 +334,70 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 			    point  => midpoint
 			  };
 
-			timeout' =   timeout_in' (time::from_milliseconds 2000);
-
-			fun check_triangle_list1  [ point ]
-				=>
-				{
-				    if (xg::point::eq (point, midpoint))  test_passed ();
-				    else                                  test_failed ();
-				    fi;
-
-				    triangle_list_watcher_slot :=  NULL;
-				};
-
-			    check_triangle_list1  _
-				=>
-				{   test_failed ();
-
-				    triangle_list_watcher_slot :=  NULL;
-				};
-			end;
-
-			fun do_timeout1 ()
-			    =
-			    {   test_failed ();
-
-				triangle_list_watcher_slot :=  NULL;
-			    };	
-
+			# Verify that our simulated mouseclick
+			# results in a triangle added to our
+			# client-side drawing_window triangle-list:
+			# 
+			triangle_list_slot =  make_mailslot ();
+			# 
+			triangle_list_watcher_slot :=  THE triangle_list_slot;
+			# 
 			select [
 			    take' triangle_list_slot ==>  check_triangle_list1,
 			    timeout'                 ==>  do_timeout1
-			];
+			]
+			where
+			    timeout' =   timeout_in' (time::from_milliseconds 5000);
+
+			    fun check_triangle_list1  [ point ]
+				    =>
+				    {
+					if (xg::point::eq (point, midpoint))  test_passed ();
+					else                                  test_failed ();
+trace .{ sprintf "test_failed/AAA."; };
+					fi;
+
+					triangle_list_watcher_slot :=  NULL;
+				    };
+
+				check_triangle_list1  []
+				    =>
+				    {   test_failed ();
+trace .{ sprintf "test_failed/BBB."; };
+
+					triangle_list_watcher_slot :=  NULL;
+				    };
+
+				check_triangle_list1  triangles
+				    =>
+				    {   test_failed ();
+trace .{ sprintf "test_failed/CCC len(triangles) d=%d." (list::length triangles); };
+
+					triangle_list_watcher_slot :=  NULL;
+				    };
+			    end;
+
+			    fun do_timeout1 ()
+				=
+				{   test_failed ();
+trace .{ sprintf "test_failed/DDD."; };
+
+				    triangle_list_watcher_slot :=  NULL;
+				};	
+			end;
+
+			# Fetch from X server the mid-window pixels
+			# over which we should have drawn a triangle.
+			#
+			# Verify that they differ from our original
+			# all-black image of the same area:
+			#
+#			{   postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+#			    #	
+#			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))   test_failed ();
+#			    else									   test_passed ();	
+#			    fi;				
+#			};
 
 			(test_stats ()) ->  { passed, failed };
 trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
