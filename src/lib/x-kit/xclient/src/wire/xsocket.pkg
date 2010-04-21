@@ -1252,7 +1252,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 			    =
 			    wire_to_value::decode_xevent (opcode, bytestring);
 
-trace  .{  sprintf "%s <=== (fun decode. %x %s)" (xevent_to_string::xevent_name  event) (unt8::to_int k) (notfaked ?? "" :: "EVENT GENERATED VIA SendEvent") ;  };
+trace  .{  sprintf "%s <=== (fun decode(): opcode x=%x%s)" (xevent_to_string::xevent_name  event) (unt8::to_int opcode) (not_via_sendevent ?? "" :: " -- EVENT GENERATED VIA SendEvent") ;  };
 			event;
 		    };
 

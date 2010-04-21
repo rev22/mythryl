@@ -56,7 +56,7 @@ herein
 	# will 'give' the displayed triangle list
 	# to this slot each time it changes:
 	#
-	my  triangle_list_watcher_slot:		Ref (Null_Or( Mailslot( List( xg::Point ))))
+	my  add_triangle_watcher_slot:		Ref (Null_Or( Mailslot( List( xg::Point ))))
 	    =
 	    REF NULL;	
 
@@ -318,6 +318,20 @@ my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row 
 #			    fi;
 #			};
 
+			# Set up a hook to detect when
+			#
+			#     add_triangle ()
+			#
+			# runs.  To avoid race conditions, we must
+			# do this BEFORE sending the below simulated
+			# mouseclicks.  (I forgot this at first, and
+			# in fact got bitten.)
+			# 
+			triangle_list_slot =  make_mailslot ();
+			# 
+trace .{ sprintf "Setting add_triangle_watcher_slot."; };
+			add_triangle_watcher_slot :=  THE triangle_list_slot;
+
 			# Simulate a mouseclick in center of drawing window:
 			#
 trace .{ sprintf "Sending midwindow downclick to X server."; };
@@ -334,13 +348,6 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 			    point  => midpoint
 			  };
 
-			# Verify that our simulated mouseclick
-			# results in a triangle added to our
-			# client-side drawing_window triangle-list:
-			# 
-			triangle_list_slot =  make_mailslot ();
-			# 
-			triangle_list_watcher_slot :=  THE triangle_list_slot;
 			# 
 			select [
 			    take' triangle_list_slot ==>  check_triangle_list1,
@@ -354,35 +361,35 @@ trace .{ sprintf "Sending midwindow upclick to X server."; };
 				    {
 					if (xg::point::eq (point, midpoint))  test_passed ();
 					else                                  test_failed ();
-trace .{ sprintf "test_failed/AAA."; };
+trace .{ sprintf "test_failed/AAA. (Clearing add_triangle_watcher_slot.)"; };
 					fi;
 
-					triangle_list_watcher_slot :=  NULL;
+					add_triangle_watcher_slot :=  NULL;
 				    };
 
 				check_triangle_list1  []
 				    =>
 				    {   test_failed ();
-trace .{ sprintf "test_failed/BBB."; };
+trace .{ sprintf "test_failed/BBB. (Clearing add_triangle_watcher_slot.)"; };
 
-					triangle_list_watcher_slot :=  NULL;
+					add_triangle_watcher_slot :=  NULL;
 				    };
 
 				check_triangle_list1  triangles
 				    =>
 				    {   test_failed ();
-trace .{ sprintf "test_failed/CCC len(triangles) d=%d." (list::length triangles); };
+trace .{ sprintf "test_failed/CCC len(triangles) d=%d. (Clearing add_triangle_watcher_slot.)" (list::length triangles); };
 
-					triangle_list_watcher_slot :=  NULL;
+					add_triangle_watcher_slot :=  NULL;
 				    };
 			    end;
 
 			    fun do_timeout1 ()
 				=
 				{   test_failed ();
-trace .{ sprintf "test_failed/DDD."; };
+trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
 
-				    triangle_list_watcher_slot :=  NULL;
+				    add_triangle_watcher_slot :=  NULL;
 				};	
 			end;
 
@@ -711,7 +718,7 @@ fun draw_triangle x
     {
 trace .{ "drawing_window draw_triangle/TOP"; };
         draw_triangle' x;
-trace .{ "drawing_window draw_trianbel/BOT"; };
+trace .{ "drawing_window draw_triangle/BOT"; };
     };
 
 
@@ -770,7 +777,10 @@ trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
 };
 			        draw_triangle  point;
 
-				case *triangle_list_watcher_slot
+case *add_triangle_watcher_slot  THE slot => trace .{ sprintf "add_triangle: add_triangle_watcher_slot is SET."; };
+                                  NULL     => trace .{ sprintf "add_triangle: add_triangle_watcher_slot is CLEAR."; };
+esac;
+				case *add_triangle_watcher_slot
 				    #
 				    THE slot =>	 give (slot, (point ! triangles));
 				    NULL     =>  ();
