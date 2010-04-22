@@ -1,3 +1,4 @@
+2010-04-21-23.00.46: src/lib/x-kit/: Globally renamed Drawable_Window, DRAWABLE_WINDOW -> Drawable, DRAWABLE.
 2010-04-21-13.55.12: src/lib/x-kit/tut/triangle/triangle-app.pkg: Fixed race condition: I was generating simulated mouseclick before setting up the trap to detect its result -- and got bitten despite network roundtrip delay(?!?)
 2010-04-20-00.21.34: src/lib/x-kit/xclient/src/wire/wire-to-value.api: decode_xevent: Document formerly mysterious Bool return value: Tells whether event was synthesized via SendEvent.
 2010-04-19-21.28.05: src/lib/x-kit/xclient/src/window/cs-pixmap.api: Added same_cs_pixmap call.
