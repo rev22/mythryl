@@ -1,12 +1,17 @@
-## rgb-image.api
+## ximage.api
 #
-#   A client-side rectangular array of pixels.
+#   A client-side rectangular array of 32-bit RGBA pixels.
 #
-#   Support for copying back and forth between
-#   client-side and server-side pixmaps makes
-#   them useful for specifying icons, tiling
-#   patterns and other client-originated image
-#   data intended for X display.
+#   Eventually I expect to expand this into a workhorse
+#   representation for RGBA (Red,Green,Blue,Alpha) pixel
+#   images; for now it is largely a placeholder and an
+#   alternative to cs-pixmap.api, which represents images
+#   as bitplanes, which is pretty awful in today's context
+#   of standardization upon 24-bit RGB.
+#
+#   Maybe this package should be  split into a generic Rgb_Image package
+#   and an Ximage package which knows how to copy back and forth from the
+#   X server etc?
 #
 # See also client-side pixmap and server-side window and pixmap support:
 #     src/lib/x-kit/xclient/src/window/cs-pixmap.api
@@ -26,13 +31,13 @@ stipulate
     package sn =  xsession;		# xsession		is from   src/lib/x-kit/xclient/src/window/xsession.pkg
 herein
 
-    api Rgb_Image {
+    api Ximage {
 
-	Rgb_Image;
+	Ximage;
 
-	same_rgb_image: (Rgb_Image, Rgb_Image) -> Bool;
+	same_ximage: (Ximage, Ximage) -> Bool;
 
-        make_rgb_image_from_drawable: (dt::Drawable, ge::Box) -> Rgb_Image;
+        make_ximage_from_drawable: (dt::Drawable, ge::Box) -> Ximage;
     };
 
 end;

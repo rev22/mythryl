@@ -1,6 +1,6 @@
-## rgb-image.pkg
+## ximage.pkg
 #
-#   Client-side rectangular arrays of pixels.
+#   Client-side rectangular arrays of 32-bit RGBA pixels.
 #   Support for copying back and forth between them
 #   and server-side windows makes them useful for
 #   specifying icons, tiling patterns and other
@@ -47,22 +47,22 @@ stipulate
     package xt  =  xtypes;		# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
-    package rgb_image: (weak) Rgb_Image {
+    package ximage: (weak) Ximage {
 
 
-	Rgb_Image
+	Ximage
 	    =
-	    RGB_IMAGE
+	    XIMAGE
 	      { size:  ge::Size,
 		data: unt8_vector::Vector	# Actually 32-bit RGBA data -- see Note [1]
 	      };
 
-	# Two rgb_images   are the same
+	# Two Ximages      are the same
 	# iff their fields are the same:
 	#
-	fun same_rgb_image
-	    ( RGB_IMAGE { size => size1, data => data1 },
-              RGB_IMAGE { size => size2, data => data2 }
+	fun same_ximage
+	    ( XIMAGE { size => size1, data => data1 },
+              XIMAGE { size => size2, data => data2 }
 	    )
 	    =
 	    ge::size::eq (size1, size2)
@@ -70,13 +70,13 @@ herein
 	    data1 == data2;
 
 
-        fun make_rgb_image_from_drawable (drawable, box)
+        fun make_ximage_from_drawable (drawable, box)
 	    =
-	    RGB_IMAGE
+	    XIMAGE
 	      { size =>  ge::SIZE { wide => 0, high => 0 },
 		data =>  u8v::vector0
 	      };
-    };									# package rgb_image
+    };									# package ximage
 
 end;
 

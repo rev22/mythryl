@@ -10,8 +10,8 @@
 #   patterns and other client-originated image
 #   data intended for X display.
 #
-# See also rgb_image and server-side window and pixmap support:
-#     src/lib/x-kit/xclient/src/window/rgb-image.api
+# See also ximage and server-side window and pixmap support:
+#     src/lib/x-kit/xclient/src/window/ximage.api
 #     src/lib/x-kit/xclient/src/window/ro-pixmap.api
 #     src/lib/x-kit/xclient/src/window/window.api
 #     src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
