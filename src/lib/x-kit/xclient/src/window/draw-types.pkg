@@ -171,9 +171,9 @@ herein
 	      ;
 	};
 	#
-	Drawable_Window
+	Drawable
 	    =
-	    DRAWABLE_WINDOW
+	    DRAWABLE
 	      {
 		root:		r::Draw_Root,
 		to_drawimp:	di::d::Draw_Op -> Void
@@ -183,14 +183,14 @@ herein
 	#
 	fun drawable_of_window (w as WINDOW { to_drawimp, ... } )
 	    =
-	    DRAWABLE_WINDOW { root => r::WINDOW w, to_drawimp };
+	    DRAWABLE { root => r::WINDOW w, to_drawimp };
 
 
 	# Make a drawable from a rw_pixmap 
 	#
 	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... } )
 	    =
-	    DRAWABLE_WINDOW { root => r::PIXMAP pm, to_drawimp=>draw_command' }
+	    DRAWABLE { root => r::PIXMAP pm, to_drawimp=>draw_command' }
 	    where 
 
 		fun draw_command' (di::d::DRAW { to, pen, op => di::o::CLEAR_AREA (ge::BOX { col, row, wide, high } ) } )
@@ -234,8 +234,8 @@ herein
 		end;
 	    end;
 
-	fun depth_of_drawable (DRAWABLE_WINDOW { root => r::WINDOW w,  ... } ) =>   depth_of_window      w;
-	    depth_of_drawable (DRAWABLE_WINDOW { root => r::PIXMAP pm, ... } ) =>   depth_of_rw_pixmap  pm;
+	fun depth_of_drawable (DRAWABLE { root => r::WINDOW w,  ... } ) =>   depth_of_window      w;
+	    depth_of_drawable (DRAWABLE { root => r::PIXMAP pm, ... } ) =>   depth_of_rw_pixmap  pm;
 	end;
 
 	# An unbuffered drawable is used to provide immediate
@@ -249,9 +249,9 @@ herein
 	#
 	#     src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
 	#
-	fun make_unbuffered_drawable (DRAWABLE_WINDOW { root as r::WINDOW w, to_drawimp } )
+	fun make_unbuffered_drawable (DRAWABLE { root as r::WINDOW w, to_drawimp } )
 		=>
-		DRAWABLE_WINDOW
+		DRAWABLE
 		  {
 		    root,
 		    to_drawimp =>   fn msg =  {   to_drawimp  msg;
@@ -334,7 +334,7 @@ herein
 		     }
 		);
 
-		{ drawable =>   DRAWABLE_WINDOW { root => r::WINDOW w, to_drawimp => draw_and_flush },
+		{ drawable =>   DRAWABLE { root => r::WINDOW w, to_drawimp => draw_and_flush },
 		  release  =>   release_fn
 		};
 	    };

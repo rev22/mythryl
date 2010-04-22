@@ -286,37 +286,35 @@ my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row 
 			end;
 # Sleep for one second in the hope that all pending
 # initialization stuff will have time to run, making
-# the tracelog of the following stuff easier to interpret:
-# This apparently never returns.  I'm presuming this is
-# some independent bug. :-(
+# the tracelog of the following stuff easier to interpret.
 # trace .{ "sleeping for one second"; };
 #		        sleep_for (time::from_milliseconds 1000);
 # trace .{ "slept    for one second"; };
 
-#			# Clear drawing window.  The drawing window
-#			# thread does this anyhow, but doing it here
-#			# saves us worrying about race conditions between
-#			# us and the drawing window threads:
-#			#
-#			clear_drawing_window ();
-#
+			# Clear drawing window.  The drawing window
+			# thread does this anyhow, but doing it here
+			# saves us worrying about race conditions between
+			# us and the drawing window threads:
+			#
+			clear_drawing_window ();
+
 #			wait_for_x_server_to_complete_queued_commands ();	# This probably accomplishes nothing.
-#
-#			# Fetch from X server the mid-window pixels
-#			# over which we are about to draw a triangle.
-#			# These should be all all background color (black)
-#			# at the moment, due to above clear_drawing_window():
-#			#
-#			antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+
+			# Fetch from X server the mid-window pixels
+			# over which we are about to draw a triangle.
+			# These should be all all background color (black)
+			# at the moment, due to above clear_drawing_window():
+			#
+			antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
 
 			# Do it again, verify that they compare equal:			
 			#
-#			{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
-#			    #
-#			    if (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2))   test_passed ();
-#			    else									    test_failed ();	
-#			    fi;
-#			};
+			{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+			    #
+			    if (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2))   test_passed ();
+			    else									    test_failed ();	
+			    fi;
+			};
 
 			# Set up a hook to detect when
 			#
@@ -393,18 +391,35 @@ trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
 				};	
 			end;
 
+			# I've seen the test fail without this;
+			# I don't know if this is sufficient for
+			# us to be -entitled- to expect the test
+			# to work, but in practice it seems to
+			# give the drawing command time to complete
+			# before we attempt to read by the relevant
+			# pixels:
+			#
+			wait_for_x_server_to_complete_queued_commands ();
+
 			# Fetch from X server the mid-window pixels
 			# over which we should have drawn a triangle.
 			#
 			# Verify that they differ from our original
 			# all-black image of the same area:
 			#
-#			{   postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
-#			    #	
+			{   postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+			    #	
 #			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))   test_failed ();
 #			    else									   test_passed ();	
 #			    fi;				
-#			};
+			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))
+print "postdraw midwindow image did NOT differ from antedraw midwindow image :-(";
+                                test_failed ();
+			    else
+print "postdraw midwindow image DID differ from antedraw midwindow image :-)";
+		                test_passed ();	
+			    fi;				
+			};
 
 			(test_stats ()) ->  { passed, failed };
 trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };

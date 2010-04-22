@@ -64,7 +64,7 @@ herein
 	    # in canvas size are reported to the widget via
 	    # X resize events, this call is rarely needed.
 
-	drawable_of:  Canvas -> xd::Drawable_Window;
+	drawable_of:  Canvas -> xd::Drawable;
 	    #
 	    # The actual x-kit drawing commands all take
 	    # a drawable as parameter, not a canvas.

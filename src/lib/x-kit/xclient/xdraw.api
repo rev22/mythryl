@@ -126,12 +126,12 @@ api Xdraw {
     #	      -- p20 http:://mythryl.org/pub/exene/1993-lib.ps
     #            (Reppy + Gansner's 1993 eXene library manual.)
     #
-    Drawable_Window;
+    Drawable;
 
-    drawable_of_rw_pixmap:  Rw_Pixmap -> Drawable_Window;
-    drawable_of_window:        Window -> Drawable_Window;
+    drawable_of_rw_pixmap:  Rw_Pixmap -> Drawable;
+    drawable_of_window:        Window -> Drawable;
 
-    depth_of_drawable:   Drawable_Window -> Int;
+    depth_of_drawable:   Drawable -> Int;
 
 
 
@@ -156,32 +156,32 @@ api Xdraw {
     #
     exception BAD_DRAW_PARAMETER;
 
-    draw_points:      Drawable_Window -> Pen -> List( xg::Point ) -> Void;
-    draw_point_path:  Drawable_Window -> Pen -> List( xg::Point ) -> Void;
-    draw_point:       Drawable_Window -> Pen ->       xg::Point   -> Void;
+    draw_points:      Drawable -> Pen -> List( xg::Point ) -> Void;
+    draw_point_path:  Drawable -> Pen -> List( xg::Point ) -> Void;
+    draw_point:       Drawable -> Pen ->       xg::Point   -> Void;
 
-    draw_lines:    Drawable_Window -> Pen -> List( xg::Point ) -> Void;
-    draw_path:     Drawable_Window -> Pen -> List( xg::Point ) -> Void;
-    draw_segs:     Drawable_Window -> Pen -> List( xg::Line  ) -> Void;
-    draw_seg:      Drawable_Window -> Pen ->       xg::Line    -> Void;
+    draw_lines:    Drawable -> Pen -> List( xg::Point ) -> Void;
+    draw_path:     Drawable -> Pen -> List( xg::Point ) -> Void;
+    draw_segs:     Drawable -> Pen -> List( xg::Line  ) -> Void;
+    draw_seg:      Drawable -> Pen ->       xg::Line    -> Void;
 
     Shape = COMPLEX_SHAPE | NONCONVEX_SHAPE | CONVEX_SHAPE;
 
-    fill_polygon:  Drawable_Window -> Pen -> { verts: List( xg::Point ), shape:  Shape } -> Void;
-    fill_path:     Drawable_Window -> Pen -> { path:  List( xg::Point ), shape:  Shape } -> Void;
+    fill_polygon:  Drawable -> Pen -> { verts: List( xg::Point ), shape:  Shape } -> Void;
+    fill_path:     Drawable -> Pen -> { path:  List( xg::Point ), shape:  Shape } -> Void;
 
-    draw_boxes:    Drawable_Window -> Pen -> List( xg::Box ) -> Void;
-    draw_box:      Drawable_Window -> Pen ->       xg::Box   -> Void;
-    fill_boxes:    Drawable_Window -> Pen -> List( xg::Box ) -> Void;
-    fill_box:      Drawable_Window -> Pen ->       xg::Box   -> Void;
+    draw_boxes:    Drawable -> Pen -> List( xg::Box ) -> Void;
+    draw_box:      Drawable -> Pen ->       xg::Box   -> Void;
+    fill_boxes:    Drawable -> Pen -> List( xg::Box ) -> Void;
+    fill_box:      Drawable -> Pen ->       xg::Box   -> Void;
 
-    draw_arcs:     Drawable_Window -> Pen -> List( xg::Arc ) -> Void;
-    draw_arc:      Drawable_Window -> Pen ->       xg::Arc   -> Void;
-    fill_arcs:     Drawable_Window -> Pen -> List( xg::Arc ) -> Void;
-    fill_arc:      Drawable_Window -> Pen ->       xg::Arc   -> Void;
+    draw_arcs:     Drawable -> Pen -> List( xg::Arc ) -> Void;
+    draw_arc:      Drawable -> Pen ->       xg::Arc   -> Void;
+    fill_arcs:     Drawable -> Pen -> List( xg::Arc ) -> Void;
+    fill_arc:      Drawable -> Pen ->       xg::Arc   -> Void;
 
-    draw_circle:   Drawable_Window -> Pen -> { center:  xg::Point, rad:  Int } -> Void;
-    fill_circle:   Drawable_Window -> Pen -> { center:  xg::Point, rad:  Int } -> Void;
+    draw_circle:   Drawable -> Pen -> { center:  xg::Point, rad:  Int } -> Void;
+    fill_circle:   Drawable -> Pen -> { center:  xg::Point, rad:  Int } -> Void;
 
 
     # Polytext drawing.
@@ -216,9 +216,9 @@ api Xdraw {
 		  ;
     };
 	
-    draw_opaque_string:        Drawable_Window -> Pen -> Font -> (xg::Point, String ) -> Void;
-    draw_transparent_string:   Drawable_Window -> Pen -> Font -> (xg::Point, String ) -> Void;
-    draw_transparent_text:     Drawable_Window -> Pen ->         (xg::Point, t::Text) -> Void;
+    draw_opaque_string:        Drawable -> Pen -> Font -> (xg::Point, String ) -> Void;
+    draw_transparent_string:   Drawable -> Pen -> Font -> (xg::Point, String ) -> Void;
+    draw_transparent_text:     Drawable -> Pen ->         (xg::Point, t::Text) -> Void;
 
 
 
@@ -275,7 +275,7 @@ api Xdraw {
     # themspinning off
 
     pixel_blt
-	:  Drawable_Window
+	:  Drawable
         -> Pen
         -> { from:      Draw_From,
              from_box:  xg::Box,
@@ -298,7 +298,7 @@ api Xdraw {
 	# -- color0.
 
     pixel_blt_mailop
-	:  Drawable_Window
+	:  Drawable
         -> Pen
         -> { from:       Draw_From,
              from_box:   xg::Box,
@@ -320,7 +320,7 @@ api Xdraw {
 	# empty.
 
     bitblt
-	:  Drawable_Window
+	:  Drawable
         -> Pen
         -> { from:      Draw_From,
              from_box:  xg::Box,
@@ -331,7 +331,7 @@ api Xdraw {
 	# Same as plane_blt with 'plane' == 0.
 
     bitblt_mailop
-	:  Drawable_Window
+	:  Drawable
         -> Pen
         -> { from:       Draw_From,
              from_box:   xg::Box,
@@ -353,7 +353,7 @@ api Xdraw {
 	# empty.
 
     plane_blt
-	:  Drawable_Window
+	:  Drawable
         -> Pen
         -> { from:      Draw_From,
              from_box:  xg::Box,
@@ -379,7 +379,7 @@ api Xdraw {
 	    # -- color0.
 
     plane_blt_mailop
-	:  Drawable_Window
+	:  Drawable
         -> Pen
         -> { from:      Draw_From,
              from_box:  xg::Box,
@@ -402,14 +402,14 @@ api Xdraw {
 	# empty.
 
 
-    texture_blt:  Drawable_Window -> Pen -> { from:  Ro_Pixmap, to_pos:  xg::Point } -> Void;
-    tile_blt:     Drawable_Window -> Pen -> { from:  Ro_Pixmap, to_pos:  xg::Point } -> Void;
+    texture_blt:  Drawable -> Pen -> { from:  Ro_Pixmap, to_pos:  xg::Point } -> Void;
+    tile_blt:     Drawable -> Pen -> { from:  Ro_Pixmap, to_pos:  xg::Point } -> Void;
 	#
 	# tile_blt is a bitblt where 'from'
 	# is all of a depth-1 Ro_Pixmap. 
 
     copy_blt
-	:  Drawable_Window
+	:  Drawable
         -> Pen
         -> { to_pos:    xg::Point,
              from_box:  xg::Box
@@ -420,7 +420,7 @@ api Xdraw {
 	# are the same drawable.
 
     copy_blt_mailop
-	:  Drawable_Window
+	:  Drawable
         -> Pen
 	-> { to_pos:   xg::Point,
              from_box: xg::Box
@@ -454,8 +454,8 @@ api Xdraw {
     #	      -- p21 http:://mythryl.org/pub/exene/1993-lib.ps
     #            (Reppy + Gansner's 1993 eXene library manual.)
     #
-    clear_box:       Drawable_Window -> xg::Box -> Void;
-    clear_drawable:  Drawable_Window -> Void;			# Clear entire drawable.
+    clear_box:       Drawable -> xg::Box -> Void;
+    clear_drawable:  Drawable -> Void;			# Clear entire drawable.
 
 
     # Create a locked version of the given window.
@@ -477,11 +477,11 @@ api Xdraw {
 	:
         Window
         ->
-        { drawable:  Drawable_Window,
+        { drawable:  Drawable,
           release:   Void -> Void
         };
 
-    make_unbuffered_drawable:  Drawable_Window -> Drawable_Window;
+    make_unbuffered_drawable:  Drawable -> Drawable;
 	#
 	# An unbuffered drawable is used to provide immediate
 	# graphical response to user interaction.  (Currently

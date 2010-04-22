@@ -37,7 +37,7 @@ herein
 	    TEXT_CANVAS
 	      {
 		window:      xd::Window,		# The window.
-		drawable:    xd::Drawable_Window,	# The drawable surface.
+		drawable:    xd::Drawable,	# The drawable surface.
 		font:        xf::Font,		# The default font.
 		foreground:  xc::Rgb,		# The default foreground color.
 		background:  xc::Rgb,		# The default background color.
@@ -99,7 +99,7 @@ herein
 	    =
 	    TB
 	      {
-		drawable:  xd::Drawable_Window,		# The text display that this
+		drawable:  xd::Drawable,		# The text display that this
 							    # typeball is  associated with. 
 		foreground_color:  xc::Color_Spec,		# 
 		background_color:  xc::Color_Spec,		# 

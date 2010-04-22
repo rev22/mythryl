@@ -42,8 +42,8 @@ herein
 	    =
 	    { node:   pg::Node,
 	      bbox:   xg::Box,
-	      draw:  (xd::Drawable_Window, xd::Pen) -> xg::Box -> Void,
-	      fill:  (xd::Drawable_Window, xd::Pen) -> xg::Box -> Void,
+	      draw:  (xd::Drawable, xd::Pen) -> xg::Box -> Void,
+	      fill:  (xd::Drawable, xd::Pen) -> xg::Box -> Void,
 	      label:  String
 	    };
 

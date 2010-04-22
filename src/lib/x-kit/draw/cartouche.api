@@ -22,7 +22,7 @@ herein
 	#
 	draw_cartouche
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    xd::Pen
 	    ->
@@ -36,7 +36,7 @@ herein
 	#
 	fill_cartouche
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    xd::Pen
 	    ->

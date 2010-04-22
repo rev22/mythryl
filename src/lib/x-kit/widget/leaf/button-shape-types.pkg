@@ -24,7 +24,7 @@ herein
 
 	Drawfn
 	    =
-	    (xd::Drawable_Window, xg::Size, Int)
+	    (xd::Drawable, xg::Size, Int)
 	    ->          
 	    (xd::Pen, xd::Pen, xd::Pen)
 	    ->

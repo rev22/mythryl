@@ -189,7 +189,7 @@ herein
 	    pen_exposures	= 0u0; #  (0u1 << 0u19) 
 
 	    stipulate
-		my std_comp			# The standard pen components used by most ops.
+		my standard_pen_components			# The standard pen components used by most ops.
 		      = pen_function
 		      | pen_plane_mask
 		      | pen_subwindow_mode
@@ -202,8 +202,8 @@ herein
 		      | pen_tile_stip_origin
 		      ;
 
-		my std_line_comp		# The pen components used by line-drawing operations.
-		      =  std_comp
+		my standard_linedrawing_pen_components		# The pen components used by line-drawing operations.
+		      =  standard_pen_components
 		      | pen_line_width
 		      | pen_line_style
 		      | pen_cap_style
@@ -214,22 +214,22 @@ herein
 		      ;
 	    herein
 
-		fun pen_vals_used (o::POLY_POINT    _)	=>  std_comp;
-		    pen_vals_used (o::POLY_LINE     _)	=>  std_line_comp;
-		    pen_vals_used (o::POLY_SEG      _)	=>  std_line_comp;
-		    pen_vals_used (o::FILL_POLY     _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (o::POLY_BOX      _)	=>  std_line_comp;
-		    pen_vals_used (o::POLY_FILL_BOX _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (o::POLY_ARC      _)	=>  std_line_comp;
-		    pen_vals_used (o::POLY_FILL_ARC _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (o::COPY_AREA     _)	=>  std_comp|pen_exposures;
-		    pen_vals_used (o::COPY_PLANE    _)	=>  std_comp|pen_exposures;
-		    pen_vals_used (o::COPY_PMAREA   _)	=>  std_comp;
-		    pen_vals_used (o::COPY_PMPLANE  _)	=>  std_comp;
+		fun pen_vals_used (o::POLY_POINT    _)	=>  standard_pen_components;
+		    pen_vals_used (o::POLY_LINE     _)	=>  standard_linedrawing_pen_components;
+		    pen_vals_used (o::POLY_SEG      _)	=>  standard_linedrawing_pen_components;
+		    pen_vals_used (o::FILL_POLY     _)	=> (standard_pen_components|pen_fill_style);
+		    pen_vals_used (o::POLY_BOX      _)	=>  standard_linedrawing_pen_components;
+		    pen_vals_used (o::POLY_FILL_BOX _)	=> (standard_pen_components|pen_fill_style);
+		    pen_vals_used (o::POLY_ARC      _)	=>  standard_linedrawing_pen_components;
+		    pen_vals_used (o::POLY_FILL_ARC _)	=> (standard_pen_components|pen_fill_style);
+		    pen_vals_used (o::COPY_AREA     _)	=>  standard_pen_components|pen_exposures;
+		    pen_vals_used (o::COPY_PLANE    _)	=>  standard_pen_components|pen_exposures;
+		    pen_vals_used (o::COPY_PMAREA   _)	=>  standard_pen_components;
+		    pen_vals_used (o::COPY_PMPLANE  _)	=>  standard_pen_components;
 		    pen_vals_used (o::CLEAR_AREA    _)	=> 0u0;
-		    pen_vals_used (o::PUT_IMAGE     _)	=>  std_comp;
-		    pen_vals_used (o::POLY_TEXT8    _)	=> (std_comp|pen_fill_style);
-		    pen_vals_used (o::IMAGE_TEXT8   _)	=>  std_comp;
+		    pen_vals_used (o::PUT_IMAGE     _)	=>  standard_pen_components;
+		    pen_vals_used (o::POLY_TEXT8    _)	=> (standard_pen_components|pen_fill_style);
+		    pen_vals_used (o::IMAGE_TEXT8   _)	=>  standard_pen_components;
 		end;
 	    end;
 
@@ -239,39 +239,39 @@ herein
 
 #	    herein
 
-		fun request_draw_op (request, send_xrequest_and_handle_exposures)
+		fun request_draw_op (send_xrequest, send_xrequest_and_handle_exposures)
 		    =
 		    fn  (to, gc_id, _, o::POLY_POINT (rel, points))
 			    =>
-			    request (v2w::encode_poly_point { drawable=>to, gc_id, items=>points, relative=>rel } );
+			    send_xrequest (v2w::encode_poly_point { drawable=>to, gc_id, items=>points, relative=>rel } );
 
 			(to, gc_id, _, o::POLY_LINE (rel, points))
 			    =>
-			    request (v2w::encode_poly_line { drawable=>to, gc_id, items=>points, relative=>rel } );
+			    send_xrequest (v2w::encode_poly_line { drawable=>to, gc_id, items=>points, relative=>rel } );
 
 			(to, gc_id, _, o::POLY_SEG lines)
 			    =>
-			    request (v2w::encode_poly_segment { drawable=>to, gc_id, items=>lines } );
+			    send_xrequest (v2w::encode_poly_segment { drawable=>to, gc_id, items=>lines } );
 
 			(to, gc_id, _, o::FILL_POLY (shape, rel, points))
 			    =>
-			    request (v2w::encode_fill_poly { drawable=>to, gc_id, points, relative=>rel, shape } );
+			    send_xrequest (v2w::encode_fill_poly { drawable=>to, gc_id, points, relative=>rel, shape } );
 
 			(to, gc_id, _, o::POLY_BOX boxes)
 			    =>
-			    request (v2w::encode_poly_box { drawable=>to, gc_id, items=>boxes } );
+			    send_xrequest (v2w::encode_poly_box { drawable=>to, gc_id, items=>boxes } );
 
 			(to, gc_id, _, o::POLY_FILL_BOX boxes)
 			    =>
-			    request (v2w::encode_poly_fill_box { drawable=>to, gc_id, items=>boxes } );
+			    send_xrequest (v2w::encode_poly_fill_box { drawable=>to, gc_id, items=>boxes } );
 
 			(to, gc_id, _, o::POLY_ARC arcs)
 			    =>
-			    request (v2w::encode_poly_arc { drawable=>to, gc_id, items=>arcs } );
+			    send_xrequest (v2w::encode_poly_arc { drawable=>to, gc_id, items=>arcs } );
 
 			(to, gc_id, _, o::POLY_FILL_ARC arcs)
 			    =>
-			    request (v2w::encode_poly_fill_arc { drawable=>to, gc_id, items=>arcs } );
+			    send_xrequest (v2w::encode_poly_fill_arc { drawable=>to, gc_id, items=>arcs } );
 
 			(to, gc_id, _, o::COPY_AREA (pt, from, box, sync_v))
 			    =>
@@ -297,7 +297,7 @@ herein
 				    =
 				    ge::box::upperleft_and_size  box;
 
-				request (v2w::encode_copy_area { gc_id, from, to, from_point=>p, size, to_point=>pt });
+				send_xrequest (v2w::encode_copy_area { gc_id, from, to, from_point=>p, size, to_point=>pt });
 			    };
 
 			(to, gc_id, _, o::COPY_PMPLANE (pt, from, box, plane))
@@ -306,16 +306,16 @@ herein
 				    =
 				    ge::box::upperleft_and_size  box;
 
-				request (v2w::encode_copy_plane { gc_id, from, to, from_point=>p, size, to_point=>pt, plane });
+				send_xrequest (v2w::encode_copy_plane { gc_id, from, to, from_point=>p, size, to_point=>pt, plane });
 			    };
 
 			(to, _, _, o::CLEAR_AREA box)
 			    =>
-			    request (v2w::encode_clear_area { window_id=>to, box, exposures => FALSE } );
+			    send_xrequest (v2w::encode_clear_area { window_id=>to, box, exposures => FALSE } );
 
 			(to, gc_id, _, o::PUT_IMAGE im)
 			    =>
-			    request
+			    send_xrequest
 				(v2w::encode_put_image
 				  { drawable => to,
                                     gc_id,
@@ -423,7 +423,7 @@ herein
 					(fn (item, l) =  (split_item item) @ l)
 					[];
 
-				request
+				send_xrequest
 				    (v2w::encode_poly_text8
 					{
 					  drawable=>to,
@@ -436,7 +436,7 @@ herein
 
 			(to, gc_id, _, o::IMAGE_TEXT8(_, point, string))
 			    =>
-			    request (v2w::encode_image_text8 { drawable=>to, gc_id, point, string } );
+			    send_xrequest (v2w::encode_image_text8 { drawable=>to, gc_id, point, string } );
 		    end;
 
 #	    end;				# stipulate
@@ -468,7 +468,7 @@ herein
 		    request_dop
 			=
 			request_draw_op
-			  ( xok::send_xrequest                 connection,
+			  ( xok::send_xrequest                       connection,
 			    xok::send_xrequest_and_handle_exposures  connection
 			  );
 

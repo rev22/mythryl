@@ -121,20 +121,20 @@ herein
 		      ;
 	};
 
-	Drawable_Window
+	Drawable
 	    =
-	    DRAWABLE_WINDOW
+	    DRAWABLE
 	      {
 		root:		r::Draw_Root,
 		to_drawimp:	di::d::Draw_Op -> Void
 	      };
 
-	drawable_of_window:        Window -> Drawable_Window;
-	drawable_of_rw_pixmap:  Rw_Pixmap -> Drawable_Window;
+	drawable_of_window:        Window -> Drawable;
+	drawable_of_rw_pixmap:  Rw_Pixmap -> Drawable;
 
-	depth_of_drawable:  Drawable_Window -> Int;
+	depth_of_drawable:  Drawable -> Int;
 
-	make_unbuffered_drawable:  Drawable_Window -> Drawable_Window;
+	make_unbuffered_drawable:  Drawable -> Drawable;
 	    #
 	    # An unbuffered drawable is used to provide immediate
 	    # graphical response to user interaction.  (Currently
@@ -146,7 +146,7 @@ herein
 	    #
 	    #     src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
 
-	make_locked_window:  Window -> { drawable:  Drawable_Window, release:  Void -> Void };
+	make_locked_window:  Window -> { drawable:  Drawable, release:  Void -> Void };
 	    #
 	    # Create a locked version of the given window.
 	    # This provides exclusive access to its drawing

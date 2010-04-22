@@ -44,7 +44,7 @@ herein
 	    realize
 		:
 		(wg::Root_Window, xc::Rgb)
-		-> xd::Drawable_Window
+		-> xd::Drawable
 		-> xg::Size
 		-> Scrollbar_State
 	  };

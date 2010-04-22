@@ -25,7 +25,7 @@ herein
 
 	draw_box
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    { box:   xg::Box,
 	      width:  Int,
@@ -38,7 +38,7 @@ herein
 
 	draw_filled_box
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    { box:   xg::Box,
 	      width:  Int,
@@ -51,7 +51,7 @@ herein
 
 	draw_round_box
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    { box:  xg::Box,
 	      width:  Int,
@@ -66,7 +66,7 @@ herein
 
 	draw_poly
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    { pts:     List( xg::Point ),
 	      width:   Int,
@@ -79,7 +79,7 @@ herein
 
 	draw3drect
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    (xg::Box, Int)
 	    -> 
@@ -91,7 +91,7 @@ herein
 
 	draw3drect2
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    (xg::Box, Int)
 	    -> 
@@ -103,7 +103,7 @@ herein
 
 	draw3dpoly
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    (List( xg::Point ), Int)
 	    -> 
@@ -115,7 +115,7 @@ herein
 
 	draw3dpoly2
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    (List( xg::Point ), Int)
 	    -> 
@@ -127,7 +127,7 @@ herein
 
 	draw3dround_box
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    { box:  xg::Box,
 	      width:  Int,
@@ -143,7 +143,7 @@ herein
 
 	draw3dround_box2
 	    :
-	    xd::Drawable_Window
+	    xd::Drawable
 	    ->
 	    { box:   xg::Box,
 	      width:  Int,

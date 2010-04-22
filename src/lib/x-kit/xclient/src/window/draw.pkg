@@ -44,14 +44,14 @@ herein
             #     xid
 	    #     depth
 	    #
-	    fun info_of_drawable (dt::DRAWABLE_WINDOW { to_drawimp, root => dt::r::WINDOW w } )
+	    fun info_of_drawable (dt::DRAWABLE { to_drawimp, root => dt::r::WINDOW w } )
 		    =>
 		    {   w ->   dt::WINDOW { window_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
 			{ to_drawimp, id => window_id, depth };
 		    };
 
-		info_of_drawable (dt::DRAWABLE_WINDOW { to_drawimp, root => dt::r::PIXMAP pm } )
+		info_of_drawable (dt::DRAWABLE { to_drawimp, root => dt::r::PIXMAP pm } )
 		    =>
 		    {   pm -> dt::RW_PIXMAP { pixmap_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... };
 
@@ -276,7 +276,7 @@ herein
 	    # TODO: imageText (what does it mean?? *		XXX BUGGO FIXME
 
 
-	    #  BLT operations 
+	    #  BLT operations 				# "BLT" == "Block Transfer" -- dates back to Xerox Alto bitmapped display "bitblt" days.
 
 	    exception DEPTH_MISMATCH;
 	    exception BAD_PLANE;
@@ -394,7 +394,7 @@ herein
 
 		fun pixel_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
+			{   to ->  dt::DRAWABLE { to_drawimp, ... };
 
 			    sync_1shot = copy_area (to, pen, to_pos, from, from_box);
 
@@ -412,7 +412,7 @@ herein
 
 		fun pixel_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
+			{   to ->  dt::DRAWABLE { to_drawimp, ... };
 
 			    sync_v = copy_area (to, pen, to_pos, from, from_box);
 
@@ -429,7 +429,7 @@ herein
 
 		fun plane_blt to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
+			{   to ->  dt::DRAWABLE { to_drawimp, ... };
 
 			    sync_1shot = copy_plane (to, pen, to_pos, from, from_box, plane);
 
@@ -447,7 +447,7 @@ herein
 
 		fun plane_blt_mailop to pen { from as (dt::FROM_WINDOW _), from_box, to_pos, plane }
 			=>
-			{   to ->  dt::DRAWABLE_WINDOW { to_drawimp, ... };
+			{   to ->  dt::DRAWABLE { to_drawimp, ... };
 
 			    sync_v = copy_plane (to, pen, to_pos, from, from_box, plane);
 
@@ -503,8 +503,8 @@ herein
 		    =
 		    {   from = case drawable
 				  #		        
-				  dt::DRAWABLE_WINDOW { root => dt::r::WINDOW w,  ... } =>  dt::FROM_WINDOW     w;
-				  dt::DRAWABLE_WINDOW { root => dt::r::PIXMAP pm, ... } =>  dt::FROM_RW_PIXMAP pm;
+				  dt::DRAWABLE { root => dt::r::WINDOW w,  ... } =>  dt::FROM_WINDOW     w;
+				  dt::DRAWABLE { root => dt::r::PIXMAP pm, ... } =>  dt::FROM_RW_PIXMAP pm;
 			      esac;
 
 
@@ -518,8 +518,8 @@ herein
 		    =
 		    {   from = case drawable
 				  #		        
-				  dt::DRAWABLE_WINDOW { root => dt::r::WINDOW w,  ... } =>  dt::FROM_WINDOW     w;
-				  dt::DRAWABLE_WINDOW { root => dt::r::PIXMAP pm, ... } =>  dt::FROM_RW_PIXMAP pm;
+				  dt::DRAWABLE { root => dt::r::WINDOW w,  ... } =>  dt::FROM_WINDOW     w;
+				  dt::DRAWABLE { root => dt::r::PIXMAP pm, ... } =>  dt::FROM_RW_PIXMAP pm;
 			      esac;
 
 			pixel_blt_mailop
@@ -566,6 +566,7 @@ herein
 	    fun clear_drawable  to
 		=
 		clear_box  to  (ge::BOX { col=>0, row=>0, wide=>0, high=>0 } );
+
 
 	end;		# stipulate
     };			# package draw 
