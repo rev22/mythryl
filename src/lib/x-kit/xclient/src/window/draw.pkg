@@ -568,6 +568,16 @@ herein
 		clear_box  to  (ge::BOX { col=>0, row=>0, wide=>0, high=>0 } );
 
 
+	    fun flush drawable
+		=
+		{   (info_of_drawable  drawable)
+			->
+			{ to_drawimp, ... };
+
+		    to_drawimp  di::d::FLUSH;
+		};
+
+
 	end;		# stipulate
     };			# package draw 
 end;			# stipulate

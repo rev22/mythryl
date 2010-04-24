@@ -40,7 +40,8 @@ package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
 
     Traversal
 	= ROW_MAJOR
-        | COLUMN_MAJOR;
+        | COLUMN_MAJOR
+        ;
 
     make_array
 	=
@@ -81,6 +82,7 @@ package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
     fun array (nrows, ncols, v)
         =
         case (check_size (nrows, ncols))
+	    #
 	    0 => { data => inline_t::poly_rw_vector::new_array0(), nrows => 0, ncols => 0 };
 	    n => { data => make_array (n, v), nrows, ncols };
         esac;
@@ -88,7 +90,7 @@ package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
     fun from_list rows
         =
         case (list::reverse rows)
-	  
+	    #	  
 	    []  =>
 		{ data  => inline_t::poly_rw_vector::new_array0(),
 		  nrows => 0,
@@ -134,9 +136,9 @@ package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
     fun tabulate_rm (nrows, ncols, f)
         =
         case (check_size (nrows, ncols))
-          
+	    #
 	    0 => { data => inline_t::poly_rw_vector::new_array0(), nrows, ncols };
-
+	    #
 	    n => {
 
 		arr = make_array (n, f (0, 0));
@@ -144,16 +146,18 @@ package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
 		fun lp1 (i, j, k)
                     =
                     if (i < nrows)
-                        lp2 (i, 0, k);
+			lp2 (i, 0, k);
                     fi
 
 		also
 		fun lp2 (i, j, k)
                     =
                     if (j < ncols)
-			 unsafe_set (arr, k, f (i, j));
-			 lp2 (i, j+1, k+1);
-		    else lp1 (i+1, 0, k);
+			#
+			unsafe_set (arr, k, f (i, j));
+			lp2 (i, j+1, k+1);
+		    else
+                        lp1 (i+1, 0, k);
                     fi;
 		
 		lp2 (0, 1, 1);  #  we've already done (0, 0) 
@@ -166,9 +170,9 @@ package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
     fun tabulate_cm (nrows, ncols, f)
         =
         case (check_size (nrows, ncols))
-          
+	    #          
 	    0 => { data => inline_t::poly_rw_vector::new_array0(), nrows, ncols };
-
+	    #          
 	    n => {
 		arr   = make_array (n, f (0, 0));
 
@@ -177,16 +181,17 @@ package matrix: Matrix {				# Matrix		is from   src/lib/std/src/matrix.api
 		fun lp1 (i, j, k)
 		    =
 		    if (j < ncols)
-                        lp2 (0, j, k);
+			lp2 (0, j, k);
                     fi
 
 		also
 		fun lp2 (i, j, k)
 		    =
 		    if (i < nrows)
-			 unsafe_set (arr, k, f (i, j));
-			 lp2 (i+1, j, k+ncols);
-		    else lp1 (0, j+1, k-delta);
+			unsafe_set (arr, k, f (i, j));
+			lp2 (i+1, j, k+ncols);
+		    else
+			lp1 (0, j+1, k-delta);
 		    fi;
 
 		lp2 (1, 0, ncols);		# We've already done (0, 0) 

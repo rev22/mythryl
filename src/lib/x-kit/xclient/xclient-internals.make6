@@ -71,8 +71,6 @@ LIBRARY_GROUP_COMPONENTS
 	src/window/color-spec.pkg
 	src/window/cs-pixmap.api
 	src/window/cs-pixmap.pkg
-	src/window/ximage.api
-	src/window/ximage.pkg
 	src/window/cursors.pkg
 	src/window/draw-imp.api
 	src/window/draw-imp.pkg

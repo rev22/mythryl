@@ -14,11 +14,11 @@
 
 api Matrix {
 
-    eqtype Array X;
+    eqtype Array(X);
 
-    Region( X )
+    Region(X)
         =
-        {   base:  Array( X ),
+        {   base:  Array(X),
 	    row:  Int,
 	    col:  Int,
 	    nrows:  Null_Or( Int ),
@@ -27,20 +27,20 @@ api Matrix {
 
     Traversal = ROW_MAJOR | COLUMN_MAJOR;
 
-    array:      ((Int, Int, X)) -> Array( X );
-    from_list:  List( List( X ) ) -> Array( X );
-    tabulate:   Traversal -> ((Int, Int, (((Int, Int)) -> X))) -> Array( X );
-    get:        ((Array( X ), Int, Int)) -> X;
-    set:        ((Array( X ), Int, Int, X)) -> Void;
-    dimensions:   Array( X ) -> ((Int, Int));
-    columns:      Array( X ) -> Int;
-    rows:         Array( X ) -> Int;
-    row:        ((Array( X ), Int)) -> vector::Vector( X );
-    column:     ((Array( X ), Int)) -> vector::Vector( X );
+    array:      (Int, Int, X) -> Array(X);
+    from_list:  List( List(X) ) -> Array(X);
+    tabulate:   Traversal -> (Int, Int, (Int, Int) -> X) -> Array(X);
+    get:        (Array(X), Int, Int) -> X;
+    set:        (Array(X), Int, Int, X) -> Void;
+    dimensions:  Array(X) -> (Int, Int);
+    columns:     Array(X) -> Int;
+    rows:        Array(X) -> Int;
+    row:        (Array(X), Int) -> vector::Vector(X);
+    column:     (Array(X), Int) -> vector::Vector(X);
 
     copy:
-         { src:  Region( X ),
-           dst:  Array( X ),
+         { src:  Region(X),
+           dst:  Array(X),
 
            dst_row:  Int,
            dst_col:  Int
@@ -48,12 +48,12 @@ api Matrix {
          ->
          Void;
 
-    keyed_apply:  Traversal -> (((Int, Int, X)) -> Void) -> Region( X ) -> Void;
-    apply:        Traversal -> (X -> Void) -> Array( X ) -> Void;
-    modifyi:      Traversal -> (((Int, Int, X)) -> X) -> Region( X ) -> Void;
-    modify:       Traversal -> (X -> X) -> Array( X ) -> Void;
-    foldi:        Traversal -> (((Int, Int, X, Y)) -> Y) -> Y -> Region( X ) -> Y;
-    fold:         Traversal -> (((X, Y)) -> Y) -> Y -> Array( X ) -> Y;
+    keyed_apply:  Traversal -> ((Int, Int, X) -> Void) -> Region(X) -> Void;
+    apply:        Traversal -> (X -> Void) -> Array(X) -> Void;
+    modifyi:      Traversal -> ((Int, Int, X) -> X) -> Region(X) -> Void;
+    modify:       Traversal -> (X -> X) -> Array(X) -> Void;
+    foldi:        Traversal -> ((Int, Int, X, Y) -> Y) -> Y -> Region(X) -> Y;
+    fold:         Traversal -> ((X, Y) -> Y) -> Y -> Array(X) -> Y;
 
   };
 

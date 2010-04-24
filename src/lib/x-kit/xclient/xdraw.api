@@ -458,6 +458,14 @@ api Xdraw {
     clear_drawable:  Drawable -> Void;			# Clear entire drawable.
 
 
+    # Flush all queued draw commands to X server.
+    # Normally the draw imp sends them in batches
+    # as a network optimization, flushing the
+    # the buffer every 40ms; this call will flush
+    # immediately:
+    #
+    flush:           Drawable -> Void;
+
     # Create a locked version of the given window.
     # This provides exclusive access to its drawing
     # surface (and that of its descendents) during

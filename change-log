@@ -1,3 +1,4 @@
+2010-04-22-00.13.16: src/lib/x-kit/xclient/src/window/: Renamed rgb-image.api, rgb-image.pkg -> ximage.api, ximage.pkg because they are X-specific and we will probably eventually want a generic rgb_image package.
 2010-04-21-23.57.41: src/lib/x-kit/xclient/src/window/: Establish rgb-image.api, rgb-image.pkg.
 2010-04-21-23.00.46: src/lib/x-kit/: Globally renamed Drawable_Window, DRAWABLE_WINDOW -> Drawable, DRAWABLE.
 2010-04-21-13.55.12: src/lib/x-kit/tut/triangle/triangle-app.pkg: Fixed race condition: I was generating simulated mouseclick before setting up the trap to detect its result -- and got bitten despite network roundtrip delay(?!?)
