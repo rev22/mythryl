@@ -1559,7 +1559,7 @@ trace  .{  "xsocket::send_xrequest_and_verify_success:  Normal return, returning
 		(XSOCKET { plea_slot, ... } )
 		(s, sync_v)
 	    =
-	    {   reply_slot = make_mailslot ();
+	    {   reply_slot = make_mailslot ();			# Um? This is never used. XXX BUGGO FIXME.
 
 		give (plea_slot, PLEA_EXPOSURES (s, sync_v));
 	    };

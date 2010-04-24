@@ -662,7 +662,13 @@ herein
 			sn::XSESSION { xdisplay => dy::XDISPLAY xdisplay, ... };
 
 
-		    to_drawimp  di::d::FLUSH;
+		    # Avoid a race condition by flushing
+		    # from the draw_imp any buffered draw
+		    # commands for this drawable before
+		    # sending our GetImage request to the
+		    # X server:
+		    #
+		    dt::flush_drawimp  to_drawimp;
 
 		    all_planes = unt::bitwise_not 0u0;
 
@@ -721,12 +727,6 @@ herein
 
 	    # Create a client-side window from
 	    # a server-side offscreen window.
-	    #
-	    # This should be better integrated with
-	    # the draw_imp to avoid a possible race
-	    # condition: We need to be sure the
-	    # draw_imp flush has occurred before we
-	    # ask for the clientside window.	XXX BUGGO FIXME
 	    #
 	    fun make_clientside_pixmap_from_readwrite_pixmap (dt::RW_PIXMAP { pixmap_id, size, gc_and_draw_imps, screen } )
 		=

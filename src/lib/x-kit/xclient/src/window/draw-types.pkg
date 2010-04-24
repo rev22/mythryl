@@ -158,6 +158,15 @@ herein
 	    size_of_rw_pixmap  pm;
 
 
+	fun flush_drawimp  to_drawimp
+	    =
+	    {   done_flush_oneshot = make_oneshot_maildrop ();
+		#
+		to_drawimp (di::d::FLUSH done_flush_oneshot);
+		#
+		get done_flush_oneshot;
+	    };	
+
 	# drawables **
 	#
 	# these are abstract views of drawable chunks (e.g., windows or pixmaps).
@@ -225,7 +234,7 @@ herein
 			    # the rw_pixmap and using it as
 			    # the source of a blt:
 			    #
-			    to_drawimp di::d::FLUSH;
+			    flush_drawimp  to_drawimp;
 			};
 
 		    draw_command' dmsg
@@ -255,7 +264,7 @@ herein
 		  {
 		    root,
 		    to_drawimp =>   fn msg =  {   to_drawimp  msg;
-					          to_drawimp  di::d::FLUSH;
+					          flush_drawimp  to_drawimp;
 					      }
 		  };
 
@@ -313,7 +322,10 @@ herein
 		fun draw_and_flush  msg
 		    =
 		    {   draw_fn  msg;
-			draw_fn  di::d::FLUSH;
+
+			flush_done_oneshot = make_oneshot_maildrop ();
+			draw_fn  (di::d::FLUSH flush_done_oneshot);
+			get flush_done_oneshot;
 		    };
 
 		# The function used to release the overlay.

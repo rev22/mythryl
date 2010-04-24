@@ -98,12 +98,12 @@ herein
 		  pen:   pg::Pen,
 		  op:    o::Draw_Opcode
 		}
-	      | FLUSH
 	      | LOCK_WINDOW_FOR_RUBBERBANDING  {
 		  draw_slot:       Mailslot( Draw_Op ),		# Stream of drawing commands for the overlay.
 		  release':        Mailop( Void )			# Overlay release mailop.
 		}
 	      | DESTROY  i::Destroy_Item
+	      | FLUSH    Oneshot_Maildrop( Void )
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;
@@ -631,9 +631,9 @@ herein
 	    # checking for possible batching of operations.
 	    # BATCHING NOT IMPLEMENTED YET	XXX BUGGO FIXME
 	    #
-	    fun batch_cmd (count, cmd, last, rest)
+	    fun batch_cmd (commands_in_buffer, cmd, last, rest)
 		=
-		(count+1, cmd ! last ! rest);
+		(commands_in_buffer+1, cmd ! last ! rest);
 
 
 	    fun destroy_window xsocket (i::WINDOW window_id)
@@ -661,13 +661,12 @@ herein
 	    #
 	    fun make_overlay_buffer (lock_imp, new_slot, old_slot', release')
 		=
-		{   flush_done_1shot = make_oneshot_maildrop ();
+		{   flush_done_oneshot = make_oneshot_maildrop ();
 
 		    fun release buf
 			=
 			{   list::apply (fn msg = give (new_slot, msg)) (list::reverse buf);
-			    give (new_slot, d::FLUSH);
-			    set (flush_done_1shot, ());
+			    give (new_slot, d::FLUSH flush_done_oneshot);
 			};
 
 		    fun loop buf
@@ -686,9 +685,9 @@ herein
 				    =>
 				    filter_msg (to, m);
 
-				filter (d::FLUSH)
+				filter (d::FLUSH flush_done_oneshot)
 				    =>
-				    {   give  (new_slot, d::FLUSH);
+				    {   give  (new_slot, d::FLUSH flush_done_oneshot);
 					loop buf;
 				    };
 
@@ -713,7 +712,7 @@ herein
 
 			xtracing::make_thread  "OverlayBuffer"  .{ loop []; };
 
-			get' flush_done_1shot;
+			get' flush_done_oneshot;
 		};							 #  fun make_overlay_buffer 
 
 	herein
@@ -803,9 +802,11 @@ herein
 					=>
 					topwindow_is_mapped_loop (1, [m]);
 
-				    do_plea (d::FLUSH)
+				    do_plea (d::FLUSH flush_done_oneshot)	# Buffer is empty so FLUSH is a no-op.
 					=>
-					topwindow_is_mapped_loop (0, []);
+					{   set (flush_done_oneshot, ());
+					    topwindow_is_mapped_loop (0, []);
+					};
 
 				    do_plea (d::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
 					=>
@@ -831,7 +832,7 @@ herein
 				];
 			    };
 
-		       topwindow_is_mapped_loop (count, buf as (last ! r))
+		       topwindow_is_mapped_loop (commands_in_buffer, buf as (last_command ! rest))
 			   =>
 			   {   fun set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED
 					=>
@@ -839,7 +840,7 @@ herein
 
 				   set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED
 					=>
-					topwindow_is_mapped_loop (count, buf);
+					topwindow_is_mapped_loop (commands_in_buffer, buf);
 
 				   set_mappedstate _
 					=>
@@ -849,11 +850,12 @@ herein
 
 			       fun do_plea (d::DRAW m)
 					=>
-					topwindow_is_mapped_loop (batch_cmd (count, m, last, r));
+					topwindow_is_mapped_loop (batch_cmd (commands_in_buffer, m, last_command, rest));
 
-				   do_plea (d::FLUSH)
+				   do_plea (d::FLUSH flush_done_oneshot)
 					=>
 					{   flush buf;
+					    set (flush_done_oneshot, ());
 					    topwindow_is_mapped_loop (0, []);
 					};
 
@@ -878,7 +880,7 @@ herein
 
 			       #  Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverMapped (", makestring (length buf), ")\n"]); 
 
-			       if (count > full_buffer_size)
+			       if (commands_in_buffer > full_buffer_size)
 				   #
 				   flush buf;
 				   topwindow_is_mapped_loop (0, []);
@@ -939,10 +941,10 @@ herein
 					    set_mappedstate _                            => xgripe::impossible "[drawimp (mapped-overlay): bad config command]";
 					end;
 
-					fun do_plea (d::DRAW m)     => topwindow_is_mapped_overlay_loop (1, [m]);
-					    do_plea (d::FLUSH)      => topwindow_is_mapped_overlay_loop (0, []);
-					    do_plea (d::DESTROY id) => { destroy id; topwindow_is_mapped_overlay_loop (0, []);};
-					    do_plea _               => xgripe::impossible "[drawimp (mapped-overlay): bad command]";
+					fun do_plea (d::DRAW m)        =>                      topwindow_is_mapped_overlay_loop (1, [m]);
+					    do_plea (d::FLUSH oneshot) => { set (oneshot, ()); topwindow_is_mapped_overlay_loop (0, []); };			# Buffer is empty so FLUSH is a no-op.
+					    do_plea (d::DESTROY id)    => { destroy id; topwindow_is_mapped_overlay_loop (0, []);};
+					    do_plea _                  => xgripe::impossible "[drawimp (mapped-overlay): bad command]";
 					end;
 
 					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (empty)\n"]); 
@@ -954,20 +956,21 @@ herein
 					];
 				    };
 
-				topwindow_is_mapped_overlay_loop (count, buf as (last ! r))
+				topwindow_is_mapped_overlay_loop (commands_in_buffer, buf as (last_draw_command ! rest))
 				    =>
 				    {   fun set_mappedstate s::TOPWINDOW_IS_NOW_UNMAPPED =>  topwindow_is_unmapped_overlay_loop();
-					    set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED   =>  topwindow_is_mapped_overlay_loop (count, buf);
+					    set_mappedstate s::TOPWINDOW_IS_NOW_MAPPED   =>  topwindow_is_mapped_overlay_loop (commands_in_buffer, buf);
 					    set_mappedstate _	                         =>  xgripe::impossible "[drawimp (mapped): bad mapped-state command]";
 					end;
 
-					fun do_plea (d::DRAW m)
+					fun do_plea (d::DRAW draw_command)
 					       =>
-					       topwindow_is_mapped_overlay_loop (batch_cmd (count, m, last, r));
+					       topwindow_is_mapped_overlay_loop (batch_cmd (commands_in_buffer, draw_command, last_draw_command, rest));
 
-					    do_plea (d::FLUSH)
+					    do_plea (d::FLUSH flush_done_oneshot)
 						=>
 						{   flush buf;
+						    set (flush_done_oneshot, ());
 						    topwindow_is_mapped_overlay_loop (0, []);
 						};
 

@@ -162,6 +162,14 @@ herein
 	    # much related-looking "overlay" code in
 	    #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
 	    # this may be a half-implemented idea.
+
+	flush_drawimp: (di::d::Draw_Op -> Void) -> Void;
+	    #
+	    # This is a lower-level version of  flush  from
+	    #     src/lib/x-kit/xclient/xdraw.api
+	    # which is used in
+	    #     src/lib/x-kit/xclient/src/window/draw.pkg
+	    #     src/lib/x-kit/xclient/src/window/cs-pixmap.pkg	
     };
 
 end;

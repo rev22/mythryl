@@ -84,9 +84,10 @@ herein
 	    #
 	    fun draw_fn f drawable pen
 		=
-		{   my { to_drawimp, id, ... }
-			=
-			info_of_drawable drawable;
+		{   (info_of_drawable  drawable)
+			->
+			{ to_drawimp, id, ... };
+			
 
 		    fn x =  to_drawimp (di::d::DRAW { to => id, pen, op => (f x) } );
 		};
@@ -381,7 +382,7 @@ herein
 
 				NULL
 				    =>
-				    {   to_drawimp (di::d::FLUSH);
+				    {   dt::flush_drawimp  to_drawimp;
 
 					sync_mailop
 					    ==>
@@ -398,7 +399,7 @@ herein
 
 			    sync_1shot = copy_area (to, pen, to_pos, from, from_box);
 
-			    to_drawimp (di::d::FLUSH);
+			    dt::flush_drawimp  to_drawimp;
 
 			    (get  sync_1shot) ();
 			};
@@ -433,7 +434,7 @@ herein
 
 			    sync_1shot = copy_plane (to, pen, to_pos, from, from_box, plane);
 
-			    to_drawimp (di::d::FLUSH);
+			    dt::flush_drawimp  to_drawimp;
 
 			    (get  sync_1shot) ();
 			};
@@ -574,7 +575,7 @@ herein
 			->
 			{ to_drawimp, ... };
 
-		    to_drawimp  di::d::FLUSH;
+		    dt::flush_drawimp  to_drawimp;
 		};
 
 

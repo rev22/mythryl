@@ -221,26 +221,6 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
                         xd::clear_drawable  drawable;
 		    };
 
-		fun wait_for_x_server_to_complete_queued_commands ()
-		    =
-		    {   # This idea here is to make sure that pending
-			# draw commands have been executed by the X
-			# server before we try reading back pixel
-			# values from it.
-			#
-			# The assumption here if we make any X server
-			# request and then wait for its reply, that
-			# all pending drawing will have completed by
-			# the time we get that reply.  If the X server
-			# has a lot of asynchronous internal stuff,
-			# that may be dubious, but I don't know a better
-			# solution at the moment:
-			# 
-			(xc::get_mouse_location  xsession)
-			    ->
-			    xg::POINT { row, col };
-		    };	
-
 		# Fetch from the X server the pixel contents of a
 		# given rectangle on a given window.  (This is so
 		# that we can check that something actually drew.)
@@ -297,8 +277,6 @@ my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row 
 			# us and the drawing window threads:
 			#
 			clear_drawing_window ();
-
-#			wait_for_x_server_to_complete_queued_commands ();	# This probably accomplishes nothing.
 
 			# Fetch from X server the mid-window pixels
 			# over which we are about to draw a triangle.
@@ -391,15 +369,17 @@ trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
 				};	
 			end;
 
-			# I've seen the test fail without this;
-			# I don't know if this is sufficient for
-			# us to be -entitled- to expect the test
-			# to work, but in practice it seems to
-			# give the drawing command time to complete
-			# before we attempt to read by the relevant
-			# pixels:
+			# Make sure the triangle-draw command
+			# has flushed from the draw_imp before
+			# fetching the pixels which we expect
+			# to have changed -- if we do not do
+			# this flush, we have a race condition
+			# between the two:
 			#
-			wait_for_x_server_to_complete_queued_commands ();
+			xd::flush  drawing_window_drawable
+			where
+			    drawing_window_drawable = xd::drawable_of_window  drawing_window;
+			end;
 
 			# Fetch from X server the mid-window pixels
 			# over which we should have drawn a triangle.

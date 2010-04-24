@@ -97,12 +97,12 @@ herein
 		    op:    o::Draw_Opcode
 		  }
 
-	      | FLUSH
 	      | LOCK_WINDOW_FOR_RUBBERBANDING  {
 		  draw_slot:       Mailslot( Draw_Op ),	# Stream of drawing commands for the overlay 
 		  release':        Mailop( Void )		# Overlay release mailop
 		}
 	      | DESTROY    i::Destroy_Item
+	      | FLUSH      Oneshot_Maildrop( Void )
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;
