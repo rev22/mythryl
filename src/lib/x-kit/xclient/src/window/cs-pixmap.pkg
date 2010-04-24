@@ -430,7 +430,7 @@ herein
 
 		depth =  list::length data;
 
-		pm  -> dt::RW_PIXMAP { pixmap_id, screen, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... };
+		pm  -> dt::RW_PIXMAP { pixmap_id, screen, gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { to_drawimp, ... }, ... };
 
 		screen -> sn::SCREEN { xsession=>sn::XSESSION { xdisplay as dy::XDISPLAY dpy_info, ... }, ... } ;
 
@@ -650,12 +650,12 @@ herein
                 (
                   box,					# Get the pixelmap pixel contents from this part of
                   pixmap_or_window_id,			# this server-side pixmap or window.
-                  screen_depth_imps,
+                  gc_and_draw_imps,
                   screen
                 )
 		=
 		{   (ge::box::size box) -> size as ge::SIZE our_size;
-                    screen_depth_imps   -> sn::SCREEN_DEPTH_IMPS { depth, to_drawimp, ... };
+                    gc_and_draw_imps   -> sn::GC_AND_DRAW_IMPS { depth, to_drawimp, ... };
 
 		    (sn::xsession_of_screen  screen)
 			->
@@ -728,11 +728,11 @@ herein
 	    # draw_imp flush has occurred before we
 	    # ask for the clientside window.	XXX BUGGO FIXME
 	    #
-	    fun make_clientside_pixmap_from_readwrite_pixmap (dt::RW_PIXMAP { pixmap_id, size, screen_depth_imps, screen } )
+	    fun make_clientside_pixmap_from_readwrite_pixmap (dt::RW_PIXMAP { pixmap_id, size, gc_and_draw_imps, screen } )
 		=
 		{   box = ge::box::make (ge::point::zero, size);	# Copy all of pixmap.
 		    #
-		    make_clientside_pixmap_from_pixmap_or_window (box, pixmap_id, screen_depth_imps, screen);
+		    make_clientside_pixmap_from_pixmap_or_window (box, pixmap_id, gc_and_draw_imps, screen);
 		};
 
 	    # Create a client-side window from part of
@@ -749,9 +749,9 @@ herein
 	    #     as other graphics-related requests.  It is intended
 	    #     specifically for rudimentary hardcopy support." 
 	    #
-	    fun make_clientside_pixmap_from_window (box, dt::WINDOW { window_id, screen_depth_imps, screen, ... } )
+	    fun make_clientside_pixmap_from_window (box, dt::WINDOW { window_id, gc_and_draw_imps, screen, ... } )
 		=
-		make_clientside_pixmap_from_pixmap_or_window    (box, window_id, screen_depth_imps, screen);
+		make_clientside_pixmap_from_pixmap_or_window    (box, window_id, gc_and_draw_imps, screen);
 
 	end;
 

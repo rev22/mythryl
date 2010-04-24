@@ -27,7 +27,7 @@ herein
 		window_id:		xt::Window_Id,
 		#
 		screen:			sn::Screen,
-		screen_depth_imps:	sn::Screen_Depth_Imps,
+		gc_and_draw_imps:	sn::Gc_And_Draw_Imps,
 		#
 		to_drawimp:		di::d::Draw_Op -> Void
 	      };
@@ -40,7 +40,7 @@ herein
 	      { pixmap_id:		xt::Pixmap_Id,
 		screen:			sn::Screen,
 		size:			ge::Size,
-		screen_depth_imps:	sn::Screen_Depth_Imps
+		gc_and_draw_imps:	sn::Gc_And_Draw_Imps
 	      };
 
 	# An off-screen read-only rectangular array of pixels on the X server: 

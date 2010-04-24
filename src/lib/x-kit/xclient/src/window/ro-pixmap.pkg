@@ -47,11 +47,11 @@ herein
 	    dt::RO_PIXMAP (cw::make_readwrite_pixmap_from_ascii_data screen data);
 
 
-	fun make_readonly_pixmap_from_readwrite_pixmap (pm as dt::RW_PIXMAP { screen, size, screen_depth_imps, ... } )
+	fun make_readonly_pixmap_from_readwrite_pixmap (pm as dt::RW_PIXMAP { screen, size, gc_and_draw_imps, ... } )
 	    =
-	    {   screen_depth_imps
+	    {   gc_and_draw_imps
 		    ->
-		    sn::SCREEN_DEPTH_IMPS { depth, ... };
+		    sn::GC_AND_DRAW_IMPS { depth, ... };
 
 		new_pixmap
 		    =

@@ -103,13 +103,13 @@ herein
 	    SCREEN_INFO
 	      {
 		xscreen:    dy::Xscreen,				# Xscreen	def in    src/lib/x-kit/xclient/src/wire/display.pkg
-		imps:       List( Screen_Depth_Imps ),			# The graphics-context and draw imps for the allowed depths.
+		imps:       List( Gc_And_Draw_Imps ),			# The graphics-context and draw imps for the allowed depths.
 				  					# of this screen.
-		root_imps:  Screen_Depth_Imps
+		root_imps:  Gc_And_Draw_Imps
 	      }
 
 	also
-	Screen_Depth_Imps
+	Gc_And_Draw_Imps
 	    =
 	    # For each combination of visual and depth
 	    # we allocate a pair of imps, one to draw,
@@ -118,11 +118,11 @@ herein
 	    # gc and pixmap be associated with a
 	    # particular screen, visual and depth:
 	    #
-	    SCREEN_DEPTH_IMPS  {					# The graphics context imp and draw_imp
+	    GC_AND_DRAW_IMPS {						# The graphics context imp and draw_imp
 		#							# for a given  depth of a screen.
 		depth:		Int,    
-		gcontext_imp:	gci::Graphics_Context_Cache,		# The graphics context imp for this screen.
-		to_drawimp:	di::d::Draw_Op -> Void			# The draw-imp connection for the root window of the screen. 
+		gcontext_imp:	gci::Graphics_Context_Cache,		# The graphics context imp for this depth on this screen.
+		to_drawimp:	di::d::Draw_Op -> Void			# The draw-imp connection  for this depth on this screen. 
 	    }
 
 	also
@@ -142,7 +142,7 @@ herein
 		window_id:		xt::Window_Id,
 		#
 		screen:			Screen,
-		screen_depth_imps:	Screen_Depth_Imps,
+		gc_and_draw_imps:	Gc_And_Draw_Imps,
 		#
 		to_drawimp:		di::d::Draw_Op -> Void
 	      };
@@ -415,7 +415,7 @@ herein
 	# Extract the graphics-context imp
         # for a given depth:
 	#
-	screen_depth_imps_of:  (Screen, Int) ->  Screen_Depth_Imps;
+	gc_and_draw_imps_of:  (Screen, Int) ->  Gc_And_Draw_Imps;
 
 	# Map a point in the window's coordinate system
 	# to the screen's coordinate system

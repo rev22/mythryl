@@ -43,7 +43,7 @@ herein
 			     {
 			       window_id:		xt::Window_Id,
 			       screen:			sn::Screen,
-			       screen_depth_imps:	sn::Screen_Depth_Imps,
+			       gc_and_draw_imps:	sn::Gc_And_Draw_Imps,
 			       to_drawimp:		di::d::Draw_Op -> Void
 			     };
 	           } = xsession;
@@ -59,7 +59,7 @@ herein
 		pixmap_id:		xt::Pixmap_Id,
 		screen:			sn::Screen,
 		size:			ge::Size,
-		screen_depth_imps:	sn::Screen_Depth_Imps
+		gc_and_draw_imps:	sn::Gc_And_Draw_Imps
 	      };
 
 	# Immutable pixmaps 
@@ -93,9 +93,9 @@ herein
 	  | FROM_RO_PIXMAP    Ro_Pixmap
 	  ;
 
-	fun depth_of_window                   (WINDOW { screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )  = depth;
-	fun depth_of_rw_pixmap             (RW_PIXMAP { screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )  = depth;
-	fun depth_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )) = depth;
+	fun depth_of_window                   (WINDOW { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )  = depth;
+	fun depth_of_rw_pixmap             (RW_PIXMAP { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )  = depth;
+	fun depth_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )) = depth;
 
 	fun depth_of_draw_src (FROM_WINDOW    w) =>  depth_of_window     w;
 	    depth_of_draw_src (FROM_RW_PIXMAP w) =>  depth_of_rw_pixmap  w;
@@ -120,7 +120,7 @@ herein
 		{ upperleft, size, depth, border_width };
 	    };
 
-	fun shape_of_rw_pixmap (RW_PIXMAP { size, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { depth, ... }, ... } )
+	fun shape_of_rw_pixmap (RW_PIXMAP { size, gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )
 	    =
 	    { upperleft => ge::point::zero,
 	      size,
@@ -188,7 +188,7 @@ herein
 
 	# Make a drawable from a rw_pixmap 
 	#
-	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... } )
+	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { to_drawimp, ... }, ... } )
 	    =
 	    DRAWABLE { root => r::PIXMAP pm, to_drawimp=>draw_command' }
 	    where 

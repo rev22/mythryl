@@ -1,5 +1,23 @@
 /* timeofday.c
  *
+ * See wikipedia article
+ *
+ *     http://en.wikipedia.org/wiki/Time_Stamp_Counter
+ *
+ * Among other things it recommends the newer
+ *
+ *    clock_gettime( CLOCK_MONOTONIC );
+ *    clock_gettime( CLOCK_PROCESS_CPUTIME_ID );
+ *    clock_gettime( CLOCK_THREAD_CPUTIME_ID );
+ *
+ * calls on Linux, points to the MIT-contributed file  cycle.h   at
+ *
+ *     http://www.fftw.org/cycle.h
+ *
+ * for getting accurate times portably, and points to the HPET page
+ *
+ *     http://en.wikipedia.org/wiki/HPET
+ *
  */
 
 #include "../../config.h"
@@ -70,7 +88,7 @@ int   _lib7_time_gettimeofday   (int* microseconds)
 
     *microseconds = c_usec;
     return c_sec;
-}				/* end of _lib7_time_gettimeofday */
+}
 
 
 /* _lib7_Time_timeofday : Void -> (int32::Int, Int)
@@ -92,8 +110,7 @@ lib7_val_t _lib7_Time_timeofday (lib7_state_t *lib7_state, lib7_val_t arg)
     REC_ALLOC2 (lib7_state, result, lib7_seconds, INT_CtoLib7(c_microseconds));
 
     return result;
-
-} /* end of _lib7_Time_timeofday */
+}
 
 
 

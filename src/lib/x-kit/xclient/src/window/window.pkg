@@ -203,9 +203,9 @@ herein
 	    =
 	    create_fn
 	    where 
-		screen_info ->  sn::SCREEN_INFO       { xscreen  => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
-		root_imps   ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
-		xsession    ->  sn::XSESSION          { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
+		screen_info ->  sn::SCREEN_INFO		{ xscreen  => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
+		root_imps   ->  sn::GC_AND_DRAW_IMPS	{ depth, ... };
+		xsession    ->  sn::XSESSION		{ xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
 		window_id = next_xid ();
 
@@ -243,7 +243,7 @@ herein
 		    };
 	    end;
 
-	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_window_id, screen, to_drawimp, screen_depth_imps, ... } )
+	fun make_simple_subwindow (dt::WINDOW { window_id=>parent_window_id, screen, to_drawimp, gc_and_draw_imps, ... } )
 	    =
 	    create_fn
 	    where 
@@ -259,10 +259,10 @@ herein
 		        window_id,
 		        screen,
 		        to_drawimp,
-		        screen_depth_imps
+		        gc_and_draw_imps
 		      };
 
-		screen_depth_imps ->   sn::SCREEN_DEPTH_IMPS { depth, ... };
+		gc_and_draw_imps ->   sn::GC_AND_DRAW_IMPS { depth, ... };
 
 		fun create_fn { site, border_color, background_color }
 		    =
@@ -326,7 +326,7 @@ herein
 	    (window, kidplug)
 	    where 
 		screen    ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
-		root_imps ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
+		root_imps ->  sn::GC_AND_DRAW_IMPS { depth, ... };
 		xsession  ->  sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
 		window_id = next_xid();
@@ -369,7 +369,7 @@ herein
 		prop_window ->  dt::WINDOW { window_id=>id, screen=>scrn as sn::SCREEN { screen, xsession }, ... };
 		screen      ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
 
-		root_imps   ->  sn::SCREEN_DEPTH_IMPS { depth, ... };
+		root_imps   ->  sn::GC_AND_DRAW_IMPS { depth, ... };
 		xsession    ->  sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
 		window_id = next_xid();
@@ -410,7 +410,7 @@ herein
 	    window
 	    where  
 
-		window ->   dt::WINDOW { window_id=>parent_window_id, screen, screen_depth_imps, to_drawimp, ... };
+		window ->   dt::WINDOW { window_id=>parent_window_id, screen, gc_and_draw_imps, to_drawimp, ... };
 		screen ->   sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }, ... };
 
 		window_id = next_xid();
@@ -431,7 +431,7 @@ herein
 			window_id,
 			screen,
 			to_drawimp => draw_fn,
-			screen_depth_imps
+			gc_and_draw_imps
 		      };
 
 		wio::create_window  xsocket

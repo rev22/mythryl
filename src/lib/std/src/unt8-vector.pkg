@@ -41,24 +41,22 @@ package {
 
     max_len = core::max_length;
 
-    my from_list:  List( Element ) -> Vector
+    my from_list:  List(Element) -> Vector
 	=
         inline_t::cast char_vector::from_list;
 
-    my tabulate:  ((Int, (Int -> Element))) -> Vector
+    my tabulate:  (Int, (Int -> Element)) -> Vector
 	=
         inline_t::cast char_vector::tabulate;
 
     length   = v::length;
     get      = v::check_sub;
 
-    my cat:  List( Vector ) -> Vector
+    my cat:  List(Vector) -> Vector
            = inline_t::cast char_vector::cat;
 
-    my keyed_apply:  ((Int, Element) -> Void) -> Vector -> Void
-          = inline_t::cast char_vector::keyed_apply;
-    my apply:  (Element -> Void) -> Vector -> Void
-          = inline_t::cast char_vector::apply;
+    my keyed_apply:  ((Int, Element) -> Void) -> Vector -> Void          = inline_t::cast char_vector::keyed_apply;
+    my apply:        (Element        -> Void) -> Vector -> Void          = inline_t::cast char_vector::apply;
 
     my set:  ((Vector, Int, Element) -> Vector)
           = inline_t::cast char_vector::set;
@@ -69,7 +67,7 @@ package {
     my map:  (Element -> Element) -> Vector -> Vector
           = inline_t::cast char_vector::map;
 
-    my v2cv:  Vector -> char_vector::Vector = inline_t::cast;
+    my v2cv:  Vector -> char_vector::Vector   = inline_t::cast;
 
     fun keyed_fold_left f init vec
 	=

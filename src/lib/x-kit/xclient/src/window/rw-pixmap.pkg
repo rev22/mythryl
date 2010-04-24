@@ -49,7 +49,7 @@ herein
 			      xsession => sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }
 		            };
 
-		screen_depth_imps = sn::screen_depth_imps_of (screen, depth)
+		gc_and_draw_imps = sn::gc_and_draw_imps_of (screen, depth)
 		except
                     xgripe::XERROR _   = raise exception BAD_PIXMAP_PARAMETER;
 
@@ -70,14 +70,14 @@ herein
 		      }
                   );
 
-		dt::RW_PIXMAP { pixmap_id, screen, size, screen_depth_imps };
+		dt::RW_PIXMAP { pixmap_id, screen, size, gc_and_draw_imps };
 	    };
 
 	# Destroy an offscreen window.
 	# We do this via draw_imp to avoid a race with
 	# any pending draw requests on the window.
 	#
-	fun destroy_rw_pixmap  (dt::RW_PIXMAP { pixmap_id, screen_depth_imps => sn::SCREEN_DEPTH_IMPS { to_drawimp, ... }, ... } )
+	fun destroy_rw_pixmap  (dt::RW_PIXMAP { pixmap_id, gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { to_drawimp, ... }, ... } )
             =
 	    to_drawimp (di::d::DESTROY (di::i::PIXMAP pixmap_id));
 
