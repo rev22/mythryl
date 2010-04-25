@@ -6,26 +6,26 @@
 
 api Thread {
 
-    Thread_Id;
+    Thread;
 
-    get_thread_id:    Void -> Thread_Id;
+    get_thread:    Void -> Thread;
     get_thread_name:  Void -> String;
 
-    same_thread_id:     (Thread_Id, Thread_Id) -> Bool;
-    compare_thread_id:  (Thread_Id, Thread_Id) -> Order;
-    hash_thread_id:      Thread_Id -> Unt;
+    same_thread:     (Thread, Thread) -> Bool;
+    compare_thread:  (Thread, Thread) -> Order;
+    hash_thread:      Thread -> Unt;
 
-    thread_id_to_string:  Thread_Id -> String;		# "003141" or such.
-    thread_id_to_name:    Thread_Id -> String;
+    thread_to_string:  Thread -> String;		# "003141" or such.
+    thread_to_name:    Thread -> String;
 
     #              Name      Thread body            Result
     #              ------    ------------------     ---------
-    make_thread:   String -> (Void -> Void)      -> Thread_Id;
-    make_thread':  String -> (X    -> Void) -> X -> Thread_Id;
+    make_thread:   String -> (Void -> Void)      -> Thread;
+    make_thread':  String -> (X    -> Void) -> X -> Thread;
 
     thread_done:  Void -> X;
 
-    thread_death_mailop:  Thread_Id -> mailop::Mailop( Void );
+    thread_death_mailop:  Thread -> mailop::Mailop( Void );
 
     yield:  Void -> Void;	#  mostly for benchmarking 
 

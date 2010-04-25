@@ -543,11 +543,11 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 	#
 	fun close_display (XDISPLAY { xsocket, ... } )
 	    =
-	    {   thread_id = get_thread_id ();
+	    {   thread = get_thread ();
 
 		trace  .{
 		    #
-		    sprintf "%s: ***** close_display *****"   (thread_id_to_string  thread_id);
+		    sprintf "%s: ***** close_display *****"   (thread_to_string  thread);
 		};
 
 

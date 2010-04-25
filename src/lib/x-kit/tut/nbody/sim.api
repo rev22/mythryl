@@ -43,7 +43,7 @@ herein
 	       msg_slot: Mailslot(  Msg(X) )
 	     }
 	     ->
-	     Thread_Id;
+	     Thread;
     };
 
 end;

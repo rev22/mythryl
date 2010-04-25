@@ -16,14 +16,14 @@ api Thread_Deathwatch {
     start_thread_deathwatch			# Watch the given thread for unexpected termination.
 	:
 	( String,				# Name of thread. This is for human consumption only -- not used algorithmically.
-	  threadkit::Thread_Id			# Id of thread to watch.
+	  threadkit::Thread			# Id of thread to watch.
         )
         ->
         Void;
 
     stop_thread_deathwatch			# Stop watching the given thread.
 	:
-	threadkit::Thread_Id
+	threadkit::Thread
 	->
 	Void;
 };

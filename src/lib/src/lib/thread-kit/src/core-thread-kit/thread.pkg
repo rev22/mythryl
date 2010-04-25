@@ -17,7 +17,7 @@ herein
     }
 
     {
-	Thread_Id                ==  tt::Thread_Id;
+	Thread                   ==  tt::Thread;
 	Condition_Variable       ==  tt::Condition_Variable;
 	Condition_Variable_State ==  tt::Condition_Variable_State;
 
@@ -46,13 +46,13 @@ herein
 		=
 		REF exception_handler;
 
-	    fun make_thread_id name
+	    fun make_thread name
 		=
 		{   n = *tid_count;
 
 		    tid_count := n+1;
 
-		    THREAD_ID
+		    THREAD
 		      { name,
 			id          =>  n,
 			did_mail    =>  REF FALSE,
@@ -64,34 +64,34 @@ herein
 
 	end;
 
-	fun same_thread_id (THREAD_ID { id=>a, ... }, THREAD_ID { id=>b, ... } )
+	fun same_thread (THREAD { id=>a, ... }, THREAD { id=>b, ... } )
 	    =
 	    a == b;
 
-	fun compare_thread_id (THREAD_ID { id=>a, ... }, THREAD_ID { id=>b, ... } )
+	fun compare_thread (THREAD { id=>a, ... }, THREAD { id=>b, ... } )
 	    =
 	    int::compare (a, b);
 
-	fun hash_thread_id (THREAD_ID { id, ... } )
+	fun hash_thread (THREAD { id, ... } )
 	    =
 	    unt::from_int id;
 
-	fun thread_id_to_name (THREAD_ID { name, ... } )
+	fun thread_to_name (THREAD { name, ... } )
 	    =
 	    name;
 
-	thread_id_to_string
+	thread_to_string
 	    =
-	    tt::thread_id_to_string;
+	    tt::thread_to_string;
 
-	fun notify_and_dispatch (THREAD_ID { dead, ... } )
+	fun notify_and_dispatch (THREAD { dead, ... } )
 	    =
 	    {   ts::disable_thread_switching ();
 		mailop::atomic_cvar_set dead;
 		ts::reenable_thread_switching_and_dispatch_next_thread ();
 	    };
 
-	fun do_handler (THREAD_ID { exception_handler, ... }, exn)
+	fun do_handler (THREAD { exception_handler, ... }, exn)
 	    =
 	    *exception_handler exn
 	    except
@@ -104,7 +104,7 @@ herein
 	    id
 	    where
 	      ts::disable_thread_switching ();
-	      id = make_thread_id name;
+	      id = make_thread name;
 	      fun thread ()
 		  =
 		  (   (f x)
@@ -129,7 +129,7 @@ herein
 	    =
 	    {   ts::disable_thread_switching ();
 
-		id = make_thread_id  name;
+		id = make_thread  name;
 
 		fate::call_with_current_fate
 		    (fn parent_fate
@@ -153,32 +153,32 @@ herein
 	    make_thread' name f ();
 
 
-	fun thread_death_mailop  (THREAD_ID { dead, ... } )
+	fun thread_death_mailop  (THREAD { dead, ... } )
 	    =
 	    mailop::cvar_get_mailop  dead;
 
 
-	get_thread_id
+	get_thread
 	    =
 	    ts::get_current_thread;
 
 
 	fun get_thread_name ()
 	    =
-	    if *tr::thread_scheduler_is_running    thread_id_to_name (get_thread_id ());
+	    if *tr::thread_scheduler_is_running    thread_to_name (get_thread ());
 	    else				   "[nothread]";
 	    fi;
 		# When thread_scheduler is not running
-		# get_thread_id() returns garbage		XXX BUGGO FIXME
+		# get_thread() returns garbage		XXX BUGGO FIXME
 		# and using that result will SEGV us.
 
 
 
 	fun thread_done ()
 	    =
-	    {   my (tid as THREAD_ID { properties, ... } )
+	    {   my (tid as THREAD { properties, ... } )
 		    =
-		    get_thread_id ();
+		    get_thread ();
 
 		properties := [];
 
@@ -245,9 +245,9 @@ herein
 
 	    fun get_properties ()
 		=
-		{   my THREAD_ID { properties, ... }
+		{   my THREAD { properties, ... }
 			=
-			get_thread_id ();
+			get_thread ();
 
 		    properties;
 		};

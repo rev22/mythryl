@@ -38,8 +38,8 @@ herein
 	enable  tracing;
 
 	Deathwatch_Mail
-	  = START_DEATHWATCH  (Thread_Id,         Mailslot(Void))
-	  |  STOP_DEATHWATCH  (Thread_Id, Oneshot_Maildrop(Void))
+	  = START_DEATHWATCH  (Thread,         Mailslot(Void))
+	  |  STOP_DEATHWATCH  (Thread, Oneshot_Maildrop(Void))
 	  ;
 
 
@@ -50,11 +50,11 @@ herein
 
 	# Stop watching the named thread:
 	#
-	fun stop_thread_deathwatch  thread_id
+	fun stop_thread_deathwatch  thread
 	    =
 	    {   ack_drop = make_oneshot_maildrop ();
 
-		push (deathwatch_mailqueue, STOP_DEATHWATCH (thread_id, ack_drop));
+		push (deathwatch_mailqueue, STOP_DEATHWATCH (thread, ack_drop));
 
 		get ack_drop;
 	    };
@@ -62,7 +62,7 @@ herein
 
 	# Watch the given thread for unexpected termination:
 	#
-	fun start_thread_deathwatch (thread_name, thread_id)
+	fun start_thread_deathwatch (thread_name, thread)
 	    =
 	    {   unwatch_slot = make_mailslot ();
 
@@ -70,23 +70,23 @@ herein
 		    =
 		    {   print_if tracing .{
 
-			    cat [ "WARNING!  Watched thread ", thread_name, thread_id_to_string  thread_id,
+			    cat [ "WARNING!  Watched thread ", thread_name, thread_to_string  thread,
 				  " has died."
 				];
 			};
 
-			stop_thread_deathwatch  thread_id;
+			stop_thread_deathwatch  thread;
 		    };
 
 		fun deathwatch_thread ()
 		    =
 		    {
-			push (deathwatch_mailqueue, START_DEATHWATCH (thread_id, unwatch_slot));
+			push (deathwatch_mailqueue, START_DEATHWATCH (thread, unwatch_slot));
 
 			select [
 			    take'  unwatch_slot,
 
-			    thread_death_mailop  thread_id
+			    thread_death_mailop  thread
 				==>
 				handle_termination
 			];
@@ -98,13 +98,13 @@ herein
 	    };
 
 
-	package thread_id_table
+	package thread_table
 	    =
 	    monomorphic_hash_table_g (
 		#
-		Hash_Key   = Thread_Id;
-		hash_value = hash_thread_id;
-		same_key   = same_thread_id;
+		Hash_Key   = Thread;
+		hash_value = hash_thread;
+		same_key   = same_thread;
 	    );
 
 
@@ -112,7 +112,7 @@ herein
 	#
 	fun start_deathwatch_imp ()
 	    =
-	    {   table = thread_id_table::make_table (32, FAIL "start_deathwatch_imp");
+	    {   table = thread_table::make_table (32, FAIL "start_deathwatch_imp");
 
 		fun loop ()
 		    =
@@ -122,15 +122,15 @@ herein
 
 			    START_DEATHWATCH arg
 				=>
-				thread_id_table::set table arg;
+				thread_table::set table arg;
 
-			    STOP_DEATHWATCH (thread_id, ack_1shot)
+			    STOP_DEATHWATCH (thread, ack_1shot)
 				=>
 				{
 				    # Notify the watcher that the thread is no longer being
 				    # watched, and then acknowledge the unwatch command.
 				    #
-				    give (thread_id_table::remove  table  thread_id, ())
+				    give (thread_table::remove  table  thread, ())
 				    except
 					_ = ();
 

@@ -51,14 +51,14 @@ herein
 	    reverse (x ! rest, rl) => reverse (rest, x ! rl);
 	end;
 
-	Thread_Id = r::Thread_Id;
+	Thread = r::Thread;
 
 	# The current thread is represented using a dedicated register.
 	# This is a real register on RISC architectures but a memory location
 	# on the register-starved x86 architecture -- see current_thread_ptr in src/lib/compiler/codegen/x86/x86-fps-registers.pkg
 	#
-	my get_current_thread:  Void -> Thread_Id =  unsafe::get_current_thread_register;	# CALLING THIS (AND USING RETURN VALUE) WHEN THREAD SCHEDULER IS NOT RUNNING CAN SEGV!! XXX BUGGO FIXME
-	my set_current_thread:  Thread_Id -> Void =  unsafe::set_current_thread_register;
+	my get_current_thread:  Void -> Thread =  unsafe::get_current_thread_register;	# CALLING THIS (AND USING RETURN VALUE) WHEN THREAD SCHEDULER IS NOT RUNNING CAN SEGV!! XXX BUGGO FIXME
+	my set_current_thread:  Thread -> Void =  unsafe::set_current_thread_register;
 
 	# The scheduler defines three fate "hooks":
 	#
@@ -102,9 +102,9 @@ herein
 	# This is used when an ID is needed
 	# to get the types right:
 	#
-	dummy_thread_id
+	dummy_thread
 	    =
-	    r::THREAD_ID
+	    r::THREAD
 	      {
 		name     => "thread_scheduler dummy",
 		id       => -1,
@@ -122,9 +122,9 @@ herein
 	# (i.e., via RunTHREADKIT).  This thread is
 	# enqueued by reset.
 	#
-	error_thread_id
+	error_thread
 	    =
-	    r::THREAD_ID
+	    r::THREAD
 	      {
 		name  => "thread_scheduler error imp",
 		id    =>  -2,
@@ -153,9 +153,9 @@ herein
 	# by giving scheduling priority to foreground
 	# threads:
 	#
-	fun set_mail_flag   (r::THREAD_ID { did_mail, ... } ) =   did_mail := TRUE;
-	fun clear_mail_flag (r::THREAD_ID { did_mail, ... } ) =   did_mail := FALSE;
-	fun thread_did_mail (r::THREAD_ID { did_mail, ... } ) =  *did_mail;
+	fun set_mail_flag   (r::THREAD { did_mail, ... } ) =   did_mail := TRUE;
+	fun clear_mail_flag (r::THREAD { did_mail, ... } ) =   did_mail := FALSE;
+	fun thread_did_mail (r::THREAD { did_mail, ... } ) =  *did_mail;
 
 	# The thread ready queues:
 	#
@@ -177,11 +177,11 @@ herein
 	#
 	my (foreground_ready_queue as r::THREADKIT_QUEUE { rear=>rear1, ... } )
 	    #
-	    : q::Threadkit_Queue( (r::Thread_Id, Fate( Void )) )
+	    : q::Threadkit_Queue( (r::Thread, Fate( Void )) )
 	    =
 	    q::make_threadkit_queue ();
 
-	my background_ready_queue:   q::Threadkit_Queue( (r::Thread_Id, Fate( Void )) )
+	my background_ready_queue:   q::Threadkit_Queue( (r::Thread, Fate( Void )) )
 	    =
 	    q::make_threadkit_queue ();
 
@@ -203,10 +203,10 @@ herein
 	# Enqueue the current thread, and make the
 	# given thread ID be the current one.
 	#
-	fun enqueue_and_switch_current_thread (resume, thread_id)
+	fun enqueue_and_switch_current_thread (resume, thread)
 	    =
 	    {   set_mail_flag_and_enqueue (get_current_thread(), resume);
-		set_current_thread thread_id;
+		set_current_thread thread;
 	    };
 
 	# Dequeue a thread from the queue
@@ -250,7 +250,7 @@ herein
 
 		r::THREADKIT_QUEUE { front => REF [], rear => REF [] }
 		    =>
-		    (dummy_thread_id, *pause_hook);
+		    (dummy_thread, *pause_hook);
 
 		r::THREADKIT_QUEUE { front as REF [], rear as REF l }
 		    =>
@@ -443,7 +443,7 @@ herein
 
 		front
 		    :=
-		    (dummy_thread_id, myfate) ! *front;
+		    (dummy_thread, myfate) ! *front;
 	    };
 
 	my default_hook:  Fate( Void )
@@ -508,12 +508,12 @@ herein
 
 	fun preempt  current_fate		#  preempt the current thread (i.e. 'with fate k). 
 	    =
-	    {   current_thread_id = get_current_thread();
-		current_p   = (current_thread_id, current_fate);
+	    {   current_thread = get_current_thread();
+		current_p   = (current_thread, current_fate);
 
-		if (thread_did_mail  current_thread_id)
+		if (thread_did_mail  current_thread)
 
-		    clear_mail_flag  current_thread_id;
+		    clear_mail_flag  current_thread;
 		    promote ();
 		    enqueue current_p;
 		else
@@ -670,7 +670,7 @@ trace .{ "thread_scheduler.pkg: stop_timer: setting SIGARLM to IGNORE"; };
 	#
 	fun reset running
 	    =
-	    {   set_current_thread  dummy_thread_id;
+	    {   set_current_thread  dummy_thread;
 
 		pause_hook     := bogus_hook;
 		shutdown_hook  := bogus_shutdown_hook;
@@ -686,7 +686,7 @@ trace .{ "thread_scheduler.pkg: stop_timer: setting SIGARLM to IGNORE"; };
 
 		if (not running)
 		    #
-		    enqueue_thread (error_thread_id, error_cont);
+		    enqueue_thread (error_thread, error_cont);
 		fi;
 	   };
 

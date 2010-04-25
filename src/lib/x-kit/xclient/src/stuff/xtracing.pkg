@@ -204,11 +204,11 @@ herein
 		    (s ! _) => "raised at " + s;
 		esac;
 
-	    fun handle_xerror (thread_id, exn as xgripe::XERROR s)
+	    fun handle_xerror (thread, exn as xgripe::XERROR s)
 		    =>
 		    {   tracing::print_if error_tracing .{
 			    cat [ "exception (XERROR ", s, ") in ",
-				  threadkit::thread_id_to_string  thread_id,
+				  threadkit::thread_to_string  thread,
 				  raised_at exn
 				];
 			  };
@@ -236,17 +236,17 @@ herein
 	    =
 	    {   fun thread_body_wrapper ()
 		    =
-		    {   thread_id = get_thread_id ();
+		    {   thread = get_thread ();
 
-			dw::start_thread_deathwatch (thread_name, thread_id);
+			dw::start_thread_deathwatch (thread_name, thread);
 
-			print_if make_thread_tracing .{ cat [ "make_thread '", thread_name, "' ", thread_id_to_string thread_id ]; };
+			print_if make_thread_tracing .{ cat [ "make_thread '", thread_name, "' ", thread_to_string thread ]; };
 
 			thread_body ();
 
-			print_if make_thread_tracing .{ cat [ "thread '", thread_name, "' ", thread_id_to_string thread_id, " exiting." ]; };
+			print_if make_thread_tracing .{ cat [ "thread '", thread_name, "' ", thread_to_string thread, " exiting." ]; };
 
-			dw::stop_thread_deathwatch  thread_id;
+			dw::stop_thread_deathwatch  thread;
 		    }
 		    except
 			ex = {   fun f (s, l)
@@ -275,7 +275,7 @@ herein
 				 esac;
 
 				 dw::stop_thread_deathwatch
-				    (get_thread_id ());
+				    (get_thread ());
 			  };
 
 		threadkit::make_thread  thread_name  thread_body_wrapper;

@@ -59,8 +59,8 @@ herein
 				=>
 				{
 
-							{   id = get_thread_id (); 
-							    tracing::print_if xtracing::lib_tracing .{ cat [thread_id_to_string id, " ***** shutdown *****"]; };
+							{   id = get_thread (); 
+							    tracing::print_if xtracing::lib_tracing .{ cat [thread_to_string id, " ***** shutdown *****"]; };
 							};
 
 				    apply  xok::close_xsocket

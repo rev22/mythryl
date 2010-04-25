@@ -23,14 +23,14 @@ package threadkit_debug: (weak)  api {
         =
         say_debug (cat ["[", time::format 3 (time::get()), "] ", msg]);
 
-    my get_current_thread:  Void -> internal_threadkit_types::Thread_Id
+    my get_current_thread:  Void -> internal_threadkit_types::Thread
         =
         unsafe::get_current_thread_register;
 
     fun say_debug_id  msg
         =
         say_debug (cat [
-	    internal_threadkit_types::thread_id_to_string (get_current_thread()), " ", msg
+	    internal_threadkit_types::thread_to_string (get_current_thread()), " ", msg
 	  ]);
 
 };

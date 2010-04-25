@@ -1,3 +1,4 @@
+2010-04-24-20.00.32: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Random internal cleaning and commenting.
 2010-04-24-19.19.34: src/lib/x-kit/xclient/src/window/: Renamed graphics-context-cache.pkg -> pen-to-gcontext-imp.pkg for clarity.  src/lib/x-kit/xclient/src/window/xsession.pkg: Added draw-imp and pen-to-gcontext-imp to master diagram.
 2010-04-24-12.56.52: src/lib/x-kit/xclient/src/window/draw-imp.pkg: FLUSH command now signals completion via a condition variable.
 2010-04-24-01.47.28: src/runtime/c-libs/lib7-time/timeofday.c: Add comments pointing to TSR, HPET and clock_gettime().

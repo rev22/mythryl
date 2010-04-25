@@ -34,9 +34,9 @@
 #
 # We create threads using a 'make_thread' command
 # which takes a thread name and function to compute
-# and returns a 'thread_id' object to the compiler:
+# and returns a 'thread' object to the compiler:
 #
-#     thread_id = thread::make_thread "foo_imp" .{ something_to_compute (); };
+#     thread = thread::make_thread "foo_imp" .{ something_to_compute (); };
 #
 # We also supply a 'result' function which may be applied
 # to such thread objects, and which yields the final result

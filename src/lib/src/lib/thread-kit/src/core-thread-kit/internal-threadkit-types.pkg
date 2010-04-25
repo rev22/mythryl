@@ -24,9 +24,9 @@ package internal_threadkit_types {
     # Thread IDs --- see
     #     src/lib/thread-kit/src/core-thread-kit/thread.pkg
     #
-    Thread_Id
+    Thread
 	=
-	THREAD_ID						# Thread ids.
+	THREAD							# Thread ids.
 	  { id:	    		Int,				# A unique ID. 
 	    name:		String,				# Purely for display to humans.
 	    did_mail:		Ref( Bool ),			# Set this whenever this thread does some concurrency operation. 
@@ -46,7 +46,7 @@ package internal_threadkit_types {
     also
     Transaction_Id
       = CANCELLED_TRANSACTION_ID
-      |           TRANSACTION_ID  Thread_Id
+      |           TRANSACTION_ID  Thread
 
     # Condition variables --- see
     #     src/lib/thread-kit/src/core-thread-kit/mailop.pkg
@@ -101,7 +101,7 @@ package internal_threadkit_types {
 
     # Useful when debugging threadkit internals:
     #
-    fun thread_id_to_string (THREAD_ID { id, ... } )
+    fun thread_to_string (THREAD { id, ... } )
         =
 	cat [ "[",
                number_string::pad_left '0' 6 (int::to_string id),

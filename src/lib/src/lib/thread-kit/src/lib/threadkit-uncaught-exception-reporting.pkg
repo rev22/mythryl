@@ -27,7 +27,7 @@ package threadkit_uncaught_exception_reporting: (weak)  Threadkit_Uncaught_Excep
     ################################################################################
     # Uncaught exception handling:
     #
-    fun default_uncaught_exception_fn (thread_id, ex)
+    fun default_uncaught_exception_fn (thread, ex)
         =
         {   raised_at
                 =
@@ -39,7 +39,7 @@ package threadkit_uncaught_exception_reporting: (weak)  Threadkit_Uncaught_Excep
 	  
 	    threadkit_debug::say_debug
               ( cat
-                  ( [ thread_id_to_string  thread_id, " uncaught exception ",
+                  ( [ thread_to_string  thread, " uncaught exception ",
 	              exception_name ex, " [", exception_message ex, "]"
 	            ]
                     @
@@ -54,7 +54,7 @@ package threadkit_uncaught_exception_reporting: (weak)  Threadkit_Uncaught_Excep
 
     uncaught_exception_actions
 	=
-	REF ([]:  List( (Thread_Id, Exception) -> Bool ));
+	REF ([]:  List( (Thread, Exception) -> Bool ));
 
     # This sets the default uncaught exception action. 
     #
@@ -109,7 +109,7 @@ package threadkit_uncaught_exception_reporting: (weak)  Threadkit_Uncaught_Excep
 	    #
 	    fun thread_handler exn
 		=
-		push (error_queue, (get_thread_id(), exn));
+		push (error_queue, (get_thread(), exn));
 
 	    # Invoke the uncaught-exception actions
             # on the uncaught exception:

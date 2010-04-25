@@ -52,7 +52,7 @@ api {
         MAILSLOT
           { priority:  Ref( Int ),
             in_q:      r::Threadkit_Queue( (Ref( r::Transaction_Id ), Fate(X)) ),
-            out_q:     r::Threadkit_Queue( (Ref( r::Transaction_Id ), Fate( (r::Thread_Id, Fate(X)) )) )
+            out_q:     r::Threadkit_Queue( (Ref( r::Transaction_Id ), Fate( (r::Thread, Fate(X)) )) )
           };
 
     fun reset_mailslot (MAILSLOT { priority, in_q, out_q } )
@@ -90,7 +90,7 @@ api {
 
     # Given a transaction ID, get its thread ID and mark it cancelled. 
     #
-    fun get_thread_id_from_transaction_id_and_cancel (transaction_id as REF (r::TRANSACTION_ID tid))
+    fun get_thread_from_transaction_id_and_cancel (transaction_id as REF (r::TRANSACTION_ID tid))
         =
         {   transaction_id := r::CANCELLED_TRANSACTION_ID;
 	    tid;
@@ -103,7 +103,7 @@ api {
     #
     fun set_current_thread  transaction_id
         =
-        s::set_current_thread (get_thread_id_from_transaction_id_and_cancel transaction_id);
+        s::set_current_thread (get_thread_from_transaction_id_and_cancel transaction_id);
 
     Qy_Item(X)
       = NO_ITEM
@@ -266,7 +266,7 @@ api {
                     call_with_current_fate
                         (fn put_fate = {   s::enqueue_and_switch_current_thread
                                            ( put_fate,
-                                             get_thread_id_from_transaction_id_and_cancel
+                                             get_thread_from_transaction_id_and_cancel
                                                  rid
                                            );
 
@@ -309,7 +309,7 @@ api {
 			    =
 			    {   s::enqueue_and_switch_current_thread
 				    ( put_fate,
-                                      get_thread_id_from_transaction_id_and_cancel
+                                      get_thread_from_transaction_id_and_cancel
                                       transaction_id
                                     );
 
@@ -363,7 +363,7 @@ api {
                                     (
                                      fn put_fate
                                         =
-                                        {   s::enqueue_and_switch_current_thread (put_fate, get_thread_id_from_transaction_id_and_cancel rid);
+                                        {   s::enqueue_and_switch_current_thread (put_fate, get_thread_from_transaction_id_and_cancel rid);
 					    priority := 1;
 					    resume_fate rkont msg;
 					}
