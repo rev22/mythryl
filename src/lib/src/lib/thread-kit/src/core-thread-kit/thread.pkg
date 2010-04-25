@@ -54,27 +54,31 @@ herein
 
 		    THREAD
 		      { name,
-			id          =>  n,
-			did_mail    =>  REF FALSE,
+			thread_id         =>  n,
+			did_mail          =>  REF FALSE,
 			exception_handler =>  REF *default_exception_handler,
-			properties  =>  REF [],
-			dead        =>  cvar ()
+			properties        =>  REF [],
+			dead              =>  cvar ()
 		      };
 		};
 
 	end;
 
-	fun same_thread (THREAD { id=>a, ... }, THREAD { id=>b, ... } )
+	fun same_thread ( THREAD { thread_id => id1, ... },
+                          THREAD { thread_id => id2, ... }
+                        )
 	    =
-	    a == b;
+	    id1 == id2;
 
-	fun compare_thread (THREAD { id=>a, ... }, THREAD { id=>b, ... } )
+	fun compare_thread ( THREAD { thread_id => id1, ... },
+                             THREAD { thread_id => id2, ... }
+                           )
 	    =
-	    int::compare (a, b);
+	    int::compare (id1, id2);
 
-	fun hash_thread (THREAD { id, ... } )
+	fun hash_thread (THREAD { thread_id, ... } )
 	    =
-	    unt::from_int id;
+	    unt::from_int  thread_id;
 
 	fun thread_to_name (THREAD { name, ... } )
 	    =

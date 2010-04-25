@@ -27,7 +27,7 @@ package internal_threadkit_types {
     Thread
 	=
 	THREAD							# Thread ids.
-	  { id:	    		Int,				# A unique ID. 
+	  { thread_id:		Int,				# A unique ID. 
 	    name:		String,				# Purely for display to humans.
 	    did_mail:		Ref( Bool ),			# Set this whenever this thread does some concurrency operation. 
 
@@ -101,10 +101,10 @@ package internal_threadkit_types {
 
     # Useful when debugging threadkit internals:
     #
-    fun thread_to_string (THREAD { id, ... } )
+    fun thread_to_string (THREAD { thread_id, ... } )
         =
 	cat [ "[",
-               number_string::pad_left '0' 6 (int::to_string id),
+               number_string::pad_left '0' 6 (int::to_string thread_id),
               "]"
             ];
 
