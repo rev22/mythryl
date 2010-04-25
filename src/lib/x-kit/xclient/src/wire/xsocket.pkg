@@ -166,10 +166,10 @@ herein
 	  = PLEA_FLUSH
 	  | PLEA_QUIT
 	  | PLEA             v8::Vector
-	  | PLEA_AND_CHECK  (v8::Vector, Mailslot( Reply_Mail ))
-	  | PLEA_REPLY      (v8::Vector, Mailslot( Reply_Mail ))
-	  | PLEA_REPLIES    (v8::Vector, Mailslot( Reply_Mail ), (v8::Vector -> Int))
-	  | PLEA_EXPOSURES  (v8::Vector, Oneshot_Maildrop (Void -> List( ge::Box ) ))
+	  | PLEA_AND_CHECK  (v8::Vector, Mailslot(Reply_Mail))
+	  | PLEA_REPLY      (v8::Vector, Mailslot(Reply_Mail))
+	  | PLEA_REPLIES    (v8::Vector, Mailslot(Reply_Mail), (v8::Vector -> Int))
+	  | PLEA_EXPOSURES  (v8::Vector, Oneshot_Maildrop (Void -> List(ge::Box) ))
 
 
 	# Replies from the sequencer to client requests 
@@ -311,9 +311,9 @@ herein
 	#	
 	# The first byte of the message distinguishes the three types.
 	#	
-	# For more details see (e.g.) p5 "1 Protocol Formats" in:
+	# For more details see (e.g.) p1 "1 Protocol Formats" in:
 	#
-	#     http://mythryl.org/pub/exene/X-protocol.pdf	
+	#     http://mythryl.org/pub/exene/X-protocol-R6.pdf
 	#	
 	# Our task here is to repetitively read one complete message
         # from the X server socket (which on a reply means reading any
@@ -619,9 +619,9 @@ herein
 	# to the X server for which replies are expected but
 	# not yet received.
         #     We represent it using the usual two-list arrangement,
-        # writing new entries to the rear list list while reading
-        # them from the front list and when the front list is empty
-	# reversing the rear list and making it the new front list.
+        # writing new entries to the rear list while reading them
+        # from the front list; when the front list is empty we
+	# reverse the rear list and make it the new front list.
 	# 
 	#
 	stipulate
@@ -748,19 +748,19 @@ trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s)/BOT pending_reply_que
 	    #
 	    # We return the pair
 	    #
-	    #    (found_it, pending_queue')
+	    #    { found_it, updated_queue }
 	    #
 	    # where:
 	    #
-	    #    pending_queue'
+	    #    updated_queue
 	    #        is the updated queue.
 	    #
 	    #    found_it
 	    #        is TRUE iff the head
-            #        of pending_queue' has
+            #        of updated_queue has
 	    #        sequence number n.
 	    #	
-	    fun pending_reply_n_exists' (n, q)
+	    fun get_pending_reply_n' (n, q)
 		=
 		drop_outdated_pending_replies q
 		where
@@ -779,7 +779,7 @@ trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s)/BOT pending_reply_que
 
 		    fun drop_outdated_pending_replies' (q' as ([], []))
 			    =>
-			    (FALSE, q');
+			    { found_it => FALSE, updated_queue => q' };
 
 			drop_outdated_pending_replies' ([], rear)
 			    =>
@@ -795,8 +795,8 @@ trace  .{ sprintf "xsocket::add_to_pending_reply_queue(%s)/BOT pending_reply_que
 				    #
 				    drop_outdated_pending_replies' (r, rear);
 				else
-				    seqn > n  ??   (FALSE, q')
-					      ::   (TRUE,  q');
+				    seqn > n  ??   { found_it => FALSE, updated_queue => q' }
+					      ::   { found_it => TRUE,  updated_queue => q' };
 				fi;
 			    };
 		      end;
@@ -811,13 +811,13 @@ trace  .{ sprintf "xsocket::drop_outdated_pending_replies/TOP: seqn =%s q =%s" (
 
 		end;
 
-fun pending_reply_n_exists (n, q)
+fun get_pending_reply_n (n, q)
     =
     {
-trace  .{ sprintf "xsocket::pending_reply_n_exists( %d, q)/TOP queue = %s" (unt::to_int n) (pending_reply_queue_to_string q); };
+trace  .{ sprintf "xsocket::get_pending_reply_n( %d, q)/TOP queue = %s" (unt::to_int n) (pending_reply_queue_to_string q); };
 
-my result as (bool, queue) = pending_reply_n_exists' (n, q);
-trace  .{ sprintf "xsocket::pending_reply_n_exists( %d, q)/MID result = (%s, q) -- queue = %s" (unt::to_int n) (bool ?? "TRUE" :: "FALSE") (pending_reply_queue_to_string queue); };
+my result as { found_it, updated_queue } = get_pending_reply_n' (n, q);
+trace  .{ sprintf "xsocket::get_pending_reply_n( %d, q)/MID result = (%s, q) -- queue = %s" (unt::to_int n) (found_it ?? "TRUE" :: "FALSE") (pending_reply_queue_to_string updated_queue); };
 result;
     };
 
@@ -832,15 +832,15 @@ result;
 	    #
 	    fun handle_reply_message (seqn, reply, pending_reply_queue)
 		=
-		case (pending_reply_n_exists (seqn, pending_reply_queue))
+		case (get_pending_reply_n (seqn, pending_reply_queue))
 		    #
-		    (TRUE, (ONE_REPLY(_, slot) ! r, rear))
+		    { found_it => TRUE,  updated_queue => (ONE_REPLY(_, slot) ! r, rear) }
 			=>
 			{   send_reply (slot, REPLY reply);
 			    (r, rear);
 			};
 
-		    (TRUE, (MULTI_REPLY (seqn, slot, remaining, replies) ! rest, rear))
+		    { found_it => TRUE,  updated_queue => (MULTI_REPLY (seqn, slot, remaining, replies) ! rest, rear) }
 			=>
 			if (remaining reply  ==  0)
 			    #
@@ -866,9 +866,9 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 	    #
 	    fun handle_expose_message (n, reply, pending_reply_queue)
 		=
-		{   case (pending_reply_n_exists (n, pending_reply_queue))
+		{   case (get_pending_reply_n (n, pending_reply_queue))
 			#
-			(TRUE, (EXPOSURE_REPLY(_, sync_1shot) ! rest,  rear))
+			{ found_it => TRUE, updated_queue => (EXPOSURE_REPLY(_, sync_1shot) ! rest,  rear) }
 			    =>
 			    {    set  (sync_1shot,  fn () = reply);
 
@@ -895,33 +895,33 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 	    #
 	    fun handle_error_message (n, err, pending_reply_queue)
 		= 
-		case (pending_reply_n_exists (n, pending_reply_queue))
+		case (get_pending_reply_n (n, pending_reply_queue))
 		    #
-		    (TRUE, (ERROR_CHECK(_, slot) ! rest,  rear))
+		    { found_it => TRUE,  updated_queue => (ERROR_CHECK(_, slot) ! rest,  rear) }
 			=>
 			{   send_reply (slot, REPLY_ERROR err);
 			    (rest, rear);
 			};
 
-		    (TRUE, (ONE_REPLY(_, slot) ! rest,  rear))
+		    { found_it => TRUE,  updated_queue => (ONE_REPLY(_, slot) ! rest,  rear) }
 			=>
 			{   send_reply (slot, REPLY_ERROR err);
 			    (rest, rear);
 			};
 
-		    (TRUE, (MULTI_REPLY(_, slot, _, _) ! rest, rear))
+		    { found_it => TRUE,  updated_queue => (MULTI_REPLY(_, slot, _, _) ! rest, rear) }
 			=>
 			{   send_reply (slot, REPLY_ERROR err);
 			    (rest, rear);
 			};
 
-		    (TRUE, (EXPOSURE_REPLY(_, sync_1shot) ! rest, rear))
+		    { found_it => TRUE,  updated_queue => (EXPOSURE_REPLY(_, sync_1shot) ! rest, rear) }
 			=>
 			{   set  (sync_1shot,  fn () = raise exception ERROR_REPLY (wire_to_value::decode_error err));
 			    (rest, rear);
 			};
 
-		    (FALSE, pending_reply_queue')
+		    { found_it => FALSE,  updated_queue => pending_reply_queue' }
 			=>
 			pending_reply_queue';
 
@@ -934,15 +934,15 @@ trace  .{                   sprintf "IMPOSSIBLE ERROR: xsocket::handle_reply_mes
 
 	    fun handle_event_message (n, pending_reply_queue)
 		=
-		case (pending_reply_n_exists (n, pending_reply_queue))
+		case (get_pending_reply_n (n, pending_reply_queue))
 		    #
-		    (TRUE, (ERROR_CHECK(_, slot) ! rest,  rear))
+		    { found_it => TRUE,  updated_queue => (ERROR_CHECK(_, slot) ! rest,  rear) }
 			=>
 			{   send_reply (slot, REPLY empty_v);
 			    (rest, rear);
 			};
 
-		    (_, pending_reply_queue')
+		    { found_it,  updated_queue => pending_reply_queue' }
 			=>
 			pending_reply_queue';
 		esac;
