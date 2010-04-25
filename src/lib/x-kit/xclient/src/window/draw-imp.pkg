@@ -105,8 +105,9 @@ herein
 		  draw_slot:       Mailslot( Draw_Op ),		# Stream of drawing commands for the overlay.
 		  release':        Mailop( Void )			# Overlay release mailop.
 		}
-	      | DESTROY  i::Destroy_Item
-	      | FLUSH    Oneshot_Maildrop( Void )
+	      | DESTROY    i::Destroy_Item
+	      | FLUSH      Oneshot_Maildrop( Void )
+	      | THREAD_ID  Oneshot_Maildrop( Int  )
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;
@@ -700,6 +701,12 @@ trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY done  send_xrequest, m
 					loop buf;
 				    };
 
+				filter (d::THREAD_ID thread_id_oneshot)
+				    =>
+				    {   give  (new_slot, d::THREAD_ID thread_id_oneshot);
+					loop buf;
+				    };
+
 				filter (d::LOCK_WINDOW_FOR_RUBBERBANDING _)
 				    =>
 				    xgripe::impossible "[multiple overlays not supported]";
@@ -813,7 +820,16 @@ trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY done  send_xrequest, m
 
 				    do_plea (d::FLUSH flush_done_oneshot)	# Buffer is empty so FLUSH is a no-op.
 					=>
-					{   set (flush_done_oneshot, ());
+					{
+trace  .{ sprintf "XYZZY draw_imp::topwindow_is_mapped_loop: do_plea/FLUSH: buffer is empty, flush is a no-op"; };
+					    set (flush_done_oneshot, ());
+					    topwindow_is_mapped_loop (0, []);
+					};
+
+				    do_plea (d::THREAD_ID thread_id_oneshot)
+					=>
+					{
+					    set (thread_id_oneshot, thread::get_current_thread's_id());
 					    topwindow_is_mapped_loop (0, []);
 					};
 
@@ -863,9 +879,19 @@ trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY done  send_xrequest, m
 
 				   do_plea (d::FLUSH flush_done_oneshot)
 					=>
-					{   flush buf;
+					{
+trace  .{ sprintf "XYZZY draw_imp::topwindow_is_mapped_loop: do_plea/FLUSH: buffer is NON-empty, doing flush"; };
+					    flush buf;
+trace  .{ sprintf "XYZZY draw_imp::topwindow_is_mapped_loop: do_plea/FLUSH: buffer is NON-empty, done  flush"; };
 					    set (flush_done_oneshot, ());
 					    topwindow_is_mapped_loop (0, []);
+					};
+
+				   do_plea (d::THREAD_ID  thread_id_oneshot)
+					=>
+					{
+					    set (thread_id_oneshot, thread::get_current_thread's_id());
+					    topwindow_is_mapped_loop (commands_in_buffer, buf);
 					};
 
 				   do_plea (d::LOCK_WINDOW_FOR_RUBBERBANDING { draw_slot, release' } )
@@ -950,10 +976,11 @@ trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY done  send_xrequest, m
 					    set_mappedstate _                            => xgripe::impossible "[drawimp (mapped-overlay): bad config command]";
 					end;
 
-					fun do_plea (d::DRAW m)        =>                      topwindow_is_mapped_overlay_loop (1, [m]);
-					    do_plea (d::FLUSH oneshot) => { set (oneshot, ()); topwindow_is_mapped_overlay_loop (0, []); };			# Buffer is empty so FLUSH is a no-op.
-					    do_plea (d::DESTROY id)    => { destroy id; topwindow_is_mapped_overlay_loop (0, []);};
-					    do_plea _                  => xgripe::impossible "[drawimp (mapped-overlay): bad command]";
+					fun do_plea (d::DRAW m)            =>                                                     topwindow_is_mapped_overlay_loop (1, [m]);
+					    do_plea (d::FLUSH     oneshot) => { set (oneshot, ());                                topwindow_is_mapped_overlay_loop (0, []); };			# Buffer is empty so FLUSH is a no-op.
+					    do_plea (d::THREAD_ID oneshot) => { set (oneshot, thread::get_current_thread's_id()); topwindow_is_mapped_overlay_loop (0, []); };
+					    do_plea (d::DESTROY id)        => { destroy id;                                       topwindow_is_mapped_overlay_loop (0, []);};
+					    do_plea _                      => xgripe::impossible "[drawimp (mapped-overlay): bad command]";
 					end;
 
 					#  Xtracing::trace (Xtracing::dmTM, fn => ["draw_imp: overlayMapped (empty)\n"]); 
@@ -981,6 +1008,12 @@ trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY done  send_xrequest, m
 						{   flush buf;
 						    set (flush_done_oneshot, ());
 						    topwindow_is_mapped_overlay_loop (0, []);
+						};
+
+					    do_plea (d::THREAD_ID thread_id_oneshot)
+						=>
+						{   set (thread_id_oneshot, thread::get_current_thread's_id());
+						    topwindow_is_mapped_overlay_loop (commands_in_buffer, buf);
 						};
 
 					    do_plea (d::DESTROY id)
@@ -1019,15 +1052,17 @@ trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY done  send_xrequest, m
 
 		    fun start_draw_imp ()
 			=
-			# Wait for FIRST_EXPOSE,
-			# then enter main loop:
-			#
-			case (do_mailop set_mappedstate')
+			{
+trace  .{ sprintf "XYZZY start_draw_imp: thread_id d=%d" (thread::get_current_thread's_id ()); };
+			    # Wait for FIRST_EXPOSE,
+			    # then enter main loop:
 			    #
-			    s::FIRST_EXPOSE =>   topwindow_is_mapped_loop (0, []);
-			     _              =>   start_draw_imp ();
-			esac;
-
+			    case (do_mailop set_mappedstate')
+				#
+				s::FIRST_EXPOSE =>   topwindow_is_mapped_loop (0, []);
+				 _              =>   start_draw_imp ();
+			    esac;
+			};
 
 		    xtracing::make_thread  "draw_imp"  start_draw_imp;
 

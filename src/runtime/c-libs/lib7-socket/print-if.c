@@ -59,7 +59,7 @@ void   print_if   (const char * fmt, ...) {
          * enough to justify the risk:
          */
 	seconds = _lib7_time_gettimeofday (&microseconds);
-	sprintf(buf,"%10d.%06d:             ", seconds, microseconds);
+	sprintf(buf,"%10d.%06d:                                        ", seconds, microseconds);
 
 	/* Now write the message proper into buf[],
          * right after the timestamp:

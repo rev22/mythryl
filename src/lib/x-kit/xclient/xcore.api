@@ -246,7 +246,7 @@ api  Xcore {
 
     # Window, rw_pixmap and ro_pixmap geometry functions:
     #
-    depth_of_window:          Window -> Int;				# depth_of_window		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+    depth_of_window:          Window -> Int;				# depth_of_window		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     depth_of_rw_pixmap:    Rw_Pixmap -> Int;				# depth_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     depth_of_ro_pixmap:    Ro_Pixmap -> Int;				# depth_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     #
@@ -257,6 +257,11 @@ api  Xcore {
     shape_of_window:          Window -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_width: Int  };	# "                                     "
     shape_of_rw_pixmap:    Rw_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_width: Int  };	# "                                     "
     shape_of_ro_pixmap:    Ro_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_width: Int  };	# "                                     "
+    #
+    id_of_window:          Window -> Int;				# id_of_window			def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+    id_of_rw_pixmap:    Rw_Pixmap -> Int;				# id_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+    id_of_ro_pixmap:    Ro_Pixmap -> Int;				# id_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+
 
 
     #  Client-side windows:

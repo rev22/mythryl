@@ -103,6 +103,7 @@ herein
 		}
 	      | DESTROY    i::Destroy_Item
 	      | FLUSH      Oneshot_Maildrop( Void )
+	      | THREAD_ID  Oneshot_Maildrop( Int  )
 	      | BATCHING_ON
 	      | BATCHING_OFF
 	      ;

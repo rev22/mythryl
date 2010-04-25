@@ -555,8 +555,8 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 		socket_closer_imp::forget_xsocket xsocket;
 	    };
 
-	fun depth_of_visual (xt::NO_VISUAL_FOR_THIS_DEPTH d) =>  d;
-	    depth_of_visual (xt::VISUAL { depth, ... } )     =>  depth;
+	fun depth_of_visual (xt::NO_VISUAL_FOR_THIS_DEPTH depth) =>  depth;
+	    depth_of_visual (xt::VISUAL { depth, ... } )         =>  depth;
 	end;
 
 	fun display_class_of_visual (xt::NO_VISUAL_FOR_THIS_DEPTH _) =>  NULL;

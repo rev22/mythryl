@@ -61,10 +61,14 @@ herein
 	  | FROM_RO_PIXMAP  Ro_Pixmap
 	  ;
 
-	depth_of_window:    Window -> Int;
+	depth_of_window:    Window    -> Int;
 	depth_of_rw_pixmap: Rw_Pixmap -> Int;
 	depth_of_ro_pixmap: Ro_Pixmap -> Int;
 	depth_of_draw_src:  Draw_From -> Int;
+
+	id_of_window:    Window    -> Int;
+	id_of_rw_pixmap: Rw_Pixmap -> Int;
+	id_of_ro_pixmap: Ro_Pixmap -> Int;
 
 	shape_of_window
 	    :
@@ -170,6 +174,11 @@ herein
 	    # which is used in
 	    #     src/lib/x-kit/xclient/src/window/draw.pkg
 	    #     src/lib/x-kit/xclient/src/window/cs-pixmap.pkg	
+
+	drawimp_thread_id_of: (di::d::Draw_Op -> Void) -> Int;
+	    #
+	    # This is a lower-level version of  drawimp_thread_id_of  from
+	    #     src/lib/x-kit/xclient/xdraw.api
     };
 
 end;

@@ -373,7 +373,7 @@ herein
 					  file::write (stream, "# \n");
 					  file::write (stream, "# print_if line fields are:\n");
 					  file::write (stream, "# \n");
-					  file::write (stream, "#     timestamp in seconds:   thread name:   message   (foo::tracing)\n");
+					  file::write (stream, "#     timestamp in seconds:   thread id:   thread name:   message   (foo::tracing)\n");
 					  file::write (stream, "# \n");
 					  file::write (stream, "# You can suppress such a message via:   tracing::disable foo::tracing\n");
 					  file::write (stream, "# You can reenable such a message via:   tracing::enable foo::tracing\n");
@@ -556,7 +556,7 @@ herein
 		    #          src/runtime/c-libs/lib7-socket/print-if.c
 
 		trace_string =  time_string + ":  "
-			     +  (sprintf "%8d:  %-20s " (thread::get_current_thread's_id())  (thread::get_current_thread's_name() + ": "))
+			     +  (sprintf "%8d:  %-26s " (thread::get_current_thread's_id())  (thread::get_current_thread's_name() + ": "))
 			     + make_message_string_fn()
 			     + "    \t(" + name
 			     + ")\n";

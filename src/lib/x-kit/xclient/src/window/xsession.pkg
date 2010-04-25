@@ -324,6 +324,7 @@ herein
 
 				make_thread  "send FIRST_EXPOSE"  .{   give (drawimp_mappedstate_slot, di::s::FIRST_EXPOSE);   };
 
+trace .{ "XYZZY xsession: open_xsession: make_screen_info: make_gc_and_draw_imps: Making GC_AND_DRAW_IMPS record"; };
 				GC_AND_DRAW_IMPS {
 				    depth,
 				    gcontext_imp,
@@ -345,9 +346,10 @@ herein
 			    make_gcontext_imps (vd ! r, l)
 				=>
 				{
-				    d = dy::depth_of_visual vd;
+				    visual_depth =  dy::depth_of_visual  vd;
+trace .{ sprintf "XYZZY xsession: open_xsession: make_gcontext_imps: visual_depth d=%d Making root_imps" visual_depth; };
 
-				    fun make_server ()
+				    fun make_imps ()
 					=
 					{   pixmap_id = next_xid ();
 
@@ -357,25 +359,26 @@ herein
 					    xok::send_xrequest xsocket
 					      ( value_to_wire::encode_create_pixmap
 						  { pixmap_id,
-						    drawable_id => root_window_id,
-						    size => ge::SIZE { wide=>1, high=>1 },
-						    depth => d
+						    drawable_id =>  root_window_id,
+						    size        =>  ge::SIZE { wide=>1, high=>1 },
+						    depth       =>  visual_depth
 				                  }
                                               );
 
 					    make_gc_and_draw_imps
-						(d, p2g::make_pen_to_gcontext_imp (xdisplay, pixmap_id));
+						(visual_depth, p2g::make_pen_to_gcontext_imp (xdisplay, pixmap_id));
 				        };
 
 
 				    fun get []
 					    =>
-					    make_server() ! l;
+					    make_imps() ! l;
 
-				        get (GC_AND_DRAW_IMPS { depth, ... } ! r)
+				        get (GC_AND_DRAW_IMPS { depth, ... } ! rest)
 					    =>
-					    d == depth  ??  l
-                                                        ::  get r;
+					    depth == visual_depth
+                                             ??  l
+                                             ::  get rest;
                                     end;
 
 
@@ -383,6 +386,7 @@ herein
 				};
 			end;
 
+trace .{ "XYZZY xsession: open_xsession: Making root_imps"; };
 			root_imps
 			    =
 			    make_gc_and_draw_imps
@@ -391,9 +395,12 @@ herein
 				p2g::make_pen_to_gcontext_imp  (xdisplay, root_window_id)
 			      );
 
+trace .{ "XYZZY xsession: open_xsession: Making per-visual imps"; };
 			imps = make_gcontext_imps (visuals, [root_imps]);
+trace .{ "XYZZY xsession: open_xsession: Making NO_VISUAL_FOR_THIS_DEPTH 1 imp-pair"; };
 			imps = make_gcontext_imps ([xt::NO_VISUAL_FOR_THIS_DEPTH 1], imps);
 
+trace .{ "XYZZY xsession: open_xsession: building and returning SCREEN_INFO record"; };
 			SCREEN_INFO
                           {
 			    xscreen,
@@ -416,7 +423,7 @@ herein
 		    selection_imp,
 		    keymap_imp
 		  };
-	  };
+	  };							# fun open_xsession
 
 
 	# X-server I/O.

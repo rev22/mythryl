@@ -578,6 +578,15 @@ herein
 		    dt::flush_drawimp  to_drawimp;
 		};
 
+	    fun drawimp_thread_id_of drawable
+		=
+		{   (info_of_drawable  drawable)
+			->
+			{ to_drawimp, ... };
+
+		    dt::drawimp_thread_id_of  to_drawimp;
+		};
+
 
 	end;		# stipulate
     };			# package draw 

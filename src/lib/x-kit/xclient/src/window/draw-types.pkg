@@ -97,6 +97,10 @@ herein
 	fun depth_of_rw_pixmap             (RW_PIXMAP { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )  = depth;
 	fun depth_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )) = depth;
 
+	fun id_of_window                   (WINDOW { window_id => xt::XID u, ... } )  =  unt::to_int u;
+	fun id_of_rw_pixmap             (RW_PIXMAP { pixmap_id => xt::XID u, ... } )  =  unt::to_int u;
+	fun id_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { pixmap_id => xt::XID u, ... } )) =  unt::to_int u;
+
 	fun depth_of_draw_src (FROM_WINDOW    w) =>  depth_of_window     w;
 	    depth_of_draw_src (FROM_RW_PIXMAP w) =>  depth_of_rw_pixmap  w;
 	    depth_of_draw_src (FROM_RO_PIXMAP w) =>  depth_of_ro_pixmap  w;
@@ -165,6 +169,15 @@ herein
 		to_drawimp (di::d::FLUSH done_flush_oneshot);
 		#
 		get done_flush_oneshot;
+	    };	
+
+	fun drawimp_thread_id_of  to_drawimp
+	    =
+	    {   thread_id_oneshot = make_oneshot_maildrop ();
+		#
+		to_drawimp (di::d::THREAD_ID thread_id_oneshot);
+		#
+		get thread_id_oneshot;
 	    };	
 
 	# drawables **

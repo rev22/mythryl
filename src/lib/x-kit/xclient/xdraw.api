@@ -466,6 +466,8 @@ api Xdraw {
     #
     flush:           Drawable -> Void;
 
+    drawimp_thread_id_of:    Drawable -> Int;
+
     # Create a locked version of the given window.
     # This provides exclusive access to its drawing
     # surface (and that of its descendents) during

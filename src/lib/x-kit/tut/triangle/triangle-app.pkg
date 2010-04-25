@@ -221,11 +221,7 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
                         xd::clear_drawable  drawable;
 		    };
 
-		# Fetch from the X server the pixel contents of a
-		# given rectangle on a given window.  (This is so
-		# that we can check that something actually drew.)
-		#
-		fun get_cs_pixmap_from_window  window
+		fun get_window_depth  window
 		    =
 		    {   drawable =  xd::drawable_of_window  window;
 			#
@@ -240,11 +236,13 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 		    {   # First order of business is to wait
 			# until things are up and running:
 			#
+trace .{ sprintf "drawing_window.id d=%d x=%x" (xc::id_of_window drawing_window) (xc::id_of_window drawing_window); };
+trace .{ sprintf "drawimp_thread_id_of drawing_window d=%d" (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
 trace .{ "Waiting for first drawing window EXPOSE..."; };
 			wait_for_first_drawing_window_expose ();
 trace .{ "Seen first drawing window EXPOSE."; };
 
-window_depth = get_cs_pixmap_from_window  drawing_window;
+window_depth = get_window_depth  drawing_window;
 			# Get size of drawing window:
 			#
 			(xw::get_window_site  drawing_window)
@@ -310,14 +308,14 @@ trace .{ sprintf "Setting add_triangle_watcher_slot."; };
 
 			# Simulate a mouseclick in center of drawing window:
 			#
-trace .{ sprintf "Sending midwindow downclick to X server."; };
+trace .{ sprintf "XYZZY Sending midwindow downclick to X server."; };
 			xw::send_mousebutton_press_xevent
                           { window => drawing_window,
                             button => xi::MOUSEBUTTON 1,
 			    point  => midpoint
 			  };
 			#
-trace .{ sprintf "Sending midwindow upclick to X server."; };
+trace .{ sprintf "XYZZY Sending midwindow upclick to X server."; };
 			xw::send_mousebutton_release_xevent
                           { window => drawing_window,
                             button => xi::MOUSEBUTTON 1,
@@ -718,9 +716,9 @@ trace .{ "mouse thread/TOP"; };
 fun draw_triangle x
     =
     {
-trace .{ "drawing_window draw_triangle/TOP"; };
+trace .{ "XYZZY drawing_window draw_triangle/TOP"; };
         draw_triangle' x;
-trace .{ "drawing_window draw_triangle/BOT"; };
+trace .{ "XYZZY drawing_window draw_triangle/BOT"; };
     };
 
 

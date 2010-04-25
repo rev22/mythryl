@@ -379,7 +379,8 @@ herein
 		    =
 		    make_mailslot ();
 
-		draw_imp
+trace .{ "XYZZY make_topwindow_to_widget_router: Doing make_draw_imp"; };
+		to_drawimp
 		    =
 		    di::make_draw_imp
 			  (
@@ -388,6 +389,7 @@ herein
 			    xsocket_to_topwindow_router,
 			    xsocket
 			  );
+trace .{ "XYZZY make_topwindow_to_widget_router: Done  make_draw_imp"; };
 
 		xevent_in'				# We receive X events via this mailop.
 		    =
@@ -400,7 +402,7 @@ herein
 
 		top_window
 		    =
-		    dt::WINDOW { window_id, screen, gc_and_draw_imps, to_drawimp => draw_imp };
+		    dt::WINDOW { window_id, screen, gc_and_draw_imps, to_drawimp };
 
 		my (kidplug, router, delete_slot)
 		    =
