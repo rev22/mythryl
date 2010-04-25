@@ -543,7 +543,7 @@ trace .{  "display.pkg: connect_to_xserver: DONE.";  }; result;
 	#
 	fun close_display (XDISPLAY { xsocket, ... } )
 	    =
-	    {   thread = get_thread ();
+	    {   thread = get_current_thread ();
 
 		trace  .{
 		    #

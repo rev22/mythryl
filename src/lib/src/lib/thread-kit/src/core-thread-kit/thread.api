@@ -1,15 +1,20 @@
-## thread.pkg
+## thread.api
 
 # Compiled by:
 #     src/lib/std/stdlib.make6
 
+# This api is implemented in:
+#     src/lib/src/lib/thread-kit/src/core-thread-kit/thread.pkg
 
 api Thread {
 
+    exception THREAD_SCHEDULER_NOT_RUNNING;
+
     Thread;
 
-    get_thread:    Void -> Thread;
-    get_thread_name:  Void -> String;
+    get_current_thread:         Void -> Thread;
+    get_current_thread's_name:  Void -> String;
+    get_current_thread's_id:    Void -> Int;
 
     same_thread:     (Thread, Thread) -> Bool;
     compare_thread:  (Thread, Thread) -> Order;

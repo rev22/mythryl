@@ -17,6 +17,8 @@ herein
     }
 
     {
+	exception THREAD_SCHEDULER_NOT_RUNNING;
+
 	Thread                   ==  tt::Thread;
 	Condition_Variable       ==  tt::Condition_Variable;
 	Condition_Variable_State ==  tt::Condition_Variable_State;
@@ -162,19 +164,45 @@ herein
 	    mailop::cvar_get_mailop  dead;
 
 
-	get_thread
+	fun get_current_thread ()
 	    =
-	    ts::get_current_thread;
-
-
-	fun get_thread_name ()
-	    =
-	    if *tr::thread_scheduler_is_running    thread_to_name (get_thread ());
-	    else				   "[nothread]";
+	    if *tr::thread_scheduler_is_running    ts::get_current_thread ();
+	    else                                   raise exception THREAD_SCHEDULER_NOT_RUNNING;
 	    fi;
-		# When thread_scheduler is not running
-		# get_thread() returns garbage		XXX BUGGO FIXME
-		# and using that result will SEGV us.
+
+
+	fun get_current_thread's_name ()
+	    =
+	    thread_to_name (get_current_thread ())
+            except
+		THREAD_SCHEDULER_NOT_RUNNING
+		    =
+		    "[no thread]";
+		    #
+		    # When thread_scheduler is not running
+		    # get_thread() returns garbage		XXX BUGGO FIXME
+		    # and using that result will SEGV us.
+		    #
+		    # We return a dummy value here (rather
+		    # than letting the exception propagate)
+		    # for the convenience of tracing.pkg
+		    # logging.
+
+	fun get_current_thread's_id ()
+	    =
+	    {
+		(get_current_thread ())
+		    ->
+		    THREAD { thread_id, ... };
+
+		thread_id;
+	    }
+            except
+		THREAD_SCHEDULER_NOT_RUNNING
+		    =
+		    0;
+		    #
+		    # See comments to get_current_thread's_name (), above.
 
 
 
@@ -182,7 +210,7 @@ herein
 	    =
 	    {   my (tid as THREAD { properties, ... } )
 		    =
-		    get_thread ();
+		    get_current_thread ();
 
 		properties := [];
 
@@ -251,7 +279,7 @@ herein
 		=
 		{   my THREAD { properties, ... }
 			=
-			get_thread ();
+			get_current_thread ();
 
 		    properties;
 		};

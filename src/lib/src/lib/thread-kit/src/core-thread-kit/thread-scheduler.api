@@ -19,9 +19,9 @@ api Thread_Scheduler {
     get_current_thread:  Void -> Thread;
     set_current_thread:  Thread -> Void;
 
-    enqueue_thread:  ((Thread, Fate( Void )) ) -> Void;
+    enqueue_thread:  (Thread, Fate(Void)) -> Void;
 
-    enqueue_and_switch_current_thread:  ((Fate( Void ), Thread)) -> Void;
+    enqueue_and_switch_current_thread:  (Fate(Void), Thread) -> Void;
 	#
 	# Enqueue the given fate with the
 	# current thread ID, and make the
@@ -65,7 +65,7 @@ api Thread_Scheduler {
 	# Switch to the given thread
 	# while leaving a critical section.
 
-    reenable_thread_switching_and_yield_to_next_thread:  Fate( Void ) -> X;
+    reenable_thread_switching_and_yield_to_next_thread:  Fate(Void) -> X;
 	#
 	# Yield control to the next thread
 	# while leaving the critical section.

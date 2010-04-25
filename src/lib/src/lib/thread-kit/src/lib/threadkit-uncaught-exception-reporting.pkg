@@ -107,9 +107,9 @@ package threadkit_uncaught_exception_reporting: (weak)  Threadkit_Uncaught_Excep
 	    # It sends the thread ID and uncaught
             # exception to the exception imp.
 	    #
-	    fun thread_handler exn
+	    fun thread_handler  the_exception
 		=
-		push (error_queue, (get_thread(), exn));
+		push (error_queue, (get_current_thread(),  the_exception));
 
 	    # Invoke the uncaught-exception actions
             # on the uncaught exception:

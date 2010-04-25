@@ -978,7 +978,7 @@ herein
 		fun pr (s, gc)
 		    =
 		    trace .{
-			cat [ thread_to_string (get_thread()), " ", s, ": gc = ",
+			cat [ thread_to_string (get_current_thread()), " ", s, ": gc = ",
 			      xid_to_string gc
 			    ];
 		    };

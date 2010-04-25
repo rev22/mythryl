@@ -1,3 +1,4 @@
+2010-04-24-22.45.01: src/lib/src/lib/thread-kit/src/core-thread-kit/internal-threadkit-types.pkg: For clarity and consistency renamed THREAD.id -> THREAD.thread_id.
 2010-04-24-22.28.30: src/lib/src/lib/thread-kit/src/core-thread-kit/thread.pkg (etc): Renamed Thread_Id -> Thread everywhere in support of the emerging convention that Foo is a record and Foo_Id is a number.
 2010-04-24-20.00.32: src/lib/x-kit/xclient/src/wire/xsocket.pkg: Random internal cleaning and commenting.
 2010-04-24-19.19.34: src/lib/x-kit/xclient/src/window/: Renamed graphics-context-cache.pkg -> pen-to-gcontext-imp.pkg for clarity.  src/lib/x-kit/xclient/src/window/xsession.pkg: Added draw-imp and pen-to-gcontext-imp to master diagram.

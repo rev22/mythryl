@@ -236,7 +236,7 @@ herein
 	    =
 	    {   fun thread_body_wrapper ()
 		    =
-		    {   thread = get_thread ();
+		    {   thread = get_current_thread ();
 
 			dw::start_thread_deathwatch (thread_name, thread);
 
@@ -275,7 +275,7 @@ herein
 				 esac;
 
 				 dw::stop_thread_deathwatch
-				    (get_thread ());
+				    (get_current_thread ());
 			  };
 
 		threadkit::make_thread  thread_name  thread_body_wrapper;

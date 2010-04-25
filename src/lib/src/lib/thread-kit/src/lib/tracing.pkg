@@ -556,7 +556,7 @@ herein
 		    #          src/runtime/c-libs/lib7-socket/print-if.c
 
 		trace_string =  time_string + ":  "
-			     +  (sprintf "%-20s" (thread::get_thread_name() + ": "))
+			     +  (sprintf "%8d:  %-20s " (thread::get_current_thread's_id())  (thread::get_current_thread's_name() + ": "))
 			     + make_message_string_fn()
 			     + "    \t(" + name
 			     + ")\n";
