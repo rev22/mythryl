@@ -81,8 +81,8 @@ LIBRARY_GROUP_COMPONENTS
 	src/window/font-imp.api
 	src/window/font-imp.pkg
 	src/window/geometry.pkg
-	src/window/graphics-context-cache.api
-	src/window/graphics-context-cache.pkg
+	src/window/pen-to-gcontext-imp.api
+	src/window/pen-to-gcontext-imp.pkg
 	src/window/hash-window.api
 	src/window/hash-window.pkg
 	src/window/keymap-imp.api

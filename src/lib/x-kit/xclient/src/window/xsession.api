@@ -72,7 +72,7 @@ stipulate
     package fb  = font_base;				# font_base			is from   src/lib/x-kit/xclient/src/window/font-base.pkg
     package fti = font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
     package ki  = keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
-    package gci = graphics_context_cache;		# graphics_context_cache	is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+    package p2g = pen_to_gcontext_imp;			# pen_to_gontext_imp		is from   src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
     package xt  = xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
@@ -121,8 +121,8 @@ herein
 	    GC_AND_DRAW_IMPS {						# The graphics context imp and draw_imp
 		#							# for a given  depth of a screen.
 		depth:		Int,    
-		gcontext_imp:	gci::Graphics_Context_Cache,		# The graphics context imp for this depth on this screen.
-		to_drawimp:	di::d::Draw_Op -> Void			# The draw-imp connection  for this depth on this screen. 
+		gcontext_imp:	p2g::Pen_To_Gcontext_Imp,		# The pen-to-gcontext imp for this depth on this screen.
+		to_drawimp:	di::d::Draw_Op -> Void			# The draw-imp connection for this depth on this screen. 
 	    }
 
 	also

@@ -376,10 +376,14 @@ trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
 			# this flush, we have a race condition
 			# between the two:
 			#
-			xd::flush  drawing_window_drawable
-			where
-			    drawing_window_drawable = xd::drawable_of_window  drawing_window;
-			end;
+# This flush shouldn't be needed now -- cs_pixmap does it -- but
+# empirically it IS needed. ?!?
+# trace .{ "tri-app calling xd::flush drawing_window_drawable."; };
+#			xd::flush  drawing_window_drawable
+#			where
+#			    drawing_window_drawable = xd::drawable_of_window  drawing_window;
+#			end;
+# trace .{ "tri-app done    xd::flush drawing_window_drawable."; };
 
 			# Fetch from X server the mid-window pixels
 			# over which we should have drawn a triangle.
@@ -387,7 +391,10 @@ trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
 			# Verify that they differ from our original
 			# all-black image of the same area:
 			#
-			{   postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+			{
+trace .{ "XYZZY tri-app calling postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
+			    postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+trace .{ "XYZZY tri-app done    postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
 			    #	
 #			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))   test_failed ();
 #			    else									   test_passed ();	

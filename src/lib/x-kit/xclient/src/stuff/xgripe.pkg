@@ -18,7 +18,7 @@
 #    src/lib/x-kit/xclient/src/window/font-imp.pkg
 #    src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
 #    src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
-#    src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+#    src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
 #    src/lib/x-kit/xclient/src/window/window-property-imp.pkg
 #    src/lib/x-kit/xclient/src/window/keysym.pkg
 #    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg

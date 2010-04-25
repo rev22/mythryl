@@ -16,13 +16,16 @@ stipulate
     #
     package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     package ge  =  geometry;				# geometry			is from   src/lib/x-kit/xclient/src/window/geometry.pkg
-    package gi  =  graphics_context_cache;		# graphics_context_cache	is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+    package p2g =  pen_to_gcontext_imp;			# pen_to_gcontext_imp		is from   src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
     package m1  =  oneshot_maildrop;			# oneshot_maildrop		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/oneshot-maildrop.pkg_
     package pg  =  pen_guts;				# pen_guts			is from   src/lib/x-kit/xclient/src/window/pen-guts.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package vu8 =  unt8_vector;				# unt8_vector			is from   src/lib/std/src/unt8-vector.pkg
     package xok =  xsocket;			 	# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package xt  =  xtypes;				# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    #
+    trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 herein
 
     package draw_imp: (weak)  Draw_Imp {		# Draw_Imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.api
@@ -239,7 +242,7 @@ herein
 
 #	    herein
 
-		fun request_draw_op (send_xrequest, send_xrequest_and_handle_exposures)
+		fun send_draw_op (send_xrequest, send_xrequest_and_handle_exposures)
 		    =
 		    fn  (to, gc_id, _, o::POLY_POINT (rel, points))
 			    =>
@@ -255,7 +258,13 @@ herein
 
 			(to, gc_id, _, o::FILL_POLY (shape, rel, points))
 			    =>
-			    send_xrequest (v2w::encode_fill_poly { drawable=>to, gc_id, points, relative=>rel, shape } );
+#			    send_xrequest (v2w::encode_fill_poly { drawable=>to, gc_id, points, relative=>rel, shape } );
+			    {
+			        msg = v2w::encode_fill_poly { drawable=>to, gc_id, points, relative=>rel, shape };
+trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY doing send_xrequest, msg s=%s" (xok::bytes_to_hex msg); };
+			        send_xrequest msg;
+trace  .{ sprintf "XYZZY draw_imp::send_draw_op/FILL_POLY done  send_xrequest, msg s=%s" (xok::bytes_to_hex msg); };
+			    };
 
 			(to, gc_id, _, o::POLY_BOX boxes)
 			    =>
@@ -458,16 +467,16 @@ herein
 		      | SET_FONT  xt::Font_Id
 		      ;
 
-		    alloc_gc =  gi::allocate_graphics_context  gc_cache;
-		    free_gc  =  gi::free_graphics_context      gc_cache;
+		    alloc_gc =  p2g::allocate_graphics_context  gc_cache;
+		    free_gc  =  p2g::free_graphics_context      gc_cache;
 
-		    alloc_gc_with_font    =   gi::allocate_graphics_context_with_font     gc_cache;
-		    alloc_gc_and_set_font =   gi::allocate_graphics_context_and_set_font  gc_cache;
-		    free_gc_and_font      =   gi::free_graphics_context_and_font          gc_cache;
+		    alloc_gc_with_font    =   p2g::allocate_graphics_context_with_font     gc_cache;
+		    alloc_gc_and_set_font =   p2g::allocate_graphics_context_and_set_font  gc_cache;
+		    free_gc_and_font      =   p2g::free_graphics_context_and_font          gc_cache;
 
-		    request_dop
+		    send_dop
 			=
-			request_draw_op
+			send_draw_op
 			  ( xok::send_xrequest                       connection,
 			    xok::send_xrequest_and_handle_exposures  connection
 			  );
@@ -560,7 +569,7 @@ herein
 		    end;						# fun batch_drawops
 
 
-		    fun draw_ops (gc, initial_fid)
+		    fun send_draw_ops (gc, initial_fid)
 			=
 			draw
 			where 
@@ -570,7 +579,7 @@ herein
 
 				draw ((to, op) ! r)
 				    =>
-				    {   request_dop (to, gc, initial_fid, op);
+				    {   send_dop (to, gc, initial_fid, op);
 					draw r;
 				    };
 			    end;
@@ -583,13 +592,13 @@ herein
 
 		    fun draw_batch (NO_GC, _, _, ops)
 			    =>
-			    draw_ops (xid0, xid0) ops;
+			    send_draw_ops (xid0, xid0) ops;
 
 			draw_batch (NO_FONT, pen, mask, ops)
 			    =>
 			    {   gc =   alloc_gc { pen, used => mask };
 				#
-				draw_ops (gc, xid0) ops;
+				send_draw_ops (gc, xid0) ops;
 				#
 				free_gc gc;
 			    };
@@ -601,7 +610,7 @@ herein
 				    alloc_gc_with_font { pen, used => mask, fid };
 
 				#
-				draw_ops (gc, init_fid) ops;
+				send_draw_ops (gc, init_fid) ops;
 				#
 				free_gc_and_font gc;
 			    };
@@ -610,7 +619,7 @@ herein
 			    =>
 			    {   gc =   alloc_gc_and_set_font { pen, used => mask, fid };
 				#
-				draw_ops (gc, fid) ops;
+				send_draw_ops (gc, fid) ops;
 				#
 				free_gc_and_font gc;
 			    };
@@ -773,7 +782,7 @@ herein
 				    topwindow_is_unmapped_loop ();
 			    end;
 
-			    # Xtracing::trace (Xtracing::dmTM, fn => ["DrawMaster: serverUnmapped\n"]); 
+			    # Xtracing::trace (Xtracing::dmTM, fn => ["drawimp: serverUnmapped\n"]); 
 			    #
 			    select [
 				plea'            ==>  do_plea,

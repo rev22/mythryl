@@ -1,4 +1,4 @@
-## graphics-context-cache.pkg
+## pen-to-gcontext-imp.pkg
 #
 # The graphics context cache imp, which maps
 # the immutable pens we present to the
@@ -38,7 +38,7 @@
 # only from the latter; we are essentially supporting
 # infrastructure for draw-imp.
 #
-# The system will have only one graphics_context_cache,
+# The system will have only one pen_to_gcontext_imp,
 # but it may be used by many draw_imp clients.  (This
 # is forced by the the X architecture's requirement that
 # each graphics context etc may be used only on one visual;
@@ -94,7 +94,7 @@ stipulate
     trace =  xtracing::print_if xtracing::graphics_context_tracing;	# Conditionally write strings to tracing.log or whatever.
 herein
 
-    package graphics_context_cache: (weak)  Graphics_Context_Cache {	# Graphics_Context_Cache	is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.api
+    package pen_to_gcontext_imp: (weak)  Pen_To_Gcontext_Imp {	# Pen_To_Gcontext_Imp	is from   src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.api
 
 
 	stipulate
@@ -220,7 +220,7 @@ herein
 		where
 		    fun find []
 			    =>
-			    xgripe::impossible "[graphics_context_cache: lost in-use graphics context]";
+			    xgripe::impossible "[pen_to_gcontext_imp: lost in-use graphics context]";
 
 			find ((x as IN_USE_GC { gc_id, ... } ) ! rest)
 			    =>
@@ -329,9 +329,9 @@ herein
 
 	herein
 
-	    Graphics_Context_Cache
+	    Pen_To_Gcontext_Imp
 		=
-		GRAPHICS_CONTEXT_CACHE
+		PEN_TO_GCONTEXT_IMP
 		  {
 		    plea_slot:  Mailslot( Plea_Mail  ),
 		    reply_slot: Mailslot( Reply_Mail )
@@ -340,7 +340,7 @@ herein
 	    # Create the graphics context imp
 	    # for the given screen:
 	    #
-	    fun make_graphics_context_cache (dy::XDISPLAY { xsocket, next_xid, ... }, drawable)
+	    fun make_pen_to_gcontext_imp (dy::XDISPLAY { xsocket, next_xid, ... }, drawable)
 		=
 		{   plea_slot  =   make_mailslot ();
 		    reply_slot =   make_mailslot ();
@@ -924,11 +924,11 @@ herein
 			imp_loop (0, 0, [default_gc], []);
 		    };
 
-		    GRAPHICS_CONTEXT_CACHE { plea_slot, reply_slot };
+		    PEN_TO_GCONTEXT_IMP { plea_slot, reply_slot };
 
-		};					# fun make_graphics_context_cache 
+		};					# fun make_pen_to_gcontext_imp 
 
-	    fun acquire_fn msg_kind (GRAPHICS_CONTEXT_CACHE { plea_slot, reply_slot })  arg
+	    fun acquire_fn msg_kind (PEN_TO_GCONTEXT_IMP { plea_slot, reply_slot })  arg
 		=
 		{   give (plea_slot, msg_kind arg);
 
@@ -942,7 +942,7 @@ herein
 	    allocate_graphics_context = acquire_fn ACQUIRE_GC;
 	    allocate_graphics_context_and_set_font = acquire_fn ACQUIRE_GC_AND_SET_FONT;
 
-	    fun allocate_graphics_context_with_font (GRAPHICS_CONTEXT_CACHE { plea_slot, reply_slot })  arg
+	    fun allocate_graphics_context_with_font (PEN_TO_GCONTEXT_IMP { plea_slot, reply_slot })  arg
 		=
 		{   give  (plea_slot, ACQUIRE_GC_WITH_FONT arg);
 
@@ -953,19 +953,19 @@ herein
 			    arg;
 
 			_   =>
-			    xgripe::impossible "[graphics_context_cache::allocate_graphics_context_with_find: bad reply]";
+			    xgripe::impossible "[pen_to_gcontext_imp::allocate_graphics_context_with_find: bad reply]";
 		    esac;
 		};
 
 
-	    fun free_graphics_context (GRAPHICS_CONTEXT_CACHE { plea_slot, ... })  gc_id
+	    fun free_graphics_context (PEN_TO_GCONTEXT_IMP { plea_slot, ... })  gc_id
 		=
 		give  (plea_slot, RELEASE_GC gc_id);
 
 
 	    fun free_graphics_context_and_font
 		    #
-		    (GRAPHICS_CONTEXT_CACHE { plea_slot, ... })
+		    (PEN_TO_GCONTEXT_IMP { plea_slot, ... })
 		    #
 		    arg
 		=
@@ -1047,7 +1047,7 @@ herein
 	    #  -DEBUG 
 
 	end;	# stipulate
-    };		# package graphics_context_cache
+    };		# package pen_to_gcontext_imp
 end;		# stipulate
 
 ##########################################################################

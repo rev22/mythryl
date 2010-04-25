@@ -78,7 +78,7 @@
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
 #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
 #     src/lib/x-kit/xclient/src/window/font-imp.pkg
-#     src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+#     src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
 #     src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
 #     src/lib/x-kit/xclient/src/window/keymap-imp.pkg
 #     src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
@@ -91,8 +91,26 @@
 #
 #
 # In this file we implement the xsession inbuf,
-# outbuf, sequencer and xbuf imps.  For the big
-# picture refer to the imp dataflow diagram in
+# outbuf, sequencer and xbuf imps.  Client code
+# interacts with us mainly by using one of the
+# sequencer-imp entrypoints
+# 
+#	send_xrequest
+#	send_xrequest_and_verify_success
+#	send_xrequest_and_read_reply
+#	sent_xrequest_and_read_replies
+#	send_xrequest_and_handle_exposures
+#
+#	query_best_size
+#	query_colors
+#	query_font
+#	query_pointer
+#	query_tree
+#	query_text_extents
+#
+# to submit a request or query to the X server.
+#
+# For the big picture see the imp dataflow diagram in
 #
 #     src/lib/x-kit/xclient/src/window/xsession.pkg
 #

@@ -11,7 +11,7 @@
 #     src/lib/x-kit/xclient/src/window/color-spec.pkg
 #     src/lib/x-kit/xclient/src/window/draw-imp.pkg
 #     src/lib/x-kit/xclient/src/window/font-imp.pkg
-#     src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+#     src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
 #     src/lib/x-kit/xclient/src/window/keymap-imp.pkg
 #     src/lib/x-kit/xclient/src/window/window-property-imp.pkg
 #     src/lib/x-kit/xclient/src/window/selection-imp.pkg

@@ -1,4 +1,4 @@
-## graphics-context-cache.api
+## pen-to-gcontext-imp.api
 #
 # To simplify the application programmer's life,
 # we present an API based on immutable "pens" -- see
@@ -37,7 +37,7 @@
 
 # This api is implemented in:
 #
-#     src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+#     src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
 
 stipulate
     package dy = display;					# display	is from   src/lib/x-kit/xclient/src/wire/display.pkg
@@ -45,21 +45,21 @@ stipulate
     package xt = xtypes;					# xtypes	is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
 herein
 
-    api Graphics_Context_Cache {
+    api Pen_To_Gcontext_Imp {
 
-	Graphics_Context_Cache;
+	Pen_To_Gcontext_Imp;
 
-	make_graphics_context_cache
+	make_pen_to_gcontext_imp
 	    :
 	    ( dy::Xdisplay,
               xt::Drawable_Id
             )
             ->
-            Graphics_Context_Cache;
+            Pen_To_Gcontext_Imp;
 
 	allocate_graphics_context
 	    :
-            Graphics_Context_Cache
+            Pen_To_Gcontext_Imp
 	    ->
             { pen:   pg::Pen,
               used:  Unt
@@ -70,7 +70,7 @@ herein
 
 	free_graphics_context
 	    :
-            Graphics_Context_Cache
+            Pen_To_Gcontext_Imp
             ->
             xt::Graphics_Context_Id
             ->
@@ -78,7 +78,7 @@ herein
 
 	allocate_graphics_context_with_font
 	    :
-	    Graphics_Context_Cache
+	    Pen_To_Gcontext_Imp
 	    ->
 	    { pen:   pg::Pen,
 	      used:  Unt,
@@ -91,7 +91,7 @@ herein
 
 	allocate_graphics_context_and_set_font
 	    :
-	    Graphics_Context_Cache
+	    Pen_To_Gcontext_Imp
 	    ->
 	    { pen:   pg::Pen,
 	      used:  Unt,
@@ -102,7 +102,7 @@ herein
 
 	free_graphics_context_and_font
             :
-            Graphics_Context_Cache
+            Pen_To_Gcontext_Imp
             ->
             xt::Graphics_Context_Id
             ->

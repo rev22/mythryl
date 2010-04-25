@@ -497,7 +497,7 @@ api Xdraw {
 	# command after each draw command.)
 	#
 	# This call is used in many of the src/lib/x-kit/tut
-        # programs, for an example in:
+        # programs, for example:
 	#
 	#     src/lib/x-kit/tut/ml-viewer/util/get-mouse-selection.pkg
 

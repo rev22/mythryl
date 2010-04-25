@@ -45,6 +45,9 @@ stipulate
     package v2w =  value_to_wire;	# value_to_wire		is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package xok =  xsocket;		# xsocket		is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package xt  =  xtypes;		# xtypes		is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
+    package xtr =  xtracing;		# xtracing		is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    #
+    trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 herein
 
     package cs_pixmap: (weak) Cs_Pixmap {
@@ -668,7 +671,9 @@ herein
 		    # sending our GetImage request to the
 		    # X server:
 		    #
+trace  .{ "XYZZY calling dt::flush_drawimp  -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window"; };
 		    dt::flush_drawimp  to_drawimp;
+trace  .{ "XYZZY done    dt::flush_drawimp  -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window"; };
 
 		    all_planes = unt::bitwise_not 0u0;
 
@@ -679,6 +684,7 @@ herein
 				plane_mask =>  xt::PLANEMASK all_planes, 
 				format     =>  xt::XYPIXMAP
 			      };
+trace  .{ sprintf "XYZZY calling GetImage, string == %s -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window" (xok::bytes_to_hex msg); };
 
 		    my { depth, data, visualid }
 			= 
@@ -689,6 +695,7 @@ herein
 				xok::send_xrequest_and_read_reply  xdisplay.xsocket  msg
 				)
 			    );
+trace  .{ sprintf "XYZZY done    GetImage, string == %s -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window" (xok::bytes_to_hex msg); };
 
 		    swapfn
 			=

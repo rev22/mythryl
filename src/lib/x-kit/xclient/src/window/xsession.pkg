@@ -10,49 +10,59 @@
 #
 # Nomenclature:  An 'imp' is a server thread.
 #               (Like a daemon, but smaller!)
-# 
+#
 # An xsession is built of seven imps.
 #
 # Adapting from the page 8 diagram in
-#     http:://mythryl.org/pub/exene/1991-ml-workshop.pdf 
+#     http:://mythryl.org/pub/exene/1991-ml-workshop.pdf
 # our dataflow network for xsession looks like:
 #
 #       ----------------------
 #       |  X server process  |
 #       ----------------------
 #            ^          |
-#            |          v 
+#            |          v
 #   -------<network socket>------------- network and process boundary.
 #            ^          |
-#            |          v                            ---           ---
-#       ----------  ----------                        .             .
-#       | outbuf |  | inbuf  |                        .             .
-#       | imp    |  | imp    |                        .             .
-#       ----------  ----------                        .             .
-#            ^          |                             .             .
-#            |          v                             .             .
-#  ---------------------------    -----------------   .             .
-#  |   sequencer imp         |--> | error handler |   ... xsocket   .
-#  ---------------------------    -----------------   .   imps      .
-#        ^       ^      |                             .             .
-#        |       |      | xevents                     .             .
-#        |       |      v                             .             ... xsession
-#        |       |   ----------                       .             .   imps
-#        |       |   | xbuf   |                       .             .
-#        |       |   | imp    |                       .             .
-#        |       |   ----------                       .             .
-#        |       |      |                            ---            .
-#        |       |      | xevents                                   .
-#        v       |      v                                           .
-#  ----------    |   ---------------    ----------                  .
-#  | font   |    |   | xbuf to     |    | keymap |                  .
-#  | imp    |    |   | widgettree  |--> | imp    |                  .
-#  ----------    |   | root xevent |--> |        |                  .
-#        ^       |   | router imp  |    |        |                  .
-#        |       |   ---------------    ----------                  .
-#        |       |      |                  ^                        .
-#        |       |      | xevents          |                        .
-#        v       v      v                  v                       ---
+#            |          v                            ---           ---                ---
+#       ----------  ----------                        .             .                  .
+#       | outbuf |  | inbuf  |                        .             .                  .
+#       | imp    |  | imp    |                        .             .                  .
+#       ----------  ----------                        .             .                  .
+#            ^          |                             .             .                  .
+#            |          v                             .             .		       .
+#  ---------------------------    -----------------   .             .		       .
+#  |   sequencer imp         |--> | error handler |   ... xsocket   .		       .
+#  ---------------------------    -----------------   .   imps      .		       .
+#    ^         ^  ^     | xevents                     .             .		       .
+#    |         |  |     v                             .             ... xsession       .
+#    |         |  |  ----------                       .             .   imps	       .
+#    |         |  |  | xbuf   |                       .             .		       .
+#    |         |  |  | imp    |                       .             .		       .
+#    |         |  |  ----------                      ---            .		       .
+#    |         |  |     | xevents                                   .		       .
+#    v         |  |     v                                           .		       .
+#  ----------  |  |  ---------------    ----------                  .		       .
+#  | font   |  |  |  | xbuf to     |    | keymap |                  .		       .
+#  | imp    |  |  |  | widgettree  |--> | imp    |                  .		       .
+#  ----------  |  |  | root xevent |--> |        |                  .		       .... xclient
+#    ^         |  |  | router imp  |    |        |                  .		       .    imps
+#    |         |  |  ---------------    ----------                  .		       .
+#    |         |  |     | xevents          ^                       ---		       .
+#    | ---------- |     |                  |					       .
+#    | |gcontext| |     |                  |					       .
+#    | | imp    | |     |                  |					       .
+#    | ---------- |     |                  |					       .
+#    |      ^     |     |                  |					       .
+#    |      |     |     |                  |					       .
+#    |      v     |     |                  |					       .
+#    |    ----------    |                  |					       .
+#    |    | draw   |    |                  |					       .
+#    |    | imp    |    |                  |					       .
+#    |    ----------    |                  |					       .
+#    |         ^        |                  |					       .
+#    |         |        | xevents          |					      ---
+#    v         |        v                  v
 #   (..........to/from widget threads............)
 #                       |
 #                       | xevents
@@ -65,28 +75,28 @@
 #                       /      \
 #                      / widget \
 #                     /   tree   \
-#                    /            \ 
-#                   /     ...      \ 
+#                    /            \
+#                   /     ...      \
 #
 # Dramatis Personae:
 #
 #  o  The sequencer imp matches replies to requests.
 #     All traffic to/from the X server goes through it.
-#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg
 #
 #  o  The outbuf imp optimizes network usage by
 #     combining multiple requests per network packet.
-#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg
 #
 #  o  The inbuf imp breaks the incoming bytestream
 #     into individual replies and forwards them individually
 #     to the sequencer thread.
-#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg
 #
 #  o  The xbuf imp combines multiple related expose events
 #     into a single logical message for ease of downstream
 #     processing.
-#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg   
+#         Implemented in:  src/lib/x-kit/xclient/src/wire/xsocket.pkg
 #
 #  o  The   xsocket_to_topwindow_router   imp receives all X events
 #     (e.g. keystrokes and mouseclicks) and feeds each one to the
@@ -96,19 +106,36 @@
 #     target widget.
 #
 #     To do this, the xsocket_to_topwindow_router imp
-#     tracks all toplevel windows created by the application,
-#     keyed by their X-server-assigned IDs.
+#     tracks all X windows created by the application,
+#     keyed by their X IDs.  (Toplevel X windows are
+#     registered at creation by the window.pkg functions;
+#     subwindows are registered when their X notify event
+#     comes through.)
 #
 #         Implemented in:  src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
 #         See also:        src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
-# 
-#  o  The font imp ... 
+#
+#  o  The font imp ...
 #         Implemented in:  src/lib/x-kit/xclient/src/window/font-imp.pkg
 #
-#  o  The keymap imp ... 
+#  o  The keymap imp ...
 #         Implemented in:  src/lib/x-kit/xclient/src/window/keymap-imp.pkg
 #
 #
+#  o  The draw_imp buffers draw commands and combines
+#     them into subsequences which can share a single
+#     X server graphics context, in order to minimize
+#     the number of graphics context switches required.
+#     It works closely with the pen-to-gcontext-imp.
+#         Implemented in:  src/lib/x-kit/xclient/src/window/draw-imp.pkg
+#
+#  o  The pen_to_gcontext_imp maps between the immutable "pens"
+#     we provide to the application programmer and the mutable
+#     graphics contexts actually supported by the X server. Given
+#     a pen, it returns a matching graphics context, using an
+#     existing one unchanged if possible, else modifying an
+#     existing one appropropriately.
+#         Implemented in:  src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
 #
 #
 # All mouse and keyboard events flow down through the
@@ -150,7 +177,7 @@ stipulate
     package cs  =  color_spec;				# color_spec			is from   src/lib/x-kit/xclient/src/window/color-spec.pkg
     package di  =  draw_imp;				# draw_imp			is from   src/lib/x-kit/xclient/src/window/draw-imp.pkg
     package fti =  font_imp;	# "fi" is taken! :-)	# font_imp			is from   src/lib/x-kit/xclient/src/window/font-imp.pkg
-    package gci =  graphics_context_cache;		# graphics_context_cache	is from   src/lib/x-kit/xclient/src/window/graphics-context-cache.pkg
+    package p2g =  pen_to_gcontext_imp;			# pen_to_gcontext_imp		is from   src/lib/x-kit/xclient/src/window/pen-to-gcontext-imp.pkg
     package ki  =  keymap_imp;				# keymap_imp			is from   src/lib/x-kit/xclient/src/window/keymap-imp.pkg
     package si  =  selection_imp;			# selection_imp			is from   src/lib/x-kit/xclient/src/window/selection-imp.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
@@ -167,7 +194,7 @@ herein
 	Xsession
 	    =
 	    XSESSION  {
-		xdisplay:          	dy::Xdisplay,          		#  
+		xdisplay:          	dy::Xdisplay,          		#
 		screens:           	List( Screen_Info ),
 
 		default_screen:    	Screen_Info,
@@ -206,9 +233,9 @@ herein
 	    #
 	    GC_AND_DRAW_IMPS {						# The graphics context imp and draw_imp
 		#							# for a given  depth of a screen.
-		depth:		Int,    
-		gcontext_imp:	gci::Graphics_Context_Cache,		# The graphics context imp for this screen.
-		to_drawimp:	di::d::Draw_Op -> Void			# The draw-imp connection for the root  window of the screen. 
+		depth:		Int,
+		gcontext_imp:	p2g::Pen_To_Gcontext_Imp,		# The graphics context imp for this screen.
+		to_drawimp:	di::d::Draw_Op -> Void			# The draw-imp connection for the root  window of the screen.
 	    }
 
 	also
@@ -217,9 +244,9 @@ herein
 	    SCREEN  {
 		xsession:   Xsession,
 		screen:     Screen_Info
-	    }; 
+	    };
 
-	#  An on-screen bitmap 
+	#  An on-screen bitmap
 	#
 	Window
 	    =
@@ -326,7 +353,7 @@ herein
 
 					    # Make a pixmap to serve as the
 					    # witness drawable for the GC server:
-					    #	
+					    #
 					    xok::send_xrequest xsocket
 					      ( value_to_wire::encode_create_pixmap
 						  { pixmap_id,
@@ -337,7 +364,7 @@ herein
                                               );
 
 					    make_gc_and_draw_imps
-						(d, gci::make_graphics_context_cache (xdisplay, pixmap_id));
+						(d, p2g::make_pen_to_gcontext_imp (xdisplay, pixmap_id));
 				        };
 
 
@@ -361,7 +388,7 @@ herein
 			    make_gc_and_draw_imps
 			      (
 				dy::depth_of_visual  root_visual,
-				gci::make_graphics_context_cache  (xdisplay, root_window_id)
+				p2g::make_pen_to_gcontext_imp  (xdisplay, root_window_id)
 			      );
 
 			imps = make_gcontext_imps (visuals, [root_imps]);
@@ -392,7 +419,7 @@ herein
 	  };
 
 
-	# X-server I/O. 
+	# X-server I/O.
 	#
 	stipulate
 
@@ -458,7 +485,7 @@ herein
 	    to_point
 	    =
 	    {   # This is an ignored dummy value:
-		#	
+		#
 	        from_box =  ge::BOX { col => 0, row => 0, wide => 0, high => 0 };
 
 		command
@@ -544,7 +571,7 @@ trace .{ "xsession: send_mousebutton_press_event/YYY calling s2w::encode_send_bu
 		      {
 			send_event_to,  propagate,  event_mask,
 			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button, buttons
-		      };		
+		      };
 
 		xok::send_xrequest xsocket command;
 
@@ -599,7 +626,7 @@ trace .{ "xsession: send_mousebutton_release_event/YYY calling s2w::encode_send_
 		      {
 			send_event_to,  propagate,  event_mask,
 			timestamp,  root_window_id,  event_window_id,  child_window_id,  root_x,  root_y,  event_x,  event_y,  button
-		      };		
+		      };
 
 		xok::send_xrequest  xsocket  command;
 trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_button_press_xevent -- DONE"; };
@@ -665,7 +692,7 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 
 	# Screen functions:
 	#
-	color_of_screen 
+	color_of_screen
 	    =
             cs::get_color;
 
@@ -673,7 +700,7 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 	    =
             xsession;
 
-	# Additions by ddeboer, May 2004. 
+	# Additions by ddeboer, May 2004.
 	# Dusty deBoer, KSU CIS 705, Spring 2004.
 
 	# Return the root window of a screen.
@@ -684,7 +711,7 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
             =
             root_window_id;
 
-	# End additions by ddeboer 
+	# End additions by ddeboer
 
 	fun size_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_pixels, ... }, ... }, ... } )
 	    =

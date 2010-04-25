@@ -1,3 +1,4 @@
+2010-04-24-12.56.52: src/lib/x-kit/xclient/src/window/draw-imp.pkg: FLUSH command now signals completion via a condition variable.
 2010-04-24-01.47.28: src/runtime/c-libs/lib7-time/timeofday.c: Add comments pointing to TSR, HPET and clock_gettime().
 2010-04-24-00.26.34: src/lib/x-kit/xclient/src/window/: Ripped out ximage.api, ximage.pkg: Too big a can of worms to open right now.
 2010-04-22-00.13.16: src/lib/x-kit/xclient/src/window/: Renamed rgb-image.api, rgb-image.pkg -> ximage.api, ximage.pkg because they are X-specific and we will probably eventually want a generic rgb_image package.
