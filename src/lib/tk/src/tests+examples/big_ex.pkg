@@ -157,7 +157,7 @@ package big_ex
             =
             frame (hider_id, [hide_button do_hide_button, hidden_button ()],
 			      [FILL ONLY_X],
-			      [RELIEF RIDGE, BORDER_WIDTH 2],[]);
+			      [RELIEF RIDGE, BORDER_THICKNESS 2],[]);
 
 	#  ----------------------------- hide Recursive Widget ---------------------- 
 
@@ -193,7 +193,7 @@ package big_ex
             =
             frame (hidden_frame_id,
 				   [hidden_button1 "A", hidden_button1 "B"],
-				   [FILL ONLY_X],[RELIEF RIDGE, BORDER_WIDTH 2],[]);
+				   [FILL ONLY_X],[RELIEF RIDGE, BORDER_THICKNESS 2],[]);
 
 	fun hider1 ()
             =
@@ -201,7 +201,7 @@ package big_ex
 			      [hide_frame do_hide_frame,
 			       hidden_frame ()],
 			      [FILL ONLY_X],
-			      [RELIEF RIDGE, BORDER_WIDTH 2],[]);
+			      [RELIEF RIDGE, BORDER_THICKNESS 2],[]);
 
 	#  ----------------------------- daVinci Starter ------------------------------ 
 
@@ -240,7 +240,7 @@ package big_ex
 					       da_vinci_button_start(),
 					       da_vinci_button_stop()],
 				      [FILL ONLY_X],
-				      [RELIEF RIDGE, BORDER_WIDTH 2],[])
+				      [RELIEF RIDGE, BORDER_THICKNESS 2],[])
 
 	also
 	fun a_text ()
@@ -250,7 +250,7 @@ package big_ex
 	also
 	fun texter ()
             =
-            frame (texter_id,[a_text()],[FILL ONLY_X],[RELIEF RIDGE, BORDER_WIDTH 2],[]);
+            frame (texter_id,[a_text()],[FILL ONLY_X],[RELIEF RIDGE, BORDER_THICKNESS 2],[]);
 
 	fun entry ()
             =
@@ -269,7 +269,7 @@ package big_ex
 						      }; end )
 						     )]
 				    )],
-			     [FILL ONLY_X],[RELIEF RIDGE, BORDER_WIDTH 2],[]);
+			     [FILL ONLY_X],[RELIEF RIDGE, BORDER_THICKNESS 2],[]);
 											my
 	count = REF (0: Int);                                                            my
 	pos   = REF (0, 0);
@@ -279,7 +279,7 @@ package big_ex
 	    frame (canvasfr_id,
 				[canvas(), mes_can_fr()],
 				[FILL ONLY_X],
-				[RELIEF RIDGE, BORDER_WIDTH 2],[])
+				[RELIEF RIDGE, BORDER_THICKNESS 2],[])
 
 	also
 	fun mes_can_fr ()
@@ -405,7 +405,7 @@ package big_ex
 		  [cnv_hide_button (cnv_do_hide_button wid cid),
 		   cnv_hidden_button ()],
 		  [FILL ONLY_X, PAD_X 5, PAD_Y 5],
-		  [RELIEF RIDGE, BORDER_WIDTH 2],[])
+		  [RELIEF RIDGE, BORDER_THICKNESS 2],[])
 
 	also
 	fun cnv_deleter (wid: Widget_Id) (cid: Canvas_Item_Id)
@@ -426,7 +426,7 @@ package big_ex
 			    [FILL_COLOR RED, OUTLINE_WIDTH 3],
 			    []) ],
 			  [PAD_X 5, PAD_Y 5],
-			  [BACKGROUND YELLOW, BORDER_WIDTH 2, RELIEF RIDGE],
+			  [BACKGROUND YELLOW, BORDER_THICKNESS 2, RELIEF RIDGE],
 			  [])]
 
 	also
@@ -451,7 +451,7 @@ package big_ex
 			   tk_21::canvas (c, AT_RIGHT, canvas_items c,
 					  [PACK_AT TOP, FILL ONLY_X, EXPAND TRUE],
 					  [HEIGHT 300, WIDTH 200, BACKGROUND YELLOW,
-					  BORDER_WIDTH 2, RELIEF RIDGE],
+					  BORDER_THICKNESS 2, RELIEF RIDGE],
 					  [EVENT_CALLBACK (BUTTON_PRESS (THE 2), add_one_item c)]); 
 			  }
 
@@ -597,7 +597,7 @@ package big_ex
 	    frame (make_tagged_widget_id "quitter",
 			       [quit_button do_quit],
 			       [FILL ONLY_X],
-			       [RELIEF RIDGE, BORDER_WIDTH 2],[]);
+			       [RELIEF RIDGE, BORDER_THICKNESS 2],[]);
 
 	fun initwin _
 	    =

@@ -62,7 +62,7 @@ herein
 	menu_font = "8x13";
 
 	padding          = 1;       #  padding between window border and actual menu items 
-	border_width = 1;       #  Border width 
+	border_thickness = 1;       #  Border width 
 	inset        = 1;       #  Add'l x padding to ensure highlighting encloses text and icon. 
 	vspace       = 1;       #  y padding per item, for same reason as above. 
 
@@ -286,9 +286,9 @@ herein
 			border_color     =>  black,
 			#
 			site =>  xg::WINDOW_SITE
-				   { upperleft => xg::point::subtract (menu_position, xg::POINT { col=>border_width, row=>border_width } ),
+				   { upperleft => xg::point::subtract (menu_position, xg::POINT { col=>border_thickness, row=>border_thickness } ),
 				     size,
-				     border_width
+				     border_thickness
 				   }
 		      };
 
@@ -332,11 +332,11 @@ herein
 		all_box
 		    =
 		    xg::BOX
-		      { col  =>  menu_x    -   border_width,
-			row  =>  menu_y    -   border_width,
+		      { col  =>  menu_x    -   border_thickness,
+			row  =>  menu_y    -   border_thickness,
 			#
-			wide =>  menu_wide + 2*border_width,
-			high =>  menu_high + 2*border_width
+			wide =>  menu_wide + 2*border_thickness,
+			high =>  menu_high + 2*border_thickness
 		      };
 
 
@@ -455,8 +455,8 @@ herein
 		#
 		fun clip_menu (xg::POINT { col=>x, row=>y }, MENU_REPRESENTATION { size=> xg::SIZE { wide, high }, ... } )
 		    =
-		    xg::POINT {  col => int::max (border_width, if (x+wide < screen_wide - border_width)  x;  else (screen_wide - (wide+border_width));fi),
-			         row => int::max (border_width, if (y+high < screen_high - border_width)  y;  else (screen_high - (high+border_width));fi)
+		    xg::POINT {  col => int::max (border_thickness, if (x+wide < screen_wide - border_thickness)  x;  else (screen_wide - (wide+border_thickness));fi),
+			         row => int::max (border_thickness, if (y+high < screen_high - border_thickness)  y;  else (screen_high - (high+border_thickness));fi)
 			      };
 
 		m_mailop

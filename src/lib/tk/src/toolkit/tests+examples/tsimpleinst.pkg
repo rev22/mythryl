@@ -320,7 +320,7 @@ package tsimple_inst_appl /* : Application */
 		      { widget_id       => make_widget_id (),
 			packing_hints   => [PACK_AT TOP, FILL ONLY_X], 
 			traits          => [ RELIEF GROOVE,
-					     BORDER_WIDTH 2,
+					     BORDER_THICKNESS 2,
 					     TEXT *nm
 					   ],
 			event_callbacks => []
@@ -498,7 +498,7 @@ package tsimple_inst_appl /* : Application */
 		  BUTTON {
 		      widget_id => make_widget_id(),
 		      packing_hints => [PACK_AT BOTTOM, FILL ONLY_X, EXPAND TRUE],
-		      traits => [RELIEF RIDGE, BORDER_WIDTH 2,
+		      traits => [RELIEF RIDGE, BORDER_THICKNESS 2,
 				   TEXT "Quit", CALLBACK confirm_quit],
 		      event_callbacks => []
 		  }; 
@@ -509,7 +509,7 @@ package tsimple_inst_appl /* : Application */
 	      BUTTON {
 		  widget_id => make_widget_id(),
 		  packing_hints => [PACK_AT BOTTOM, FILL ONLY_X, EXPAND TRUE],
-		  traits => [RELIEF RIDGE, BORDER_WIDTH 2,
+		  traits => [RELIEF RIDGE, BORDER_THICKNESS 2,
 			       TEXT "New Folder",
 			       CALLBACK (fn _ => tsimple_gui::create_folder (20, 20); end )],
 		  event_callbacks => []
@@ -520,7 +520,7 @@ package tsimple_inst_appl /* : Application */
 	      BUTTON {
 		  widget_id => make_widget_id(),
 		  packing_hints => [PACK_AT BOTTOM, FILL ONLY_X, EXPAND TRUE],
-		  traits => [RELIEF RIDGE, BORDER_WIDTH 2,
+		  traits => [RELIEF RIDGE, BORDER_THICKNESS 2,
 			       TEXT "Import File",
 			       CALLBACK (fn _ => tsimple_inst_appl::filer::enter_file(); end )],
 		  event_callbacks => []

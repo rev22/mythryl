@@ -39,7 +39,7 @@ herein
 	arrow_dir                  = qk::quark "arrowDir";
 	background                 = qk::quark "background";
 	border_color               = qk::quark "borderColor";
-	border_width               = qk::quark "borderWidth";
+	border_thickness               = qk::quark "borderWidth";
 	color                      = qk::quark "color";
 	current                    = qk::quark "current";
 	cursor                     = qk::quark "cursor";
@@ -67,7 +67,7 @@ herein
 	scale                      = qk::quark "scale";
 	select_color		   = qk::quark "selectColor";
 	select_background          = qk::quark "selectBackground";
-	select_border_width        = qk::quark "selectBorderWidth";
+	select_border_thickness        = qk::quark "selectBorderWidth";
 	select_foreground          = qk::quark "selectForeground";
 	show_value                 = qk::quark "showValue";
 	state                      = qk::quark "state";

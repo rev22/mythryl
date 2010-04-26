@@ -41,10 +41,10 @@ herein
 			   =
 			   WINDOW
 			     {
-			       window_id:		xt::Window_Id,
-			       screen:			sn::Screen,
-			       gc_and_draw_imps:	sn::Gc_And_Draw_Imps,
-			       to_drawimp:		di::d::Draw_Op -> Void
+			       window_id:			xt::Window_Id,
+			       screen:				sn::Screen,
+			       screen_pen_and_draw_imps:	sn::Screen_Pen_And_Draw_Imps,
+			       to_topwindow_drawimp:		di::d::Draw_Op -> Void
 			     };
 	           } = xsession;
 	include xsession;    
@@ -56,10 +56,10 @@ herein
 	    =
 	    RW_PIXMAP
 	      {  
-		pixmap_id:		xt::Pixmap_Id,
-		screen:			sn::Screen,
-		size:			ge::Size,
-		gc_and_draw_imps:	sn::Gc_And_Draw_Imps
+		pixmap_id:			xt::Pixmap_Id,
+		screen:				sn::Screen,
+		size:				ge::Size,
+		screen_pen_and_draw_imps:	sn::Screen_Pen_And_Draw_Imps
 	      };
 
 	# Immutable pixmaps 
@@ -93,9 +93,9 @@ herein
 	  | FROM_RO_PIXMAP    Ro_Pixmap
 	  ;
 
-	fun depth_of_window                   (WINDOW { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )  = depth;
-	fun depth_of_rw_pixmap             (RW_PIXMAP { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )  = depth;
-	fun depth_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )) = depth;
+	fun depth_of_window                   (WINDOW { screen_pen_and_draw_imps => sn::SCREEN_PEN_AND_DRAW_IMPS { depth, ... }, ... } )  = depth;
+	fun depth_of_rw_pixmap             (RW_PIXMAP { screen_pen_and_draw_imps => sn::SCREEN_PEN_AND_DRAW_IMPS { depth, ... }, ... } )  = depth;
+	fun depth_of_ro_pixmap  (RO_PIXMAP (RW_PIXMAP { screen_pen_and_draw_imps => sn::SCREEN_PEN_AND_DRAW_IMPS { depth, ... }, ... } )) = depth;
 
 	fun id_of_window                   (WINDOW { window_id => xt::XID u, ... } )  =  unt::to_int u;
 	fun id_of_rw_pixmap             (RW_PIXMAP { pixmap_id => xt::XID u, ... } )  =  unt::to_int u;
@@ -117,19 +117,19 @@ herein
 				(encode_get_geometry { drawable=>window_id } )
 			    );
 
-		my { depth, geometry=>ge::WINDOW_SITE { upperleft, size, border_width }, ... }
+		my { depth, geometry=>ge::WINDOW_SITE { upperleft, size, border_thickness }, ... }
 		    =
 		    decode_get_geometry_reply reply;
 
-		{ upperleft, size, depth, border_width };
+		{ upperleft, size, depth, border_thickness };
 	    };
 
-	fun shape_of_rw_pixmap (RW_PIXMAP { size, gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { depth, ... }, ... } )
+	fun shape_of_rw_pixmap (RW_PIXMAP { size, screen_pen_and_draw_imps => sn::SCREEN_PEN_AND_DRAW_IMPS { depth, ... }, ... } )
 	    =
 	    { upperleft => ge::point::zero,
 	      size,
 	      depth,
-	      border_width => 0
+	      border_thickness => 0
 	    };
 
 	fun shape_of_ro_pixmap (RO_PIXMAP pm)
@@ -186,7 +186,7 @@ herein
 	#
 	package r {
 	    #
-	    Draw_Root
+	    Window_Or_Pixmap
 	      #
 	      = WINDOW  Window
 	      | PIXMAP  Rw_Pixmap
@@ -197,20 +197,20 @@ herein
 	    =
 	    DRAWABLE
 	      {
-		root:		r::Draw_Root,
+		root:		r::Window_Or_Pixmap,
 		to_drawimp:	di::d::Draw_Op -> Void
 	      };
 
 	# Make a drawable from a window 
 	#
-	fun drawable_of_window (w as WINDOW { to_drawimp, ... } )
+	fun drawable_of_window (w as WINDOW { to_topwindow_drawimp => to_drawimp, ... } )
 	    =
 	    DRAWABLE { root => r::WINDOW w, to_drawimp };
 
 
 	# Make a drawable from a rw_pixmap 
 	#
-	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, gc_and_draw_imps => sn::GC_AND_DRAW_IMPS { to_drawimp, ... }, ... } )
+	fun drawable_of_rw_pixmap (pm as RW_PIXMAP { size, screen_pen_and_draw_imps => sn::SCREEN_PEN_AND_DRAW_IMPS { to_screen_drawimp, ... }, ... } )
 	    =
 	    DRAWABLE { root => r::PIXMAP pm, to_drawimp=>draw_command' }
 	    where 
@@ -236,7 +236,7 @@ herein
 				    high => clip (row, high, pm_high)
 				  };
 
-			    to_drawimp (di::d::DRAW {
+			    to_screen_drawimp (di::d::DRAW {
 				  to,
 				  pen => pg::default_pen,
 				  op  => di::o::POLY_FILL_BOX [ to_box ]
@@ -247,12 +247,12 @@ herein
 			    # the rw_pixmap and using it as
 			    # the source of a blt:
 			    #
-			    flush_drawimp  to_drawimp;
+			    flush_drawimp  to_screen_drawimp;
 			};
 
 		    draw_command' dmsg
 			=>
-			to_drawimp  dmsg;
+			to_screen_drawimp  dmsg;
 		end;
 	    end;
 
@@ -309,7 +309,7 @@ herein
 	#     src/lib/x-kit/xclient/src/window/draw-imp.pkg
 	# this may be a half-implemented idea.
 	#
-	fun make_locked_window (w as WINDOW { to_drawimp, ... } )
+	fun make_locked_window w
 	    =
 	    {   release_1shot =  make_oneshot_maildrop ();
 

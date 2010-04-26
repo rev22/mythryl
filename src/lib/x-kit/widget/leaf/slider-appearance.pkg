@@ -95,7 +95,7 @@ herein
 		    fontinfo:     (xc::Font, Int, Int),
 		    relief:        wg::Relief,
 		    #
-		    border_width:  Int,
+		    border_thickness:  Int,
 		    from_v:        Int,
 		    length:        Int,
 		    #
@@ -140,7 +140,7 @@ herein
 	    =
 	    [ (wa::ready_color,    wa::COLOR,      wa::NO_VAL		),
 	      (wa::background,     wa::COLOR,      wa::STRING_VAL "white"	),
-	      (wa::border_width,   wa::INT,        wa::INT_VAL 2		),
+	      (wa::border_thickness,   wa::INT,        wa::INT_VAL 2		),
 	      (wa::font,           wa::FONT,       wa::STRING_VAL "8x13"	),
 	      (wa::foreground,     wa::COLOR,      wa::STRING_VAL "black"	),
 	      (wa::is_vertical,    wa::BOOL,       wa::BOOL_VAL TRUE	),
@@ -181,14 +181,14 @@ herein
 		to_v   = wa::get_int (attributes wa::to_value);
 		from_v = wa::get_int (attributes wa::from_value);
 
-		border_width = wa::get_int  (attributes wa::border_width);
+		border_thickness = wa::get_int  (attributes wa::border_thickness);
 		font         = wa::get_font (attributes wa::font);
 
 		my fontinfo as (font, font_ascent, _)
 		    =
 		    make_font_info font;
 
-		thumb = max (6, max (3*border_width, wa::get_int (attributes wa::thumb_length)));
+		thumb = max (6, max (3*border_thickness, wa::get_int (attributes wa::thumb_length)));
 
 		relief = wa::get_relief (attributes wa::relief);
 
@@ -201,7 +201,7 @@ herein
 
 		{ bg,
 		  fg,
-		  border_width,
+		  border_thickness,
 		  fontinfo,
 		  is_vertical => wa::get_bool (attributes wa::is_vertical),
 		  relief,
@@ -215,9 +215,9 @@ herein
 		  thumb,
 		  tick => check_tick (wa::get_int (attributes wa::tick_interval)),
 		  twid => get_tick_width (from_v, to_v, font, font_ascent),
-		  offset => case relief    wg::FLAT => 0;  _ => border_width; esac,
+		  offset => case relief    wg::FLAT => 0;  _ => border_thickness; esac,
 		  to_v,
-		  width => max (3*border_width, wa::get_int (attributes wa::width))
+		  width => max (3*border_thickness, wa::get_int (attributes wa::width))
 		};
 	    };
 
@@ -227,7 +227,7 @@ herein
 
 		line_high = font_ascent + font_descent;
 		offset2 = 2*result.offset;
-		bw2 = 2*result.border_width;
+		bw2 = 2*result.border_thickness;
 		x = max (result.length + offset2, (num_ticks result)*result.twid);
 
 		y = result.width
@@ -264,7 +264,7 @@ herein
 		value_width = if result.show_value   twid; else 0;fi;
 
 		offset2 = 2*result.offset;
-		bw2 = 2*result.border_width;
+		bw2 = 2*result.border_thickness;
 
 		y = result.length + offset2 + bw2;
 		x = result.width + offset2 + bw2 +
@@ -283,18 +283,18 @@ herein
 
 	fun val_to_pt (size, result:  Result)
 	    =
-	    {   result ->   { is_vertical, thumb, border_width, offset, from_v, to_v, ... };
+	    {   result ->   { is_vertical, thumb, border_thickness, offset, from_v, to_v, ... };
 
 		size   ->  xg::SIZE { wide, high };
 
 		range = real (to_v - from_v);
 
 		prange = (is_vertical ?? high :: wide)
-				- thumb - 2*(offset + border_width);
+				- thumb - 2*(offset + border_thickness);
 
 		rprange = real prange;
 
-		off = thumb / 2 + offset + border_width;
+		off = thumb / 2 + offset + border_thickness;
 
 		if  (float::(====) (range, 0.0))
 		     fn _ =  off;
@@ -378,7 +378,7 @@ herein
 		d = drawable_of_window window;
 		fd = make_unbuffered_drawable d;
 		offset = result.offset;
-		border_width = result.border_width;
+		border_thickness = result.border_thickness;
 		val_to_pt = val_to_pt (size, result);
 		text_pen = make_pen [FOREGROUND (xc::rgb8_from_rgb  result.fg)];
 		draw_vvalue = draw_vvalue (val_to_pt, high, d, text_pen, result);
@@ -395,14 +395,14 @@ herein
 		tick_wid = if (result.tick != 0 ) twid; else 0;fi;
 		value_wid = if result.show_value  twid; else 0;fi;
 
-		total = tick_wid + value_wid + 2*(border_width+spacing)
+		total = tick_wid + value_wid + 2*(border_thickness+spacing)
 			      + label_wid + result.width;
 
 		tick_right = (wide - total) / 2 + tick_wid;
 		value_right = tick_right + value_wid;
 
 		scale_left = value_right + spacing;
-		label_left = scale_left + 2*border_width
+		label_left = scale_left + 2*border_thickness
 				  + result.width + (font_ascent / 2);
 
 		fun draw_ticks 0
@@ -473,7 +473,7 @@ herein
 			include three_d;
 
 			width = result.width;
-			bw = result.border_width;
+			bw = result.border_thickness;
 
 			shades = result.shades;
 
@@ -571,9 +571,9 @@ herein
 			       _    => line_high;
 			   esac;
 
-		border_width = result.border_width;
+		border_thickness = result.border_thickness;
 
-		total = tick_ht + value_ht + 2*border_width + result.width
+		total = tick_ht + value_ht + 2*border_thickness + result.width
 			      + label_ht;
 
 		ticky = (high + total) / 2 - 1;
@@ -581,7 +581,7 @@ herein
 		valuey = ticky - tick_ht;
 		scaley = valuey - value_ht;
 
-		labely = scaley - 2*border_width - result.width;
+		labely = scaley - 2*border_thickness - result.width;
 
 		fun draw_ticks 0
 			=>
@@ -652,7 +652,7 @@ herein
 		    {   include three_d;
 
 			width = result.width;
-			bw = result.border_width;
+			bw = result.border_thickness;
 			y = scaley - 2*bw - width + 1;
 			shades = result.shades;
 
@@ -734,17 +734,17 @@ herein
 
 	fun pt_to_val (size, result:  Result)
 	    =
-	    {   result ->  { is_vertical, thumb, border_width, offset, from_v, to_v, ... };
+	    {   result ->  { is_vertical, thumb, border_thickness, offset, from_v, to_v, ... };
 
 
 		size ->  xg::SIZE { wide, high };
 
 		l = if is_vertical  high; else wide;fi;
 
-		range = l - thumb - 2*(offset + border_width);
+		range = l - thumb - 2*(offset + border_thickness);
 		prange = real range;
 
-		inset = thumb / 2 + offset + border_width;
+		inset = thumb / 2 + offset + border_thickness;
 		rrange = real (to_v-from_v);
 
 		fun make_var v

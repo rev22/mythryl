@@ -104,7 +104,7 @@ package table: (weak)  Table_Si_G		# Table_Si_G	is from   src/lib/tk/src/toolkit
 			 packing_hints   => [ROW r, COLUMN c],
 			 traits    => [   RELIEF (if (r == 1 ) cnf.headline_relief;
 						else cnf.field_relief;fi),
-					 BORDER_WIDTH (if (r == 1 ) cnf.headline_borderwidth;
+					 BORDER_THICKNESS (if (r == 1 ) cnf.headline_borderwidth;
 							      else cnf.field_borderwidth;fi),
 					 WIDTH (if cnf.constant_column_width  max_column_width();
 									      else column_width c;fi),

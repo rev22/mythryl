@@ -106,7 +106,7 @@ herein
 				    ge::WINDOW_SITE
 				      { upperleft    =>  ge::POINT { col=>100, row=>100 },
 					size         =>  ge::SIZE { wide=>400, high=>400 },
-					border_width =>  1
+					border_thickness =>  1
 				      },
 
 				attributes

@@ -40,7 +40,7 @@ herein
 	medcolor =  maxcolor / 0u2;
 	mincolor =  0u0;
 
-	border_width =    4;
+	border_thickness =    4;
 	slider_width =   20;
 	hue_box_dim  =   25;
 	big_spot_ht  =  400;
@@ -97,7 +97,7 @@ herein
 		fun make_display_box c w
 		    =
 		    {   args = [ (wa::background,   wa::COLOR_VAL  c),
-				 (wa::border_width, wa::INT_VAL  border_width)
+				 (wa::border_thickness, wa::INT_VAL  border_thickness)
 			       ];
 
 			display

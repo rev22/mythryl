@@ -177,7 +177,7 @@ herein
     #         (wa::attribute_multiset,  wa::BOOL,    wa::BOOL_VAL FALSE), 
     #         (wa::attribute_isVertical,wa::BOOL,    wa::BOOL_VAL TRUE), 
     #         (wa::halign,              wa::HALIGN,  wa::HALIGN_VAL wg::HLeft), 
-	      (wa::border_width,        wa::INT,     wa::INT_VAL 2),
+	      (wa::border_thickness,        wa::INT,     wa::INT_VAL 2),
 	      (wa::font,                wa::FONT,    wa::STRING_VAL default_font),
 	      (wa::color,               wa::COLOR,   wa::NO_VAL),
 	      (wa::relief,              wa::RELIEF,  wa::RELIEF_VAL wg::FLAT),
@@ -185,7 +185,7 @@ herein
 	      (wa::height,              wa::INT,     wa::INT_VAL 0),
 	      (wa::background,          wa::COLOR,   wa::STRING_VAL "white"),
 	      (wa::foreground,          wa::COLOR,   wa::STRING_VAL "black"),
-	      (wa::select_border_width, wa::INT,     wa::INT_VAL 1)
+	      (wa::select_border_thickness, wa::INT,     wa::INT_VAL 1)
 	  ];
 
 	color_attributes
@@ -213,7 +213,7 @@ herein
 	      sel_fg:  xc::Rgb,
 	      #	
 	      relief:  wg::Relief,
-	      border_width:  Int,
+	      border_thickness:  Int,
 	      maxslen:  Ref( Int ),
 	      stipple:  xc::Ro_Pixmap,
 	      #	
@@ -223,7 +223,7 @@ herein
 	      height:  Int,
 	      #	
 	      sel_shades:  wg::Shades,
-	      sel_border_width:  Int
+	      sel_border_thickness:  Int
 	    };
 
 	State(X)
@@ -251,8 +251,8 @@ herein
 
 		relief = wa::get_relief (attributes wa::relief);
 
-		border_width  = wa::get_int (attributes wa::border_width       );
-		sborder_width = wa::get_int (attributes wa::select_border_width);
+		border_thickness  = wa::get_int (attributes wa::border_thickness       );
+		sborder_width = wa::get_int (attributes wa::select_border_thickness);
 
 		forec  = wa::get_color (attributes wa::foreground);
 		backc  = wa::get_color (attributes wa::background);
@@ -274,11 +274,11 @@ herein
 		  bg => backc,
 
 		  shades => wg::shades root backc,
-		  border_width => int::max (border_width, 0),
+		  border_thickness => int::max (border_thickness, 0),
 
 		  sel_shades => wg::shades root sbackc,
 		  sel_fg => sforec,
-		  sel_border_width => int::max (sborder_width, 0),
+		  sel_border_thickness => int::max (sborder_width, 0),
 
 		  relief
 		};
@@ -343,7 +343,7 @@ herein
 	    =
 	    {   count = ti::vals_count items;
 
-		xbase = 2*(result.border_width + result.sel_border_width);
+		xbase = 2*(result.border_thickness + result.sel_border_thickness);
 
 		my (xmin, xnat, xmax)
 		    =
@@ -357,7 +357,7 @@ herein
 		    =
 		    wg::INT_PREFERENCE { start_at=>xbase, step_by=>xincr, min_steps=>xmin, ideal_steps=>xnat, max_steps=>xmax };
 
-		ybase = 2*result.border_width;
+		ybase = 2*result.border_thickness;
 
 		# This changes once we have scroll bars.  XXX BUGGO FIXME
 
@@ -390,7 +390,7 @@ herein
 
 		dr =  xd::drawable_of_window  window;
 
-		bw = result.border_width;
+		bw = result.border_thickness;
 
 		txt_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb  result.fg)];
 
@@ -407,7 +407,7 @@ herein
 		    d
 		    where 
 
-			sbw = result.sel_border_width;
+			sbw = result.sel_border_thickness;
 			row_incr = result.yincr;
 
 			result.sel_shades ->  selshades as { base=>selbase, ... };
@@ -461,7 +461,7 @@ herein
 			me ->  { items, top, line_count };
 
 			bot = top + line_count;
-			bw = result.border_width;
+			bw = result.border_thickness;
 
 			yincr = result.yincr;
 
@@ -509,7 +509,7 @@ herein
 		    {   box = xg::BOX { col=>0, row=>0, wide, high };
 
 			relief = result.relief;
-			bw = result.border_width;
+			bw = result.border_thickness;
 
 			result.shades ->  shades as { base, ... };
 
@@ -540,7 +540,7 @@ herein
 	#
 	fun pt_to_index (xg::POINT { col, row }, result:  Result, top, vals_count)
 	    =
-	    {   row' = (row - result.border_width) / result.yincr;
+	    {   row' = (row - result.border_thickness) / result.yincr;
 
 		index = row' + top;
 
@@ -551,9 +551,9 @@ herein
 
 	#  Given a window size, compute how many items can be displayed.
 	# 
-	fun get_num_lines ( { border_width, yincr, ... } : Result, xg::SIZE { high, ... } )
+	fun get_num_lines ( { border_thickness, yincr, ... } : Result, xg::SIZE { high, ... } )
 	    =
-	    int::max (0, (high - 2*border_width) / yincr);
+	    int::max (0, (high - 2*border_thickness) / yincr);
 
 	# Generate a list of length len of consecutive integers 
 	# starting at start.

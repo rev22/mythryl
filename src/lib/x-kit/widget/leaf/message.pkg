@@ -220,7 +220,7 @@ herein
 	    =
 	    [ (wa::aspect,         wa::INT,        wa::INT_VAL 150),
 	      (wa::background,     wa::COLOR,      wa::STRING_VAL "white"),
-	      (wa::border_width,   wa::INT,        wa::INT_VAL 2),
+	      (wa::border_thickness,   wa::INT,        wa::INT_VAL 2),
 	      (wa::font,           wa::FONT,       wa::STRING_VAL "8x13"),
 	      (wa::foreground,     wa::COLOR,      wa::STRING_VAL "black"),
 	      (wa::gravity,        wa::GRAVITY,    wa::GRAVITY_VAL wt::CENTER),
@@ -238,7 +238,7 @@ herein
 		   bg:  xc::Rgb,
 		   fg:  xc::Rgb,
 
-		   border_width:  Int,
+		   border_thickness:  Int,
 		   fontinfo:  Fontinfo,
 		   gravity:  wt::Gravity,
 		   justify:  wt::Horizontal_Alignment,
@@ -277,11 +277,11 @@ herein
 
 		text         = wa::get_string (attributes wa::text);
 		width        = wa::get_int    (attributes wa::width);
-		border_width = wa::get_int    (attributes wa::border_width);
+		border_thickness = wa::get_int    (attributes wa::border_thickness);
 
 		{ aspect,
 		  bg,
-		  border_width,
+		  border_thickness,
 		  fontinfo,
 
 		  fg      => wa::get_color   (attributes wa::foreground),
@@ -294,17 +294,17 @@ herein
 		  relief   => wa::get_relief (attributes wa::relief),
 		  shades   => wg::shades root bg,
 		  textinfo => REF (make_text_info (root, aspect, text, width, fontinfo,
-				border_width, padx, pady)),
+				border_thickness, padx, pady)),
 		  width
 		};
 	    };
 
-	fun size_preference_thunk_of ( { textinfo, padx, pady, border_width, ... } : Result)
+	fun size_preference_thunk_of ( { textinfo, padx, pady, border_thickness, ... } : Result)
 	    =
 	    {   (*textinfo) ->  { text_high, text_wide, ... };
 
-		x = text_wide + 2*(border_width + padx);
-		y = text_high  + 2*(border_width + pady);
+		x = text_wide + 2*(border_thickness + padx);
+		y = text_high  + 2*(border_thickness + pady);
 
 		{ col_preference => wg::loose_preference x,
 		  row_preference => wg::loose_preference y
@@ -317,7 +317,7 @@ herein
               result:  Result
             )
 	    =
-	    {   result ->  { border_width=>bw, pady, padx, ... };
+	    {   result ->  { border_thickness=>bw, pady, padx, ... };
 
 		result.fontinfo ->  (font, font_ascent, font_descent);
 
@@ -437,7 +437,7 @@ herein
 		fun do_plea (SET_TEXT t, (draw, size))
 			=>
 			{   ti = make_text_info (root, result.aspect, t, result.width, result.fontinfo,
-				       result.border_width, result.padx, result.pady);
+				       result.border_thickness, result.padx, result.pady);
 
 			    my { textinfo, ... } = result;
 
@@ -489,7 +489,7 @@ herein
 		fun do_plea (SET_TEXT t)
 		    =>
 		    {   ti = make_text_info (root, result.aspect, t, result.width, result.fontinfo,
-				   result.border_width, result.padx, result.pady);
+				   result.border_thickness, result.padx, result.pady);
 			textinfo := ti;
 		    };
 

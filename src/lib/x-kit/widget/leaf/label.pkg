@@ -104,7 +104,7 @@ herein
 		shades:  Ref( wg::Shades    ),
 		#
 		relief:        wg::Relief,
-		border_width:  Int,
+		border_thickness:  Int,
 		font:          Font_Info,
 		align:         wt::Horizontal_Alignment,
 		#
@@ -122,7 +122,7 @@ herein
 	    [ (wa::halign,       wa::HALIGN, wa::HALIGN_VAL wt::HCENTER),
 	      (wa::tile,         wa::TILE,   wa::NO_VAL),
 	      (wa::label,        wa::STRING, wa::STRING_VAL ""),
-	      (wa::border_width, wa::INT,    wa::INT_VAL 2),
+	      (wa::border_thickness, wa::INT,    wa::INT_VAL 2),
 	      (wa::height,       wa::INT,    wa::INT_VAL 0),
 	      (wa::width,        wa::INT,    wa::INT_VAL 0),
 	      (wa::padx,         wa::INT,    wa::INT_VAL 1),
@@ -141,7 +141,7 @@ herein
 		attributes = wg::find_attribute (wg::attributes (view, attributes, args));
 
 		align  = wa::get_halign (attributes wa::halign);
-		bw     = wa::get_int    (attributes wa::border_width);
+		bw     = wa::get_int    (attributes wa::border_thickness);
 		height = wa::get_int    (attributes wa::height);
 		width  = wa::get_int    (attributes wa::width);
 		padx   = wa::get_int    (attributes wa::padx);
@@ -169,7 +169,7 @@ herein
 		    bg => REF bg,
 		    shades => REF shades,
 		    relief,
-		    border_width => int::max (0, bw),
+		    border_thickness => int::max (0, bw),
 		    font => fifi,
 		    align,
 
@@ -190,7 +190,7 @@ herein
 
 	fun bounds lview
 	    =
-	    {   my LABEL_VIEW { border_width, width, height, padx, pady, font, ... }
+	    {   my LABEL_VIEW { border_thickness, width, height, padx, pady, font, ... }
 		    =
 		    lview;
 
@@ -229,8 +229,8 @@ herein
 		    =
 		    compute_size  lview;
 
-		col_preference =  wg::tight_preference (wide + 2*(border_width+padx+1));
-		row_preference =  wg::tight_preference (high + 2*(border_width+pady+1));
+		col_preference =  wg::tight_preference (wide + 2*(border_thickness+padx+1));
+		row_preference =  wg::tight_preference (high + 2*(border_thickness+pady+1));
 
 		{ col_preference,
 		  row_preference
@@ -269,12 +269,12 @@ herein
 	    =
 	    {   include xdraw;						# xdraw		is from   src/lib/x-kit/xclient/xdraw.pkg
 
-		my { shades, relief, label, border_width, fg, bg, ... }
+		my { shades, relief, label, border_thickness, fg, bg, ... }
 		    =
 		    lv;
 
 		box  =  xg::BOX { col=>0, row=>0, wide, high };
-		xoff =  border_width + lv.padx;
+		xoff =  border_thickness + lv.padx;
 
 		fill_box  dr  (make_pen [FOREGROUND (xc::rgb8_from_rgb *bg)])  box;
 
@@ -325,7 +325,7 @@ herein
 		       };
 		esac;
 
-		d3::draw_box dr { box, relief, width=>border_width }
+		d3::draw_box dr { box, relief, width=>border_thickness }
 			*shades;
 	    };
 

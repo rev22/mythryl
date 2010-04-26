@@ -47,7 +47,7 @@ herein
 				xg::WINDOW_SITE
 				  { upperleft    =>  xg::POINT { col=>0, row=>0 },
 				    size         =>  xg::SIZE { wide=>400, high=>400 },
-				    border_width =>  1
+				    border_thickness =>  1
 				  }
 			  };
 

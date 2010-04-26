@@ -365,7 +365,7 @@ package tabs: (weak)  Tabs		# Tabs	is from   src/lib/tk/src/toolkit/tabs.api
 		    scrollbars => NOWHERE,
 		    citems     => init,
 		    packing_hints   => [],
-		    traits    => [BORDER_WIDTH 0,
+		    traits    => [BORDER_THICKNESS 0,
 				  WIDTH (width + 6),
 				  HEIGHT (height + labelheight + 4)],
 		    event_callbacks   => [EVENT_CALLBACK (BUTTON_PRESS (THE 1),

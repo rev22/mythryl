@@ -121,7 +121,7 @@ herein
 		    site =>  xg::WINDOW_SITE
 			       { upperleft    =>  xg::box::upperleft  box,
 			         size         =>  xg::box::size       box,
-				 border_width =>  0
+				 border_thickness =>  0
 			       }
 		  };
 	      };

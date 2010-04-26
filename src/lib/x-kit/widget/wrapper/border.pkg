@@ -39,14 +39,14 @@ herein
 	    =
 	    [ (wa::padx,           wa::INT,      wa::INT_VAL 0),
 	      (wa::pady,           wa::INT,      wa::INT_VAL 0),
-	      (wa::border_width,   wa::INT,      wa::INT_VAL 2),
+	      (wa::border_thickness,   wa::INT,      wa::INT_VAL 2),
 	      (wa::relief,         wa::RELIEF,   wa::RELIEF_VAL (wg::SUNKEN)),
 	      (wa::background,     wa::COLOR,    wa::NO_VAL)
 	    ];
 
 	Result = { padx:  Int,
 		   pady:  Int,
-		   border_width:  Int,
+		   border_thickness:  Int,
 		   relief:  wg::Relief,
 		   background:  Null_Or( xc::Rgb )
 		 };
@@ -64,7 +64,7 @@ herein
 
 		{ padx         => wa::get_int       (attributes wa::padx),
 		  pady         => wa::get_int       (attributes wa::pady),
-		  border_width => wa::get_int       (attributes wa::border_width),
+		  border_thickness => wa::get_int       (attributes wa::border_thickness),
 		  relief       => wa::get_relief    (attributes wa::relief),
 		  background   => wa::get_color_opt (attributes wa::background)
 		};
@@ -95,7 +95,7 @@ herein
 				=
 				wg::shades root_window c;
 
-			    arg1 = { box=>r, width=> result.border_width, relief=>rel };
+			    arg1 = { box=>r, width=> result.border_thickness, relief=>rel };
 
 			    fun fill ()
 				=
@@ -120,8 +120,8 @@ herein
 			    =
 			    wg::size_preference_of  child;
 
-			xextra = 2*(result.padx + result.border_width);
-			yextra = 2*(result.pady + result.border_width);
+			xextra = 2*(result.padx + result.border_thickness);
+			yextra = 2*(result.pady + result.border_thickness);
 
 			{ col_preference =>  inc_base (col_preference, xextra),
 			  row_preference =>  inc_base (row_preference, yextra)
@@ -141,8 +141,8 @@ herein
 
 			fun child_box (xg::SIZE { wide, high } )
 			    =
-			    {   xoff = result.padx + result.border_width;
-				yoff = result.pady + result.border_width;
+			    {   xoff = result.padx + result.border_thickness;
+				yoff = result.pady + result.border_thickness;
 
 				xg::BOX
 				  { col  => xoff,
@@ -269,7 +269,7 @@ herein
 				       aliases =>  []
 				     };
 
-		args =  [ (wa::border_width, wa::INT_VAL width) ];
+		args =  [ (wa::border_thickness, wa::INT_VAL width) ];
 
 		args =  case color   
 			    #

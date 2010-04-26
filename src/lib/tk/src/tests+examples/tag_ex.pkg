@@ -88,7 +88,7 @@ package tag_ex
 
 			     TEXT_ITEM_TAG { text_item_id => tn,
 				   marks  => [(MARK (2, 11), MARK_TO_END 2)],
-				   traits => [BACKGROUND BLUE,   BORDER_WIDTH 2,   RELIEF RAISED],
+				   traits => [BACKGROUND BLUE,   BORDER_THICKNESS 2,   RELIEF RAISED],
 				   event_callbacks => [  EVENT_CALLBACK (BUTTON_PRESS NULL, del_tag tn),
 							 EVENT_CALLBACK (ENTER, (col_tag tn RED)),
 							 EVENT_CALLBACK (LEAVE, (col_tag tn BLUE))] };
@@ -101,7 +101,7 @@ package tag_ex
 			     TEXT_ITEM_TAG { text_item_id=>tn,
 				   marks=> read_selection t1,
 				   traits => [BACKGROUND GREEN,
-					    BORDER_WIDTH 2, RELIEF RAISED],
+					    BORDER_THICKNESS 2, RELIEF RAISED],
 				   event_callbacks=> [EVENT_CALLBACK (BUTTON_PRESS NULL, del_tag tn),
 					      EVENT_CALLBACK (ENTER, (col_tag tn RED)),
 					      EVENT_CALLBACK (LEAVE, (col_tag tn GREEN))] };
@@ -188,7 +188,7 @@ package tag_ex
 							     t  = "Neuer Text\n";
 							     tg = TEXT_ITEM_TAG { text_item_id=>fat,
 									    marks => [(MARK (1, 0), MARK (1, 5))],
-									    traits=> [BACKGROUND RED, BORDER_WIDTH 2, RELIEF RAISED], event_callbacks=> [] };
+									    traits=> [BACKGROUND RED, BORDER_THICKNESS 2, RELIEF RAISED], event_callbacks=> [] };
 
 							      replace_livetext t1 (LIVE_TEXT { len=>NULL, str=>t, text_items => [tg] } );
 
@@ -199,7 +199,7 @@ package tag_ex
 			      packing_hints => [PACK_AT LEFT], traits => [TEXT "Widget State", TEAR_OFF FALSE], event_callbacks => [] }
 		   ],
 		  packing_hints => [FILL ONLY_X],
-		  traits => [RELIEF RAISED, BORDER_WIDTH 2],
+		  traits => [RELIEF RAISED, BORDER_THICKNESS 2],
 		  event_callbacks => [] };
 	};
 
@@ -207,7 +207,7 @@ package tag_ex
 	{
 	    t  = "\nDies ist ein Tag-Test\n\nUnd noch ein Test ...\n";
 	    tg = TEXT_ITEM_TAG { text_item_id=> fat, marks=> [(MARK (2, 9), MARK (2, 21))],
-			   traits=> [BACKGROUND RED, BORDER_WIDTH 2, RELIEF RAISED],
+			   traits=> [BACKGROUND RED, BORDER_THICKNESS 2, RELIEF RAISED],
 			   event_callbacks => [EVENT_CALLBACK (BUTTON_PRESS NULL, make_callback (fn _ => 
 				       { file::write (file::stdout, 
 				    "Button press in annotation\n");
@@ -280,7 +280,7 @@ package tag_ex
 		traits => [   WIDTH 200,
 			     HEIGHT 200,
 			     RELIEF RAISED,
-			     BORDER_WIDTH 2
+			     BORDER_THICKNESS 2
 			 ]
 	    };
 	};

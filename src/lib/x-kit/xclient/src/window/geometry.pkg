@@ -71,7 +71,7 @@ herein
 		WINDOW_SITE
 		  { upperleft:     Point,
 		    size:          Size,
-		    border_width:  Int
+		    border_thickness:  Int
 		  };
 
 	    package point {
@@ -325,11 +325,11 @@ herein
 		rc::valid_signed16  angle1  and
 		rc::valid_signed16  angle2;
 
-	    fun valid_site (WINDOW_SITE { upperleft, size, border_width } )
+	    fun valid_site (WINDOW_SITE { upperleft, size, border_thickness } )
 		= 
 		valid_point  upperleft      and
 		valid_size   size           and
-		rc::valid16  border_width;
+		rc::valid16  border_thickness;
 
 	end;		# stipulate
     };			# package geometry 

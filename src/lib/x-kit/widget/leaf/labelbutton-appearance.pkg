@@ -145,7 +145,7 @@ herein
 		#
 		shades:  wg::Shades,
 		stipple:  xc::Ro_Pixmap,
-		border_width:  Int,
+		border_thickness:  Int,
 		#
 		font:  (xc::Font, Int, Int),
 		align:  wt::Horizontal_Alignment,
@@ -165,7 +165,7 @@ herein
 	      (wa::tile,           wa::TILE,       wa::NO_VAL),
 	      (wa::label,          wa::STRING,     wa::STRING_VAL ""),
 	      (wa::type,           wa::STRING,     wa::STRING_VAL "NoLight"),
-	      (wa::border_width,   wa::INT,        wa::INT_VAL 2),
+	      (wa::border_thickness,   wa::INT,        wa::INT_VAL 2),
 	      (wa::height,         wa::INT,        wa::INT_VAL 0),
 	      (wa::width,          wa::INT,        wa::INT_VAL 0),
 	      (wa::padx,           wa::INT,        wa::INT_VAL 1),
@@ -188,7 +188,7 @@ herein
 		ltype  = wa::get_string (attributes wa::type);
 		align  = wa::get_halign (attributes wa::halign);
 
-		bw     = wa::get_int (attributes wa::border_width);
+		bw     = wa::get_int (attributes wa::border_thickness);
 
 		height = wa::get_int (attributes wa::height);
 		width  = wa::get_int (attributes wa::width);
@@ -231,7 +231,7 @@ herein
 		  bg,
 		  shades => wg::shades root bg,
 		  readyc,
-		  border_width => int::max (0, bw),
+		  border_thickness => int::max (0, bw),
 		  font,
 		  align,
 
@@ -245,7 +245,7 @@ herein
 
 	fun bounds (BUTTON_APPEARANCE v)
 	    =
-	    {   v ->  { label, border_width, width, height, padx, pady, font, ... };
+	    {   v ->  { label, border_thickness, width, height, padx, pady, font, ... };
 
 		light_space = case v.light
 				  #
@@ -258,11 +258,11 @@ herein
 		    size_of_label (label, font);
 
 		wide = if (width > 0)   width;
-		       else             (2*border_width + 2*padx + light_space + wide);
+		       else             (2*border_thickness + 2*padx + light_space + wide);
 		       fi;
 
 		high = if (height > 0)  height;
-		       else             (2*border_width + 2*pady + high);
+		       else             (2*border_thickness + 2*pady + high);
 		       fi;
 
 		col_preference =  wg::loose_preference  wide;
@@ -277,7 +277,7 @@ herein
 	    =
 	    {   dr =  xd::drawable_of_window  window;
 
-		v ->  { light, shades, label, border_width=>bw, fg, bg, readyc, ... };
+		v ->  { light, shades, label, border_thickness=>bw, fg, bg, readyc, ... };
 
 		box  = xg::BOX { col=>0, row=>0, wide, high };
 

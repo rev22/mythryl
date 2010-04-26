@@ -70,7 +70,7 @@ api Xgeometry {
     # relative to its parent.
     #
     # Note that position does not take
-    # border_width into account.
+    # border_thickness into account.
     #
     Window_Site
 	=
@@ -78,7 +78,7 @@ api Xgeometry {
 	  {
 	    upperleft:     Point,
 	    size:          Size,
-	    border_width:  Int		# In pixels.
+	    border_thickness:  Int		# In pixels.
 	  };
 
 

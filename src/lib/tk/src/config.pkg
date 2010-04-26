@@ -93,7 +93,7 @@ package config: (weak)  Config	{	# Config	is from   src/lib/tk/src/config.api
 
 	fun conf_eq (WIDTH _          ) (WIDTH _          ) => TRUE;
 	    conf_eq (HEIGHT _         ) (HEIGHT _         ) => TRUE;
-	    conf_eq (BORDER_WIDTH _   ) (BORDER_WIDTH _   ) => TRUE;
+	    conf_eq (BORDER_THICKNESS _   ) (BORDER_THICKNESS _   ) => TRUE;
 	    conf_eq (RELIEF _         ) (RELIEF _         ) => TRUE;
 	    conf_eq (FOREGROUND _     ) (FOREGROUND _     ) => TRUE;
 	    conf_eq (BACKGROUND _     ) (BACKGROUND _     ) => TRUE;
@@ -146,7 +146,7 @@ package config: (weak)  Config	{	# Config	is from   src/lib/tk/src/config.api
 
 	fun conf_name (WIDTH _)          => "Width";
 	    conf_name (HEIGHT _)         => "Height";
-	    conf_name (BORDER_WIDTH _)   => "Borderwidth";
+	    conf_name (BORDER_THICKNESS _)   => "Borderwidth";
 	    conf_name (RELIEF _)         => "Relief";
 	    conf_name (FOREGROUND _)     => "Foreground";
 	    conf_name (BACKGROUND _)     => "Background";
@@ -360,7 +360,7 @@ package config: (weak)  Config	{	# Config	is from   src/lib/tk/src/config.api
         #
 	fun default_conf wt (WIDTH _)        => WIDTH (default_width wt);
 	    default_conf wt (HEIGHT _)       => HEIGHT (default_height wt);
-	    default_conf wt (BORDER_WIDTH _) => BORDER_WIDTH (default_borderwidth wt);
+	    default_conf wt (BORDER_THICKNESS _) => BORDER_THICKNESS (default_borderwidth wt);
 	    default_conf wt (RELIEF _)       => RELIEF (default_relief wt);
 
 #	    defaultConf wt (FOREGROUND _)   = FOREGROUND (defaultForeground wt)
@@ -550,7 +550,7 @@ package config: (weak)  Config	{	# Config	is from   src/lib/tk/src/config.api
 	#
 	fun show_conf _ (WIDTH n)           => " -width " + string_util::from_int n;
 	    show_conf _ (HEIGHT n)          => " -height " + string_util::from_int n;
-	    show_conf _ (BORDER_WIDTH n)    => " -borderwidth " + string_util::from_int n;
+	    show_conf _ (BORDER_THICKNESS n)    => " -borderwidth " + string_util::from_int n;
 	    show_conf _ (RELIEF r)          => " -relief " + show_rel r;
 	    show_conf _ (FOREGROUND r)      => " -foreground " + show_col r;
 	    show_conf _ (BACKGROUND r)      => " -background " + show_col r;

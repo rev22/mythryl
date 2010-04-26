@@ -301,7 +301,7 @@ package wee_boxes
 	    traits => [   TEXT "Quit",
                          CALLBACK (make_simple_callback (fn _ = tk::close_window window)),
 	                 RELIEF RIDGE,
-                         BORDER_WIDTH 2
+                         BORDER_THICKNESS 2
                      ]
         };
 
@@ -329,7 +329,7 @@ package wee_boxes
 	        traits          => [   TEXT "Move Opaque",
                                       CALLBACK (make_simple_callback (toggle_move mb)),
 	                              RELIEF RIDGE,
-                                      BORDER_WIDTH 2
+                                      BORDER_THICKNESS 2
                                   ]
             };
 	};

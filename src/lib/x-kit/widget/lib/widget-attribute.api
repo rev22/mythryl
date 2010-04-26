@@ -27,7 +27,7 @@ herein
 
 	background:    	  	Name;			#  "background" 
 	border_color:  	  	Name;			#  "borderColor" 
-	border_width:  	  	Name;			#  "borderWidth" 
+	border_thickness:  	  	Name;			#  "borderWidth" 
 
 	color:         	  	Name;			#  "color" 
 	current:       	  	Name;			#  "current" 
@@ -66,7 +66,7 @@ herein
 	select_color:		Name;			#  "selectColor" 
 	select_background:	Name;			#  "selectBackground" 
 
-	select_border_width:	Name;			#  "selectBorderWidth" 
+	select_border_thickness:	Name;			#  "selectBorderWidth" 
 	select_foreground:	Name;			#  "selectForeground" 
 	show_value:    	  	Name;			#  "showValue" 
 	state:         	  	Name;			#  "state" 

@@ -62,7 +62,7 @@ package markup_ex: (weak)    api {
 	       text_item_for_tag BOX_TAG   _ _ marx
 		  => 
 		  tatag (make_text_item_id(), [marx],
-				       [RELIEF RAISED, BORDER_WIDTH 2], []); end;
+				       [RELIEF RAISED, BORDER_THICKNESS 2], []); end;
 
 	     Escape  = Void;
 
@@ -122,7 +122,7 @@ package markup_ex: (weak)    api {
 	button (
 	    make_widget_id(),
 		   [PACK_AT BOTTOM, FILL ONLY_X, EXPAND TRUE],
-		   [RELIEF RIDGE, BORDER_WIDTH 2,
+		   [RELIEF RIDGE, BORDER_THICKNESS 2,
 		    TEXT "Quit", CALLBACK (fn () = close_window window)], []); 
 
 									    my

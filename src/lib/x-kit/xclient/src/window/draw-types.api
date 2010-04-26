@@ -24,12 +24,12 @@ herein
 	    =
 	    WINDOW
 	      {
-		window_id:		xt::Window_Id,
+		window_id:			xt::Window_Id,
 		#
-		screen:			sn::Screen,
-		gc_and_draw_imps:	sn::Gc_And_Draw_Imps,
+		screen:				sn::Screen,
+		screen_pen_and_draw_imps:	sn::Screen_Pen_And_Draw_Imps,
 		#
-		to_drawimp:		di::d::Draw_Op -> Void
+		to_topwindow_drawimp:		di::d::Draw_Op -> Void
 	      };
 
 	# An off-screen rectangular array of pixels on the X server:
@@ -37,10 +37,10 @@ herein
 	Rw_Pixmap
 	    =
 	    RW_PIXMAP
-	      { pixmap_id:		xt::Pixmap_Id,
-		screen:			sn::Screen,
-		size:			ge::Size,
-		gc_and_draw_imps:	sn::Gc_And_Draw_Imps
+	      { pixmap_id:			xt::Pixmap_Id,
+		screen:				sn::Screen,
+		size:				ge::Size,
+		screen_pen_and_draw_imps:	sn::Screen_Pen_And_Draw_Imps
 	      };
 
 	# An off-screen read-only rectangular array of pixels on the X server: 
@@ -77,8 +77,8 @@ herein
 	    { upperleft:     ge::Point,		# Pixel location of window upper-left corner relative to parent.
 	      size:          ge::Size,		# Pixel size of window.	
 	      #
-	      depth:         Int,				# Pixel depth in bits.
-	      border_width:  Int				# Window border in pixels.
+	      depth:         Int,		# Pixel depth in bits.
+	      border_thickness:  Int		# Window border in pixels.
 	    };
 
 	shape_of_rw_pixmap
@@ -89,7 +89,7 @@ herein
 	      size:          ge::Size,
 	      #
 	      depth:         Int,
-	      border_width:  Int				# Present only for uniformity;  these have no actual border.    Always 0.
+	      border_thickness:  Int		# Present only for uniformity;  these have no actual border.    Always 0.
 	    };
 
 	shape_of_ro_pixmap
@@ -100,7 +100,7 @@ herein
 	      size:          ge::Size,
 	      #
 	      depth:         Int,
-	      border_width:  Int				# Present only for uniformity;  these have no actual border.    Always 0.
+	      border_thickness:  Int		# Present only for uniformity;  these have no actual border.    Always 0.
 	    };
 
 	shape_of_draw_src
@@ -111,7 +111,7 @@ herein
 	      size:          ge::Size,
 	      #
 	      depth:         Int,
-	      border_width:  Int
+	      border_thickness:  Int
 	    };
 
 	size_of_window:	        Window -> ge::Size;
@@ -120,17 +120,19 @@ herein
 
 	package r: api {
 	    #
-	    Draw_Root = WINDOW  Window
-		      | PIXMAP  Rw_Pixmap
-		      ;
+	    Window_Or_Pixmap
+	      #
+	      = WINDOW  Window
+	      | PIXMAP  Rw_Pixmap
+	      ;
 	};
 
 	Drawable
 	    =
 	    DRAWABLE
 	      {
-		root:		r::Draw_Root,
-		to_drawimp:	di::d::Draw_Op -> Void
+		root:		r::Window_Or_Pixmap,
+		to_drawimp:	di::d::Draw_Op -> Void		# This goes to WINDOW.to_topwindow_drawimp or PIXMAP.to_screen_drawimp.
 	      };
 
 	drawable_of_window:        Window -> Drawable;

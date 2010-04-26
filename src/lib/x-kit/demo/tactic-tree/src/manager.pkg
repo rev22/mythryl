@@ -26,7 +26,7 @@ pkg
     type ttree_state = tt::ttree_state
 
     pause = TIME { sec=0, usec=500000 }
-    display_border_width = 3
+    display_border_thickness = 3
 
     h_glue = Glue { nat=5, min=5, max= NULL }
     v_glue = Glue { nat=5, min=1, max=NULL }
@@ -51,7 +51,7 @@ pkg
 	      frame::widgetOf (frame::mkFrame {
 		  widget = shape::mkRigid w,
 		  color = THE blackc,
-		  width = display_border_width
+		  width = display_border_thickness
 		} )
 
 	fun make_button (l, a)   = let 
@@ -344,7 +344,7 @@ pkg
 		frame_widget = frame::widgetOf (frame::mkFrame { 
 				widget = scroll_widget,
 				color = THE blackc,
-				width = display_border_width } )
+				width = display_border_thickness } )
 		in
 		     make_thread "manager text_widget" (fn () => (mouse_loop event));
 		     shape::freeSize (frame_widget, Geometry::SIZE { wid=500, ht=500 } )

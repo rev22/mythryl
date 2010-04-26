@@ -45,7 +45,7 @@ herein
 	      (wa::rounded,      wa::BOOL,    wa::BOOL_VAL FALSE),
 	      (wa::width,        wa::INT,     wa::NO_VAL),
 	      (wa::height,       wa::INT,     wa::NO_VAL),
-	      (wa::border_width, wa::INT,     wa::INT_VAL 2),
+	      (wa::border_thickness, wa::INT,     wa::INT_VAL 2),
 	      (wa::label,        wa::STRING,  wa::STRING_VAL ""),
 	      (wa::font,         wa::FONT,    wa::STRING_VAL default_font_name),
 	      (wa::color,        wa::COLOR,   wa::NO_VAL),
@@ -97,7 +97,7 @@ herein
 		 width:        Null_Or( Int ),
 		 height:       Null_Or( Int ),
 		 #
-		 border_width: Int,
+		 border_thickness: Int,
 		 labeldata:    Labeldata,
 		 fontdata:     Fontdata,
 		 #
@@ -131,7 +131,7 @@ herein
 		    width   => wa::get_int_opt (attributes wa::width),
 		    height  => wa::get_int_opt (attributes wa::height),
 
-		    border_width =>  wa::get_int (attributes wa::border_width),
+		    border_thickness =>  wa::get_int (attributes wa::border_thickness),
 		    labeldata    =>  make_label (wa::get_string (attributes wa::label), font),
 
 		    stipple =>  wg::ro_pixmap root "gray",
@@ -156,7 +156,7 @@ herein
 
 		r = xg::box::make (xg::point::zero, size);
 
-		v ->  { border_width, labeldata, fontdata, ... };
+		v ->  { border_thickness, labeldata, fontdata, ... };
 
 		text_pen = xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb v.forec) ];
 
@@ -169,7 +169,7 @@ herein
 
 		v.shades ->  { base, light, dark };
 
-		xoff = border_width + pad;
+		xoff = border_thickness + pad;
 
 		labeldata ->  { lb, rb, label };
 		fontdata  ->  { font, font_ascent, font_descent };
@@ -184,7 +184,7 @@ herein
 		row = (high + font_ascent - font_descent) / 2;
 
 		text_pt =  xg::POINT { col, row };
-		border  =  d3::draw3drect d (r, border_width);
+		border  =  d3::draw3drect d (r, border_thickness);
 
 		fun draw (text_pen, back_pen, top_pen, bot_pen)
 		    =
@@ -213,7 +213,7 @@ herein
 
 		corner_radius = int::min (10, int::min (wide, high) / 6);
 
-		v ->  { backc, color, border_width, labeldata, fontdata, ... };
+		v ->  { backc, color, border_thickness, labeldata, fontdata, ... };
 
 		text_pen =  xd::make_pen [xd::FOREGROUND (xc::rgb8_from_rgb v.forec) ];
 
@@ -245,7 +245,7 @@ herein
 			xd::draw_transparent_string d text_pen font (text_pt, label);
 
 			d3::draw3dround_box d 
-			    { box=>r, c_wid=>corner_radius, c_ht=>corner_radius, width=>border_width }
+			    { box=>r, c_wid=>corner_radius, c_ht=>corner_radius, width=>border_thickness }
 			    { top=>top_pen, bottom=>bot_pen };
 		    };
 
@@ -260,9 +260,9 @@ herein
 
 	fun bounds (BUTTON_APPEARANCE v)
 	    =
-	    {   v ->  { rounded, border_width, labeldata, fontdata, ... };
+	    {   v ->  { rounded, border_thickness, labeldata, fontdata, ... };
 
-		inset = border_width + (if rounded  rpad; else pad;fi);
+		inset = border_thickness + (if rounded  rpad; else pad;fi);
 
 		labeldata ->  { lb, rb, ... };
 		fontdata  ->  { font_ascent, font_descent, ... };

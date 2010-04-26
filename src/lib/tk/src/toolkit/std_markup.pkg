@@ -184,7 +184,7 @@ generic package standard_tags_g (naming_tags:  Bind_Tags)		# Bind_Tags	is from  
 	TEXT_ITEM_TAG {
 	    text_item_id  => make_text_item_id(),
 	    marks  => [wh],
-	    traits => [RELIEF GROOVE, BORDER_WIDTH 1], 
+	    traits => [RELIEF GROOVE, BORDER_THICKNESS 1], 
 	    event_callbacks => []
 	};
 

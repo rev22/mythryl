@@ -257,7 +257,7 @@ trace  .{  "wire-to-value-core.pkg: decode_connect_request_reply: get_list/BOT";
 		  {
 		    upperleft    => get_pt    (s, i  ),
 		    size         => get_size  (s, i+4),
-		    border_width => get_int16 (s, i+8)
+		    border_thickness => get_int16 (s, i+8)
 		  };
 
 	    get_key_code =  xt::KEYCODE o get_int8;

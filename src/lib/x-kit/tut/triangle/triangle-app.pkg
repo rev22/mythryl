@@ -87,7 +87,7 @@ herein
 		size         =>  xg::SIZE  { wide => button_wide,
                                              high => button_high
                                            },
-		border_width =>  0
+		border_thickness =>  0
 	      };
 
 	# Let drawing window fill the rest of topwindow:
@@ -96,7 +96,7 @@ herein
 	    =
 	    xg::WINDOW_SITE
 	      {
-		border_width =>  1,
+		border_thickness =>  1,
 		upperleft    =>  xg::POINT { col => 5, row => 5 },
 		#
 		size         =>  xg::SIZE { wide => wide - 10,
@@ -436,7 +436,7 @@ trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
 		    =
 		    xw::make_simple_top_window  screen
 		      {
-			site =>  xg::WINDOW_SITE { upperleft => xg::POINT { col=>0, row=>0 }, size=>window_size, border_width=>1 },
+			site =>  xg::WINDOW_SITE { upperleft => xg::POINT { col=>0, row=>0 }, size=>window_size, border_thickness=>1 },
 			#
 			border_color     =>  xc::black,
 			background_color =>  xc::rgb8_white

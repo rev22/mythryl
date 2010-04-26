@@ -57,11 +57,11 @@ herein
 	    =
 	    {   make_descendant_window
 		    =
-		    {   top_window ->  dt::WINDOW { screen, gc_and_draw_imps, to_drawimp, ... };
+		    {   top_window ->  dt::WINDOW { screen, screen_pen_and_draw_imps, to_topwindow_drawimp, ... };
 
 			fn window_id
 			    =
-                            dt::WINDOW { window_id, screen, gc_and_draw_imps, to_drawimp };
+                            dt::WINDOW { window_id, screen, screen_pen_and_draw_imps, to_topwindow_drawimp };
 		    };
 
 		my { kidplug, momplug }
@@ -367,8 +367,8 @@ herein
 	#
 	fun make_topwindow_to_widget_router
 	    (
-              screen		as  sn::SCREEN { xsession, ... },
-	      gc_and_draw_imps	as  sn::GC_AND_DRAW_IMPS  { gcontext_imp, ... },
+              screen			as  sn::SCREEN { xsession, ... },
+	      screen_pen_and_draw_imps	as  sn::SCREEN_PEN_AND_DRAW_IMPS  { pen_imp, ... },
 	      window_id,
               site
 	    )
@@ -380,12 +380,12 @@ herein
 		    make_mailslot ();
 
 trace .{ "XYZZY make_topwindow_to_widget_router: Doing make_draw_imp"; };
-		to_drawimp
+		to_topwindow_drawimp
 		    =
 		    di::make_draw_imp
 			  (
 			    take'  drawimp_mappedstate_slot,
-			    gcontext_imp,
+			    pen_imp,
 			    xsocket_to_topwindow_router,
 			    xsocket
 			  );
@@ -402,7 +402,7 @@ trace .{ "XYZZY make_topwindow_to_widget_router: Done  make_draw_imp"; };
 
 		top_window
 		    =
-		    dt::WINDOW { window_id, screen, gc_and_draw_imps, to_drawimp };
+		    dt::WINDOW { window_id, screen, screen_pen_and_draw_imps, to_topwindow_drawimp };
 
 		my (kidplug, router, delete_slot)
 		    =

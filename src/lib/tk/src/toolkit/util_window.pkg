@@ -272,7 +272,7 @@ package uw: (weak)  Util_Window		# Util_Window	is from   src/lib/tk/src/toolkit/
 				    packing_hints=> [PACK_AT TOP, FILL XY, 
 					       EXPAND TRUE], 
 				    traits=> [ACTIVE FALSE, 
-					      BORDER_WIDTH 1, WIDTH width,
+					      BORDER_THICKNESS 1, WIDTH width,
 					      HEIGHT height], 
 				    event_callbacks=> [] } ));
 	};
@@ -444,7 +444,7 @@ package uw: (weak)  Util_Window		# Util_Window	is from   src/lib/tk/src/toolkit/
 			   live_text        => string_to_livetext default,
 			   packing_hints   => [PACK_AT TOP, EXPAND TRUE],
 			   event_callbacks => [],
-			   traits => [RELIEF RAISED, BORDER_WIDTH 2, 
+			   traits => [RELIEF RAISED, BORDER_THICKNESS 2, 
 					     WIDTH width, HEIGHT h,
 					     FONT enter_text_font]
                        };
@@ -521,7 +521,7 @@ package uw: (weak)  Util_Window		# Util_Window	is from   src/lib/tk/src/toolkit/
 
 		       traits        => [   RELIEF RIDGE,
                                            WIDTH width, 
-				           BORDER_WIDTH 2,
+				           BORDER_THICKNESS 2,
                                            FONT enter_text_font
                                        ],
 

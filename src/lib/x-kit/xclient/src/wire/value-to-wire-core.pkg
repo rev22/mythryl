@@ -298,11 +298,11 @@ herein
 		    put_signed16 (buf, i+10, angle2);
 		};
 
-	    fun put_wgeom (buf, i, ge::WINDOW_SITE { upperleft, size, border_width } )
+	    fun put_wgeom (buf, i, ge::WINDOW_SITE { upperleft, size, border_thickness } )
 		=
 		{   put_point    (buf, i,   upperleft   );
 		    put_size     (buf, i+4, size        );
-		    put_signed16 (buf, i+8, border_width);
+		    put_signed16 (buf, i+8, border_thickness);
 		};
 
 

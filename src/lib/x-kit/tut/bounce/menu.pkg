@@ -151,7 +151,7 @@ herein
 			    site =>  xg::WINDOW_SITE
 				       { upperleft    =>  xg::point::subtract (menu_origin, xg::POINT { col=>1, row=>1 } ),
 					 size         =>  menu_sz,
-					 border_width =>  1
+					 border_thickness =>  1
 				       }
 			  };
 

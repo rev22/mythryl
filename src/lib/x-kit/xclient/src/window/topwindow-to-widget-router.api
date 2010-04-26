@@ -27,7 +27,7 @@ herein
 	make_topwindow_to_widget_router
 	    :
 	    ( sn::Screen,
-	      sn::Gc_And_Draw_Imps,
+	      sn::Screen_Pen_And_Draw_Imps,
 	      xt::Window_Id,
               ge::Window_Site
 	    )

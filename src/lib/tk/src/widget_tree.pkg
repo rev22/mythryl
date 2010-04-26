@@ -283,7 +283,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 	    fun check_one_widget_configure FRAME_TYPE c    =>
 		(case c   
 		     BACKGROUND _      => TRUE;
-		    BORDER_WIDTH _    => TRUE;
+		    BORDER_THICKNESS _    => TRUE;
 		    COLOR_MAP _       => TRUE;
 		    CURSOR _          => TRUE;
 		    HEIGHT _          => TRUE;
@@ -297,7 +297,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 		(case c   
 		     ANCHOR _          => TRUE;
 		    BACKGROUND _      => TRUE;
-		    BORDER_WIDTH _    => TRUE;
+		    BORDER_THICKNESS _    => TRUE;
 		    CURSOR _          => TRUE;
 		    FONT _            => TRUE;
 		    FOREGROUND _      => TRUE;
@@ -316,7 +316,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 		     ANCHOR _          => TRUE;
 		    BACKGROUND _      => TRUE;
 		    ICON _            => TRUE;
-		    BORDER_WIDTH _    => TRUE;
+		    BORDER_THICKNESS _    => TRUE;
 		    CURSOR _          => TRUE;
 		    FONT _            => TRUE;
 		    FOREGROUND _      => TRUE;
@@ -336,7 +336,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 	       check_one_widget_configure LIST_BOX_TYPE c    =>
 		(case c
 		      BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
 		     FOREGROUND _      => TRUE;
@@ -352,7 +352,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 		(case c
 		      ANCHOR _          => TRUE;
 		     BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     CALLBACK _        => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
@@ -374,7 +374,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 		(case c
 		      ANCHOR _          => TRUE;
 		     BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     CALLBACK _        => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
@@ -398,7 +398,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 		(case c
 		      ANCHOR _          => TRUE;
 		     BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _     => TRUE;
+		     BORDER_THICKNESS _     => TRUE;
 		     CALLBACK _        => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
@@ -421,7 +421,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 		(case c
 		      ANCHOR _          => TRUE;
 		     BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     CALLBACK _        => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
@@ -445,7 +445,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 		(case c
 		      BACKGROUND _      => TRUE;
 		     BIG_INCREMENT _   => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     REAL_CALLBACK _   => TRUE;
 		     CURSOR _          => TRUE;
 		     DIGITS _          => TRUE;
@@ -475,7 +475,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 	       check_one_widget_configure TEXT_ENTRY_TYPE c    =>
 		(case c
 		      BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
 		     TEXT _            => TRUE;
@@ -494,7 +494,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
                 =>
 		(case c
 		      BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     CURSOR _          => TRUE;
 		     HEIGHT _          => TRUE;
 		     RELIEF _          => TRUE;
@@ -507,7 +507,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 	       check_one_widget_configure TEXT_WIDGET_TYPE c    =>
 		(case c
 		      BACKGROUND _      => TRUE;
-		     BORDER_WIDTH  _   => TRUE;
+		     BORDER_THICKNESS  _   => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
 		     FOREGROUND _      => TRUE;
@@ -526,7 +526,7 @@ package widget_tree: (weak)  Widget_Tree {		# Widget_Tree	is from   src/lib/tk/s
 	       check_one_widget_configure POPUP_TYPE c    =>
 		(case c
 		      BACKGROUND _      => TRUE;
-		     BORDER_WIDTH _    => TRUE;
+		     BORDER_THICKNESS _    => TRUE;
 		     CURSOR _          => TRUE;
 		     FONT _            => TRUE;
 		     FOREGROUND _      => TRUE;

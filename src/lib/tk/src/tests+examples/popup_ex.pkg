@@ -129,7 +129,7 @@ package pop_up_ex :   api {
 	    FRAME {
                 widget_id => make_widget_id (),
 		packing_hints => [FILL ONLY_X],
-		traits => [RELIEF RAISED, BORDER_WIDTH 2],
+		traits => [RELIEF RAISED, BORDER_THICKNESS 2],
                 event_callbacks => [],
 		subwidgets   => PACKED [
                                 MENU_BUTTON {
@@ -223,7 +223,7 @@ package pop_up_ex :   api {
 	    FRAME {
                 widget_id  => make_widget_id (),
 		packing_hints => [PACK_AT LEFT, FILL ONLY_X],
-		traits => [WIDTH 200, HEIGHT 200, RELIEF RAISED, BORDER_WIDTH 2], 
+		traits => [WIDTH 200, HEIGHT 200, RELIEF RAISED, BORDER_THICKNESS 2], 
 		event_callbacks => [],
 		subwidgets => PACKED [
                                  CANVAS {

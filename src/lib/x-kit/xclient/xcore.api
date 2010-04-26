@@ -254,9 +254,9 @@ api  Xcore {
     size_of_rw_pixmap:     Rw_Pixmap -> xg::Size;			# size_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     size_of_ro_pixmap:     Ro_Pixmap -> xg::Size;			# size_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     #
-    shape_of_window:          Window -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_width: Int  };	# "                                     "
-    shape_of_rw_pixmap:    Rw_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_width: Int  };	# "                                     "
-    shape_of_ro_pixmap:    Ro_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_width: Int  };	# "                                     "
+    shape_of_window:          Window -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
+    shape_of_rw_pixmap:    Rw_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
+    shape_of_ro_pixmap:    Ro_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
     #
     id_of_window:          Window -> Int;				# id_of_window			def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     id_of_rw_pixmap:    Rw_Pixmap -> Int;				# id_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg

@@ -100,7 +100,7 @@ package listbox_example
 	    widget_id => list,
 	    scrollbars => AT_RIGHT_AND_BOTTOM,
 	    packing_hints => [FILL ONLY_X],
-	    traits => [RELIEF RIDGE, BORDER_WIDTH 2],
+	    traits => [RELIEF RIDGE, BORDER_THICKNESS 2],
 	    event_callbacks => [ EVENT_CALLBACK (
 				    DOUBLE (BUTTON_PRESS (THE 2)),
 				    fn _=> do_select(); end 
@@ -129,7 +129,7 @@ package listbox_example
 	FRAME { widget_id => make_widget_id(),
 		subwidgets => PACKED [fill_button do_fill],
 		packing_hints => [FILL ONLY_X],
-		traits => [RELIEF RIDGE, BORDER_WIDTH 2],
+		traits => [RELIEF RIDGE, BORDER_THICKNESS 2],
 		event_callbacks => []
 	}
 
@@ -148,7 +148,7 @@ package listbox_example
 	    widget_id => make_widget_id(),
 	    subwidgets  => PACKED [get_button do_select],
 	    packing_hints => [FILL ONLY_X],
-	    traits  => [RELIEF RIDGE, BORDER_WIDTH 2],
+	    traits  => [RELIEF RIDGE, BORDER_THICKNESS 2],
 	    event_callbacks => []
 	}
 
@@ -168,7 +168,7 @@ package listbox_example
 	    widget_id => make_widget_id(),
 	    subwidgets => PACKED [quit_button do_quit],
 	    packing_hints => [FILL ONLY_X],
-	    traits  => [RELIEF RIDGE, BORDER_WIDTH 2],
+	    traits  => [RELIEF RIDGE, BORDER_THICKNESS 2],
 	    event_callbacks => []
 	};
 

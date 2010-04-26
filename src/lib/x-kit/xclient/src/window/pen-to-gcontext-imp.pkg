@@ -267,7 +267,7 @@ herein
 				    (_, gc)
 					=>
 					xgripe::impossible (string::cat [
-					    "[Gcontext_Imp::findUsedGC: bogus in-use GC; font_used = ",
+					    "[Pen_Imp::findUsedGC: bogus in-use GC; font_used = ",
 					    bool::to_string font_used, ", gc = ", in_use_gc_to_string gc, "]"
 					]);
 				esac;
@@ -549,7 +549,7 @@ herein
 				    (_,                  NULL) =>  (FALSE, NO_FONT);
 				    (NO_FONT,        THE fid ) =>  (TRUE, IN_USE_FONT (fid, 1));
 				    (UNUSED_FONT fid1, THE fid2) =>  ((fid1 != fid2), IN_USE_FONT (fid2, 1));
-				    (IN_USE_FONT _,           _) =>  xgripe::impossible "[Gcontext_Imp: used font in free_gcs gc]";
+				    (IN_USE_FONT _,           _) =>  xgripe::impossible "[Pen_Imp: used font in free_gcs gc]";
 				esac;
 
 			    if (default_mask != 0u0)
@@ -705,7 +705,7 @@ herein
 
 						match (FREE_GC { font => (IN_USE_FONT _), ... } )
 						    =>
-						    xgripe::impossible "[Gcontext_Imp: used font in avail gc]";
+						    xgripe::impossible "[Pen_Imp: used font in avail gc]";
 					    end;
 
 					    fun make_used (FREE_GC { gc_id, desc, ... } )
@@ -919,7 +919,7 @@ herein
 
 
 
-		    xtr::make_thread  "gcontext_imp"  .{
+		    xtr::make_thread  "pen_imp"  .{
 			#
 			imp_loop (0, 0, [default_gc], []);
 		    };
@@ -935,7 +935,7 @@ herein
 		    case (take  reply_slot)
 			#
 			REPLY_GC id =>  id;
-			_           =>  xgripe::impossible "[Gcontext_Imp::acquireFn: bad reply]";
+			_           =>  xgripe::impossible "[Pen_Imp::acquireFn: bad reply]";
 		    esac;
 		};
 

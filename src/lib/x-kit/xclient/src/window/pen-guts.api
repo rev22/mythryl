@@ -7,7 +7,7 @@
 # A read-only drawing context.
 # This is gets mapped onto an
 # X-server graphics context (GC)
-# by the gcontext_imp
+# by the pen_imp
 
 # Compiled by:
 #     src/lib/x-kit/xclient/xclient-internals.make6

@@ -354,7 +354,7 @@ package simple_inst_appl #  : Application
 	      title = LABEL {
 			  widget_id => make_widget_id(), 
 			  packing_hints => [PACK_AT TOP, FILL ONLY_X], 
-			  traits => [RELIEF GROOVE, BORDER_WIDTH 2,
+			  traits => [RELIEF GROOVE, BORDER_THICKNESS 2,
 					 TEXT *nm],
 			  event_callbacks => []
 		      };
@@ -492,7 +492,7 @@ package simple_inst
 	    BUTTON {
 		widget_id => make_widget_id(),
 		packing_hints => [PACK_AT BOTTOM, FILL ONLY_X, EXPAND TRUE],
-		traits => [RELIEF RIDGE, BORDER_WIDTH 2,
+		traits => [RELIEF RIDGE, BORDER_THICKNESS 2,
 			     TEXT "Quit", CALLBACK confirm_quit],
 		event_callbacks => []
 	    }; 
@@ -505,7 +505,7 @@ package simple_inst
 	    widget_id => make_widget_id(),
 	    packing_hints => [PACK_AT BOTTOM, FILL ONLY_X, EXPAND TRUE],
 	    event_callbacks => [],
-	    traits => [RELIEF RIDGE, BORDER_WIDTH 2,
+	    traits => [RELIEF RIDGE, BORDER_THICKNESS 2,
 			 TEXT "Import File",
 			 CALLBACK (fn _ => simple_inst_appl::filer::enter_file(); end )]
 	};

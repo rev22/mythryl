@@ -96,7 +96,7 @@ package tabs_ex : (weak)
 		      int::to_string *my_height + ",\n" +
 		      "                   RELIEF " +
 		      rel_name *my_relief + ",\n" +
-		      "                   BORDER_WIDTH " +
+		      "                   BORDER_THICKNESS " +
 		      int::to_string *my_borderwidth + "],\n" +
 		      "       event_callbacks = [] }";
 
@@ -417,7 +417,7 @@ package tabs_ex : (weak)
 		   width         => 3,
 		   orientation   => HORIZONTAL,
 		   selection_notifier => fn i => { add_trait lab_id
-							 [BORDER_WIDTH i];
+							 [BORDER_THICKNESS i];
 						 my_borderwidth := i;
 						 show_code();}; end  };
 
@@ -506,7 +506,7 @@ package tabs_ex : (weak)
 					     packing_hints => [PAD_X 10, PAD_Y 20,
 							 PACK_AT LEFT],
 					     traits  =>
-					       [TEXT "BORDER_WIDTH:",
+					       [TEXT "BORDER_THICKNESS:",
 						WIDTH 15],
 					     event_callbacks => [] },
 				      FRAME
@@ -615,7 +615,7 @@ package tabs_ex : (weak)
 							   [NORMAL_SIZE]),
 						      FOREGROUND BLUE,
 						      BACKGROUND GREEN,
-						      BORDER_WIDTH 2,
+						      BORDER_THICKNESS 2,
 						      RELIEF RAISED,
 						      HEIGHT 2,
 						      WIDTH 15],
@@ -656,7 +656,7 @@ package tabs_ex : (weak)
 					  WIDTH        *my_width,
 					  HEIGHT       *my_height,
 					  RELIEF       *my_relief,
-					  BORDER_WIDTH *my_borderwidth
+					  BORDER_THICKNESS *my_borderwidth
 				      ]
 		};
 	    };

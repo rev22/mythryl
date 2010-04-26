@@ -151,7 +151,7 @@ package basic_tk_types {
     Trait
       = WIDTH  Int
       | HEIGHT  Int
-      | BORDER_WIDTH  Int
+      | BORDER_THICKNESS  Int
       | RELIEF  Relief_Kind
       | FOREGROUND  Color
       | BACKGROUND  Color

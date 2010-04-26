@@ -35,7 +35,7 @@ herein
 
 
 	attributes
-	   = (wa::border_width,   wa::INT,    wa::INT_VAL 2)
+	   = (wa::border_thickness,   wa::INT,    wa::INT_VAL 2)
 	   ! (wa::width,          wa::INT,    wa::INT_VAL 30)
 	   ! (wa::height,         wa::INT,    wa::NO_VAL)
 	   ! (wa::background,     wa::COLOR,  wa::STRING_VAL "white")
@@ -93,7 +93,7 @@ herein
 			      _        => color;
 			 esac;
 
-		bwid = wa::get_int (attributes wa::border_width);
+		bwid = wa::get_int (attributes wa::border_thickness);
 
 		shades = wg::shades root color;
 
