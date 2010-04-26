@@ -261,6 +261,10 @@ api  Xcore {
     id_of_window:          Window -> Int;				# id_of_window			def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     id_of_rw_pixmap:    Rw_Pixmap -> Int;				# id_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
     id_of_ro_pixmap:    Ro_Pixmap -> Int;				# id_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	#
+	# These give windows etc distinguishing marks
+	# visible at the application programmer level,
+	# which is essential for tracelog debugging.
 
 
 

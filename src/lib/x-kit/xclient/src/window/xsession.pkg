@@ -242,8 +242,8 @@ herein
 	Screen								# A screen handle for users.
 	    =
 	    SCREEN  {
-		xsession:   Xsession,
-		screen:     Screen_Info
+		xsession:      Xsession,
+		screen_info:   Screen_Info
 	    };
 
 	#  An on-screen bitmap
@@ -269,8 +269,8 @@ herein
 	    =
 	    xok::same_xsocket (x1, x2);
 
-	fun same_screen ( SCREEN { xsession=>xsession1, screen=>SCREEN_INFO { xscreen => dy::XSCREEN { id=>id1, ... }, ... }},
-			  SCREEN { xsession=>xsession2, screen=>SCREEN_INFO { xscreen => dy::XSCREEN { id=>id2, ... }, ... }}
+	fun same_screen ( SCREEN { xsession=>xsession1, screen_info=>SCREEN_INFO { xscreen => dy::XSCREEN { id=>id1, ... }, ... }},
+			  SCREEN { xsession=>xsession2, screen_info=>SCREEN_INFO { xscreen => dy::XSCREEN { id=>id2, ... }, ... }}
 			)
 	    =
 	    (id1 == id2)
@@ -514,7 +514,7 @@ trace .{ "XYZZY xsession: open_xsession: building and returning SCREEN_INFO reco
 	#
 	fun window_point_to_screen_point (WINDOW { window_id, screen, ... } ) pt
 	    =
-	    {   screen ->  SCREEN { xsession, screen=> SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... };
+	    {   screen ->  SCREEN { xsession, screen_info => SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... };
 
 		my { to_point, ... }
 		    =
@@ -682,12 +682,12 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 
 	fun default_screen_of (xsession as XSESSION { default_screen, ... } )
 	    =
-	    SCREEN { xsession, screen => default_screen };
+	    SCREEN { xsession, screen_info => default_screen };
 
 
 	fun screens_of (xsession as XSESSION { screens, ... } )
 	    =
-	    map (fn s = SCREEN { xsession, screen => s })
+	    map (fn s = SCREEN { xsession, screen_info => s })
                 screens;
 
 
@@ -714,25 +714,25 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 	# This is needed in obtaining strings from xrdb,
 	# as they are stored in a property of the root window:
 	#
-	fun root_window_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... } )
+	fun root_window_of_screen (SCREEN { screen_info => SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, ... }, ... } )
             =
             root_window_id;
 
 	# End additions by ddeboer
 
-	fun size_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_pixels, ... }, ... }, ... } )
+	fun size_of_screen (SCREEN { screen_info => SCREEN_INFO { xscreen => dy::XSCREEN { size_in_pixels, ... }, ... }, ... } )
 	    =
 	    size_in_pixels;
 
-	fun mm_size_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { size_in_mm, ... }, ... }, ... } )
+	fun mm_size_of_screen (SCREEN { screen_info => SCREEN_INFO { xscreen => dy::XSCREEN { size_in_mm, ... }, ... }, ... } )
 	    =
 	    size_in_mm;
 
-	fun depth_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root_visual, ... }, ... }, ... } )
+	fun depth_of_screen (SCREEN { screen_info => SCREEN_INFO { xscreen => dy::XSCREEN { root_visual, ... }, ... }, ... } )
 	    =
 	    dy::depth_of_visual root_visual;
 
-	fun display_class_of_screen (SCREEN { screen=>SCREEN_INFO { xscreen => dy::XSCREEN { root_visual, ... }, ... }, ... } )
+	fun display_class_of_screen (SCREEN { screen_info => SCREEN_INFO { xscreen => dy::XSCREEN { root_visual, ... }, ... }, ... } )
 	    =
 	    case (dy::display_class_of_visual root_visual)
 		THE c => c;
@@ -742,7 +742,7 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 	# Extract the graphics-context imp
         # for a given depth:
 	#
-	fun gc_and_draw_imps_of (SCREEN { screen=>SCREEN_INFO { imps, ... }, ... }, d)
+	fun gc_and_draw_imps_of (SCREEN { screen_info => SCREEN_INFO { imps, ... }, ... }, d)
 	    =
 	    f imps
 	    where

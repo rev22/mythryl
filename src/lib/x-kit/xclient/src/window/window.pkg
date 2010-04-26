@@ -199,7 +199,7 @@ herein
 	    else                   raise exception  BAD_WINDOW_SITE;
 	    fi;
 
-	fun make_simple_top_window (screen as sn::SCREEN { screen=>screen_info, xsession } )
+	fun make_simple_top_window (screen as sn::SCREEN { screen_info, xsession } )
 	    =
 	    create_fn
 	    where 
@@ -320,14 +320,14 @@ herein
 	#     src/lib/x-kit/widget/basic/topwindow.pkg
 	#
 	fun make_simple_popup_window
-		(scrn as sn::SCREEN { screen, xsession } )
+		(scrn as sn::SCREEN { screen_info, xsession } )
 		{ site, border_color, background_color }
 	    =
 	    (window, kidplug)
 	    where 
-		screen    ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
-		root_imps ->  sn::GC_AND_DRAW_IMPS { depth, ... };
-		xsession  ->  sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
+		screen_info ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
+		root_imps   ->  sn::GC_AND_DRAW_IMPS { depth, ... };
+		xsession    ->  sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
 
 		window_id = next_xid();
 
@@ -366,8 +366,8 @@ herein
 	    (window, kidplug)
 	    where 
 
-		prop_window ->  dt::WINDOW { window_id=>id, screen=>scrn as sn::SCREEN { screen, xsession }, ... };
-		screen      ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
+		prop_window ->  dt::WINDOW { window_id=>id, screen=>scrn as sn::SCREEN { screen_info, xsession }, ... };
+		screen_info ->  sn::SCREEN_INFO { xscreen => dy::XSCREEN { root_window_id, ... }, root_imps, ... };
 
 		root_imps   ->  sn::GC_AND_DRAW_IMPS { depth, ... };
 		xsession    ->  sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... };
@@ -621,7 +621,7 @@ herein
 		     ];
 	herein
 
-	    fun withdraw_window (dt::WINDOW { window_id, screen => sn::SCREEN { screen=> sn::SCREEN_INFO { xscreen, ... }, xsession }, ... } )
+	    fun withdraw_window (dt::WINDOW { window_id, screen => sn::SCREEN { screen_info => sn::SCREEN_INFO { xscreen, ... }, xsession }, ... } )
 		=
 		{   xscreen ->  dy::XSCREEN { root_window_id, ... };
 

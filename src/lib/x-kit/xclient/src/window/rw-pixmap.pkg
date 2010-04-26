@@ -45,8 +45,8 @@ herein
             =
             {   screen -> sn::SCREEN
                             {
-			      screen   => sn::SCREEN_INFO { xscreen  => dy::XSCREEN  { root_window_id, ... }, ... },
-			      xsession => sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }
+			      screen_info =>  sn::SCREEN_INFO { xscreen  => dy::XSCREEN  { root_window_id, ... }, ... },
+			      xsession    =>  sn::XSESSION    { xdisplay => dy::XDISPLAY { xsocket, next_xid, ... }, ... }
 		            };
 
 		gc_and_draw_imps = sn::gc_and_draw_imps_of (screen, depth)

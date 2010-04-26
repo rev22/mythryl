@@ -218,6 +218,7 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 		fun clear_drawing_window ()
 		    =
 		    {   drawable = xd::drawable_of_window  drawing_window;
+trace .{ sprintf "clear_drawing_window: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
                         xd::clear_drawable  drawable;
 		    };
 
@@ -716,9 +717,9 @@ trace .{ "mouse thread/TOP"; };
 fun draw_triangle x
     =
     {
-trace .{ "XYZZY drawing_window draw_triangle/TOP"; };
+trace .{ sprintf "XYZZY drawing_window draw_triangle/TOP: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
         draw_triangle' x;
-trace .{ "XYZZY drawing_window draw_triangle/BOT"; };
+trace .{ sprintf "XYZZY drawing_window draw_triangle/TOP: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
     };
 
 

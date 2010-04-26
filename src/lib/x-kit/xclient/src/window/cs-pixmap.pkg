@@ -651,14 +651,14 @@ herein
 	    #
 	    fun make_clientside_pixmap_from_pixmap_or_window
                 (
-                  box,					# Get the pixelmap pixel contents from this part of
-                  pixmap_or_window_id,			# this server-side pixmap or window.
+                  box,						# Get the pixelmap pixel contents from this part of
+                  pixmap_or_window_id as (xt::XID u),		# this server-side pixmap or window.
                   gc_and_draw_imps,
                   screen
                 )
 		=
-		{   (ge::box::size box) -> size as ge::SIZE our_size;
-                    gc_and_draw_imps   -> sn::GC_AND_DRAW_IMPS { depth, to_drawimp, ... };
+		{   (ge::box::size  box) ->  size as ge::SIZE our_size;
+                    gc_and_draw_imps     ->  sn::GC_AND_DRAW_IMPS { depth, to_drawimp, ... };
 
 		    (sn::xsession_of_screen  screen)
 			->
@@ -671,9 +671,10 @@ herein
 		    # sending our GetImage request to the
 		    # X server:
 		    #
-trace  .{ "XYZZY calling dt::flush_drawimp  -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window"; };
+
+trace  .{ sprintf "XYZZY calling dt::flush_drawimp  -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window   pixmap_or_window_id x=%x  (drawimp thread_id d=%d)" (unt::to_int u) (dt::drawimp_thread_id_of to_drawimp); };
 		    dt::flush_drawimp  to_drawimp;
-trace  .{ "XYZZY done    dt::flush_drawimp  -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window"; };
+trace  .{ sprintf "XYZZY done    dt::flush_drawimp  -- cs_pixmap::make_clientside_pixmap_from_pixmap_or_window   pixmap_or_window_id x=%x  (drawimp thread_id d=%d)" (unt::to_int u) (dt::drawimp_thread_id_of to_drawimp); };
 
 		    all_planes = unt::bitwise_not 0u0;
 
@@ -756,9 +757,13 @@ trace  .{ sprintf "XYZZY done    GetImage, string == %s -- cs_pixmap::make_clien
 	    #     as other graphics-related requests.  It is intended
 	    #     specifically for rudimentary hardcopy support." 
 	    #
-	    fun make_clientside_pixmap_from_window (box, dt::WINDOW { window_id, gc_and_draw_imps, screen, ... } )
+	    fun make_clientside_pixmap_from_window (box, window as dt::WINDOW { window_id, gc_and_draw_imps, screen, ... } )
 		=
-		make_clientside_pixmap_from_pixmap_or_window    (box, window_id, gc_and_draw_imps, screen);
+		{
+gc_and_draw_imps   -> sn::GC_AND_DRAW_IMPS { depth, to_drawimp, ... };
+trace .{ sprintf "XYZZY make_clientside_pixmap_from_window: window.id x=%x   drawimp_thread_id_of window d=%d GC_AND_DRAW_IMPS.to_drawimp.thread_id d=%d" (dt::id_of_window window) (draw::drawimp_thread_id_of (dt::drawable_of_window  window)) (dt::drawimp_thread_id_of to_drawimp); };
+		    make_clientside_pixmap_from_pixmap_or_window    (box, window_id, gc_and_draw_imps, screen);
+		};
 
 	end;
 

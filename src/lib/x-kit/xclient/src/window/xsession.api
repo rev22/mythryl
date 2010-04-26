@@ -129,8 +129,8 @@ herein
 	Screen								# A screen handle for users.
 	    =
 	    SCREEN  {
-		xsession:   Xsession,
-		screen:     Screen_Info
+		xsession:     Xsession,
+		screen_info:  Screen_Info
 	    }; 
 
 	#  An on-screen bitmap 

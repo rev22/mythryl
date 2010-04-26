@@ -467,6 +467,13 @@ api Xdraw {
     flush:           Drawable -> Void;
 
     drawimp_thread_id_of:    Drawable -> Int;
+	#
+	# This lets the application programmer tell
+	# which drawables use which draw imps, which
+	# is occasionally important when debugging,
+	# for example to decide if you're flushing
+	# the right draw imp(s) before doing a GetImage
+	# request to the X server.
 
     # Create a locked version of the given window.
     # This provides exclusive access to its drawing
