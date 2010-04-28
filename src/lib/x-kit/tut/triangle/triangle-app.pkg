@@ -51,6 +51,15 @@ herein
 
 	run_selfcheck =  REF FALSE;
 
+	# This is a hack allowing selfcheck code
+	# to wait until first drawing window redraw
+	# has happened, so as to start up in a
+	# known state:
+	# 
+        my  done_first_drawing_window_redraw:   Oneshot_Maildrop(Void)
+	    =
+	    make_oneshot_maildrop ();
+
 	# This is a hack to support selfcheck;
 	# if it is set non-NULL, drawing_window_imp
 	# will 'give' the displayed triangle list
@@ -59,6 +68,17 @@ herein
 	my  add_triangle_watcher_slot:		Ref (Null_Or( Mailslot( List( xg::Point ))))
 	    =
 	    REF NULL;	
+
+	# This is another hack to support selfcheck;
+	# if it is set non-NULL, drawing_window_imp
+	# will 'give' () to the slot each time it
+	# does a reset:
+	#
+	my  drawing_window_''do_reset''_watcher_slot:		Ref (Null_Or( Mailslot(Void)))
+	    =
+	    REF NULL;	
+
+
 
 	stipulate
 	    selfcheck_tests_passed =  REF 0;
@@ -215,13 +235,6 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 			get  seen_first_drawing_window_expose_oneshot;
 		    };
 
-		fun clear_drawing_window ()
-		    =
-		    {   drawable = xd::drawable_of_window  drawing_window;
-trace .{ sprintf "clear_drawing_window: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
-                        xd::clear_drawable  drawable;
-		    };
-
 		fun get_window_depth  window
 		    =
 		    {   drawable =  xd::drawable_of_window  window;
@@ -235,7 +248,13 @@ trace .{ sprintf "clear_drawing_window: drawing_window.id x=%x   drawimp_thread_
 		fun selfcheck ()
 		    =
 		    {   # First order of business is to wait
-			# until things are up and running:
+			# until things are up and running.
+			#
+			# This may actually not be needed now
+			# that we wait on
+			#     done_first_drawing_window_redraw
+			# in below logic, but exercising the
+			# facility is useful anyhow:
 			#
 trace .{ sprintf "drawing_window.id d=%d x=%x" (xc::id_of_window drawing_window) (xc::id_of_window drawing_window); };
 trace .{ sprintf "drawimp_thread_id_of drawing_window d=%d" (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
@@ -244,25 +263,32 @@ trace .{ "Waiting for first drawing window EXPOSE..."; };
 trace .{ "Seen first drawing window EXPOSE."; };
 
 window_depth = get_window_depth  drawing_window;
-			# Get size of drawing window:
-			#
-			(xw::get_window_site  drawing_window)
-			    ->
-			    xg::BOX { row, col, high, wide };
-trace .{ sprintf "drawing window box = { row %d, col %d, high %d, wide %d }; depth = %d." row col high wide window_depth; };
+			fun midwindow window
+			    =
+			    {
+				# Get size of drawing window:
+				#
+				(xw::get_window_site  window)
+				    ->
+				    xg::BOX { row, col, high, wide };
 
-			# Define midpoint of drawing window,
-			# and a 9x9 box enclosing it:
-			#
-			stipulate
-			    row =  high / 2;
-			    col =  wide / 2;
-my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row  col ;  };
-			herein
-			    midpoint      =  xg::POINT { row, col };
+				# Define midpoint of drawing window,
+				# and a 9x9 box enclosing it:
+				#
+				stipulate
+				    row =  high / 2;
+				    col =  wide / 2;
+				herein
+				    midpoint =  xg::POINT { row, col };
+				    midbox   =  xg::BOX { row => row - 4, col => col - 4, high => 9, wide => 9 };
+				end;
 
-			    midwindow_box =  xg::BOX { row => row - 4, col => col - 4, high => 9, wide => 9 };
-			end;
+				(midpoint, midbox);
+			    };
+
+
+			(midwindow drawing_window) ->  (drawing_window_midpoint, drawing_window_midbox);
+			(midwindow  button_window) ->  ( button_window_midpoint,  _                   );
 # Sleep for one second in the hope that all pending
 # initialization stuff will have time to run, making
 # the tracelog of the following stuff easier to interpret.
@@ -270,23 +296,21 @@ my _ = trace  .{  sprintf  "drawing window midpoint = { row %d, col %d }."  row 
 #		        sleep_for (time::from_milliseconds 1000);
 # trace .{ "slept    for one second"; };
 
-			# Clear drawing window.  The drawing window
-			# thread does this anyhow, but doing it here
-			# saves us worrying about race conditions between
-			# us and the drawing window threads:
+
+			# Wait until first redraw is done:
 			#
-			clear_drawing_window ();
+			get  done_first_drawing_window_redraw;
 
 			# Fetch from X server the mid-window pixels
 			# over which we are about to draw a triangle.
 			# These should be all all background color (black)
-			# at the moment, due to above clear_drawing_window():
+			# at the moment:
 			#
-			antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+			antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
 
 			# Do it again, verify that they compare equal:			
 			#
-			{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+			{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
 			    #
 			    if (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2))   test_passed ();
 			    else									    test_failed ();	
@@ -311,16 +335,16 @@ trace .{ sprintf "Setting add_triangle_watcher_slot."; };
 			#
 trace .{ sprintf "XYZZY Sending midwindow downclick to X server."; };
 			xw::send_mousebutton_press_xevent
-                          { window => drawing_window,
-                            button => xi::MOUSEBUTTON 1,
-			    point  => midpoint
+                          { window =>  drawing_window,
+                            button =>  xi::MOUSEBUTTON 1,
+			    point  =>  drawing_window_midpoint
 			  };
 			#
 trace .{ sprintf "XYZZY Sending midwindow upclick to X server."; };
 			xw::send_mousebutton_release_xevent
-                          { window => drawing_window,
-                            button => xi::MOUSEBUTTON 1,
-			    point  => midpoint
+                          { window =>  drawing_window,
+                            button =>  xi::MOUSEBUTTON 1,
+			    point  =>  drawing_window_midpoint
 			  };
 
 			# 
@@ -334,8 +358,8 @@ trace .{ sprintf "XYZZY Sending midwindow upclick to X server."; };
 			    fun check_triangle_list1  [ point ]
 				    =>
 				    {
-					if (xg::point::eq (point, midpoint))  test_passed ();
-					else                                  test_failed ();
+					if (xg::point::eq (point, drawing_window_midpoint))  test_passed ();
+					else                                                 test_failed ();
 trace .{ sprintf "test_failed/AAA. (Clearing add_triangle_watcher_slot.)"; };
 					fi;
 
@@ -392,7 +416,7 @@ trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
 			#
 			{
 trace .{ "XYZZY tri-app calling postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
-			    postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (midwindow_box, drawing_window);
+			    postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
 trace .{ "XYZZY tri-app done    postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
 			    #	
 #			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))   test_failed ();
@@ -406,6 +430,80 @@ print "postdraw midwindow image DID differ from antedraw midwindow image :-)";
 		                test_passed ();	
 			    fi;				
 			};
+
+
+
+			# Set up a hook to detect when drawing_window_imp
+			#
+			#     do_reset ()
+			#
+			# runs.  To avoid race conditions, we must
+			# do this BEFORE sending the below simulated
+			# mouseclicks.  (I forgot this at first, and
+			# in fact got bitten.)
+			# 
+			drawing_window_''do_reset''_slot =  make_mailslot ();
+			# 
+trace .{ sprintf "Setting add_triangle_watcher_slot."; };
+			drawing_window_''do_reset''_watcher_slot :=  THE drawing_window_''do_reset''_slot;
+
+
+			# Simulate a mouseclick in center of reset button:
+			#
+trace .{ sprintf "XYZZY Sending reset button downclick to X server."; };
+			xw::send_mousebutton_press_xevent
+                          { window =>  button_window,
+                            button =>  xi::MOUSEBUTTON 1,
+			    point  =>  button_window_midpoint
+			  };
+			#
+trace .{ sprintf "XYZZY Sending reset button upclick to X server."; };
+			xw::send_mousebutton_release_xevent
+                          { window =>  button_window,
+                            button =>  xi::MOUSEBUTTON 1,
+			    point  =>  button_window_midpoint
+			  };
+
+			# 
+			select [
+			    take' drawing_window_''do_reset''_slot ==>  check_reset,
+			    timeout'                               ==>  do_timeout2
+			]
+			where
+			    timeout' =   timeout_in' (time::from_milliseconds 5000);
+
+			    fun check_reset ()
+				=
+				{   drawing_window_''do_reset''_watcher_slot :=  NULL;
+
+				    test_passed ();
+				};
+
+			    fun do_timeout2 ()
+				=
+				{   drawing_window_''do_reset''_watcher_slot :=  NULL;
+
+				    test_failed ();
+				};	
+			end;
+
+
+			# Fetch from X server the mid-window pixels
+			# over which we drew the triangle.
+			#
+			# Verify that they match our original
+			# all-black image of the same area:
+			#
+			{
+trace .{ "XYZZY tri-app calling postreset_midwindow_image = xc::make_clientside_pixmap_from_window."; };
+			    postreset_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+trace .{ "XYZZY tri-app done    postreset_midwindow_image = xc::make_clientside_pixmap_from_window."; };
+			    #	
+			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postreset_midwindow_image))   test_passed ();
+			    else									    test_failed ();
+			    fi;				
+			};
+
 
 			(test_stats ()) ->  { passed, failed };
 trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
@@ -658,149 +756,169 @@ trace .{ "button loop TOP"; };
 	# a triangle at each spot the user
 	# clicks on:
 	#
-	fun make_drawing_window_threads (drawing_window, reset', draw_kidplug)
-	    =
-	    {   xtr::make_thread "drawing window mouse"  mouse_thread;
-		xtr::make_thread "drawing window"       .{ drawing_window_imp []; };
-		();
-	    }
-	    where
-		my xi::KIDPLUG { from_mouse', from_other', ... }
-		    =
-		    xi::ignore_keyboard  draw_kidplug;
+	stipulate
+	    done_first_redraw = REF FALSE;
+	herein
+	    fun make_drawing_window_threads (drawing_window, reset', draw_kidplug)
+		=
+		{   xtr::make_thread "drawing window mouse"  mouse_thread;
+		    xtr::make_thread "drawing window"       .{ drawing_window_imp []; };
+		    ();
+		}
+		where
+		    my xi::KIDPLUG { from_mouse', from_other', ... }
+			=
+			xi::ignore_keyboard  draw_kidplug;
 
-		mouse' =   from_mouse' ==> xi::envelope_contents;
-		other' =   from_other' ==> xi::envelope_contents;
+		    mouse' =   from_mouse' ==> xi::envelope_contents;
+		    other' =   from_other' ==> xi::envelope_contents;
 
-		add_triangle_slot = make_mailslot ();
+		    add_triangle_slot = make_mailslot ();
 
-		fun mouse_thread ()
-		    =
-		    for (;;) {
-			#
-trace .{ "mouse thread/TOP"; };
-			case (do_mailop  mouse')
+		    fun mouse_thread ()
+			=
+			for (;;) {
 			    #
-			    xi::MOUSE_FIRST_DOWN { window_point, ... }
-				=>
-				give (add_triangle_slot, window_point);
+    trace .{ "mouse thread/TOP"; };
+			    case (do_mailop  mouse')
+				#
+				xi::MOUSE_FIRST_DOWN { window_point, ... }
+				    =>
+				    give (add_triangle_slot, window_point);
+				#
+				_   => ();
+			    esac;
+			};
+
+		    add_triangle' = take' add_triangle_slot;
+
+		    drawable = xd::drawable_of_window  drawing_window;
+
+		    pen = xd::make_pen
+			    [
+			      xd::FUNCTION    xd::OP_COPY,
+			      xd::FOREGROUND  xc::rgb8_green
+			    ];
+
+		    draw = xd::fill_polygon drawable pen;
+
+
+		    fun draw_triangle' (xg::POINT { col, row } )
+			=
+			draw
+			  {
+			    shape => xd::CONVEX_SHAPE,
 			    #
-			    _   => ();
-			esac;
-		    };
+			    verts => [ xg::POINT { col => col,       row => row - 10 },
+				       xg::POINT { col => col - 8,   row => row +  6 },
+				       xg::POINT { col => col + 8,   row => row +  6 }
+				     ]
+			  };
 
-		add_triangle' = take' add_triangle_slot;
-
-		drawable = xd::drawable_of_window  drawing_window;
-
-		pen = xd::make_pen
-			[
-			  xd::FUNCTION    xd::OP_COPY,
-			  xd::FOREGROUND  xc::rgb8_green
-			];
-
-		draw = xd::fill_polygon drawable pen;
+    fun draw_triangle x
+	=
+	{
+    trace .{ sprintf "XYZZY drawing_window draw_triangle/TOP: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
+	    draw_triangle' x;
+    trace .{ sprintf "XYZZY drawing_window draw_triangle/TOP: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
+	};
 
 
-		fun draw_triangle' (xg::POINT { col, row } )
-		    =
-		    draw
-		      {
-			shape => xd::CONVEX_SHAPE,
-			#
-			verts => [ xg::POINT { col => col,       row => row - 10 },
-				   xg::POINT { col => col - 8,   row => row +  6 },
-				   xg::POINT { col => col + 8,   row => row +  6 }
-				 ]
-		      };
+		    # "triangles" is the list of points at which we
+		    # show triangles in the drawing window:
+		    #
+		    fun drawing_window_imp  triangles
+			=
+			{   fun do_reset ()
+				=
+				{
+    trace .{ "drawing_window loop do_reset()/TOP -- clearing drawable"; };
+				    xd::clear_drawable  drawable;
+    trace .{ "drawing_window loop do_reset()/BOT"; };
 
-fun draw_triangle x
-    =
-    {
-trace .{ sprintf "XYZZY drawing_window draw_triangle/TOP: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
-        draw_triangle' x;
-trace .{ sprintf "XYZZY drawing_window draw_triangle/TOP: drawing_window.id x=%x   drawimp_thread_id_of drawing_window d=%d" (xc::id_of_window drawing_window) (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
+				    case *drawing_window_''do_reset''_watcher_slot
+					#
+					THE slot =>  give (slot, ());
+					NULL     =>  ();
+				    esac;
+
+				    drawing_window_imp [];
+				};
+
+
+			    fun do_other (xi::ETC_REDRAW _)
+				    =>
+				    {
+    trace .{ "drawing_window loop do_other/ETC_REDRAW/TOP -- clearing drawable"; };
+					xd::clear_drawable  drawable;
+
+    trace .{ "drawing_window loop do_other/ETC_REDRAW/MID -- drawing triangles"; };
+					apply  draw_triangle  triangles;
+
+					# Selfcheck code waits for us to do first redraw
+					# before starting tests.  If this is our first
+					# redraw, give it the green light:
+					#
+					if (not *done_first_redraw)
+					    done_first_redraw := TRUE;
+					    set (done_first_drawing_window_redraw, ());
+					fi;
+
+    trace .{ "drawing_window loop do_other/ETC_REDRAW/BOT"; };
+					drawing_window_imp  triangles;
+				    };
+
+				do_other xi::ETC_OWN_DEATH
+				    =>
+				    {
+    trace .{ "drawing_window loop do_other/ETC_OWN_DEATH"; };
+					();
+				    };
+
+				do_other _
+				    =>
+				    {
+    trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
+					drawing_window_imp  triangles;
+				    };
+			    end;
+
+
+			    # In response to a mouse downclick at a point,
+			    # add a triangle to our list and draw it:
+			    #
+			    fun add_triangle  point
+				=
+				{
+    { point -> xg::POINT { row, col };
+      trace .{ sprintf "add_triangle (POINT { row %d, col %d })/TOP" row col; };
     };
+				    draw_triangle  point;
 
+    case *add_triangle_watcher_slot  THE slot => trace .{ sprintf "add_triangle: add_triangle_watcher_slot is SET."; };
+				      NULL     => trace .{ sprintf "add_triangle: add_triangle_watcher_slot is CLEAR."; };
+    esac;
+				    case *add_triangle_watcher_slot
+					#
+					THE slot =>	 give (slot, (point ! triangles));
+					NULL     =>  ();
+				    esac;
 
-		# "triangles" is the list of points at which we
-		# show triangles in the drawing window:
-		#
-		fun drawing_window_imp  triangles
-		    =
-		    {   fun do_reset ()
-			    =
-			    {
-trace .{ "drawing_window loop do_reset()/TOP -- clearing drawable"; };
-                                xd::clear_drawable  drawable;
-trace .{ "drawing_window loop do_reset()/BOT"; };
-				drawing_window_imp [];
-			    };
-
-
-			fun do_other (xi::ETC_REDRAW _)
-				=>
-				{
-trace .{ "drawing_window loop do_other/ETC_REDRAW/TOP -- clearing drawable"; };
-                                    xd::clear_drawable  drawable;
-
-trace .{ "drawing_window loop do_other/ETC_REDRAW/MID -- drawing triangles"; };
-				    apply  draw_triangle  triangles;
-
-trace .{ "drawing_window loop do_other/ETC_REDRAW/BOT"; };
-				    drawing_window_imp  triangles;
+    trace .{ "drawing_window loop do_draw/BOT -- adding point to list and continuing"; };
+				    drawing_window_imp (point ! triangles);
 				};
 
-			    do_other xi::ETC_OWN_DEATH
-				=>
-				{
-trace .{ "drawing_window loop do_other/ETC_OWN_DEATH"; };
-                                    ();
-				};
+    trace .{ "drawing_window loop -- doing select []"; };
+			    select [
+				#
+				reset'         ==>  do_reset,
+				other'         ==>  do_other,
+				add_triangle'  ==>  add_triangle
+			    ];
 
-			    do_other _
-				=>
-				{
-trace .{ "drawing_window loop do_other/whoknows (ignored)"; };
-				    drawing_window_imp  triangles;
-				};
-			end;
-
-
-			# In response to a mouse downclick at a point,
-			# add a triangle to our list and draw it:
-			#
-			fun add_triangle  point
-			    =
-			    {
-{ point -> xg::POINT { row, col };
-  trace .{ sprintf "add_triangle (POINT { row %d, col %d })/TOP" row col; };
-};
-			        draw_triangle  point;
-
-case *add_triangle_watcher_slot  THE slot => trace .{ sprintf "add_triangle: add_triangle_watcher_slot is SET."; };
-                                  NULL     => trace .{ sprintf "add_triangle: add_triangle_watcher_slot is CLEAR."; };
-esac;
-				case *add_triangle_watcher_slot
-				    #
-				    THE slot =>	 give (slot, (point ! triangles));
-				    NULL     =>  ();
-				esac;
-
-trace .{ "drawing_window loop do_draw/BOT -- adding point to list and continuing"; };
-				drawing_window_imp (point ! triangles);
-			    };
-
-trace .{ "drawing_window loop -- doing select []"; };
-			select [
-			    #
-			    reset'         ==>  do_reset,
-			    other'         ==>  do_other,
-			    add_triangle'  ==>  add_triangle
-			];
-
-		    };					# fun drawing_window_imp
-	    end;					# fun make_drawing_window_threads 
+			};				# fun drawing_window_imp
+		end;					# fun make_drawing_window_threads 
+	    end;					# stipulate
 
 	fun make_toplevel_threads
             {

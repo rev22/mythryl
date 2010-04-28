@@ -30,7 +30,7 @@ api Maildrop {
 	:
         Maildrop(X) -> Null_Or(X);
 
-    peek:           Maildrop(X) -> X;
+    peek:          Maildrop(X) -> X;
     peek':         Maildrop(X) -> mailop::Mailop(X);
 
     nonblocking_peek
