@@ -95,20 +95,53 @@ herein
 	end;
 
 
-	# Put button window at bottom of topwindow:
+	# Put reset button window at bottom left of topwindow:
 	# 
-	fun button_window_site  (topwindow_size as { wide: Int, high: Int })
+	fun reset_button_window_site  (topwindow_size as { wide => topwindow_wide, high => topwindow_high })
 	    =
-	    xg::WINDOW_SITE
-	      {
-		upperleft    =>  xg::POINT { col => (wide -  button_wide)/2,
-				             row => (high - (button_high+10))
-				           },
-		size         =>  xg::SIZE  { wide => button_wide,
-                                             high => button_high
-                                           },
-		border_thickness =>  0
-	      };
+	    {   # We put the reset and exit buttons ten pixels
+		# above the bottom of the topwindow, side by side,
+		# splitting the remaining horizontal space evenly
+		# around them (right/center/left):
+		#
+		remaining_horizontal_space =  topwindow_wide - 2*button_wide;
+		gap                        =  remaining_horizontal_space / 3;
+
+		xg::WINDOW_SITE
+		  {
+		    upperleft    =>  xg::POINT { col =>  gap,
+						 row => (topwindow_high - (button_high+10))
+					       },
+		    size         =>  xg::SIZE  { wide => button_wide,
+						 high => button_high
+					       },
+		    border_thickness =>  0
+		  };
+	    };
+
+	# Put exit button window at bottom right of topwindow:
+	# 
+	fun exit_button_window_site  (topwindow_size as { wide => topwindow_wide, high => topwindow_high })
+	    =
+	    {   # We put the reset and exit buttons ten pixels
+		# above the bottom of the topwindow, side by side,
+		# splitting the remaining horizontal space evenly
+		# around them (right/center/left):
+		#
+		remaining_horizontal_space =  topwindow_wide - 2*button_wide;
+		gap                        =  remaining_horizontal_space / 3;
+
+		xg::WINDOW_SITE
+		  {
+		    upperleft    =>  xg::POINT { col =>  2*gap + button_wide,
+						 row => (topwindow_high - (button_high+10))
+					       },
+		    size         =>  xg::SIZE  { wide => button_wide,
+						 high => button_high
+					       },
+		    border_thickness =>  0
+		  };
+	    };
 
 	# Let drawing window fill the rest of topwindow:
 	# 
@@ -191,10 +224,11 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 	# mouseclicks and verifying their effects:
 	#
 	fun make_selfcheck_thread
-            { xsession:         xc::Xsession,
-	      topwindow:        xw::Window,
-              drawing_window:   xw::Window,
-              button_window:    xw::Window
+            { xsession:		    xc::Xsession,
+	      topwindow:	    xw::Window,
+              drawing_window:	    xw::Window,
+               exit_button_window:  xw::Window,
+              reset_button_window:  xw::Window
             }
 	    =
 	    {   fun get_''seen_first_expose''_oneshot
@@ -287,8 +321,9 @@ window_depth = get_window_depth  drawing_window;
 			    };
 
 
-			(midwindow drawing_window) ->  (drawing_window_midpoint, drawing_window_midbox);
-			(midwindow  button_window) ->  ( button_window_midpoint,  _                   );
+			(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
+			(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
+			(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
 # Sleep for one second in the hope that all pending
 # initialization stuff will have time to run, making
 # the tracelog of the following stuff easier to interpret.
@@ -452,16 +487,16 @@ trace .{ sprintf "Setting add_triangle_watcher_slot."; };
 			#
 trace .{ sprintf "XYZZY Sending reset button downclick to X server."; };
 			xw::send_mousebutton_press_xevent
-                          { window =>  button_window,
+                          { window =>  reset_button_window,
                             button =>  xi::MOUSEBUTTON 1,
-			    point  =>  button_window_midpoint
+			    point  =>  reset_button_window_midpoint
 			  };
 			#
 trace .{ sprintf "XYZZY Sending reset button upclick to X server."; };
 			xw::send_mousebutton_release_xevent
-                          { window =>  button_window,
+                          { window =>  reset_button_window,
                             button =>  xi::MOUSEBUTTON 1,
-			    point  =>  button_window_midpoint
+			    point  =>  reset_button_window_midpoint
 			  };
 
 			# 
@@ -505,11 +540,40 @@ trace .{ "XYZZY tri-app done    postreset_midwindow_image = xc::make_clientside_
 			};
 
 
+			# Simulate a mouseclick in center of exit button:
+			#
+trace .{ sprintf "XYZZY Sending exit button downclick to X server."; };
+			xw::send_mousebutton_press_xevent
+                          { window =>  exit_button_window,
+                            button =>  xi::MOUSEBUTTON 1,
+			    point  =>  exit_button_window_midpoint
+			  };
+			#
+trace .{ sprintf "XYZZY Sending exit button upclick to X server."; };
+			xw::send_mousebutton_release_xevent
+                          { window =>  exit_button_window,
+                            button =>  xi::MOUSEBUTTON 1,
+			    point  =>  exit_button_window_midpoint
+			  };
+
+			# Give the exit button time to fire.
+			# It should shut down all threads, so
+			# we should never make it past this sleep:
+			#
+		        sleep_for (time::from_milliseconds 5000);
+
+			# The exit button didn't shut us down:
+			# register a bug:
+			#
+			test_failed ();
+
 			(test_stats ()) ->  { passed, failed };
 trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
 
+			# Go ahead and do the shutdown
+			# that the EXIT button should have done:
+			#
 			xc::close_xsession  xsession;
-
 			shut_down_thread_scheduler  winix::process::success;
 		    };
 
@@ -572,8 +636,8 @@ make_periodic_prints  ();
 		xw::show_window  window;
 	    end;
 
-	# Divide the topwindow into a
-	# drawing window over a button window:
+	# Divide the topwindow into a drawing window
+	# over two button windows:
 	#
 	fun make_drawing_and_button_windows  (screen, topwindow, top_kidplug)
 	    =
@@ -596,11 +660,21 @@ trace .{ "make_drawing_and_button_windows noting drawing window oneshot..."; };
 		    drawing_window
 		    (make_oneshot_maildrop ());
 
-		button_window
+		reset_button_window
 		    =
 		    xw::make_simple_subwindow  topwindow
 		      {
-			site =>  button_window_site  topwindow_size,
+			site =>  reset_button_window_site  topwindow_size,
+			#
+			border_color     =>  NULL,
+			background_color =>  THE  xc::rgb8_white
+		      };
+
+		exit_button_window
+		    =
+		    xw::make_simple_subwindow  topwindow
+		      {
+			site =>  exit_button_window_site  topwindow_size,
 			#
 			border_color     =>  NULL,
 			background_color =>  THE  xc::rgb8_white
@@ -608,34 +682,36 @@ trace .{ "make_drawing_and_button_windows noting drawing window oneshot..."; };
 
 trace .{ "make_drawing_and_button_windows noting button window oneshot..."; };
 		xw::note_''seen_first_expose''_oneshot
-		    button_window
+		    reset_button_window
 		    (make_oneshot_maildrop ());
 
-		xw::show_window  drawing_window;
-		xw::show_window  button_window;
+		xw::show_window       drawing_window;
+		xw::show_window   exit_button_window;
+		xw::show_window  reset_button_window;
 
 		{ topwindow,
 		  top_kidplug,
 		  drawing_window,
-		  button_window
+		  reset_button_window,
+		  exit_button_window
 		};
 	    };
 
 
-	fun make_button_threads (button_window, button_kidplug)
+	fun make_reset_button_threads (reset_button_window, reset_button_kidplug)
 	    =
-	    {   xtr::make_thread "triangle button" loop;
+	    {   xtr::make_thread "reset button" loop;
 		take' reset_slot;
 	    }
 	    where
 
 		# Define a function to re/draw the
-		# button as "RESET" inside a cartouche:
+		# reset button as "RESET" inside a cartouche:
 		#
 		fun redraw ()
 		    =
 		    {
-trace .{ "button redraw()/TOP -- drawing cartouche"; };
+trace .{ "reset button redraw()/TOP -- drawing cartouche"; };
                         draw_cartouche
 			  {
 			    corner_radius =>  button_corner_radius,
@@ -653,7 +729,7 @@ trace .{ "button redraw()/MID -- drawing text"; };
 trace .{ "button redraw()/BOT"; };
 		    }
 		    where
-			drawable =  xd::drawable_of_window  button_window;
+			drawable =  xd::drawable_of_window  reset_button_window;
 
 			pen = xd::make_pen
 				[
@@ -669,7 +745,7 @@ trace .{ "button redraw()/BOT"; };
 
 			font =  xf::open_font
 				    #
-				    (xw::xsession_of_window  button_window)
+				    (xw::xsession_of_window  reset_button_window)
 				    #
 				    "9x15";
 
@@ -697,7 +773,7 @@ trace .{ "button redraw()/BOT"; };
 		# We respond to ETC_REDRAW by redrawing our button;
 		# we respond to a click by resetting the draw thread:
 		#
-		(xi::ignore_keyboard  button_kidplug)
+		(xi::ignore_keyboard  reset_button_kidplug)
 		    ->
 		    xi::KIDPLUG { from_mouse', from_other', ... };
 
@@ -721,9 +797,9 @@ trace .{ "button redraw()/BOT"; };
 fun do_mouse x
     =
     {
-trace .{ "button loop do_mouse/TOP"; };
+trace .{ "reset button loop do_mouse/TOP"; };
         do_mouse' x;
-trace .{ "button loop do_mouse/BOT"; };
+trace .{ "reset button loop do_mouse/BOT"; };
     };
 
 			fun do_other' (xi::ETC_REDRAW _)  =>  redraw ();
@@ -734,15 +810,15 @@ trace .{ "button loop do_mouse/BOT"; };
 fun do_other x
     =
     {
-trace .{ "button loop do_other/TOP"; };
+trace .{ "reset button loop do_other/TOP"; };
         do_other' x;
-trace .{ "button loop do_other/BOT"; };
+trace .{ "reset button loop do_other/BOT"; };
     };
 
 
 			for (;;) {
 			    #
-trace .{ "button loop TOP"; };
+trace .{ "reset button loop TOP"; };
 			    select [
 				from_mouse'' ==>  do_mouse,
 				from_other'' ==>  do_other
@@ -750,7 +826,137 @@ trace .{ "button loop TOP"; };
 			};
 		    };
 
-	    end;				# fun make_button_threads 
+	    end;				# fun make_reset_button_threads 
+
+	fun make_exit_button_threads (exit_button_window, exit_button_kidplug)
+	    =
+	    {   xtr::make_thread "exit button" loop;
+		take' exit_slot;
+	    }
+	    where
+
+		# Define a function to re/draw the
+		# exit button as "EXIT" inside a cartouche:
+		#
+		fun redraw ()
+		    =
+		    {
+trace .{ "exit button redraw()/TOP -- drawing cartouche"; };
+                        draw_cartouche
+			  {
+			    corner_radius =>  button_corner_radius,
+			    #
+			    box  =>  xg::BOX { col  => 0,
+					       row  => 0,
+					       #	
+					       high => button_high - 1,
+					       wide => button_wide - 1
+					     }
+			  };
+
+trace .{ "button redraw()/MID -- drawing text"; };
+			draw_string (text_point, text);
+trace .{ "button redraw()/BOT"; };
+		    }
+		    where
+			drawable =  xd::drawable_of_window  exit_button_window;
+
+			pen = xd::make_pen
+				[
+				  xd::FUNCTION    xd::OP_COPY,
+				  xd::FOREGROUND  xc::rgb8_black
+				];
+
+			draw_cartouche
+			    =
+			    che::draw_cartouche  drawable  pen;
+
+			text = "EXIT";
+
+			font =  xf::open_font
+				    #
+				    (xw::xsession_of_window  exit_button_window)
+				    #
+				    "9x15";
+
+			text_point
+			    =
+			    {   text_width =  xf::text_width  font  text;
+
+				my { ascent, descent }
+				    =
+				    xf::font_high  font;
+
+				xg::POINT
+				  {
+				    col => ( button_wide - text_width) / 2,
+				    row => ((button_high - (ascent + descent)) / 2) + ascent
+				  };
+			    };
+
+			draw_string
+			    =
+			    xd::draw_transparent_string  drawable  pen  font;
+		    end;
+
+		# Define the main thread loop animating the button.
+		# We respond to ETC_REDRAW by redrawing our button;
+		# we respond to a click by exiting the program:
+		#
+		(xi::ignore_keyboard  exit_button_kidplug)
+		    ->
+		    xi::KIDPLUG { from_mouse', from_other', ... };
+
+		from_mouse'' =   from_mouse' ==> xi::envelope_contents;
+		from_other'' =   from_other' ==> xi::envelope_contents;
+
+		exit_slot = make_mailslot ();
+
+		fun loop ()
+		    =
+		    {   fun do_mouse' (xi::MOUSE_FIRST_DOWN _)
+				=>
+				give (exit_slot, ());
+
+			    do_mouse' _
+				=>
+				();
+			end;
+
+
+fun do_mouse x
+    =
+    {
+trace .{ "exit button loop do_mouse/TOP"; };
+        do_mouse' x;
+trace .{ "exit button loop do_mouse/BOT"; };
+    };
+
+			fun do_other' (xi::ETC_REDRAW _)  =>  redraw ();
+			    do_other'  xi::ETC_OWN_DEATH  =>  ();
+			    do_other' _	  	          =>  ();
+			end;
+
+fun do_other x
+    =
+    {
+trace .{ "exit button loop do_other/TOP"; };
+        do_other' x;
+trace .{ "exit button loop do_other/BOT"; };
+    };
+
+
+			for (;;) {
+			    #
+trace .{ "exit button loop TOP"; };
+			    select [
+				from_mouse'' ==>  do_mouse,
+				from_other'' ==>  do_other
+			    ];
+			};
+		    };
+
+	    end;				# fun make_exit_button_threads 
 
 	# Define drawing_window logic to put
 	# a triangle at each spot the user
@@ -759,7 +965,7 @@ trace .{ "button loop TOP"; };
 	stipulate
 	    done_first_redraw = REF FALSE;
 	herein
-	    fun make_drawing_window_threads (drawing_window, reset', draw_kidplug)
+	    fun make_drawing_window_threads (xsession, drawing_window, exit', reset', draw_kidplug)
 		=
 		{   xtr::make_thread "drawing window mouse"  mouse_thread;
 		    xtr::make_thread "drawing window"       .{ drawing_window_imp []; };
@@ -829,7 +1035,20 @@ trace .{ "button loop TOP"; };
 		    #
 		    fun drawing_window_imp  triangles
 			=
-			{   fun do_reset ()
+			{   fun do_exit ()
+				=
+				{
+    trace .{ "drawing_window loop do_exit()/TOP -- clearing drawable"; };
+				    (test_stats ()) ->  { passed, failed };
+    trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
+
+				    xc::close_xsession  xsession;
+
+				    shut_down_thread_scheduler  winix::process::success;
+				};
+
+
+			    fun do_reset ()
 				=
 				{
     trace .{ "drawing_window loop do_reset()/TOP -- clearing drawable"; };
@@ -911,6 +1130,7 @@ trace .{ "button loop TOP"; };
     trace .{ "drawing_window loop -- doing select []"; };
 			    select [
 				#
+				exit'          ==>  do_exit,
 				reset'         ==>  do_reset,
 				other'         ==>  do_other,
 				add_triangle'  ==>  add_triangle
@@ -924,20 +1144,23 @@ trace .{ "button loop TOP"; };
             {
               topwindow,
               top_kidplug  => xi::KIDPLUG { from_keyboard', from_mouse', from_other', ... },
-              button_window,
+              exit_button_window,
+              reset_button_window,
               drawing_window
             }
 	    =
 	    {   xtr::make_thread "triangle router" router;
 
-		{ button_kidplug,
+		{  exit_button_kidplug,
+		  reset_button_kidplug,
 		  draw_kidplug
 		};
 	    }
 	    where
-		(xi::make_widget_cable ()) ->   { kidplug => button_kidplug, momplug => button_momplug };
-		(xi::make_widget_cable ()) ->   { kidplug =>   draw_kidplug, momplug =>   draw_momplug };
-		(xi::make_widget_cable ()) ->   { kidplug,                   momplug                   };
+		(xi::make_widget_cable ()) ->   { kidplug =>  exit_button_kidplug, momplug =>  exit_button_momplug };
+		(xi::make_widget_cable ()) ->   { kidplug => reset_button_kidplug, momplug => reset_button_momplug };
+		(xi::make_widget_cable ()) ->   { kidplug =>         draw_kidplug, momplug =>         draw_momplug };
+		(xi::make_widget_cable ()) ->   { kidplug,                         momplug                         };
 
 		kidplug =  xi::ignore_all  kidplug;
 
@@ -951,9 +1174,10 @@ trace .{ "button loop TOP"; };
 
 			xi::TO_CHILD msg'			# Envelope needs to be passed on down the widget hierarchy.
 			    =>
-			    if   (xi::to_window (msg',   drawing_window))   draw_momplug;
-			    elif (xi::to_window (msg', button_window))   button_momplug;
-			    else                                         raise exception FAIL "find_cable";
+			    if   (xi::to_window (msg',      drawing_window))   draw_momplug;
+			    elif (xi::to_window (msg',  exit_button_window))    exit_button_momplug;
+			    elif (xi::to_window (msg', reset_button_window))   reset_button_momplug;
+			    else                                               raise exception FAIL "find_cable";
 			    fi;
 		    esac;
 
@@ -1021,24 +1245,26 @@ trace .{ "run_triangle_app -- above make_topwindow ()"; };
 trace .{ "run_triangle_app -- above make_drawing_and_button_windows ()"; };
 	        (make_drawing_and_button_windows (screen, topwindow, kidplug))
 		    ->
-		    (x as { button_window, drawing_window, ... } );
+		    (x as { drawing_window, exit_button_window, reset_button_window, ... } );
 
 trace .{ "run_triangle_app -- above make_toplevel_threads ()"; };
 		(make_toplevel_threads  x)
 		    ->
-		    { button_kidplug, draw_kidplug };
+		    { exit_button_kidplug, reset_button_kidplug, draw_kidplug };
 		    
 
 trace .{ "run_triangle_app -- above make_drawing_window_threads ()"; };
 		make_drawing_window_threads
-		  ( drawing_window,
-		    make_button_threads (button_window, button_kidplug),
+		  ( xsession,
+		    drawing_window,
+		     make_exit_button_threads ( exit_button_window,  exit_button_kidplug),
+		    make_reset_button_threads (reset_button_window, reset_button_kidplug),
 		    draw_kidplug
 		  );
 
 		if *run_selfcheck
 		    #
-		    make_selfcheck_thread  { xsession, topwindow, drawing_window, button_window };
+		    make_selfcheck_thread  { xsession, topwindow, drawing_window, exit_button_window, reset_button_window };
 		    ();
 		fi;
 trace .{ "run_triangle_app -- DONE"; };
