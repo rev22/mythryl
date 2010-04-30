@@ -240,63 +240,48 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 			NULL        =>  get_''seen_first_expose''_oneshot window;		# Cannot actually happen.
 		    esac;
 
-		# Wait for drawing window to
-		# get its first EXPOSE x event:
-		#
-		fun wait_for_first_drawing_window_expose ()
-		    =
-		    {
-			# Normally we would use the
-			#
-			#     seen_first_redraw_oneshot_of
-			#
-			# from 
-			#
-			#     src/lib/x-kit/widget/basic/widget.api
-			#
-			# but the logic here doesn't use the widget
-			# support (I'm guessing this app predates
-			# the widget layer) so we have to use the
-			# following call instead:
-			#
-			# 
-			seen_first_drawing_window_expose_oneshot
-			    =
-			    get_''seen_first_expose''_oneshot
-				#
-				drawing_window;
-
-			get  seen_first_drawing_window_expose_oneshot;
-		    };
-
-		fun get_window_depth  window
-		    =
-		    {   drawable =  xd::drawable_of_window  window;
-			#
-			
-			#
-			xd::depth_of_drawable  drawable;
-# Unfinished code; The above is a quick test hack mid-development.
-		    };	
-
 		fun selfcheck ()
 		    =
-		    {   # First order of business is to wait
-			# until things are up and running.
-			#
-			# This may actually not be needed now
-			# that we wait on
-			#     done_first_drawing_window_redraw
-			# in below logic, but exercising the
-			# facility is useful anyhow:
-			#
-trace .{ sprintf "drawing_window.id d=%d x=%x" (xc::id_of_window drawing_window) (xc::id_of_window drawing_window); };
-trace .{ sprintf "drawimp_thread_id_of drawing_window d=%d" (xd::drawimp_thread_id_of (xd::drawable_of_window  drawing_window)); };
-trace .{ "Waiting for first drawing window EXPOSE..."; };
-			wait_for_first_drawing_window_expose ();
-trace .{ "Seen first drawing window EXPOSE."; };
+		    {
+			wait_until_things_are_stable       { drawing_window };
+		       (check_drawing_window_triangle_draw { })                              -> { antedraw_midwindow_image };
+			check_reset_button_operation       { antedraw_midwindow_image };
+			check_exit_button_operation { };
 
-window_depth = get_window_depth  drawing_window;
+		    }
+		    where
+			# Wait for drawing window to
+			# get its first EXPOSE x event:
+			#
+			fun wait_for_first_drawing_window_expose ()
+			    =
+			    {
+				# Normally we would use the
+				#
+				#     seen_first_redraw_oneshot_of
+				#
+				# from 
+				#
+				#     src/lib/x-kit/widget/basic/widget.api
+				#
+				# but the logic here doesn't use the widget
+				# support (I'm guessing this app predates
+				# the widget layer) so we have to use the
+				# following call instead:
+				#
+				# 
+				seen_first_drawing_window_expose_oneshot
+				    =
+				    get_''seen_first_expose''_oneshot
+					#
+					drawing_window;
+
+				get  seen_first_drawing_window_expose_oneshot;
+			    };
+
+			# Figure midpoint of window and also
+			# a small box centered on the midpoint:
+			#
 			fun midwindow window
 			    =
 			    {
@@ -320,262 +305,295 @@ window_depth = get_window_depth  drawing_window;
 				(midpoint, midbox);
 			    };
 
-
-			(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
-			(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
-			(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
-# Sleep for one second in the hope that all pending
-# initialization stuff will have time to run, making
-# the tracelog of the following stuff easier to interpret.
-# trace .{ "sleeping for one second"; };
-#		        sleep_for (time::from_milliseconds 1000);
-# trace .{ "slept    for one second"; };
-
-
-			# Wait until first redraw is done:
+			# We do not want to start running the
+			# selfcheck code until the application
+			# is ready to respond:
 			#
-			get  done_first_drawing_window_redraw;
-
-			# Fetch from X server the mid-window pixels
-			# over which we are about to draw a triangle.
-			# These should be all all background color (black)
-			# at the moment:
-			#
-			antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-
-			# Do it again, verify that they compare equal:			
-			#
-			{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-			    #
-			    if (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2))   test_passed ();
-			    else									    test_failed ();	
-			    fi;
-			};
-
-			# Set up a hook to detect when
-			#
-			#     add_triangle ()
-			#
-			# runs.  To avoid race conditions, we must
-			# do this BEFORE sending the below simulated
-			# mouseclicks.  (I forgot this at first, and
-			# in fact got bitten.)
-			# 
-			triangle_list_slot =  make_mailslot ();
-			# 
-trace .{ sprintf "Setting add_triangle_watcher_slot."; };
-			add_triangle_watcher_slot :=  THE triangle_list_slot;
-
-			# Simulate a mouseclick in center of drawing window:
-			#
-trace .{ sprintf "XYZZY Sending midwindow downclick to X server."; };
-			xw::send_mousebutton_press_xevent
-                          { window =>  drawing_window,
-                            button =>  xi::MOUSEBUTTON 1,
-			    point  =>  drawing_window_midpoint
-			  };
-			#
-trace .{ sprintf "XYZZY Sending midwindow upclick to X server."; };
-			xw::send_mousebutton_release_xevent
-                          { window =>  drawing_window,
-                            button =>  xi::MOUSEBUTTON 1,
-			    point  =>  drawing_window_midpoint
-			  };
-
-			# 
-			select [
-			    take' triangle_list_slot ==>  check_triangle_list1,
-			    timeout'                 ==>  do_timeout1
-			]
-			where
-			    timeout' =   timeout_in' (time::from_milliseconds 5000);
-
-			    fun check_triangle_list1  [ point ]
-				    =>
-				    {
-					if (xg::point::eq (point, drawing_window_midpoint))  test_passed ();
-					else                                                 test_failed ();
-trace .{ sprintf "test_failed/AAA. (Clearing add_triangle_watcher_slot.)"; };
-					fi;
-
-					add_triangle_watcher_slot :=  NULL;
-				    };
-
-				check_triangle_list1  []
-				    =>
-				    {   test_failed ();
-trace .{ sprintf "test_failed/BBB. (Clearing add_triangle_watcher_slot.)"; };
-
-					add_triangle_watcher_slot :=  NULL;
-				    };
-
-				check_triangle_list1  triangles
-				    =>
-				    {   test_failed ();
-trace .{ sprintf "test_failed/CCC len(triangles) d=%d. (Clearing add_triangle_watcher_slot.)" (list::length triangles); };
-
-					add_triangle_watcher_slot :=  NULL;
-				    };
-			    end;
-
-			    fun do_timeout1 ()
-				=
-				{   test_failed ();
-trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
-
-				    add_triangle_watcher_slot :=  NULL;
-				};	
-			end;
-
-			# Make sure the triangle-draw command
-			# has flushed from the draw_imp before
-			# fetching the pixels which we expect
-			# to have changed -- if we do not do
-			# this flush, we have a race condition
-			# between the two:
-			#
-# This flush shouldn't be needed now -- cs_pixmap does it -- but
-# empirically it IS needed. ?!?
-# trace .{ "tri-app calling xd::flush drawing_window_drawable."; };
-#			xd::flush  drawing_window_drawable
-#			where
-#			    drawing_window_drawable = xd::drawable_of_window  drawing_window;
-#			end;
-# trace .{ "tri-app done    xd::flush drawing_window_drawable."; };
-
-			# Fetch from X server the mid-window pixels
-			# over which we should have drawn a triangle.
-			#
-			# Verify that they differ from our original
-			# all-black image of the same area:
-			#
-			{
-trace .{ "XYZZY tri-app calling postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
-			    postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-trace .{ "XYZZY tri-app done    postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
-			    #	
-#			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))   test_failed ();
-#			    else									   test_passed ();	
-#			    fi;				
-			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))
-print "postdraw midwindow image did NOT differ from antedraw midwindow image :-(";
-                                test_failed ();
-			    else
-print "postdraw midwindow image DID differ from antedraw midwindow image :-)";
-		                test_passed ();	
-			    fi;				
-			};
+			fun wait_until_things_are_stable { drawing_window }
+			    =
+			    {
+				# First order of business is to wait
+				# until things are up and running.
+				#
+				# This may actually not be needed now
+				# that we wait on
+				#     done_first_drawing_window_redraw
+				# in below logic, but exercising the
+				# facility is useful anyhow:
+				#
+				wait_for_first_drawing_window_expose ();
 
 
+				# Wait until first redraw is done:
+				#
+				get  done_first_drawing_window_redraw;
 
-			# Set up a hook to detect when drawing_window_imp
-			#
-			#     do_reset ()
-			#
-			# runs.  To avoid race conditions, we must
-			# do this BEFORE sending the below simulated
-			# mouseclicks.  (I forgot this at first, and
-			# in fact got bitten.)
-			# 
-			drawing_window_''do_reset''_slot =  make_mailslot ();
-			# 
-trace .{ sprintf "Setting add_triangle_watcher_slot."; };
-			drawing_window_''do_reset''_watcher_slot :=  THE drawing_window_''do_reset''_slot;
+			    };	
 
+			fun check_drawing_window_triangle_draw { }
+			    =
+			    {
+				(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
+				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
+				(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
 
-			# Simulate a mouseclick in center of reset button:
-			#
-trace .{ sprintf "XYZZY Sending reset button downclick to X server."; };
-			xw::send_mousebutton_press_xevent
-                          { window =>  reset_button_window,
-                            button =>  xi::MOUSEBUTTON 1,
-			    point  =>  reset_button_window_midpoint
-			  };
-			#
-trace .{ sprintf "XYZZY Sending reset button upclick to X server."; };
-			xw::send_mousebutton_release_xevent
-                          { window =>  reset_button_window,
-                            button =>  xi::MOUSEBUTTON 1,
-			    point  =>  reset_button_window_midpoint
-			  };
+				# Fetch from X server the mid-window pixels
+				# over which we are about to draw a triangle.
+				# These should be all all background color (black)
+				# at the moment:
+				#
+				antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
 
-			# 
-			select [
-			    take' drawing_window_''do_reset''_slot ==>  check_reset,
-			    timeout'                               ==>  do_timeout2
-			]
-			where
-			    timeout' =   timeout_in' (time::from_milliseconds 5000);
-
-			    fun check_reset ()
-				=
-				{   drawing_window_''do_reset''_watcher_slot :=  NULL;
-
-				    test_passed ();
+				# Do it again, verify that they compare equal:			
+				#
+				{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+				    #
+				    if (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2))   test_passed ();
+				    else									    test_failed ();	
+				    fi;
 				};
 
-			    fun do_timeout2 ()
-				=
-				{   drawing_window_''do_reset''_watcher_slot :=  NULL;
+				# Set up a hook to detect when
+				#
+				#     add_triangle ()
+				#
+				# runs.  To avoid race conditions, we must
+				# do this BEFORE sending the below simulated
+				# mouseclicks.  (I forgot this at first, and
+				# in fact got bitten.)
+				# 
+				triangle_list_slot =  make_mailslot ();
+				# 
+	trace .{ sprintf "Setting add_triangle_watcher_slot."; };
+				add_triangle_watcher_slot :=  THE triangle_list_slot;
 
-				    test_failed ();
-				};	
-			end;
+				# Simulate a mouseclick in center of drawing window:
+				#
+	trace .{ sprintf "XYZZY Sending midwindow downclick to X server."; };
+				xw::send_mousebutton_press_xevent
+				  { window =>  drawing_window,
+				    button =>  xi::MOUSEBUTTON 1,
+				    point  =>  drawing_window_midpoint
+				  };
+				#
+	trace .{ sprintf "XYZZY Sending midwindow upclick to X server."; };
+				xw::send_mousebutton_release_xevent
+				  { window =>  drawing_window,
+				    button =>  xi::MOUSEBUTTON 1,
+				    point  =>  drawing_window_midpoint
+				  };
+
+				# 
+				select [
+				    take' triangle_list_slot ==>  check_triangle_list1,
+				    timeout'                 ==>  do_timeout1
+				]
+				where
+				    timeout' =   timeout_in' (time::from_milliseconds 5000);
+
+				    fun check_triangle_list1  [ point ]
+					    =>
+					    {
+						if (xg::point::eq (point, drawing_window_midpoint))  test_passed ();
+						else                                                 test_failed ();
+	trace .{ sprintf "test_failed/AAA. (Clearing add_triangle_watcher_slot.)"; };
+						fi;
+
+						add_triangle_watcher_slot :=  NULL;
+					    };
+
+					check_triangle_list1  []
+					    =>
+					    {   test_failed ();
+	trace .{ sprintf "test_failed/BBB. (Clearing add_triangle_watcher_slot.)"; };
+
+						add_triangle_watcher_slot :=  NULL;
+					    };
+
+					check_triangle_list1  triangles
+					    =>
+					    {   test_failed ();
+	trace .{ sprintf "test_failed/CCC len(triangles) d=%d. (Clearing add_triangle_watcher_slot.)" (list::length triangles); };
+
+						add_triangle_watcher_slot :=  NULL;
+					    };
+				    end;
+
+				    fun do_timeout1 ()
+					=
+					{   test_failed ();
+	trace .{ sprintf "test_failed/DDD. (Clearing add_triangle_watcher_slot.)"; };
+
+					    add_triangle_watcher_slot :=  NULL;
+					};	
+				end;
+
+				# Make sure the triangle-draw command
+				# has flushed from the draw_imp before
+				# fetching the pixels which we expect
+				# to have changed -- if we do not do
+				# this flush, we have a race condition
+				# between the two:
+				#
+	# This flush shouldn't be needed now -- cs_pixmap does it -- but
+	# empirically it IS needed. ?!?
+	# trace .{ "tri-app calling xd::flush drawing_window_drawable."; };
+	#			xd::flush  drawing_window_drawable
+	#			where
+	#			    drawing_window_drawable = xd::drawable_of_window  drawing_window;
+	#			end;
+	# trace .{ "tri-app done    xd::flush drawing_window_drawable."; };
+
+				# Fetch from X server the mid-window pixels
+				# over which we should have drawn a triangle.
+				#
+				# Verify that they differ from our original
+				# all-black image of the same area:
+				#
+				{
+	trace .{ "XYZZY tri-app calling postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
+				    postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+	trace .{ "XYZZY tri-app done    postdraw_midwindow_image = xc::make_clientside_pixmap_from_window."; };
+				    #	
+	#			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))   test_failed ();
+	#			    else									   test_passed ();	
+	#			    fi;				
+				    if (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image))
+	print "postdraw midwindow image did NOT differ from antedraw midwindow image :-(";
+					test_failed ();
+				    else
+	print "postdraw midwindow image DID differ from antedraw midwindow image :-)";
+					test_passed ();	
+				    fi;				
+				};
+
+				{ antedraw_midwindow_image };
+			    };
+
+			fun check_reset_button_operation { antedraw_midwindow_image }
+			    =
+			    {
+				(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
+				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
+				(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
+
+				# Set up a hook to detect when drawing_window_imp
+				#
+				#     do_reset ()
+				#
+				# runs.  To avoid race conditions, we must
+				# do this BEFORE sending the below simulated
+				# mouseclicks.  (I forgot this at first, and
+				# in fact got bitten.)
+				# 
+				drawing_window_''do_reset''_slot =  make_mailslot ();
+				# 
+	trace .{ sprintf "Setting add_triangle_watcher_slot."; };
+				drawing_window_''do_reset''_watcher_slot :=  THE drawing_window_''do_reset''_slot;
 
 
-			# Fetch from X server the mid-window pixels
-			# over which we drew the triangle.
-			#
-			# Verify that they match our original
-			# all-black image of the same area:
-			#
-			{
-trace .{ "XYZZY tri-app calling postreset_midwindow_image = xc::make_clientside_pixmap_from_window."; };
-			    postreset_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-trace .{ "XYZZY tri-app done    postreset_midwindow_image = xc::make_clientside_pixmap_from_window."; };
-			    #	
-			    if (xc::same_cs_pixmap (antedraw_midwindow_image, postreset_midwindow_image))   test_passed ();
-			    else									    test_failed ();
-			    fi;				
-			};
+				# Simulate a mouseclick in center of reset button:
+				#
+	trace .{ sprintf "XYZZY Sending reset button downclick to X server."; };
+				xw::send_mousebutton_press_xevent
+				  { window =>  reset_button_window,
+				    button =>  xi::MOUSEBUTTON 1,
+				    point  =>  reset_button_window_midpoint
+				  };
+				#
+	trace .{ sprintf "XYZZY Sending reset button upclick to X server."; };
+				xw::send_mousebutton_release_xevent
+				  { window =>  reset_button_window,
+				    button =>  xi::MOUSEBUTTON 1,
+				    point  =>  reset_button_window_midpoint
+				  };
+
+				# 
+				select [
+				    take' drawing_window_''do_reset''_slot ==>  check_reset,
+				    timeout'                               ==>  do_timeout2
+				]
+				where
+				    timeout' =   timeout_in' (time::from_milliseconds 5000);
+
+				    fun check_reset ()
+					=
+					{   drawing_window_''do_reset''_watcher_slot :=  NULL;
+
+					    test_passed ();
+					};
+
+				    fun do_timeout2 ()
+					=
+					{   drawing_window_''do_reset''_watcher_slot :=  NULL;
+
+					    test_failed ();
+					};	
+				end;
 
 
-			# Simulate a mouseclick in center of exit button:
-			#
-trace .{ sprintf "XYZZY Sending exit button downclick to X server."; };
-			xw::send_mousebutton_press_xevent
-                          { window =>  exit_button_window,
-                            button =>  xi::MOUSEBUTTON 1,
-			    point  =>  exit_button_window_midpoint
-			  };
-			#
-trace .{ sprintf "XYZZY Sending exit button upclick to X server."; };
-			xw::send_mousebutton_release_xevent
-                          { window =>  exit_button_window,
-                            button =>  xi::MOUSEBUTTON 1,
-			    point  =>  exit_button_window_midpoint
-			  };
+				# Fetch from X server the mid-window pixels
+				# over which we drew the triangle.
+				#
+				# Verify that they match our original
+				# all-black image of the same area:
+				#
+				{
+	trace .{ "XYZZY tri-app calling postreset_midwindow_image = xc::make_clientside_pixmap_from_window."; };
+				    postreset_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+	trace .{ "XYZZY tri-app done    postreset_midwindow_image = xc::make_clientside_pixmap_from_window."; };
+				    #	
+				    if (xc::same_cs_pixmap (antedraw_midwindow_image, postreset_midwindow_image))   test_passed ();
+				    else									    test_failed ();
+				    fi;				
+				};
 
-			# Give the exit button time to fire.
-			# It should shut down all threads, so
-			# we should never make it past this sleep:
-			#
-		        sleep_for (time::from_milliseconds 5000);
 
-			# The exit button didn't shut us down:
-			# register a bug:
-			#
-			test_failed ();
+			    };
 
-			(test_stats ()) ->  { passed, failed };
-trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
+			fun check_exit_button_operation { }
+			    =
+			    {
+				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
 
-			# Go ahead and do the shutdown
-			# that the EXIT button should have done:
-			#
-			xc::close_xsession  xsession;
-			shut_down_thread_scheduler  winix::process::success;
-		    };
+				# Simulate a mouseclick in center of exit button:
+				#
+	trace .{ sprintf "XYZZY Sending exit button downclick to X server."; };
+				xw::send_mousebutton_press_xevent
+				  { window =>  exit_button_window,
+				    button =>  xi::MOUSEBUTTON 1,
+				    point  =>  exit_button_window_midpoint
+				  };
+				#
+	trace .{ sprintf "XYZZY Sending exit button upclick to X server."; };
+				xw::send_mousebutton_release_xevent
+				  { window =>  exit_button_window,
+				    button =>  xi::MOUSEBUTTON 1,
+				    point  =>  exit_button_window_midpoint
+				  };
+
+				# Give the exit button time to fire.
+				# It should shut down all threads, so
+				# we should never make it past this sleep:
+				#
+				sleep_for (time::from_milliseconds 5000);
+
+				# The exit button didn't shut us down:
+				# register a bug:
+				#
+				test_failed ();
+
+				(test_stats ()) ->  { passed, failed };
+	trace .{ sprintf "test_stats: passed %d  failed %d" passed failed; };
+
+				# Go ahead and do the shutdown
+				# that the EXIT button should have done:
+				#
+				xc::close_xsession  xsession;
+				shut_down_thread_scheduler  winix::process::success;
+			    }; 	
+
+		    end;					# fun selfcheck
 
 		xtr::make_thread "tri-app selfcheck" selfcheck;
 	    };
