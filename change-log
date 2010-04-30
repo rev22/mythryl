@@ -1,3 +1,4 @@
+2010-04-29-21.39.33: src/lib/x-kit/tut/triangle/triangle-app.pkg: Cleaning.
 2010-04-29-04.34.49: src/lib/x-kit/tut/triangle/triangle-app.pkg: Added EXIT button and selfcheck code to simulate a click on it.
 2010-04-28-14.43.34: src/lib/x-kit/tut/triangle/triangle-app.pkg: Exercise RESET button in unit test code.
 2010-04-26-03.34.40: src/lib/x-kit/xclient/src/window/cs-pixmap.pkg: Hacked make_clientside_pixmap_from_window to flush to_topwindow_drawimp but make_clientside_pixmap_from_readwrite_pixmap to flush to_screen_drawimp. This matches the xkit drawing convention; consequently triangle-app now self-checks correctly.

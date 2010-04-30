@@ -194,32 +194,6 @@ herein
 #		xtr::make_thread "mouse watcher" mouse_watcher;
 #	    };
 
-	# Temporary hack to test out
-	# periodic operation:
-	#
-	fun make_periodic_prints  ()
-	    =
-	    {   fun periodic_prints ()
-		    =
-		    loop ()
-		    where
-			fun loop ()
-			    =
-			    {
-
-print "triangle_app: periodic_prints/AAA\n";
-
-trace .{ "periodic_print sleeping for 1/3 second..."; };
-				sleep_for (time::from_milliseconds 333);
-trace .{ "periodic_print back from 1/3 second sleep."; };
-
-				loop ();
-			    };		
-		    end;
-
-		xtr::make_thread "periodic prints" periodic_prints;
-	    };
-
 	# Thread to exercise the app by simulating user
 	# mouseclicks and verifying their effects:
 	#
@@ -243,6 +217,7 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 		fun selfcheck ()
 		    =
 		    {
+			check_periodic_asynchronous_operation ();
 			wait_until_things_are_stable       { drawing_window };
 		       (check_drawing_window_triangle_draw { })                              -> { antedraw_midwindow_image };
 			check_reset_button_operation       { antedraw_midwindow_image };
@@ -250,6 +225,55 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 
 		    }
 		    where
+			# Try sleep/work loop.  This actually wasn't
+			# working at one point due to blocking on the
+			# X server socket, so it is worth checking:
+			#
+			fun check_periodic_asynchronous_operation ()
+			    =
+			    {   # Set up a counter which will be
+				# shared between our two threads:
+				#
+				counter = REF 0;
+
+				# Spin off a thread which increments
+				# the counter at 50Hz or so.  (The
+				# thread scheduler is normally run
+				# off a 50Hz SIGALRM signal, so we
+				# cannot count on shorter sleeps.)
+				#
+				xtr::make_thread "count slowly" count_slowly
+				where
+				    fun count_slowly ()
+					=
+					for (i = 0; i < 50; ++i) {
+
+					    # We currently run SIGALRM at 50HZ, so
+					    # we cannot usefully sleep less than 20ms
+					    # at a go:
+					    # 
+					    sleep_for (time::from_milliseconds 20);
+
+					    counter := *counter + 1;
+					};
+				end;
+
+				# Sleep a fifth of a second.  This is
+				# long enough to get significant results
+				# but short enough not to slow down our
+				# "make check" runs noticably:
+				#
+				sleep_for (time::from_milliseconds 200);
+
+				# In a perfect world the counter would be at 10 now;
+				# in practice we will settle for anything between 5 and 15:
+				#
+				count = *counter;
+				if (count >= 5 and count <= 15)   test_passed ();
+				else				  test_failed ();
+				fi; 
+			    };	
+
 			# Wait for drawing window to
 			# get its first EXPOSE x event:
 			#
@@ -648,7 +672,6 @@ trace .{ "periodic_print back from 1/3 second sleep."; };
 		    commandline_arguments =>  commandline::get_arguments ()
 		  };
 
-make_periodic_prints  ();
 # make_mouse_watcher  xsession  window;
 
 		xw::show_window  window;
