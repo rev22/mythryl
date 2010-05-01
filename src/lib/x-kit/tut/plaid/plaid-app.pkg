@@ -343,6 +343,23 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 		    top::topwindow  (root_window, view, args)  plaid_widgettree;
 
 		top::start  topwindow;
+
+		close_window' =  top::get_''close_window''_mailop  topwindow;
+
+		make_thread "window closer" .{
+		    #
+		    select [
+			close_window'
+			    ==>
+			   .{
+print "ATTEMPTING TO CLOSE WINDOW.\n";
+				topwindow::destroy  topwindow;
+				shut_down_thread_scheduler  winix::process::success;
+			    }
+		    ];	
+		};
+
+		();
 	    };
 
 	fun set_up_tracing ()

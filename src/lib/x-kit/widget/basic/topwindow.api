@@ -234,7 +234,7 @@ herein
 	    #	
 	    #	          close_window'
 	    #                 ==>
-	    #                .{   xc::close_xsession  xsession;
+	    #                .{   topwindow::destroy  topwindow;
 	    #			  shut_down_thread_scheduler  winix::process::success;
 	    #		      };
 	    #         ];	
