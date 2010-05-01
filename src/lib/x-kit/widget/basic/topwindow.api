@@ -212,14 +212,45 @@ herein
 	    # We invoke this if we get a REQ_DESTRUCTION
 	    # from the root widget of our widget-tree.
 
-	delete_mailop:  Topwindow ->  Mailop( Void );
+	get_''close_window''_mailop:  Topwindow ->  Mailop(Void);
 	    #
-	    # This appears to be a half-completed dusty deboer hack.
-	    # This mailop will fire if we recieve (any) CLIENT_MESSAGE
-	    # X event -- see logic in
+	    # This returns a mailop which will be set when
+	    # the user clicks on our windowframe close button.
+	    #	
+	    # The idea is that the application can detect and 
+	    # handle this condition via code somethine like:
+	    #	
+	    #     close_window' = 	get_''close_window''_mailop  topwindow;
+	    #
+	    #     ...
+	    #
+	    #     for (;;) {		# Main application loop
+	    #
+	    #         ...
+	    #
+	    #         select [		# Main application select reading mouse events etc.
+	    #
+	    #             ...
+	    #	
+	    #	          close_window'
+	    #                 ==>
+	    #                .{   xc::close_xsession  xsession;
+	    #			  shut_down_thread_scheduler  winix::process::success;
+	    #		      };
+	    #         ];	
+   	    #     };
+	    #	
+	    # Note that it is entirely up to the application to close
+	    # the window;  if this mailop is ignored, nothing whatever
+	    # will happen. (Except user frustration.)	
+	    #	
+	    # It is fine to pop up a confirmation dialogue, and to do
+	    # nothing if the user does not confirm.
+	    #	
+	    #	
+	    # For the supporting infrastructure see
+	    #	
 	    #     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
-	    # No existing code sends a CLIENT_MESSAGE,
-	    # nor does any existing code reference delete_mailop.
     };
 end;						# stipulate
 

@@ -1,3 +1,4 @@
+2010-04-29-23.53.50: src/lib/x-kit/tut/triangle/triangle-app.pkg:  Stripped out much debug crud.
 2010-04-29-23.26.53: src/lib/x-kit/tut/triangle/triangle-app.pkg:  Added unit test to exercise mouse pointer get/set.
 2010-04-29-22.31.59: src/lib/x-kit/tut/triangle/triangle-app.pkg: Add unit test exercising sleep/count loop.
 2010-04-29-21.39.33: src/lib/x-kit/tut/triangle/triangle-app.pkg: Cleaning.

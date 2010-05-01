@@ -54,7 +54,7 @@ herein
 	    =
 	    TOPWINDOW
 	      ( Mailslot( Plea_Mail ),
-		Mailslot( Void )		# delete_slot. This appears to be some half-implemented dusty deboer hack.
+		Mailslot( Void )		# wm_window_delete_slot. Set when user clicks on windowframe close button.
               );
 
 	fun set_size_hints
@@ -157,7 +157,7 @@ herein
 
 
 	fun make_topwindow'
-                make_window_fn		# window creation fn, one of either 'simple' or 'transient' (see below).
+                make_simple_vs_transient_window		# window creation fn, one of either 'simple' or 'transient' (see below).
                 rectopt
                 ( widget,
                   color_opt,
@@ -176,8 +176,14 @@ herein
 			    NULL      =>  xc::white;
 			esac;
 
-		delete_slot = make_mailslot ();
+		wm_window_delete_slot = make_mailslot ();		# This will be set when user clicks windowframe close button.
 
+		# Advertise that we support the ICCCM WM_DELETE_WINDOW protocol.
+		# This way, when a user clicks on the windowframe close button,
+		# the window manager will send us a WM_DELETE_WINDOW ClientMessage
+		# X event instead of just summarily killing our window and our
+		# X connection;  this gives us time to close down gracefully.
+		#
 		fun set_protocols window
 		    = 
 		    xw::set_window_manager_protocols
@@ -202,9 +208,9 @@ herein
 			    =
 			    placement (rectopt, default_size);
 
-			my (twin, in_kidplug, in_delete_slot_opt)
+			my (topwindow, in_kidplug, null_or_wm_delete_window_slot)
 			    =
-                            make_window_fn  widget
+                            make_simple_vs_transient_window  widget
                               {
                                 site =>  xg::WINDOW_SITE { upperleft, size, border_thickness=>0 },
 				#
@@ -214,7 +220,7 @@ herein
 
 			fun give_hint { size_hints, nonsize_hints }
                             =
-			    xw::set_window_manager_properties  twin
+			    xw::set_window_manager_properties  topwindow
 			      {
 				size_hints,
 				nonsize_hints,
@@ -226,7 +232,7 @@ herein
 			      };
 
 											# commandline		is from   src/lib/std/commandline.pkg
-			xw::set_window_manager_properties  twin
+			xw::set_window_manager_properties  topwindow
                           {
 			    commandline_arguments =>  commandline::get_arguments(),
 			    #
@@ -241,14 +247,14 @@ herein
 
 			apply give_hint (reverse hintlist);
 
-			set_protocols twin;
+			set_protocols topwindow;
 
 			my { kidplug => my_kidplug, momplug => my_momplug }
 			    =
 			    xi::make_widget_cable ();
 
 			cwin =  wg::make_child_window
-                                  ( twin,
+                                  ( topwindow,
                                     xg::box::make (xg::point::zero, size),
                                     wg::args_of  widget
                                   );
@@ -281,7 +287,7 @@ herein
                                                     row_preference
                                                   };
 
-				    xw::set_window_manager_properties twin
+				    xw::set_window_manager_properties topwindow
 				      {
 					size_hints =>  set_size_hints  bounds,
 					#
@@ -293,7 +299,7 @@ herein
 				      };                
 
 				      xw::resize_window
-                                        twin
+                                        topwindow
                                         (xg::SIZE { wide =>  wg::preferred_length  col_preference,
                                                     high =>  wg::preferred_length  row_preference
                                                   }
@@ -302,7 +308,7 @@ herein
 
 			   handle_co  xi::REQ_DESTRUCTION
 			       =>
-			       {    xw::destroy_window twin;
+			       {    xw::destroy_window topwindow;
 				    zombie();
 			       };
 			end;
@@ -318,15 +324,15 @@ herein
 			    do_mom _ => ();
 			end;
 
-			fun map_top_window (FALSE, TRUE) => { xw::show_window twin; TRUE;};
-			    map_top_window (TRUE, FALSE) => { xw::withdraw_window twin; FALSE;};
+			fun map_top_window (FALSE, TRUE) => { xw::show_window topwindow;     TRUE;  };
+			    map_top_window (TRUE, FALSE) => { xw::withdraw_window topwindow; FALSE; };
 			    map_top_window (_, b) => b;
 			end;
 
 			fun do_plea mapped
 			    =
 			    fn START      => mapped;
-			       DESTROY    => { xw::destroy_window twin; zombie ();};
+			       DESTROY    => { xw::destroy_window topwindow; zombie ();};
 			       HINTS hint => { give_hint hint; mapped;};
 			       MAP arg    => map_top_window (mapped, arg);
 			    end;
@@ -341,13 +347,13 @@ herein
 					 ==>
 					 do_mom  o  xi::envelope_contents,
 
-				    case in_delete_slot_opt
+				    case null_or_wm_delete_window_slot
 					#
-					THE in_delete_slot
+					THE input_wm_window_delete_slot
 					    =>
-					    take'  in_delete_slot
+					    take'  input_wm_window_delete_slot
 						==>
-						.{  give (delete_slot, ());  };
+						.{  give (wm_window_delete_slot, ());  };
 
 					NULL => never;
 				    esac, 
@@ -391,7 +397,7 @@ herein
 
 		xtracing::make_thread  "topwindow"  .{ start_loop ([], TRUE); };
 
-		TOPWINDOW (plea_slot, delete_slot);
+		TOPWINDOW (plea_slot, wm_window_delete_slot);
 
 	    };					# fun make_topwindow'
 
@@ -399,13 +405,13 @@ herein
 
 	    fun simple widget g
 		= 
-		{   my (window, in_kidplug, delete_slot)
+		{   my (window, in_kidplug, wm_window_delete_slot)
 			=
 			xw::make_simple_top_window
 			    (wg::screen_of  (wg::root_window_of  widget))
 			    g;
 
-		    (window, in_kidplug, THE delete_slot);
+		    (window, in_kidplug, THE wm_window_delete_slot);
 		};
 
 	    fun transient w _ g
@@ -450,20 +456,21 @@ herein
 
 	end;
 
-	fun start        (TOPWINDOW (slot, delete_slot))     =  give (slot, START);
-	fun destroy      (TOPWINDOW (slot, delete_slot))     =  give (slot, DESTROY);
-	fun unmap        (TOPWINDOW (slot, delete_slot))     =  give (slot, MAP FALSE);
-	fun map          (TOPWINDOW (slot, delete_slot))     =  give (slot, MAP TRUE);
+	fun start        (TOPWINDOW (slot, wm_window_delete_slot))     =  give (slot, START);
+	fun destroy      (TOPWINDOW (slot, wm_window_delete_slot))     =  give (slot, DESTROY);
+	fun unmap        (TOPWINDOW (slot, wm_window_delete_slot))     =  give (slot, MAP FALSE);
+	fun map          (TOPWINDOW (slot, wm_window_delete_slot))     =  give (slot, MAP TRUE);
 
 	fun set_window_manager_hints
-                (TOPWINDOW (slot, delete_slot))
+                (TOPWINDOW (slot, wm_window_delete_slot))
                 arg
 	    =
 	    give (slot, HINTS arg);
 
-	fun delete_mailop (TOPWINDOW (slot, delete_slot))
+	fun get_''close_window''_mailop (TOPWINDOW (slot, wm_window_delete_slot))
 	    =
-	    take'  delete_slot;
+	    take'  wm_window_delete_slot;
+
     };			# package topwindow 
 end;			# stipulate
 

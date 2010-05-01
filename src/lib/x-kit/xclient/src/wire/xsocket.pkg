@@ -1258,7 +1258,7 @@ trace  .{ sprintf "xsocket::sequencer_imp: do_from_x: Handling 'other' event seq
 	# 
 	# -- see the dataflow diagram in top-of-file comments there.
 	#
-	fun xbuf_imp (from_sequencer_slot, to_widget_slot)
+	fun xbuf_imp  (from_sequencer_slot,  to_widget_slot)
 	    =
 	    route_p
 	    where

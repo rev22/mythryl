@@ -212,7 +212,7 @@ herein
 
 		fun create_fn { site, border_color, background_color }
 		    =
-		    {   my (kidplug, window, delete_slot)
+		    {   my (kidplug, window, wm_window_delete_slot)
 			    =
 			    wr::make_topwindow_to_widget_router
 				#
@@ -239,7 +239,7 @@ herein
 			  };
 
 
-			(window, kidplug, delete_slot);
+			(window, kidplug, wm_window_delete_slot);
 		    };
 	    end;
 
@@ -334,7 +334,7 @@ herein
 		# modified ddeboer, Jul 2004; original: 
 		# my (inDict, window) = TopLevelWin::mkTopLevelWinDict (scrn, rootwindow_pen_and_draw_imps, winId)
 
-		my (kidplug, window, delete_slot)
+		my (kidplug, window, wm_window_delete_slot)
 		    =
 		    wr::make_topwindow_to_widget_router (scrn, rootwindow_pen_and_draw_imps, window_id, site);
 
@@ -377,7 +377,7 @@ herein
 		# modified ddeboer, Jul 2004; original: 
 		# my (inDict, window) = TopLevelWin::mkTopLevelWinDict (screen, rootwindow_pen_and_draw_imps, winId)
 
-		my (kidplug, window, delete_slot)
+		my (kidplug, window, wm_window_delete_slot)
 		    =
 		    wr::make_topwindow_to_widget_router (screen, rootwindow_pen_and_draw_imps, window_id, site);
 

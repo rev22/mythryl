@@ -98,16 +98,21 @@ herein
 		# Create mailslot to pass client messages
 		# to the application.
 		#
-		# This appears to be a half-finished dusty deboer hack.
+		# This appears is a 2005 dusty deboer hack described
+		# in the "Library: Deletion Events" section of
+		#
+		#     http://people.cis.ksu.edu/~ddeboer/eXene.html
+		#
 		# Receipt of (any) CLIENT_MESSAGE X event is signaled
 		# (see fun route_xevent below) via this slot
 		# and can be waited on via TOPWINDOW.delete_slot
 		# -- see delete_mailop in   src/lib/x-kit/widget/basic/topwindow.api
 		#
 		# We never send a CLIENT_MESSAGE, nor does any existing
-		# code reference the delete_mailop.
+		# code reference the delete_mailop.  However, the window
+		# manager 
 		#
-		delete_slot =   make_mailslot ();
+		wm_window_delete_slot =   make_mailslot ();
 
 
 		fun do_key (make_msg, key_event)
@@ -293,10 +298,38 @@ herein
 		       => 
 		       always_void
 			   ==>
-			  .{   give (delete_slot, ());   };
+			  .{   give (wm_window_delete_slot, ());   };
 				#
-				# This appears to be some half-complete dusty deboer hack
-				# which signals reciept of (any) CLIENT_MESSAGE via the
+				# In principle we might here have received
+				# any of the following window manager messages:
+				#
+				#     WM_ACCEPT_FOCUS  -- See p33            of http://mythryl.org/pub/exene/icccm.pdf
+				#     WM_DELETE_WINDOW -- See p43 (S4.2.8.1) of http://mythryl.org/pub/exene/icccm.pdf
+				#     WM_SAVE_YOURSELF -- See p61            of http://mythryl.org/pub/exene/icccm.pdf (Obsolete -- use newer session management support.)
+				#
+				# However, we have only registered support for
+				# WM_DELETE_WINDOW so at present we presume
+				# that is what we have, without even checking.
+				# 
+				# This is a 2005 dusty deboer hack described in
+				#
+				#     http://people.cis.ksu.edu/~ddeboer/eXene.html
+				#
+				# When the user clicks on our windowframe close button,
+				# the window manager sends us a WM_DELETE_WINDOW X ClientEvent.
+				#
+				# It does this because we advertised support for the WM_DELETE_WINDOW
+				# ICCCM protocol in the set_protocols() fn in
+				#
+				#     src/lib/x-kit/widget/basic/topwindow.pkg
+				#
+				# -- otherwise it would just summarily kill our X window
+				# and X socket connection.)
+				#
+				# The window manager sends us WM_DELETE_WINDOW messages
+				# when the user clicks on the windowframe close button.
+				#
+				# WM_DELETE_WINDOW messages from the window manager via the
 				#     delete_mailop
 				# in
 				#     src/lib/x-kit/widget/basic/topwindow.api
@@ -348,7 +381,7 @@ herein
 
 		( kidplug,
 		  (fn pending = router (pending, [])),
-		  delete_slot
+		  wm_window_delete_slot
 		);
 	  };							# fun make_router 
 
@@ -404,7 +437,7 @@ trace .{ "XYZZY make_topwindow_to_widget_router: Done  make_draw_imp"; };
 		    =
 		    dt::WINDOW { window_id, screen, screen_pen_and_draw_imps, to_topwindow_drawimp };
 
-		my (kidplug, router, delete_slot)
+		my (kidplug, router, wm_window_delete_slot)
 		    =
 		    make_router (xsession, xevent_in', drawimp_mappedstate_slot, top_window);
 
@@ -435,8 +468,8 @@ trace .{ "XYZZY make_topwindow_to_widget_router: Done  make_draw_imp"; };
 		  xtr::make_thread  "topwin_to_widget"  init_router;
 
 
-		  (kidplug, top_window, delete_slot);
-	    };										# fun make_toplevel_window_dictionary 
+		  (kidplug, top_window, wm_window_delete_slot);
+	    };										# fun make_topwindow_to_widget_router
 
     };											# package toplevel_window
 

@@ -924,6 +924,10 @@ result;
 			installed           =>  get_bool          (buf, 13)
 		      };
 
+		# ClientMessage is documented on pages 88 and 158 of:
+		#
+		#     http://mythryl.org/pub/exene/X-protocol-R6.pdf
+		#
 		fun decode_client_message buf
 		    = 
 		    et::x::CLIENT_MESSAGE
@@ -938,6 +942,10 @@ result;
 				    }
 		      };
 
+		# MappingNotify is document on page 88 (see also 68, 69, 72, 158) of:
+		#
+		#     http://mythryl.org/pub/exene/X-protocol-R6.pdf
+		#
 		fun decode_mapping_notify buf
 		    =
 		    case (w8v::get (buf, 4))

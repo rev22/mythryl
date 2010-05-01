@@ -75,17 +75,17 @@ herein
 	      };
 
 
-	fun make_plaid root_window
+	fun make_plaid  root_window
 	    =
 	    {   bounds = wg::make_tight_size_preference (300, 200);
 
 		sz::make_loose_size_preference_wrapper
 		    (wg::make_widget
 		      {
-			size_preference_thunk_of =>  .{ bounds; },
-			args      =>  .{ { background => NULL }; },
 			root_window,
-			realize   => realize_plaid
+			size_preference_thunk_of =>  .{ bounds; },
+			args                     =>  .{ { background => NULL }; },
+			realize                  => realize_plaid
 		      }
 		    );
 	    }
@@ -94,8 +94,7 @@ herein
 trace .{ "make_plaid/AAA..."; };
 
 		pen = xd::make_pen [
-#                                     xd::FOREGROUND xc::rgb8_color1,
-                                     xd::FOREGROUND (xc::rgb8_from_int 0x00FF00),
+                                     xd::FOREGROUND (xc::rgb8_from_int 0xFF0000),	# Was xc::rgb8_color1
 				     xd::FUNCTION   xd::OP_XOR
 				   ];
 trace .{ "make_plaid/BBB..."; };
@@ -224,6 +223,7 @@ trace .{ "step_state/EEE..."; };
 
 				fun do_mom (xi::ETC_REDRAW _)                              =>  start_over ();
 				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } )) =>  do_active (xg::SIZE { wide, high } );
+do_mom xi::ETC_OWN_DEATH => { print "do_active: do_mom: ETC_OWN_DEATH ignored\n"; (); };
 				    do_mom _					           =>  ();
 				end
 
@@ -298,6 +298,7 @@ trace .{ "do_idle: redraw_loop/BBB..."; };
 
 				fun do_mom (xi::ETC_REDRAW _)                              =>  redraw ();
 				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } )) =>  do_idle (xg::SIZE { wide, high } );
+do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; (); };
 				    do_mom _						   =>  ();
 				end;
 
