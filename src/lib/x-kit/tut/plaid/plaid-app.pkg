@@ -75,7 +75,7 @@ herein
 	      };
 
 
-	fun make_plaid  root_window
+	fun make_plaid_widgettree  root_window
 	    =
 	    {   bounds = wg::make_tight_size_preference (300, 200);
 
@@ -91,16 +91,16 @@ herein
 	    }
 	    where
 		screen = wg::screen_of root_window;
-trace .{ "make_plaid/AAA..."; };
+trace .{ "make_plaid_widgettree/AAA..."; };
 
 		pen = xd::make_pen [
                                      xd::FOREGROUND (xc::rgb8_from_int 0xFF0000),	# Was xc::rgb8_color1
 				     xd::FUNCTION   xd::OP_XOR
 				   ];
-trace .{ "make_plaid/BBB..."; };
+trace .{ "make_plaid_widgettree/BBB..."; };
 		idle_pen = pen;
 
-trace .{ "make_plaid/CCC..."; };
+trace .{ "make_plaid_widgettree/CCC..."; };
 		timeout' =  timeout_in' (time::from_milliseconds 100);
 
 		fun realize_plaid { window, size, kidplug }
@@ -318,10 +318,10 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 				    ];
 			    end;					# fun do_idle
 		    end;						# fun realize_plaid
-	    end;							# fun make_plaid
+	    end;							# fun make_plaid_widgettree
 
 
-	fun plaid root_window
+	fun plaid_app root_window
 	    =
 	    {   name = wy::make_view
 			 { name    =>   wy::style_name [],
@@ -332,7 +332,7 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 
 		view = (name, style);
 
-		plaid = make_plaid root_window;
+		plaid_widgettree =  make_plaid_widgettree  root_window;
 
 		args = [ (wa::title,     wa::STRING_VAL "Plaid"),
 			 (wa::icon_name, wa::STRING_VAL "Plaid")
@@ -340,7 +340,7 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 
 		topwindow
 		    =
-		    top::topwindow (root_window, view, args) plaid;
+		    top::topwindow  (root_window, view, args)  plaid_widgettree;
 
 		top::start  topwindow;
 	    };
@@ -365,7 +365,7 @@ printf "plaid-app: do_it': Creating new %s file...\n" tracefile;
 
 		rx::run_xkit'
 		    #
-		    plaid
+		    plaid_app
 		    #
 		    { display => THE server,
 		      time_quantum_in_milliseconds => NULL
@@ -377,7 +377,7 @@ printf "plaid-app: do_it': Creating new %s file...\n" tracefile;
 	    =
 	    {   set_up_tracing ();
 		#
-		rx::run_xkit  plaid;
+		rx::run_xkit  plaid_app;
 	    };
 
 

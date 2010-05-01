@@ -34,7 +34,6 @@ stipulate
     package s2t =  xsocket_to_topwindow_router;		# xsocket_to_topwindow_router	is from   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.pkg
     package v2w =  value_to_wire;			# value_to_wire			is from   src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
     package w2v =  wire_to_value;			# wire_to_value			is from   src/lib/x-kit/xclient/src/wire/wire-to-value.pkg
-    package wio =  window_io;				# window_io			is from   src/lib/x-kit/xclient/src/wire/window-io.pkg
     package wr  =  topwindow_to_widget_router;       	# topwindow_to_widget_router	is from   src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg
     package xok =  xsocket;				# xsocket			is from   src/lib/x-kit/xclient/src/wire/xsocket.pkg
     package xt  =  xtypes;				# xtypes			is from   src/lib/x-kit/xclient/src/wire/xtypes.pkg
@@ -199,6 +198,52 @@ herein
 	    else                   raise exception  BAD_WINDOW_SITE;
 	    fi;
 
+	# Create a new X-window with the given xid 
+	#
+	fun create_window   (xsocket: xok::Xsocket)
+            {
+              window_id:    	xt::Window_Id,
+              parent_window_id:	xt::Window_Id,
+              visual_id:	xt::Visual_Id_Choice,
+	      #	
+              io_class:		xt::Io_Class,
+              depth:		Int,
+              site:		ge::Window_Site,
+              attributes:	List( xt::a::Window_Attribute )
+            }
+	    =
+	    xok::send_xrequest  xsocket  msg
+	    where 
+		msg =   v2w::encode_create_window
+			  {
+			    window_id,
+			    parent_window_id,
+			    visual_id,
+			    io_class,
+			    depth,
+			    site,
+			    attributes
+			  };
+
+	    end;
+
+
+# This was in window-io.pkg, but apparently is never used:
+#	fun map_window  xsocket  window_id
+#	    =
+#	    xok::send_xrequest  xsocket  (v2w::encode_map_window { window_id } );
+
+
+	fun change_window_attributes'  xsocket  (window_id, attributes)
+	    =
+	    {   xok::send_xrequest  xsocket
+		      #
+		      (v2w::encode_change_window_attributes  { window_id, attributes });
+
+		xok::flush xsocket;
+	    };
+
+
 	fun make_simple_top_window (screen as sn::SCREEN { screen_info, xsession } )
 	    =
 	    create_fn
@@ -218,7 +263,7 @@ herein
 				#
 				(screen, rootwindow_pen_and_draw_imps, window_id, site);
 
-			wio::create_window  xsocket
+			create_window  xsocket
 			  {
 			    depth,
 			    #
@@ -284,7 +329,7 @@ herein
 			    esac;
 
 
-			  wio::create_window   xsocket
+			  create_window   xsocket
                             {
 			      window_id,
 			      parent_window_id,
@@ -320,7 +365,7 @@ herein
 	#     src/lib/x-kit/widget/basic/topwindow.pkg
 	#
 	fun make_simple_popup_window
-		(scrn as sn::SCREEN { screen_info, xsession } )
+		(screen as sn::SCREEN { screen_info, xsession } )
 		{ site, border_color, background_color }
 	    =
 	    (window, kidplug)
@@ -331,14 +376,11 @@ herein
 
 		window_id = next_xid();
 
-		# modified ddeboer, Jul 2004; original: 
-		# my (inDict, window) = TopLevelWin::mkTopLevelWinDict (scrn, rootwindow_pen_and_draw_imps, winId)
-
 		my (kidplug, window, wm_window_delete_slot)
 		    =
-		    wr::make_topwindow_to_widget_router (scrn, rootwindow_pen_and_draw_imps, window_id, site);
+		    wr::make_topwindow_to_widget_router (screen, rootwindow_pen_and_draw_imps, window_id, site);
 
-		wio::create_window  xsocket
+		create_window  xsocket
                   {
 		    window_id,
 		    parent_window_id  => root_window_id,
@@ -374,14 +416,11 @@ herein
 
 		window_id = next_xid();
 
-		# modified ddeboer, Jul 2004; original: 
-		# my (inDict, window) = TopLevelWin::mkTopLevelWinDict (screen, rootwindow_pen_and_draw_imps, winId)
-
 		my (kidplug, window, wm_window_delete_slot)
 		    =
 		    wr::make_topwindow_to_widget_router (screen, rootwindow_pen_and_draw_imps, window_id, site);
 
-		wio::create_window  xsocket
+		create_window  xsocket
                   {
 		    window_id,
 		    parent_window_id  => root_window_id,
@@ -434,7 +473,7 @@ herein
 			screen_pen_and_draw_imps
 		      };
 
-		wio::create_window  xsocket
+		create_window  xsocket
                   {
 		    window_id,
 		    parent_window_id,
@@ -673,7 +712,7 @@ herein
 			   NULL                           =>   xt::a::CURSOR_NONE;
 		       esac;
 
-		wio::change_window_attributes  xsocket  (window_id, [cur]);
+		change_window_attributes'  xsocket  (window_id, [cur]);
 	    };
 
 
@@ -686,7 +725,7 @@ herein
 	#
 	fun set_background_color (dt::WINDOW { window_id, screen, ... } ) color
 	    =
-	    wio::change_window_attributes  xsocket  (window_id, [color])
+	    change_window_attributes'  xsocket  (window_id, [color])
 	    where 
 		screen ->  sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, ... }, ... }, ... };
 
@@ -705,7 +744,7 @@ herein
 	    =
 	    {   screen ->  sn::SCREEN { xsession=>sn::XSESSION { xdisplay => dy::XDISPLAY { xsocket, ... }, ... }, ... };
 
-		change = wio::change_window_attributes  xsocket;
+		change = change_window_attributes'  xsocket;
 
 		fn attributes =  change (window_id,  map  user_window_attribute_to_internal_window_attribute  attributes);
 	    };

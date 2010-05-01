@@ -103,8 +103,8 @@ herein
 	    (wg::Root_Window,  wg::View,  List( wg::Arg ))
 	    ->
 	    wg::Widget
-		->
-		Topwindow;
+	    ->
+	    Topwindow;
 
 	# Create a topwindow.  We supply:
 	#

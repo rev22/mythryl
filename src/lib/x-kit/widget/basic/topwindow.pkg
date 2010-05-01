@@ -161,7 +161,7 @@ herein
                 rectopt
                 ( widget,
                   color_opt,
-                  wm_args:  Window_And_Icon_Names
+                  wm_args:	Window_And_Icon_Names
                 )
 	    =
 	    {   root_window =  wg::root_window_of  widget;
@@ -182,7 +182,8 @@ herein
 		# This way, when a user clicks on the windowframe close button,
 		# the window manager will send us a WM_DELETE_WINDOW ClientMessage
 		# X event instead of just summarily killing our window and our
-		# X connection;  this gives us time to close down gracefully.
+		# X connection;  this gives us time to close down gracefully
+		# via our get_''close_window''_mailop facility.
 		#
 		fun set_protocols window
 		    = 
@@ -354,7 +355,18 @@ herein
 					    take'  input_wm_window_delete_slot
 						==>
 						.{  give (wm_window_delete_slot, ());  };
-
+							#
+							# input_wm_window_delete_slot   was created by   make_router   in
+							#
+							#     src/lib/x-kit/xclient/src/window/topwindow-to-widget-router.pkg;
+							#
+							# which also 'set's it when a WM_DELETE_WINDOW ClientEvent is received.
+							#
+							# wm_window_delete_slot   was created in this file.
+							# It gets returned in the TOPWINDOW values we return,
+							# and thus is the one made available via our   get_''close_window''_mailop
+							# call and ultimately used by the application programmer.
+							# Offhand, I do not see why we need both.	XXX BUGGO FIXME
 					NULL => never;
 				    esac, 
 

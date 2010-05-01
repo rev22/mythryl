@@ -26,8 +26,6 @@ LIBRARY_GROUP_COMPONENTS
 	src/wire/value-to-wire.api
 	src/wire/value-to-wire.pkg
 	src/wire/value-to-wire-core.pkg
-	src/wire/window-io.api
-	src/wire/window-io.pkg
 	src/wire/wire-to-value.api
 	src/wire/wire-to-value.pkg
 	src/wire/wire-to-value-core.pkg

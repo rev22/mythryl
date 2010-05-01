@@ -324,7 +324,7 @@ herein
 				#     src/lib/x-kit/widget/basic/topwindow.pkg
 				#
 				# -- otherwise it would just summarily kill our X window
-				# and X socket connection.)
+				# and X socket connection.
 				#
 				# The window manager sends us WM_DELETE_WINDOW messages
 				# when the user clicks on the windowframe close button.
@@ -388,7 +388,7 @@ herein
 
 	# Create the X-event-router imp and draw_imp
 	# for a top-level window, returning the
-	# input dictionary and top-level window.
+	# kidplug and topwindow.
 	#
 	# This function is called (only) from
 	#
