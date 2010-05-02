@@ -396,6 +396,9 @@ herein
 	default_screen_of:  Xsession -> Screen;
 	screens_of:         Xsession -> List(Screen);
 
+	get_''gui_startup_complete''_oneshot_of			# Export to the wider world from src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api
+            :
+	    Xsession -> Oneshot_Maildrop(Void);
 
 	ring_bell:          Xsession -> Int -> Void;
 

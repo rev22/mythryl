@@ -1,3 +1,4 @@
+2010-05-01-01.15.32: src/lib/x-kit/tut/plaid/plaid-app.pkg: Now exits when user clicks on windowframe close button.
 2010-05-01-00.46.16: src/lib/x-kit/xclient/src/wire/:  Killed off window-io.pkg:  It was just clutter, containing only three small functions used only in src/lib/x-kit/xclient/src/window/window.pkg.
 2010-04-30-21.42.24: src/lib/x-kit/widget/basic/topwindow.api: Concluded that the mysterious Dusty Deboer 'delete' slot is intended to signal WM_DELETE_WINDOW X events to applications. Much commenting and renaming to clarify this to library users and code maintainers.
 2010-04-29-23.53.50: src/lib/x-kit/tut/triangle/triangle-app.pkg:  Stripped out much debug crud.

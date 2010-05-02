@@ -121,6 +121,25 @@ herein
 	    )
 	    ->
 	    Null_Or(Oneshot_Maildrop(Void));
+
+	
+	# Application threads can wait on the oneshot
+	# returned by this call; when it fires they
+	# can be confident that the GUI windows exist
+	# and the widget threads have been created and
+	# in general the widgettree is go.
+	#
+	# Currently this oneshot it set when the first
+	# EXPOSE xevent is received from the X server,
+	# but that is internal implementation, not
+	# supported external semantics:
+	#
+	get_''gui_startup_complete''_oneshot_of
+	    :
+	    Xsocket_To_Topwindow_Router
+	    ->
+	    Oneshot_Maildrop(Void);
+
     };
 end;						# stipulate
 

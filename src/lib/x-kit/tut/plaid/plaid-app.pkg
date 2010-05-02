@@ -35,6 +35,7 @@ stipulate
     package xd  =  xdraw;				# xdraw				is from   src/lib/x-kit/xclient/xdraw.pkg
     package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi  =  xinput;				# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
+    package xw  =  xwindow;				# xwindow			is from   src/lib/x-kit/xclient/xwindow.pkg
     package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     #
     package top =  topwindow;				# topwindow			is from   src/lib/x-kit/widget/basic/topwindow.pkg
@@ -49,6 +50,26 @@ stipulate
 herein
 
     package plaid_app: Plaid_App {			# Plaid_App			is from   src/lib/x-kit/tut/plaid/plaid-app.api
+
+	run_selfcheck =  REF FALSE;
+
+	stipulate
+	    selfcheck_tests_passed =  REF 0;
+	    selfcheck_tests_failed =  REF 0;
+	herein
+	    fun test_passed () =  selfcheck_tests_passed :=  *selfcheck_tests_passed + 1;
+	    fun test_failed () =  selfcheck_tests_failed :=  *selfcheck_tests_failed + 1;
+	    #
+	    fun assert bool    =  if bool   test_passed ();
+				  else      test_failed ();
+				  fi;				
+	    #
+	    fun test_stats  ()
+		=
+                { passed => *selfcheck_tests_passed,
+                  failed => *selfcheck_tests_failed
+                };
+	end;
 
 	empty_box
 	    =
@@ -101,11 +122,11 @@ trace .{ "make_plaid_widgettree/BBB..."; };
 		idle_pen = pen;
 
 trace .{ "make_plaid_widgettree/CCC..."; };
-		timeout' =  timeout_in' (time::from_milliseconds 100);
+		timeout' =  timeout_in' (time::from_milliseconds 25);
 
 		fun realize_plaid { window, size, kidplug }
 		    =
-		    {   make_thread "plaid" .{ do_idle size;  };
+		    {   make_thread "plaid" .{ do_active size;  };
 			();
 		    }
 		    where
@@ -121,9 +142,9 @@ trace .{ "realize_plaid/DDD..."; };
 			fill      = xd::fill_boxes autodrawwin idle_pen;
 
 trace .{ "realize_plaid/EEE..."; };
-			my xi::KIDPLUG { from_mouse', from_other', ... }
-			    =
-			    xi::ignore_keyboard  kidplug;
+			(xi::ignore_keyboard  kidplug)
+			    ->
+			    xi::KIDPLUG { from_mouse', from_other', ... };
 
 trace .{ "realize_plaid/FFF..."; };
 			fun do_active (size as xg::SIZE { wide, high } )
@@ -321,6 +342,346 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 	    end;							# fun make_plaid_widgettree
 
 
+	# Thread to exercise the app by simulating user
+	# mouseclicks and verifying their effects:
+	#
+	fun make_selfcheck_thread  { topwindow, widgettree }
+	    =
+	    xtr::make_thread "plaid-app selfcheck" selfcheck
+	    where
+	        fun selfcheck ()
+		    =
+		    {   # Wait until the widgettree is realized and running:
+			# 
+print "plaid-app: make_selfcheck_thread: Waiting for gui startup to complete...\n";
+trace .{ "plaid-app: make_selfcheck_thread: Waiting for gui startup to complete...\n"; };
+			get (wg::get_''gui_startup_complete''_oneshot_of  widgettree);
+			test_passed ();
+print "plaid-app: make_selfcheck_thread: Gui startup now complete.\n";
+trace .{ "plaid-app: make_selfcheck_thread: Gui startup now complete.\n"; };
+
+
+			# All done -- shut everything down:
+			#
+			(xw::xsession_of_window  (wg::window_of widgettree)) ->  xsession;
+			xc::close_xsession  xsession;
+			shut_down_thread_scheduler  winix::process::success;
+		    };
+
+
+
+#	        fun get_''seen_first_expose''_oneshot
+#			window
+#		    =
+#		    case (xw::get_''seen_first_expose''_oneshot_of  window)
+#			#
+#			THE oneshot =>  oneshot;
+#			NULL        =>  get_''seen_first_expose''_oneshot window;		# Cannot actually happen.
+#		    esac;
+#
+#		fun selfcheck ()
+#		    =
+#		    {   wait_until_gui_is_stable       { drawing_window };
+#		       (check_drawing_window_triangle_draw { })                              -> { antedraw_midwindow_image };
+#			check_reset_button_operation       { antedraw_midwindow_image };
+#			check_exit_button_operation { };
+#		    }
+#		    where
+#			# Wait for drawing window to
+#			# get its first EXPOSE x event:
+#			#
+#			fun wait_for_first_drawing_window_expose ()
+#			    =
+#			    {
+#				# Normally we would use the
+#				#
+#				#     seen_first_redraw_oneshot_of
+#				#
+#				# from 
+#				#
+#				#     src/lib/x-kit/widget/basic/widget.api
+#				#
+#				# but the logic here doesn't use the widget
+#				# support (I'm guessing this app predates
+#				# the widget layer) so we have to use the
+#				# following call instead:
+#				#
+#				# 
+#				seen_first_drawing_window_expose_oneshot
+#				    =
+#				    get_''seen_first_expose''_oneshot
+#					#
+#					drawing_window;
+#
+#				get  seen_first_drawing_window_expose_oneshot;
+#			    };
+#
+#			# Figure midpoint of window and also
+#			# a small box centered on the midpoint:
+#			#
+#			fun midwindow window
+#			    =
+#			    {
+#				# Get size of drawing window:
+#				#
+#				(xw::get_window_site  window)
+#				    ->
+#				    xg::BOX { row, col, high, wide };
+#
+#				# Define midpoint of drawing window,
+#				# and a 9x9 box enclosing it:
+#				#
+#				stipulate
+#				    row =  high / 2;
+#				    col =  wide / 2;
+#				herein
+#				    midpoint =  xg::POINT { row, col };
+#				    midbox   =  xg::BOX { row => row - 4, col => col - 4, high => 9, wide => 9 };
+#				end;
+#
+#				(midpoint, midbox);
+#			    };
+#
+#			# We do not want to start running the
+#			# selfcheck code until the application
+#			# is ready to respond:
+#			#
+#			fun wait_until_gui_is_stable { drawing_window }
+#			    =
+#			    {
+# seen_first_redraw_oneshot_of
+#				# First order of business is to wait
+#				# until things are up and running.
+#				#
+#				# This may actually not be needed now
+#				# that we wait on
+#				#     done_first_drawing_window_redraw
+#				# in below logic, but exercising the
+#				# facility is useful anyhow:
+#				#
+#				wait_for_first_drawing_window_expose ();
+#
+#
+#
+#			    };	
+#
+#			fun check_drawing_window_triangle_draw { }
+#			    =
+#			    {
+#				(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
+#				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
+#				(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
+#
+#				# Fetch from X server the mid-window pixels
+#				# over which we are about to draw a triangle.
+#				# These should be all all background color (black)
+#				# at the moment:
+#				#
+#				antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+#
+#				# Do it again, verify that they compare equal:			
+#				#
+#				{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+#				    #
+#				    assert (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2));
+#				};
+#
+#				# Set up a hook to detect when
+#				#
+#				#     add_triangle ()
+#				#
+#				# runs.  To avoid race conditions, we must
+#				# do this BEFORE sending the below simulated
+#				# mouseclicks.  (I forgot this at first, and
+#				# in fact got bitten.)
+#				# 
+#				triangle_list_slot =  make_mailslot ();
+#				# 
+#				add_triangle_watcher_slot :=  THE triangle_list_slot;
+#
+#				# Simulate a mouseclick in center of drawing window:
+#				#
+#				xw::send_mousebutton_press_xevent
+#				  { window =>  drawing_window,
+#				    button =>  xi::MOUSEBUTTON 1,
+#				    point  =>  drawing_window_midpoint
+#				  };
+#				#
+#				xw::send_mousebutton_release_xevent
+#				  { window =>  drawing_window,
+#				    button =>  xi::MOUSEBUTTON 1,
+#				    point  =>  drawing_window_midpoint
+#				  };
+#
+#				# 
+#				select [
+#				    take' triangle_list_slot ==>  check_triangle_list1,
+#				    timeout'                 ==>  do_timeout1
+#				]
+#				where
+#				    timeout' =   timeout_in' (time::from_milliseconds 5000);
+#
+#				    fun check_triangle_list1  [ point ]
+#					    =>
+#					    {
+#						assert (xg::point::eq (point, drawing_window_midpoint));
+#
+#						add_triangle_watcher_slot :=  NULL;
+#					    };
+#
+#					check_triangle_list1  []
+#					    =>
+#					    {   test_failed ();
+#
+#						add_triangle_watcher_slot :=  NULL;
+#					    };
+#
+#					check_triangle_list1  triangles
+#					    =>
+#					    {   test_failed ();
+#
+#						add_triangle_watcher_slot :=  NULL;
+#					    };
+#				    end;
+#
+#				    fun do_timeout1 ()
+#					=
+#					{   test_failed ();
+#
+#					    add_triangle_watcher_slot :=  NULL;
+#					};	
+#				end;
+#
+#
+#				# Fetch from X server the mid-window pixels
+#				# over which we should have drawn a triangle.
+#				#
+#				# Verify that they differ from our original
+#				# all-black image of the same area:
+#				#
+#				{   postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+#				    #	
+#				    assert (not (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image)));
+#				};
+#
+#				{ antedraw_midwindow_image };
+#			    };
+#
+#			fun check_reset_button_operation { antedraw_midwindow_image }
+#			    =
+#			    {
+#				(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
+#				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
+#				(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
+#
+#				# Set up a hook to detect when drawing_window_imp
+#				#
+#				#     do_reset ()
+#				#
+#				# runs.  To avoid race conditions, we must
+#				# do this BEFORE sending the below simulated
+#				# mouseclicks.  (I forgot this at first, and
+#				# in fact got bitten.)
+#				# 
+#				drawing_window_''do_reset''_slot =  make_mailslot ();
+#				# 
+#				drawing_window_''do_reset''_watcher_slot :=  THE drawing_window_''do_reset''_slot;
+#
+#
+#				# Simulate a mouseclick in center of reset button:
+#				#
+#				xw::send_mousebutton_press_xevent
+#				  { window =>  reset_button_window,
+#				    button =>  xi::MOUSEBUTTON 1,
+#				    point  =>  reset_button_window_midpoint
+#				  };
+#				#
+#				xw::send_mousebutton_release_xevent
+#				  { window =>  reset_button_window,
+#				    button =>  xi::MOUSEBUTTON 1,
+#				    point  =>  reset_button_window_midpoint
+#				  };
+#
+#				# 
+#				select [
+#				    take' drawing_window_''do_reset''_slot ==>  check_reset,
+#				    timeout'                               ==>  do_timeout2
+#				]
+#				where
+#				    timeout' =   timeout_in' (time::from_milliseconds 5000);
+#
+#				    fun check_reset ()
+#					=
+#					{   drawing_window_''do_reset''_watcher_slot :=  NULL;
+#
+#					    test_passed ();
+#					};
+#
+#				    fun do_timeout2 ()
+#					=
+#					{   drawing_window_''do_reset''_watcher_slot :=  NULL;
+#
+#					    test_failed ();
+#					};	
+#				end;
+#
+#
+#				# Fetch from X server the mid-window pixels
+#				# over which we drew the triangle.
+#				#
+#				# Verify that they match our original
+#				# all-black image of the same area:
+#				#
+#				{   postreset_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+#				    #	
+#				    assert (xc::same_cs_pixmap (antedraw_midwindow_image, postreset_midwindow_image));
+#				};
+#			    };
+#
+#			fun check_exit_button_operation { }
+#			    =
+#			    {
+#				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
+#
+#				# Simulate a mouseclick in center of exit button:
+#				#
+#				xw::send_mousebutton_press_xevent
+#				  { window =>  exit_button_window,
+#				    button =>  xi::MOUSEBUTTON 1,
+#				    point  =>  exit_button_window_midpoint
+#				  };
+#				#
+#				xw::send_mousebutton_release_xevent
+#				  { window =>  exit_button_window,
+#				    button =>  xi::MOUSEBUTTON 1,
+#				    point  =>  exit_button_window_midpoint
+#				  };
+#
+#				# Give the exit button time to fire.
+#				# It should shut down all threads, so
+#				# we should never make it past this sleep:
+#				#
+#				sleep_for (time::from_milliseconds 5000);
+#
+#				# The exit button didn't shut us down:
+#				# register a bug:
+#				#
+#				test_failed ();
+#
+#				(test_stats ()) ->  { passed, failed };
+#
+#				# Go ahead and do the shutdown
+#				# that the EXIT button should have done:
+#				#
+#				xc::close_xsession  xsession;
+#				shut_down_thread_scheduler  winix::process::success;
+#			    }; 	
+#
+#		    end;					# fun selfcheck
+#
+
+	    end;						# fun make_selfcheck_thread
+
 	fun plaid_app root_window
 	    =
 	    {   name = wy::make_view
@@ -332,7 +693,7 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 
 		view = (name, style);
 
-		plaid_widgettree =  make_plaid_widgettree  root_window;
+		widgettree =  make_plaid_widgettree  root_window;
 
 		args = [ (wa::title,     wa::STRING_VAL "Plaid"),
 			 (wa::icon_name, wa::STRING_VAL "Plaid")
@@ -340,7 +701,7 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 
 		topwindow
 		    =
-		    top::topwindow  (root_window, view, args)  plaid_widgettree;
+		    top::topwindow  (root_window, view, args)  widgettree;
 
 		top::start  topwindow;
 
@@ -352,12 +713,17 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 			close_window'
 			    ==>
 			   .{
-print "ATTEMPTING TO CLOSE WINDOW.\n";
 				topwindow::destroy  topwindow;
 				shut_down_thread_scheduler  winix::process::success;
 			    }
 		    ];	
 		};
+
+		if *run_selfcheck
+		    #
+		    make_selfcheck_thread  { topwindow, widgettree };
+		    ();
+		fi;
 
 		();
 	    };
@@ -369,22 +735,21 @@ print "ATTEMPTING TO CLOSE WINDOW.\n";
 		#
 		include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
 		#
-printf "plaid-app: do_it': Creating new %s file...\n" tracefile;
 		log_trace_messages  (TO_FILE tracefile);
 		enable all_tracing;				# Gross overkill.
 	    };
 
 	fun do_it' (debug_flags, server)
 	    =
-	    {   set_up_tracing ();
+	    {   xtracing::init debug_flags;
 
-		xtracing::init debug_flags;
+		set_up_tracing ();
 
 		rx::run_xkit'
 		    #
 		    plaid_app
 		    #
-		    { display => THE server,
+		    { display => (server == "" ?? NULL :: THE server),
 		      time_quantum_in_milliseconds => NULL
 		    };
 	    };
@@ -396,6 +761,14 @@ printf "plaid-app: do_it': Creating new %s file...\n" tracefile;
 		#
 		rx::run_xkit  plaid_app;
 	    };
+
+
+	fun selfcheck ()
+	    =
+	    {   run_selfcheck :=  TRUE;
+		do_it' ([], "");
+		test_stats ();
+	    };	
 
 
 	fun main (program ! server ! _, _)

@@ -220,6 +220,10 @@ herein
 	    # return NULL, in which case the client thread
 	    # will have to sleep a bit and then retry.
 
+	get_''gui_startup_complete''_oneshot_of				# get_''gui_startup_complete''_oneshot_of	def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	    :
+	    Window -> Oneshot_Maildrop(Void);				# See comments in   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api
+
 
 	# Make 'window' receive a (faked) mousebutton click at 'point'.
 	# 'window' should be the sub/window actually holding the widget to be activate.

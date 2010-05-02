@@ -20,10 +20,20 @@ herein
 	    =
 	    {   printf "\nDoing %s:\n" name;   
 
-		(triangle_app::selfcheck ()) ->  { passed, failed };
 
+
+		(triangle_app::selfcheck ()) ->  { passed, failed };
+		#
 		for (i = 0; i < passed; ++i) {   assert TRUE;    };  
 		for (i = 0; i < failed; ++i) {   assert FALSE;   };  
+
+
+		(plaid_app::selfcheck ()) ->  { passed, failed };
+		#
+		for (i = 0; i < passed; ++i) {   assert TRUE;    };  
+		for (i = 0; i < failed; ++i) {   assert FALSE;   };  
+
+
 
 		summarize_unit_tests  name;
 	    };

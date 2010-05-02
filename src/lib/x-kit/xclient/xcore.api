@@ -19,386 +19,392 @@
 
 
 
-api  Xcore {
+stipulate
+    include threadkit;
+herein
 
-    package xg:  Xgeometry;		# Xgeometry		is from   src/lib/x-kit/xclient/xgeometry.api
+    api  Xcore {
 
-    version:  { major:    Int,
-                minor:    Int,
-                reverse:  Int,
-                date:     String
-              };
+	package xg:  Xgeometry;		# Xgeometry		is from   src/lib/x-kit/xclient/xgeometry.api
 
-    version_name:  String;
+	version:  { major:    Int,
+		    minor:    Int,
+		    reverse:  Int,
+		    date:     String
+		  };
 
-    # Opaque types:
-    #
-    Xsession;				# Xsession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    Screen;				# Screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    Window;				# Window		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    Font;				# Font			def in    src/lib/x-kit/xclient/src/window/font-base.pkg
-    Rw_Pixmap;				# Rw_Pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    Ro_Pixmap;				# Ro_Pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    Xcursor;				# Xcursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
-    Rgb8;				# Rgb8			def in    src/lib/x-kit/xclient/src/color/rgb8.pkg
-    #
-    eqtype Standard_Xcursor;		# Standard_Xcursor	def in    src/lib/x-kit/xclient/src/window/cursors.pkg
-    eqtype Atom;			# Atom			def in    src/lib/x-kit/xclient/src/wire/xtypes.pkg
+	version_name:  String;
 
-    # X server timestamps.
-    #
-    package xserver_timestamp:    api {
-				      Xserver_Timestamp;
-
-				      to_float:  Xserver_Timestamp -> Float;
-
-				      +  : (Xserver_Timestamp, Xserver_Timestamp) -> Xserver_Timestamp;
-				      -  : (Xserver_Timestamp, Xserver_Timestamp) -> Xserver_Timestamp;
-
-				      # If you use these, remember that X server timestamps
-				      # WRAP AROUND MONTHLY, so you cannot assume that
-				      #
-				      #     timestamp1 < timestamp2
-				      #     =>				# DANGER!
-				      #     timestamp1  earlier_than  timestamp2
-				      #
-				      <  : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
-				      <= : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
-				      >  : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
-				      >= : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
-				  };
-
-    # Xauthentication information. 
-    # This type actually gets defined in:
-    #
-    #     src/lib/x-kit/xclient/src/wire/xtypes.pkg
-    #
-    # At runtime this information gets extracted from
-    #
-    #     ~/.Xauthority
-    #
-    # by code (e.g. get_xdisplay_string_and_xauthentication) in
-    #
-    #     src/lib/x-kit/xclient/src/stuff/xauthentication.pkg
-    #
-    # and then passed successively to:
-    #
-    #     root_window::make_root_window                     in    src/lib/x-kit/widget/basic/root-window.pkg
-    #     xession::open_xsession                            in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    #     display::open_xdisplay                            in    src/lib/x-kit/xclient/src/wire/display.pkg
-    #     value_to_wire::encode_xserver_connection_request  in    src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
-    #
-    # and ultimately to the X server.	
-    #
-    Xauthentication
-	=
-        XAUTHENTICATION
-	  {
-	    family:   Int,						# E.g. xauthentication::family_internet
-	    address:  String,						# E.g. "127.0.0.1"
-	    display:  String,						# E.g. "0"
-	    name:     String,						# E.g. "MIT-MAGIC-COOKIE-1"
-	    data:     unt8_vector::Vector				# For   MIT-MAGIC-COOKIE-1 this is 16 bytes (128 bits) of random data.
-	  };
-
-    # This is our preferred vanilla color representation,
-    # based on a (red, green, blue) float triple representation:
-    Rgb;
-    #
-    # Predefine a few common colors for convenience:
-    #
-    black:   Rgb;
-    white:   Rgb;
-    red:     Rgb;
-    green:   Rgb;
-    blue:    Rgb;
-    cyan:    Rgb;
-    magenta: Rgb;
-    yellow:  Rgb;
-    #
-    rgb8_color0:   Rgb8;
-    rgb8_color1:   Rgb8;
-    rgb8_white:    Rgb8;
-    rgb8_black:    Rgb8;
-    rgb8_red:      Rgb8;
-    rgb8_green:    Rgb8;
-    rgb8_blue:     Rgb8;
-    rgb8_cyan:     Rgb8;
-    rgb8_magenta:  Rgb8;
-    rgb8_yellow:   Rgb8;
-    #
-    rgb_normalize:     Rgb -> Rgb;
-    #
-    rgb_from_unts:    (Unt, Unt, Unt) -> Rgb;
-    rgb_to_unts:       Rgb -> (Unt, Unt, Unt);
-    #
-    rgb_from_floats:  (Float, Float, Float) -> Rgb;
-    rgb_to_floats:    Rgb -> (Float, Float, Float);
-
-    rgb8_from_ints: (Int, Int, Int) -> Rgb8;
-    rgb8_from_int:  Int             -> Rgb8;
-    rgb8_from_name: String          -> Rgb8;
-    rgb8_from_rgb:  Rgb             -> Rgb8;
-    #
-    rgb8_to_ints:   Rgb8 -> (Int, Int, Int);
-    rgb8_to_int:    Rgb8 -> Int;
-
-    # Identity tests:
-    #
-    same_xsession: (Xsession, Xsession) -> Bool;			# same_xsession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    same_screen:   (Screen, Screen)     -> Bool;			# same_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    same_window:   (Window, Window)     -> Bool;			# same_window		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    same_font:     (Font, Font)         -> Bool;			# same_font		def in    src/lib/x-kit/xclient/src/window/font-base.pkg
-    same_cursor:   (Xcursor, Xcursor)   -> Bool;			# same_cursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
-    same_rgb:      (Rgb, Rgb)           -> Bool;			# same_rgb		def in    src/lib/x-kit/xclient/src/color/rgb.pkg 
-    same_rgb8:     (Rgb8, Rgb8)         -> Bool;			# same_rgb8		def in    src/lib/x-kit/xclient/src/color/rgb8.pkg
-    #
-    same_rw_pixmap							# same_rw_pixmap	def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-	:
-	( Rw_Pixmap,
-          Rw_Pixmap
-        )
-        ->
-        Bool;
-
-    same_ro_pixmap							# same_ro_pixmap	def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-	:
-	( Ro_Pixmap,
-          Ro_Pixmap
-	)
-	->
-	Bool;
-
-
-    # Xsession operations
-    #
-    exception XSERVER_CONNECT_ERROR  String;
-    #
-    open_xsession:     (String, Null_Or(Xauthentication)) -> Xsession;	# open_xsession			def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    close_xsession:     Xsession -> Void;				# close_xesession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    default_screen_of:  Xsession -> Screen;				# default_screen_of		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    screens_of:         Xsession -> List( Screen );			# screens_of			def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    ring_bell:          Xsession -> Int -> Void;			# ring_bell			def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    max_request_length: Xsession -> Int;				# max_request_length		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-
-
-    # Get/set location of mouse pointer
-    # relative to root window:
-    #
-    get_mouse_location: Xsession -> xg::Point;
-    set_mouse_location: Xsession -> xg::Point -> Void;
-
-    # Make 'window' receive a (faked) mousebutton click at 'point'.
-    # 'window' should be the sub/window actually holding the widget to be activate.
-    # 'point'  should be the click point in that window's coordinate system.
-    #
-    send_mousebutton_press_xevent
-	:
-	Xsession
-	->
-	{ window:		Window,					# Window handling the mouse-button click event.
-	  button:		xtypes::Mousebutton,			# Mouse button just clicked down.
-	  point:		xg::Point
-	}
-	->
-	Void
-	;
-
-    # Counterpart of previous:  make 'window' receive a (faked) mousebutton release at 'point'.
-    # 'window' should be the sub/window actually holding the widget to be activate.
-    # 'point'  should be the release point in that window's coordinate system.
-    #
-    send_mousebutton_release_xevent
-	:
-	Xsession
-	->
-	{ window:		Window,					# Window handling the mouse-button click event.
-	  button:		xtypes::Mousebutton,			# Mouse button just clicked down.
-	  point:		xg::Point
-	}
-	->
-	Void
-	;
-
-    
-
-    # Screen operations:
-    #
-    xsession_of_screen: Screen -> Xsession;				# xsession_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    size_of_screen:     Screen -> xg::Size;				# size_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    mm_size_of_screen:  Screen -> xg::Size;				# mm_size_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    depth_of_screen:    Screen -> Int;					# depth_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-    
-  
-    Display_Class
-      = STATIC_GRAY
-      | GRAY_SCALE
-      | STATIC_COLOR
-      | PSEUDO_COLOR
-      | TRUE_COLOR
-      | DIRECT_COLOR
-      ;
-
-     display_class_of_screen						# display_class_of_screen	def in    src/lib/x-kit/xclient/src/window/xsession.pkg
-	:
-        Screen -> Display_Class;
-
-
-    # Window, rw_pixmap and ro_pixmap geometry functions:
-    #
-    depth_of_window:          Window -> Int;				# depth_of_window		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    depth_of_rw_pixmap:    Rw_Pixmap -> Int;				# depth_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    depth_of_ro_pixmap:    Ro_Pixmap -> Int;				# depth_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    #
-    size_of_window:           Window -> xg::Size;			# size_of_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    size_of_rw_pixmap:     Rw_Pixmap -> xg::Size;			# size_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    size_of_ro_pixmap:     Ro_Pixmap -> xg::Size;			# size_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    #
-    shape_of_window:          Window -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
-    shape_of_rw_pixmap:    Rw_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
-    shape_of_ro_pixmap:    Ro_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
-    #
-    id_of_window:          Window -> Int;				# id_of_window			def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    id_of_rw_pixmap:    Rw_Pixmap -> Int;				# id_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
-    id_of_ro_pixmap:    Ro_Pixmap -> Int;				# id_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	# Opaque types:
 	#
-	# These give windows etc distinguishing marks
-	# visible at the application programmer level,
-	# which is essential for tracelog debugging.
-
-
-
-    #  Client-side windows:
-    #
-    Cs_Pixmap
-	=
-	CS_PIXMAP
-	  {
-            size:  xg::Size,
-            data:  List( List( unt8_vector::Vector ))
-          };
-
-    exception BAD_CS_PIXMAP_DATA;
-
-    make_clientside_pixmap_from_ascii						# make_clientside_pixmap_from_ascii	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-        :
-        (Int, List( List( String ) ))
-        ->
-        Cs_Pixmap;
-
-
-    # Rw_Pixmap and ro_pixmap operations:
-    #
-    exception BAD_PIXMAP_PARAMETER;
-
-    make_readwrite_pixmap:                         Screen -> (xg::Size, Int)            -> Rw_Pixmap;		# make_readwrite_pixmap				def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
-    make_readwrite_pixmap_from_ascii_data:         Screen -> (Int, List( List(String))) -> Rw_Pixmap;		# make_readwrite_pixmap_from_ascii_data		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-    make_readwrite_pixmap_from_clientside_pixmap:  Screen -> Cs_Pixmap                  -> Rw_Pixmap;		# make_readwrite_pixmap_from_clientside_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-
-    destroy_rw_pixmap: 			    	    Rw_Pixmap -> Void;						# destroy_rw_pixmap				def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
-
-    make_readonly_pixmap_from_ascii:		    Screen -> (Int, List(List(String))) -> Ro_Pixmap;		# make_readonly_pixmap_from_ascii		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
-    make_readonly_pixmap_from_clientside_pixmap:    Screen -> Cs_Pixmap         	-> Ro_Pixmap;		# make_ro_pixmal_from_clientside_pixmap		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
-    make_readonly_pixmap_from_readwrite_pixmap:	    Rw_Pixmap                           -> Ro_Pixmap;		# make_ro_pixmal_from_rw_pixmap			def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
-
-    make_clientside_pixmap_from_readwrite_pixmap:   Rw_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readwrite_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-    make_clientside_pixmap_from_readonly_pixmap:    Ro_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readonly_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-    make_clientside_pixmap_from_window:   (xg::Box, Window)   -> Cs_Pixmap;					# make_clientside_pixmap_from_window		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-
-    same_cs_pixmap:				    (Cs_Pixmap, Cs_Pixmap) -> Bool;				# same_cs_pixmap				def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
-
-    # Window hash tables:
-
-    Window_Map(X);
-
-    exception WINDOW_NOT_FOUND;
-
-    make_map: Void -> Window_Map( X );
-    set:      Window_Map( X ) -> ((Window, X)) -> Void;
-    get:      Window_Map( X ) -> Window -> X;
-    remove:   Window_Map( X ) -> Window -> X;
-    list:     Window_Map( X ) -> List( X );
-
-
-    # Colors.
-    #
-    #    "This release of [x-kit] supports the most basic
-    #     use of color supported by X: read-only access to
-    #     the default colormap using either RGB values or
-    #     names to specify the color.  A devide-independent
-    #     mechanism for specifying colors is part of the
-    #     X11R5 standard.  We plan to use this as the basis
-    #     for future color support in [x-kit]."
-    #
-    #    "To determine whether a screen supports color, one
-    #     can use the function display_class_of_screen to determine
-    #     the screen's display class.  A monochrome screen,
-    #     for example, will usually have the display class
-    #     StaticGray and a depth of one."
-    #
-    #    "Colors are specified either by name or RGB value,
-    #     using the Color_Spec datatype.  The values 'black'
-    #     and 'white' specify their respecive colors.  A
-    #     Color_Spec is mapped to an abstract Color value
-    #     using the function color_of_screen.  The functions
-    #     black_of_screen and white_of_screen return the black
-    #     and white colors for the given screen.  The colors
-    #     'color0' and 'color1' represent the 0 and 1 pixel
-    #     values, and are used to draw on [Pixmap]s."
-    #
-    #	      -- p24 http:://mythryl.org/pub/exene/1993-lib.ps
-    #            (Reppy + Gansner's 1993 eXene library manual.)
-    #
-    #
-    Color_Spec
-      = CMS_NAME  String
-      | CMS_RGB  { red:  Unt, green:  Unt, blue:  Unt }
-      ;
-
-    get_color:  Color_Spec -> Rgb;
-
-
-    # Cursors:
-
-    get_standard_xcursor:   Xsession -> Standard_Xcursor -> Xcursor;
+	Xsession;				# Xsession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	Screen;				# Screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	Window;				# Window		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	Font;				# Font			def in    src/lib/x-kit/xclient/src/window/font-base.pkg
+	Rw_Pixmap;				# Rw_Pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	Ro_Pixmap;				# Ro_Pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	Xcursor;				# Xcursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
+	Rgb8;				# Rgb8			def in    src/lib/x-kit/xclient/src/color/rgb8.pkg
 	#
-	# These are currently the only cursors
-	# supported by x-kit.
+	eqtype Standard_Xcursor;		# Standard_Xcursor	def in    src/lib/x-kit/xclient/src/window/cursors.pkg
+	eqtype Atom;			# Atom			def in    src/lib/x-kit/xclient/src/wire/xtypes.pkg
 
-    recolor_cursor
-	:
-	{ cursor:  Xcursor,
-	  #
-          foreground_rgb:  Rgb,
-          background_rgb:  Rgb
-        }
-        ->
-        Void;
+	# X server timestamps.
+	#
+	package xserver_timestamp:    api {
+					  Xserver_Timestamp;
+
+					  to_float:  Xserver_Timestamp -> Float;
+
+					  +  : (Xserver_Timestamp, Xserver_Timestamp) -> Xserver_Timestamp;
+					  -  : (Xserver_Timestamp, Xserver_Timestamp) -> Xserver_Timestamp;
+
+					  # If you use these, remember that X server timestamps
+					  # WRAP AROUND MONTHLY, so you cannot assume that
+					  #
+					  #     timestamp1 < timestamp2
+					  #     =>				# DANGER!
+					  #     timestamp1  earlier_than  timestamp2
+					  #
+					  <  : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
+					  <= : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
+					  >  : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
+					  >= : (Xserver_Timestamp, Xserver_Timestamp) -> Bool;
+				      };
+
+	# Xauthentication information. 
+	# This type actually gets defined in:
+	#
+	#     src/lib/x-kit/xclient/src/wire/xtypes.pkg
+	#
+	# At runtime this information gets extracted from
+	#
+	#     ~/.Xauthority
+	#
+	# by code (e.g. get_xdisplay_string_and_xauthentication) in
+	#
+	#     src/lib/x-kit/xclient/src/stuff/xauthentication.pkg
+	#
+	# and then passed successively to:
+	#
+	#     root_window::make_root_window                     in    src/lib/x-kit/widget/basic/root-window.pkg
+	#     xession::open_xsession                            in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	#     display::open_xdisplay                            in    src/lib/x-kit/xclient/src/wire/display.pkg
+	#     value_to_wire::encode_xserver_connection_request  in    src/lib/x-kit/xclient/src/wire/value-to-wire.pkg
+	#
+	# and ultimately to the X server.	
+	#
+	Xauthentication
+	    =
+	    XAUTHENTICATION
+	      {
+		family:   Int,						# E.g. xauthentication::family_internet
+		address:  String,						# E.g. "127.0.0.1"
+		display:  String,						# E.g. "0"
+		name:     String,						# E.g. "MIT-MAGIC-COOKIE-1"
+		data:     unt8_vector::Vector				# For   MIT-MAGIC-COOKIE-1 this is 16 bytes (128 bits) of random data.
+	      };
+
+	# This is our preferred vanilla color representation,
+	# based on a (red, green, blue) float triple representation:
+	Rgb;
+	#
+	# Predefine a few common colors for convenience:
+	#
+	black:   Rgb;
+	white:   Rgb;
+	red:     Rgb;
+	green:   Rgb;
+	blue:    Rgb;
+	cyan:    Rgb;
+	magenta: Rgb;
+	yellow:  Rgb;
+	#
+	rgb8_color0:   Rgb8;
+	rgb8_color1:   Rgb8;
+	rgb8_white:    Rgb8;
+	rgb8_black:    Rgb8;
+	rgb8_red:      Rgb8;
+	rgb8_green:    Rgb8;
+	rgb8_blue:     Rgb8;
+	rgb8_cyan:     Rgb8;
+	rgb8_magenta:  Rgb8;
+	rgb8_yellow:   Rgb8;
+	#
+	rgb_normalize:     Rgb -> Rgb;
+	#
+	rgb_from_unts:    (Unt, Unt, Unt) -> Rgb;
+	rgb_to_unts:       Rgb -> (Unt, Unt, Unt);
+	#
+	rgb_from_floats:  (Float, Float, Float) -> Rgb;
+	rgb_to_floats:    Rgb -> (Float, Float, Float);
+
+	rgb8_from_ints: (Int, Int, Int) -> Rgb8;
+	rgb8_from_int:  Int             -> Rgb8;
+	rgb8_from_name: String          -> Rgb8;
+	rgb8_from_rgb:  Rgb             -> Rgb8;
+	#
+	rgb8_to_ints:   Rgb8 -> (Int, Int, Int);
+	rgb8_to_int:    Rgb8 -> Int;
+
+	# Identity tests:
+	#
+	same_xsession: (Xsession, Xsession) -> Bool;			# same_xsession		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	same_screen:   (Screen, Screen)     -> Bool;			# same_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	same_window:   (Window, Window)     -> Bool;			# same_window		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	same_font:     (Font, Font)         -> Bool;			# same_font		def in    src/lib/x-kit/xclient/src/window/font-base.pkg
+	same_cursor:   (Xcursor, Xcursor)   -> Bool;			# same_cursor		def in    src/lib/x-kit/xclient/src/window/cursors.pkg
+	same_rgb:      (Rgb, Rgb)           -> Bool;			# same_rgb		def in    src/lib/x-kit/xclient/src/color/rgb.pkg 
+	same_rgb8:     (Rgb8, Rgb8)         -> Bool;			# same_rgb8		def in    src/lib/x-kit/xclient/src/color/rgb8.pkg
+	#
+	same_rw_pixmap							# same_rw_pixmap	def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	    :
+	    ( Rw_Pixmap,
+	      Rw_Pixmap
+	    )
+	    ->
+	    Bool;
+
+	same_ro_pixmap							# same_ro_pixmap	def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	    :
+	    ( Ro_Pixmap,
+	      Ro_Pixmap
+	    )
+	    ->
+	    Bool;
 
 
-    change_active_grab_cursor:  Xsession -> Xcursor -> Void;
-        #
-	# Change the cursor during an "active grab" of the mouse.
+	# Xsession operations
+	#
+	exception XSERVER_CONNECT_ERROR  String;
+	#
+	open_xsession:     (String, Null_Or(Xauthentication)) -> Xsession;	# open_xsession					def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	close_xsession:     Xsession -> Void;				# close_xesession				def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	default_screen_of:  Xsession -> Screen;				# default_screen_of				def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	screens_of:         Xsession -> List( Screen );			# screens_of					def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	ring_bell:          Xsession -> Int -> Void;			# ring_bell					def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	max_request_length: Xsession -> Int;				# max_request_length				def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	get_''gui_startup_complete''_oneshot_of				# get_''gui_startup_complete''_oneshot_of	def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	    :
+	    Xsession -> Oneshot_Maildrop(Void);				# See comments in   src/lib/x-kit/xclient/src/window/xsocket-to-topwindow-router.api
 
-    # Gravity (both window and bit):
-    #
-    Gravity
-      = FORGET_GRAVITY       #  Bit gravity only 
-      | UNMAP_GRAVITY        #  window gravity only 
-      | NORTHWEST_GRAVITY
-      | NORTH_GRAVITY
-      | NORTHEAST_GRAVITY
-      | WEST_GRAVITY
-      | CENTER_GRAVITY
-      | EAST_GRAVITY
-      | SOUTHWEST_GRAVITY
-      | SOUTH_GRAVITY
-      | SOUTHEAST_GRAVITY
-      | STATIC_GRAVITY
-      ;
+	# Get/set location of mouse pointer
+	# relative to root window:
+	#
+	get_mouse_location: Xsession -> xg::Point;
+	set_mouse_location: Xsession -> xg::Point -> Void;
 
-};					# api Xcore
+	# Make 'window' receive a (faked) mousebutton click at 'point'.
+	# 'window' should be the sub/window actually holding the widget to be activate.
+	# 'point'  should be the click point in that window's coordinate system.
+	#
+	send_mousebutton_press_xevent
+	    :
+	    Xsession
+	    ->
+	    { window:		Window,					# Window handling the mouse-button click event.
+	      button:		xtypes::Mousebutton,			# Mouse button just clicked down.
+	      point:		xg::Point
+	    }
+	    ->
+	    Void
+	    ;
 
+	# Counterpart of previous:  make 'window' receive a (faked) mousebutton release at 'point'.
+	# 'window' should be the sub/window actually holding the widget to be activate.
+	# 'point'  should be the release point in that window's coordinate system.
+	#
+	send_mousebutton_release_xevent
+	    :
+	    Xsession
+	    ->
+	    { window:		Window,					# Window handling the mouse-button click event.
+	      button:		xtypes::Mousebutton,			# Mouse button just clicked down.
+	      point:		xg::Point
+	    }
+	    ->
+	    Void
+	    ;
+
+
+
+	# Screen operations:
+	#
+	xsession_of_screen: Screen -> Xsession;				# xsession_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	size_of_screen:     Screen -> xg::Size;				# size_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	mm_size_of_screen:  Screen -> xg::Size;				# mm_size_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	depth_of_screen:    Screen -> Int;				# depth_of_screen		def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+
+
+	Display_Class
+	  = STATIC_GRAY
+	  | GRAY_SCALE
+	  | STATIC_COLOR
+	  | PSEUDO_COLOR
+	  | TRUE_COLOR
+	  | DIRECT_COLOR
+	  ;
+
+	 display_class_of_screen						# display_class_of_screen	def in    src/lib/x-kit/xclient/src/window/xsession.pkg
+	    :
+	    Screen -> Display_Class;
+
+
+	# Window, rw_pixmap and ro_pixmap geometry functions:
+	#
+	depth_of_window:          Window -> Int;				# depth_of_window		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	depth_of_rw_pixmap:    Rw_Pixmap -> Int;				# depth_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	depth_of_ro_pixmap:    Ro_Pixmap -> Int;				# depth_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	#
+	size_of_window:           Window -> xg::Size;			# size_of_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	size_of_rw_pixmap:     Rw_Pixmap -> xg::Size;			# size_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	size_of_ro_pixmap:     Ro_Pixmap -> xg::Size;			# size_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	#
+	shape_of_window:          Window -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
+	shape_of_rw_pixmap:    Rw_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
+	shape_of_ro_pixmap:    Ro_Pixmap -> {  upperleft: xg::Point,  size: xg::Size,  depth: Int,  border_thickness: Int  };	# "                                     "
+	#
+	id_of_window:          Window -> Int;				# id_of_window			def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	id_of_rw_pixmap:    Rw_Pixmap -> Int;				# id_of_rw_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	id_of_ro_pixmap:    Ro_Pixmap -> Int;				# id_of_ro_pixmap		def in    src/lib/x-kit/xclient/src/window/draw-types.pkg
+	    #
+	    # These give windows etc distinguishing marks
+	    # visible at the application programmer level,
+	    # which is essential for tracelog debugging.
+
+
+
+	#  Client-side windows:
+	#
+	Cs_Pixmap
+	    =
+	    CS_PIXMAP
+	      {
+		size:  xg::Size,
+		data:  List( List( unt8_vector::Vector ))
+	      };
+
+	exception BAD_CS_PIXMAP_DATA;
+
+	make_clientside_pixmap_from_ascii						# make_clientside_pixmap_from_ascii	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+	    :
+	    (Int, List( List( String ) ))
+	    ->
+	    Cs_Pixmap;
+
+
+	# Rw_Pixmap and ro_pixmap operations:
+	#
+	exception BAD_PIXMAP_PARAMETER;
+
+	make_readwrite_pixmap:                         Screen -> (xg::Size, Int)            -> Rw_Pixmap;		# make_readwrite_pixmap				def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
+	make_readwrite_pixmap_from_ascii_data:         Screen -> (Int, List( List(String))) -> Rw_Pixmap;		# make_readwrite_pixmap_from_ascii_data		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+	make_readwrite_pixmap_from_clientside_pixmap:  Screen -> Cs_Pixmap                  -> Rw_Pixmap;		# make_readwrite_pixmap_from_clientside_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+
+	destroy_rw_pixmap: 			    	    Rw_Pixmap -> Void;						# destroy_rw_pixmap				def in    src/lib/x-kit/xclient/src/window/rw-pixmap.pkg
+
+	make_readonly_pixmap_from_ascii:		    Screen -> (Int, List(List(String))) -> Ro_Pixmap;		# make_readonly_pixmap_from_ascii		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
+	make_readonly_pixmap_from_clientside_pixmap:    Screen -> Cs_Pixmap         	-> Ro_Pixmap;		# make_ro_pixmal_from_clientside_pixmap		def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
+	make_readonly_pixmap_from_readwrite_pixmap:	    Rw_Pixmap                           -> Ro_Pixmap;		# make_ro_pixmal_from_rw_pixmap			def in    src/lib/x-kit/xclient/src/window/ro-pixmap.pkg
+
+	make_clientside_pixmap_from_readwrite_pixmap:   Rw_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readwrite_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+	make_clientside_pixmap_from_readonly_pixmap:    Ro_Pixmap -> Cs_Pixmap;					# make_clientside_pixmap_from_readonly_pixmap	def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+	make_clientside_pixmap_from_window:   (xg::Box, Window)   -> Cs_Pixmap;					# make_clientside_pixmap_from_window		def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+
+	same_cs_pixmap:				    (Cs_Pixmap, Cs_Pixmap) -> Bool;				# same_cs_pixmap				def in    src/lib/x-kit/xclient/src/window/cs-pixmap.pkg
+
+	# Window hash tables:
+
+	Window_Map(X);
+
+	exception WINDOW_NOT_FOUND;
+
+	make_map: Void -> Window_Map( X );
+	set:      Window_Map( X ) -> ((Window, X)) -> Void;
+	get:      Window_Map( X ) -> Window -> X;
+	remove:   Window_Map( X ) -> Window -> X;
+	list:     Window_Map( X ) -> List( X );
+
+
+	# Colors.
+	#
+	#    "This release of [x-kit] supports the most basic
+	#     use of color supported by X: read-only access to
+	#     the default colormap using either RGB values or
+	#     names to specify the color.  A devide-independent
+	#     mechanism for specifying colors is part of the
+	#     X11R5 standard.  We plan to use this as the basis
+	#     for future color support in [x-kit]."
+	#
+	#    "To determine whether a screen supports color, one
+	#     can use the function display_class_of_screen to determine
+	#     the screen's display class.  A monochrome screen,
+	#     for example, will usually have the display class
+	#     StaticGray and a depth of one."
+	#
+	#    "Colors are specified either by name or RGB value,
+	#     using the Color_Spec datatype.  The values 'black'
+	#     and 'white' specify their respecive colors.  A
+	#     Color_Spec is mapped to an abstract Color value
+	#     using the function color_of_screen.  The functions
+	#     black_of_screen and white_of_screen return the black
+	#     and white colors for the given screen.  The colors
+	#     'color0' and 'color1' represent the 0 and 1 pixel
+	#     values, and are used to draw on [Pixmap]s."
+	#
+	#	      -- p24 http:://mythryl.org/pub/exene/1993-lib.ps
+	#            (Reppy + Gansner's 1993 eXene library manual.)
+	#
+	#
+	Color_Spec
+	  = CMS_NAME  String
+	  | CMS_RGB  { red:  Unt, green:  Unt, blue:  Unt }
+	  ;
+
+	get_color:  Color_Spec -> Rgb;
+
+
+	# Cursors:
+
+	get_standard_xcursor:   Xsession -> Standard_Xcursor -> Xcursor;
+	    #
+	    # These are currently the only cursors
+	    # supported by x-kit.
+
+	recolor_cursor
+	    :
+	    { cursor:  Xcursor,
+	      #
+	      foreground_rgb:  Rgb,
+	      background_rgb:  Rgb
+	    }
+	    ->
+	    Void;
+
+
+	change_active_grab_cursor:  Xsession -> Xcursor -> Void;
+	    #
+	    # Change the cursor during an "active grab" of the mouse.
+
+	# Gravity (both window and bit):
+	#
+	Gravity
+	  = FORGET_GRAVITY       #  Bit gravity only 
+	  | UNMAP_GRAVITY        #  window gravity only 
+	  | NORTHWEST_GRAVITY
+	  | NORTH_GRAVITY
+	  | NORTHEAST_GRAVITY
+	  | WEST_GRAVITY
+	  | CENTER_GRAVITY
+	  | EAST_GRAVITY
+	  | SOUTHWEST_GRAVITY
+	  | SOUTH_GRAVITY
+	  | SOUTHEAST_GRAVITY
+	  | STATIC_GRAVITY
+	  ;
+
+    };					# api Xcore
+end;
 
 ## COPYRIGHT (c) 1990, 1991 by John H. Reppy.  See COPYRIGHT file for details.
 ## Subsequent changes by Jeff Prothero Copyright (c) 2010,

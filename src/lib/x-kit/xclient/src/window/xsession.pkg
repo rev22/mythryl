@@ -184,6 +184,7 @@ stipulate
     package wpi =  window_property_imp;			# window_property_imp		is from   src/lib/x-kit/xclient/src/window/window-property-imp.pkg
     package xt  =  xtypes;				# xtypes			is from	  src/lib/x-kit/xclient/src/wire/xtypes.pkg
     package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
+    #
     trace =  xtr::print_if  xtr::io_tracing;		# Conditionally write strings to tracing.log or whatever.
 herein
 
@@ -679,17 +680,24 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
 
 	# Font operations:
 	#
-	fun open_font (XSESSION { font_imp, ... } )
+	fun open_font  (XSESSION { font_imp, ... } )
 	    =
 	    font_imp::open_font font_imp;
 
 
-	fun default_screen_of (xsession as XSESSION { default_screen_info, ... } )
+	fun default_screen_of  (xsession as XSESSION { default_screen_info, ... } )
 	    =
 	    SCREEN { xsession, screen_info => default_screen_info };
 
 
-	fun screens_of (xsession as XSESSION { screens, ... } )
+	fun get_''gui_startup_complete''_oneshot_of  (xsession as XSESSION { xsocket_to_topwindow_router, ... } )
+	    =
+	    s2t::get_''gui_startup_complete''_oneshot_of
+		#
+		xsocket_to_topwindow_router;
+
+
+	fun screens_of  (xsession as XSESSION { screens, ... } )
 	    =
 	    map (fn s = SCREEN { xsession, screen_info => s })
                 screens;

@@ -25,6 +25,7 @@ stipulate
     package xw =  xwindow;			# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
     package xc =  xcore;			# xcore			is from   src/lib/x-kit/xclient/src/api/build.pkg
     #
+    package rw =  root_window;			# root_window		is from   src/lib/x-kit/widget/basic/root-window.pkg
     package wa =  widget_attribute;		# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
 herein
 
@@ -228,6 +229,12 @@ herein
 	Relief == three_d::Relief;
 
 	Attribute_Spec = (wa::Name, wa::Type, wa::Value);
+
+	fun get_''gui_startup_complete''_oneshot_of
+		#
+                (WIDGET { root_window, ... })
+	    =
+	    xc::get_''gui_startup_complete''_oneshot_of  (rw::xsession_of  root_window);
 
     };				# package widget 
 

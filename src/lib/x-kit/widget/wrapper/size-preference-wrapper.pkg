@@ -34,7 +34,12 @@ herein
 
 	herein
 
-	    fun make_size_preference_wrapper wrapfn { child, size_preference_fn => bnds, resize_fn => resize }
+	    fun make_size_preference_wrapper wrapfn
+                {
+                  child,
+                  size_preference_fn => bounds,
+                  resize_fn => resize
+                }
 		=
 		{   size_preference_thunk_of
 			=
@@ -81,7 +86,7 @@ herein
 
 			args =>  wg::args_fn  child,
 
-			size_preference_thunk_of =>   fn () = bnds size_preference_thunk_of,
+			size_preference_thunk_of =>   fn () = bounds size_preference_thunk_of,
 
 			realize
 		      };

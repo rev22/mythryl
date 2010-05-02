@@ -863,6 +863,15 @@ herein
 		#
 		(xsocket_to_topwindow_router,  window_id);
 
+
+	fun get_''gui_startup_complete''_oneshot_of
+		#
+		(dt::WINDOW { window_id, screen => sn::SCREEN { xsession as sn::XSESSION  { xsocket_to_topwindow_router, ... }, ... }, ... })
+	    =	
+	    s2t::get_''gui_startup_complete''_oneshot_of
+		#
+		xsocket_to_topwindow_router;
+
     };						# Window 
 end;						# stipulate
 

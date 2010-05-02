@@ -48,7 +48,11 @@ herein
             =
             a;
 
-	Plea_Mail = START | DESTROY | MAP  Bool | HINTS  Window_Manager_Hints;
+	Plea_Mail = START
+                  | DESTROY
+                  | MAP    Bool
+                  | WM_HINTS  Window_Manager_Hints
+                  ;
 
 	Topwindow
 	    =
@@ -149,7 +153,7 @@ herein
 		=>
 		( xg::POINT { col, row },
 
-	          xg::SIZE { wide => if (wide > 0)  wide;  else default_wide; fi,
+	          xg::SIZE { wide => if (wide > 0)  wide;  else default_wide;  fi,
 		             high => if (high > 0)  high;  else default_high;  fi
                            }
                 );
@@ -197,7 +201,7 @@ herein
 		    =
 		    {   (wg::size_preference_of  widget)
 			    ->
-			    bounds as { col_preference, row_preference };
+			    size_preference as { col_preference, row_preference };
 
 			default_size
 			    =
@@ -240,7 +244,7 @@ herein
 			    window_name           =>  wm_args.window_name,
 			    icon_name             =>  wm_args.icon_name,
 			    #
-			    size_hints            =>  set_size_hints bounds,
+			    size_hints            =>  set_size_hints  size_preference,
 			    #
 			    nonsize_hints         =>  [],
 			    class_hints           =>  NULL
@@ -254,7 +258,7 @@ herein
 			    =
 			    xi::make_widget_cable ();
 
-			cwin =  wg::make_child_window
+			child_window =  wg::make_child_window
                                   ( topwindow,
                                     xg::box::make (xg::point::zero, size),
                                     wg::args_of  widget
@@ -317,7 +321,7 @@ herein
 
 			fun do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } ))
                                 => 
-			        xw::resize_window cwin (xg::SIZE { wide, high } );
+			        xw::resize_window child_window (xg::SIZE { wide, high } );
 
 			    do_mom xi::ETC_OWN_DEATH => zombie ();
 			    do_mom (xi::ETC_CHILD_DEATH _) => zombie ();
@@ -332,10 +336,10 @@ herein
 
 			fun do_plea mapped
 			    =
-			    fn START      => mapped;
-			       DESTROY    => { xw::destroy_window topwindow; zombie ();};
-			       HINTS hint => { give_hint hint; mapped;};
-			       MAP arg    => map_top_window (mapped, arg);
+			    fn START         => mapped;
+			       DESTROY       => { xw::destroy_window topwindow; zombie ();};
+			       WM_HINTS hint => { give_hint hint; mapped;};
+			       MAP arg       => map_top_window (mapped, arg);
 			    end;
 
 			fun loop mapped
@@ -387,11 +391,11 @@ herein
 			     widget
 			     {
 			       kidplug => ckidplug, 
-			       window  => cwin,
+			       window  => child_window,
 			       size
 			     };
 
-			xw::show_window cwin;
+			xw::show_window child_window;
 
 			loop (map_top_window (FALSE, mapped));
 		    };						# fun start
@@ -400,10 +404,10 @@ herein
 		    =
 		    case (take  plea_slot)
 			#
-			START       => start arg;
-			DESTROY     => start_loop arg;
-			HINTS hint  => start_loop (hint ! hintlist, mapped);
-			MAP mapped' => start_loop (hintlist, mapped');
+			START          => start arg;
+			DESTROY        => start_loop arg;
+			WM_HINTS hint  => start_loop (hint ! hintlist, mapped);
+			MAP mapped'    => start_loop (hintlist, mapped');
 		    esac;
 
 
@@ -477,7 +481,7 @@ herein
                 (TOPWINDOW (slot, wm_window_delete_slot))
                 arg
 	    =
-	    give (slot, HINTS arg);
+	    give (slot, WM_HINTS arg);
 
 	fun get_''close_window''_mailop (TOPWINDOW (slot, wm_window_delete_slot))
 	    =
