@@ -289,7 +289,12 @@ herein
               xauthentication:  Null_Or( xt::Xauthentication )				# Xauthentication info comes ultimately from ~/.Xauthority
             )
 	    =
-	    {   my (xdisplay as dy::XDISPLAY { default_screen, screens, xsocket, next_xid, ... } )
+	    {   # We turn this off in close_xession, so for symmetry's
+		# sake we turn it on here in open_xsession:
+		#									# tracing		is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+		tracing::disable  thread_deathwatch::tracing;				# thread_deathwatch	is from   src/lib/src/lib/thread-kit/src/lib/thread-deathwatch.pkg
+
+		my (xdisplay as dy::XDISPLAY { default_screen, screens, xsocket, next_xid, ... } )
 		    =
 		    dy::open_xdisplay { display_name, xauthentication };
 
@@ -653,7 +658,15 @@ trace .{ "xsession: send_mousebutton_release_event/BOT called  s2w::encode_send_
         #
 	fun close_xsession (XSESSION { xdisplay, ... } )
             =
-            display::close_display  xdisplay;
+	    {   # Threads will die left and right as we shut down,
+		# and scary warning messages will by default be
+		# logged to stdout, so suppress that to avoid
+		# spooking the user:
+		#
+		tracing::disable  thread_deathwatch::tracing;
+
+		display::close_display  xdisplay;
+	    };
 
 	# Return the maximum request size
 	# supported by the display:

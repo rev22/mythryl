@@ -47,11 +47,26 @@ stipulate
     #
     tracefile   =  "plaid-app.trace.log";
     trace	=  xtr::print_if  xtr::io_tracing;	# Conditionally write strings to tracing.log or whatever.
+        #
+        # To debug via tracelogging, annotate the code with lines like
+	#
+        #	trace .{ sprintf "foo/top: bar d=%d" bar; };
+	#
+	# and then set   write_tracelog = TRUE;   below.
 herein
 
     package plaid_app: Plaid_App {			# Plaid_App			is from   src/lib/x-kit/tut/plaid/plaid-app.api
 
+	write_tracelog = FALSE;
+
 	run_selfcheck =  REF FALSE;
+
+	# This maildrop gives the selfcheck code
+	# access to the main drawing window:
+	#
+        my  drawing_window_oneshot:  Oneshot_Maildrop( xc::Window )
+	    =
+	    make_oneshot_maildrop ();
 
 	stipulate
 	    selfcheck_tests_passed =  REF 0;
@@ -112,16 +127,13 @@ herein
 	    }
 	    where
 		screen = wg::screen_of root_window;
-trace .{ "make_plaid_widgettree/AAA..."; };
 
 		pen = xd::make_pen [
                                      xd::FOREGROUND (xc::rgb8_from_int 0xFF0000),	# Was xc::rgb8_color1
 				     xd::FUNCTION   xd::OP_XOR
 				   ];
-trace .{ "make_plaid_widgettree/BBB..."; };
 		idle_pen = pen;
 
-trace .{ "make_plaid_widgettree/CCC..."; };
 		timeout' =  timeout_in' (time::from_milliseconds 25);
 
 		fun realize_plaid { window, size, kidplug }
@@ -130,34 +142,28 @@ trace .{ "make_plaid_widgettree/CCC..."; };
 			();
 		    }
 		    where
-trace .{ "realize_plaid/AAA..."; };
+			set (drawing_window_oneshot, window);
+
 			drawwin     = xd::drawable_of_window  window;
 
-trace .{ "realize_plaid/BBB..."; };
 			autodrawwin = xd::make_unbuffered_drawable  drawwin;
 
-trace .{ "realize_plaid/CCC..."; };
 			idle_fill = xd::fill_boxes drawwin     idle_pen;
-trace .{ "realize_plaid/DDD..."; };
 			fill      = xd::fill_boxes autodrawwin idle_pen;
 
-trace .{ "realize_plaid/EEE..."; };
 			(xi::ignore_keyboard  kidplug)
 			    ->
 			    xi::KIDPLUG { from_mouse', from_other', ... };
 
-trace .{ "realize_plaid/FFF..."; };
 			fun do_active (size as xg::SIZE { wide, high } )
 			    =
 			    start_over ()
 			    where
-trace .{ "do_active/AAA..."; };
 				my middle as (xg::POINT { col=>midx, row=>midy } )
 				    = 
 				    xg::box::middle (xg::box::make (xg::point::zero, size));
 
 
-trace .{ "do_active/BBB..."; };
 				# Given a point (x,y) with a velocity (dx,dy),
 				# make it bounce off walls to stay within
 				#    0 < x < wide
@@ -200,7 +206,6 @@ trace .{ "do_active/BBB..."; };
 				    {   # Move the point per velocity,
 					# bouncing off walls appropriately:
 					#	
-trace .{ "step_state/AAA..."; };
 					(step_point (point, velocity))
 					    ->
 					    ( point  as  xg::POINT { col, row },
@@ -208,7 +213,6 @@ trace .{ "step_state/AAA..."; };
                                             );
 					    
 
-trace .{ "step_state/BBB..."; };
 					# Map 'point' into the fourth quadrant, then
 					# define a box with that as one corner and
 					# (0,0) as the other:
@@ -221,19 +225,16 @@ trace .{ "step_state/BBB..."; };
 						   high => 2 * abs(row - midy)
 						 };
 
-trace .{ "step_state/CCC..."; };
 
 					# Center above box on middle of drawing_window:
 					#
 					box = center_box (box, middle);
 
-trace .{ "step_state/DDD..."; };
 					if odd_cycle
 					    #
 					    fill (xg::box::xor (box, last_box));
 					fi;
 
-trace .{ "step_state/EEE..."; };
 					{ point,
                                           velocity,
                                           last_box  =>  box,
@@ -244,7 +245,6 @@ trace .{ "step_state/EEE..."; };
 
 				fun do_mom (xi::ETC_REDRAW _)                              =>  start_over ();
 				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } )) =>  do_active (xg::SIZE { wide, high } );
-do_mom xi::ETC_OWN_DEATH => { print "do_active: do_mom: ETC_OWN_DEATH ignored\n"; (); };
 				    do_mom _					           =>  ();
 				end
 
@@ -264,11 +264,8 @@ do_mom xi::ETC_OWN_DEATH => { print "do_active: do_mom: ETC_OWN_DEATH ignored\n"
 				also
 				fun start_over ()
 				    =
-				    {
-trace .{ "start_over/AAA..."; };
-					xd::clear_drawable  drawwin;
+				    {   xd::clear_drawable  drawwin;
 
-trace .{ "start_over/BBB..."; };
 					active_loop
 					  {
 					    point     =>  middle,
@@ -288,20 +285,16 @@ trace .{ "start_over/BBB..."; };
 				fun redraw ()
 				    =
 				    {
-trace .{ "do_idle: redraw/AAA..."; };
 					xd::clear_drawable  drawwin;
 					redraw_loop 1;
 				    }
 				    where	
-trace .{ "do_idle: redraw/BBB..."; };
 					bound = int::min (wide, high) / 2;
-trace .{ "do_idle: redraw/CCC..."; };
 
 					fun redraw_loop i
 					    = 
 					    if (i <= bound)
 						#
-trace .{ "do_idle: redraw_loop/AAA..."; };
 						idle_fill
 						  [
 						    xg::BOX { col=>i,            row=>i,            wide=>1,          high=>high-(2*i) },
@@ -310,7 +303,6 @@ trace .{ "do_idle: redraw_loop/AAA..."; };
 						    xg::BOX { col=>i,            row=>high - i - 1, wide=>wide-(2*i), high=>1 }
 						  ];
 
-trace .{ "do_idle: redraw_loop/BBB..."; };
 						redraw_loop (i+2);
 					    fi;
 
@@ -319,7 +311,6 @@ trace .{ "do_idle: redraw_loop/BBB..."; };
 
 				fun do_mom (xi::ETC_REDRAW _)                              =>  redraw ();
 				    do_mom (xi::ETC_RESIZE (xg::BOX { wide, high, ... } )) =>  do_idle (xg::SIZE { wide, high } );
-do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; (); };
 				    do_mom _						   =>  ();
 				end;
 
@@ -349,17 +340,66 @@ do_mom xi::ETC_OWN_DEATH => { print "do_idle: do_mom: ETC_OWN_DEATH ignored\n"; 
 	    =
 	    xtr::make_thread "plaid-app selfcheck" selfcheck
 	    where
+		# Figure midpoint of window and also
+		# a small box centered on the midpoint:
+		#
+		fun midwindow window
+		    =
+		    {
+			# Get size of drawing window:
+			#
+			(xw::get_window_site  window)
+			    ->
+			    xg::BOX { row, col, high, wide };
+
+			# Define midpoint of drawing window,
+			# and a 9x9 box enclosing it:
+			#
+			stipulate
+			    row =  high / 2;
+			    col =  wide / 2;
+			herein
+			    midpoint =  xg::POINT { row, col };
+			    midbox   =  xg::BOX { row => row - 4, col => col - 4, high => 9, wide => 9 };
+			end;
+
+			(midpoint, midbox);
+		    };
+
 	        fun selfcheck ()
 		    =
 		    {   # Wait until the widgettree is realized and running:
 			# 
-print "plaid-app: make_selfcheck_thread: Waiting for gui startup to complete...\n";
-trace .{ "plaid-app: make_selfcheck_thread: Waiting for gui startup to complete...\n"; };
 			get (wg::get_''gui_startup_complete''_oneshot_of  widgettree);
-			test_passed ();
-print "plaid-app: make_selfcheck_thread: Gui startup now complete.\n";
-trace .{ "plaid-app: make_selfcheck_thread: Gui startup now complete.\n"; };
 
+			drawing_window =  get drawing_window_oneshot;
+
+			# Fetch from X server the center pixels
+			# over which we are about to draw:
+			#
+			(midwindow      drawing_window) ->  (_, drawing_window_midbox);
+			#
+			antedraw_midwindow_image
+			    =
+			    xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+
+			# Give the drawing thread time to
+			# draw over the window center:
+			#
+			sleep_for (time::from_milliseconds 500);
+
+			# Re-fetch center pixels, verify
+			# that new result differs from original result.
+			#
+			# Strictly speaking we have a race condition
+			# here, but I think this is good enough for
+			# the purpose -- this isn't flight control:
+			#
+			postdraw_midwindow_image
+			    =
+			    xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+			#
+			assert (not (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image)));
 
 			# All done -- shut everything down:
 			#
@@ -367,319 +407,6 @@ trace .{ "plaid-app: make_selfcheck_thread: Gui startup now complete.\n"; };
 			xc::close_xsession  xsession;
 			shut_down_thread_scheduler  winix::process::success;
 		    };
-
-
-
-#	        fun get_''seen_first_expose''_oneshot
-#			window
-#		    =
-#		    case (xw::get_''seen_first_expose''_oneshot_of  window)
-#			#
-#			THE oneshot =>  oneshot;
-#			NULL        =>  get_''seen_first_expose''_oneshot window;		# Cannot actually happen.
-#		    esac;
-#
-#		fun selfcheck ()
-#		    =
-#		    {   wait_until_gui_is_stable       { drawing_window };
-#		       (check_drawing_window_triangle_draw { })                              -> { antedraw_midwindow_image };
-#			check_reset_button_operation       { antedraw_midwindow_image };
-#			check_exit_button_operation { };
-#		    }
-#		    where
-#			# Wait for drawing window to
-#			# get its first EXPOSE x event:
-#			#
-#			fun wait_for_first_drawing_window_expose ()
-#			    =
-#			    {
-#				# Normally we would use the
-#				#
-#				#     seen_first_redraw_oneshot_of
-#				#
-#				# from 
-#				#
-#				#     src/lib/x-kit/widget/basic/widget.api
-#				#
-#				# but the logic here doesn't use the widget
-#				# support (I'm guessing this app predates
-#				# the widget layer) so we have to use the
-#				# following call instead:
-#				#
-#				# 
-#				seen_first_drawing_window_expose_oneshot
-#				    =
-#				    get_''seen_first_expose''_oneshot
-#					#
-#					drawing_window;
-#
-#				get  seen_first_drawing_window_expose_oneshot;
-#			    };
-#
-#			# Figure midpoint of window and also
-#			# a small box centered on the midpoint:
-#			#
-#			fun midwindow window
-#			    =
-#			    {
-#				# Get size of drawing window:
-#				#
-#				(xw::get_window_site  window)
-#				    ->
-#				    xg::BOX { row, col, high, wide };
-#
-#				# Define midpoint of drawing window,
-#				# and a 9x9 box enclosing it:
-#				#
-#				stipulate
-#				    row =  high / 2;
-#				    col =  wide / 2;
-#				herein
-#				    midpoint =  xg::POINT { row, col };
-#				    midbox   =  xg::BOX { row => row - 4, col => col - 4, high => 9, wide => 9 };
-#				end;
-#
-#				(midpoint, midbox);
-#			    };
-#
-#			# We do not want to start running the
-#			# selfcheck code until the application
-#			# is ready to respond:
-#			#
-#			fun wait_until_gui_is_stable { drawing_window }
-#			    =
-#			    {
-# seen_first_redraw_oneshot_of
-#				# First order of business is to wait
-#				# until things are up and running.
-#				#
-#				# This may actually not be needed now
-#				# that we wait on
-#				#     done_first_drawing_window_redraw
-#				# in below logic, but exercising the
-#				# facility is useful anyhow:
-#				#
-#				wait_for_first_drawing_window_expose ();
-#
-#
-#
-#			    };	
-#
-#			fun check_drawing_window_triangle_draw { }
-#			    =
-#			    {
-#				(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
-#				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
-#				(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
-#
-#				# Fetch from X server the mid-window pixels
-#				# over which we are about to draw a triangle.
-#				# These should be all all background color (black)
-#				# at the moment:
-#				#
-#				antedraw_midwindow_image  =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-#
-#				# Do it again, verify that they compare equal:			
-#				#
-#				{   antedraw_midwindow_image2 =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-#				    #
-#				    assert (xc::same_cs_pixmap (antedraw_midwindow_image, antedraw_midwindow_image2));
-#				};
-#
-#				# Set up a hook to detect when
-#				#
-#				#     add_triangle ()
-#				#
-#				# runs.  To avoid race conditions, we must
-#				# do this BEFORE sending the below simulated
-#				# mouseclicks.  (I forgot this at first, and
-#				# in fact got bitten.)
-#				# 
-#				triangle_list_slot =  make_mailslot ();
-#				# 
-#				add_triangle_watcher_slot :=  THE triangle_list_slot;
-#
-#				# Simulate a mouseclick in center of drawing window:
-#				#
-#				xw::send_mousebutton_press_xevent
-#				  { window =>  drawing_window,
-#				    button =>  xi::MOUSEBUTTON 1,
-#				    point  =>  drawing_window_midpoint
-#				  };
-#				#
-#				xw::send_mousebutton_release_xevent
-#				  { window =>  drawing_window,
-#				    button =>  xi::MOUSEBUTTON 1,
-#				    point  =>  drawing_window_midpoint
-#				  };
-#
-#				# 
-#				select [
-#				    take' triangle_list_slot ==>  check_triangle_list1,
-#				    timeout'                 ==>  do_timeout1
-#				]
-#				where
-#				    timeout' =   timeout_in' (time::from_milliseconds 5000);
-#
-#				    fun check_triangle_list1  [ point ]
-#					    =>
-#					    {
-#						assert (xg::point::eq (point, drawing_window_midpoint));
-#
-#						add_triangle_watcher_slot :=  NULL;
-#					    };
-#
-#					check_triangle_list1  []
-#					    =>
-#					    {   test_failed ();
-#
-#						add_triangle_watcher_slot :=  NULL;
-#					    };
-#
-#					check_triangle_list1  triangles
-#					    =>
-#					    {   test_failed ();
-#
-#						add_triangle_watcher_slot :=  NULL;
-#					    };
-#				    end;
-#
-#				    fun do_timeout1 ()
-#					=
-#					{   test_failed ();
-#
-#					    add_triangle_watcher_slot :=  NULL;
-#					};	
-#				end;
-#
-#
-#				# Fetch from X server the mid-window pixels
-#				# over which we should have drawn a triangle.
-#				#
-#				# Verify that they differ from our original
-#				# all-black image of the same area:
-#				#
-#				{   postdraw_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-#				    #	
-#				    assert (not (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image)));
-#				};
-#
-#				{ antedraw_midwindow_image };
-#			    };
-#
-#			fun check_reset_button_operation { antedraw_midwindow_image }
-#			    =
-#			    {
-#				(midwindow      drawing_window) ->  (     drawing_window_midpoint, drawing_window_midbox);
-#				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
-#				(midwindow reset_button_window) ->  (reset_button_window_midpoint,  _                   );
-#
-#				# Set up a hook to detect when drawing_window_imp
-#				#
-#				#     do_reset ()
-#				#
-#				# runs.  To avoid race conditions, we must
-#				# do this BEFORE sending the below simulated
-#				# mouseclicks.  (I forgot this at first, and
-#				# in fact got bitten.)
-#				# 
-#				drawing_window_''do_reset''_slot =  make_mailslot ();
-#				# 
-#				drawing_window_''do_reset''_watcher_slot :=  THE drawing_window_''do_reset''_slot;
-#
-#
-#				# Simulate a mouseclick in center of reset button:
-#				#
-#				xw::send_mousebutton_press_xevent
-#				  { window =>  reset_button_window,
-#				    button =>  xi::MOUSEBUTTON 1,
-#				    point  =>  reset_button_window_midpoint
-#				  };
-#				#
-#				xw::send_mousebutton_release_xevent
-#				  { window =>  reset_button_window,
-#				    button =>  xi::MOUSEBUTTON 1,
-#				    point  =>  reset_button_window_midpoint
-#				  };
-#
-#				# 
-#				select [
-#				    take' drawing_window_''do_reset''_slot ==>  check_reset,
-#				    timeout'                               ==>  do_timeout2
-#				]
-#				where
-#				    timeout' =   timeout_in' (time::from_milliseconds 5000);
-#
-#				    fun check_reset ()
-#					=
-#					{   drawing_window_''do_reset''_watcher_slot :=  NULL;
-#
-#					    test_passed ();
-#					};
-#
-#				    fun do_timeout2 ()
-#					=
-#					{   drawing_window_''do_reset''_watcher_slot :=  NULL;
-#
-#					    test_failed ();
-#					};	
-#				end;
-#
-#
-#				# Fetch from X server the mid-window pixels
-#				# over which we drew the triangle.
-#				#
-#				# Verify that they match our original
-#				# all-black image of the same area:
-#				#
-#				{   postreset_midwindow_image =  xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
-#				    #	
-#				    assert (xc::same_cs_pixmap (antedraw_midwindow_image, postreset_midwindow_image));
-#				};
-#			    };
-#
-#			fun check_exit_button_operation { }
-#			    =
-#			    {
-#				(midwindow  exit_button_window) ->  ( exit_button_window_midpoint,  _                   );
-#
-#				# Simulate a mouseclick in center of exit button:
-#				#
-#				xw::send_mousebutton_press_xevent
-#				  { window =>  exit_button_window,
-#				    button =>  xi::MOUSEBUTTON 1,
-#				    point  =>  exit_button_window_midpoint
-#				  };
-#				#
-#				xw::send_mousebutton_release_xevent
-#				  { window =>  exit_button_window,
-#				    button =>  xi::MOUSEBUTTON 1,
-#				    point  =>  exit_button_window_midpoint
-#				  };
-#
-#				# Give the exit button time to fire.
-#				# It should shut down all threads, so
-#				# we should never make it past this sleep:
-#				#
-#				sleep_for (time::from_milliseconds 5000);
-#
-#				# The exit button didn't shut us down:
-#				# register a bug:
-#				#
-#				test_failed ();
-#
-#				(test_stats ()) ->  { passed, failed };
-#
-#				# Go ahead and do the shutdown
-#				# that the EXIT button should have done:
-#				#
-#				xc::close_xsession  xsession;
-#				shut_down_thread_scheduler  winix::process::success;
-#			    }; 	
-#
-#		    end;					# fun selfcheck
-#
-
 	    end;						# fun make_selfcheck_thread
 
 	fun plaid_app root_window
@@ -730,8 +457,10 @@ trace .{ "plaid-app: make_selfcheck_thread: Gui startup now complete.\n"; };
 
 	fun set_up_tracing ()
 	    =
-	    {   # Open tracelog file and
-		# select tracing level:
+	    {   # Open tracelog file and select tracing level.
+		# We don't need to truncate any existing file
+		# because that is already done by the logic in
+		#     src/lib/std/src/unix/posix-text-primitive-io.pkg
 		#
 		include tracing;				# tracing			is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
 		#
@@ -743,7 +472,7 @@ trace .{ "plaid-app: make_selfcheck_thread: Gui startup now complete.\n"; };
 	    =
 	    {   xtracing::init debug_flags;
 
-		set_up_tracing ();
+		if write_tracelog   set_up_tracing ();   fi;
 
 		rx::run_xkit'
 		    #

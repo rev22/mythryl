@@ -311,7 +311,7 @@ herein
 	    # from a file::Output_Stream -- this is
 	    # a bit like pulling teeth:
 	    #
-	    fun outstream_to_fd  stream					# file			is from   src/lib/std/src/unix/file.pkg
+	    fun outstream_to_fd  stream						# file			is from   src/lib/std/src/unix/file.pkg
 		=								# text_primitive_io	is from   src/lib/std/src/io/text-primitive-io.pkg
 		{   purestream =  file::get_outstream  stream;
 

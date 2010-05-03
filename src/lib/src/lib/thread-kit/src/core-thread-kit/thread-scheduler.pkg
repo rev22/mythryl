@@ -44,6 +44,11 @@ herein
 	my trace_backpatchfn:   Ref( (Void -> String) -> Void )    =   REF (fn _ = ());
 	#
 	fun trace printfn =  *trace_backpatchfn  printfn;
+	    #
+	    # To debug via tracelogging, annotate the code with lines like
+	    #
+	    #	trace .{ sprintf "foo/top: bar d=%d" bar; };
+
 
 	# Some utility functions that should be inlined 
 	#
@@ -634,14 +639,12 @@ herein
 		    :=
 		    new_time_quantum;
 
-trace .{ "thread_scheduler.pkg: start_timer: setting SIGARLM to be handled"; };
 		sig::set_signal_handler
 		    (
 		      sig::alarm_signal,
 		      sig::HANDLER alarm_handler
 		    );
 
-trace .{ sprintf "thread_scheduler.pkg: start_timer: calling set_interval_timer (THE %s)" (time::to_string new_time_quantum); };
 		it::set_interval_timer (THE new_time_quantum);
 
 		();
@@ -651,10 +654,8 @@ trace .{ sprintf "thread_scheduler.pkg: start_timer: calling set_interval_timer 
 	fun stop_timer ()
 	    =
 	    {
-trace .{ "thread_scheduler.pkg: stop_timer: calling set_interval_timer NULL"; };
 		it::set_interval_timer  NULL;
 
-trace .{ "thread_scheduler.pkg: stop_timer: setting SIGARLM to IGNORE"; };
 		sig::set_signal_handler
 		    (sig::alarm_signal, sig::IGNORE);
 

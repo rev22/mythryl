@@ -43,13 +43,15 @@ herein
 	    #
 	    # Do a system call with timer signals masked (i.e., SIGALRM ignored) 
 
+        tracing:  tracing::Trace_Tree_Node;		# Controls printing of thread watching messages.
     } {
 
-	stipulate
-            retry_syscall_tracing =  tr::make_trace_tree_leaf { parent => tr::all_tracing, name => "retry_syscall_tracing" };
-	herein
-	    trace =  tr::print_if  retry_syscall_tracing;			# Conditionally write strings to tracing.log or whatever.
-	end;
+        tracing =  tr::make_trace_tree_leaf { parent => tr::all_tracing, name => "retry_syscall_tracing" };
+	trace   =  tr::print_if  tracing;			# Conditionally write strings to tracing.log or whatever.
+	    #
+	    # To debug via tracelogging, annotate the code with lines like
+	    #
+	    #	trace .{ sprintf "foo/top: bar d=%d" bar; };
 
 	fun is_intr err
 	    =
@@ -67,7 +69,6 @@ herein
 		#
 		# This is probably a REALLY BAD IDEA. 		XXX BUGGO FIXME
 		#
-trace .{ "do_atomic_syscall stopping timer"; };
 	        ts::stop_timer();
 		    #
 		    # XXX BUGGO FIXME this is still pretty slapdash;
@@ -75,16 +76,13 @@ trace .{ "do_atomic_syscall stopping timer"; };
 		    #                 signals like SIGCHLD, and if we
 		    #                 do we're screwed.
 
-trace .{ "do_atomic_syscall making the syscall"; };
 		y = (f x)
 		    except
 			x = {
-trace .{ "do_atomic_syscall restarting timer after syscall exception return"; };
 				ts::restart_timer ();
 				raise exception x;
 			    };
 
-trace .{ "do_atomic_syscall restarting timer after syscall normal return"; };
 		ts::restart_timer();
 
 		y;

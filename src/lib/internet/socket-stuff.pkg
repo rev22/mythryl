@@ -11,6 +11,10 @@ stipulate
     package sok =  socket;					# socket		is from   src/lib/std/socket.pkg
     package is  =  internet_socket;				# internet_socket	is from   src/lib/std/src/socket/internet-socket.pkg
     package tr  =  tracing;					# tracing		is from   src/lib/src/lib/thread-kit/src/lib/tracing.pkg
+        #
+        # To debug via tracelogging, annotate the code with lines like
+	#
+        #	trace .{ sprintf "foo/top: bar d=%d" bar; };
 herein
 
     package socket_stuff: (weak)  Socket_Stuff {		# Socket_Stuff		is from   src/lib/internet/socket-stuff.api
@@ -182,17 +186,13 @@ herein
 	    {   fun get (0, data)
 			=>
 			{
-trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: Done reading all %d bytes" n;  };
 			    unt8_vector::cat (reverse data);
 			};
 
 		    get (n, data)
 			=>
 			{
-trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: %d bytes left to read" n;  };
-trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: Now  calling sok::receive_vector";  };
 			    v = sok::receive_vector (socket, n);
-trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: Done calling sok::receive_vector, got %d bytes" (unt8_vector::length v);  };
 
 			    if (unt8_vector::length v == 0)
 				#
@@ -202,8 +202,6 @@ trace  .{  sprintf "socket-stuff.pkg: receive_vector: get: Done calling sok::rec
 			    fi;
 			};
 		end;
-
-trace  .{  sprintf "socket-stuff.pkg: receive_vector: bytes-to-read d=%d" n;  };
 
 		if (n < 0)   raise exception SIZE;
 		else         get(n, []);
