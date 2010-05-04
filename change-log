@@ -1,3 +1,4 @@
+2010-05-03-03.11.42: src/lib/x-kit/tut/plaid/plaid-app.pkg: selfcheck() now actually checks something. :-)
 2010-05-02-03.32.41: src/lib/x-kit/tut/xkit-tut-unit-test.pkg:  Now exercises plaid-app as well as triangle-app.
 2010-05-01-01.15.32: src/lib/x-kit/tut/plaid/plaid-app.pkg: Now exits when user clicks on windowframe close button.
 2010-05-01-00.46.16: src/lib/x-kit/xclient/src/wire/:  Killed off window-io.pkg:  It was just clutter, containing only three small functions used only in src/lib/x-kit/xclient/src/window/window.pkg.

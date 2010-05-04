@@ -13,7 +13,7 @@ herein
     api Sim {
 
 	package v:  api {
-			Vect = (Float, Float);				# Was abstract, had to mak concrete to get nbody.pkg to compile. -- 2009-12-10 CrT
+			Vect = (Float, Float);				# Was abstract, had to make concrete to get nbody.pkg to compile. -- 2009-12-10 CrT
 			proj2d: Vect -> { x: Float, y: Float };
 		    };
 
@@ -21,26 +21,26 @@ herein
 
 	Body(X)
 	    =
-	    {   p: Vect,
-		v: Vect,
-		m: Float,
+	    {   p: Vect,				# 2-D Float position
+		v: Vect,				# 2-D Float velocity
+		m: Float,				# mass
 		data: X
 	    };
 
-	Msg(X)
-	  =	NEW_DT   Float
-	  | NEW_N    Int
-	  | NEW_BODY Body(X)
-	  | QUERY    Mailslot( List( Body(X) ))
+	Plea_Mail(X)
+	  = NEW_DT   Float				# Delta-time (time step in seconds...?)
+	  | NEW_N    Int				# Number of orbiting bodies.
+	  | NEW_BODY Body(X)				# New orbiting body.
+	  | QUERY    Mailslot( List( Body(X) ))		# Return list of currently orbiting bodies.
 	  | STOP
 	  ;
 
-	run: { g:        Float,
-	       bodies:   List( Body(X)),
+	run: { g:          Float,			# Gravitational constant in CGS (6.67428e-8)
+	       bodies:     List( Body(X)),		# List of orbiting bodies.
 	       #
-	       dt:       Float,
-	       n:        Int,
-	       msg_slot: Mailslot(  Msg(X) )
+	       dt:         Float,			# Delta-time (time step in seconds).
+	       n:          Int,				# Number of orbiting bodies.
+	       plea_slot:  Mailslot(  Plea_Mail(X) )
 	     }
 	     ->
 	     Thread;

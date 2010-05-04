@@ -34,15 +34,15 @@ herein
 		    data: X
 		  };
 
-	Msg(X)
-	  =	NEW_DT   Float
+	Plea_Mail(X)
+	  = NEW_DT   Float
 	  | NEW_N    Int
 	  | NEW_BODY Body(X)
 	  | QUERY    Mailslot( List( Body(X) ))
 	  | STOP
 	  ;
 
-	fun run { g, bodies, dt, msg_slot, n }
+	fun run { g, bodies, dt, plea_slot, n }
 	    =
 	    {   fun accels []
 			=>
@@ -52,13 +52,18 @@ herein
 			=>
 			[v::zero];
 
-		    accels ( { p => ph, v => vh, m => mh, data } ! tl)
+		    accels ( { p => ph,		# position
+                               v => vh,		# vector
+                               m => mh,		# mass
+                               data
+                             } ! tl
+                           )
 			=>
 			{
 			      fun addh (b, ab, (ah, atl))
 				  =
 				  {
-				      b ->  { p => pb, v => value_naming, m => mb, data };
+				      b ->  { p => pb, v => vb, m => mb, data };
 
 				      distv = v::sub (pb, ph);
 				      dist2 = v::sqnorm distv;
@@ -85,7 +90,7 @@ herein
 		end;
 
 
-		fun step (bl, dt)
+		fun step (bl, dt)		# "bl" == "body_list", "dt" == "delta_time" (time step in seconds)
 		    =
 		    paired_lists::map
 			one_body
@@ -111,24 +116,17 @@ herein
 		    end;
 
 
-		always =  always_mailop ();
+		always' =  always_mailop ();
 
 
 		fun loop (bl, dt, n)
 		    =
-		    select [
-			#
-			take' msg_slot
-			    ==>
-			    handle_msg (bl, dt, n),
-
-			always
-			    ==>
-			   .{  loop (steps n (bl, dt), dt, n);  }
-		    ]
+		    select [  take' plea_slot ==>  do_plea (bl, dt, n),
+			      always'         ==>  .{  loop (steps n (bl, dt), dt, n);  }
+		           ]
 
 		also
-		fun handle_msg (bl, dt, n) m
+		fun do_plea (bl, dt, n) m
 		    =
 		    case m
 			#
