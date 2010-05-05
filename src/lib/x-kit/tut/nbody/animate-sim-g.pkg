@@ -16,6 +16,7 @@ stipulate
     package xg  =  xgeometry;				# xgeometry			is from   src/lib/x-kit/xclient/xgeometry.pkg
     package xi  =  xinput;				# xinput			is from   src/lib/x-kit/xclient/xinput.pkg
     package rx  =  run_xkit;				# run_xkit			is from   src/lib/x-kit/widget/lib/run-xkit.pkg
+    package xtr =  xtracing;				# xtracing			is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     #
     package low =  line_of_widgets;			# line_of_widgets		is from   src/lib/x-kit/widget/layout/line-of-widgets.pkg
     package pb  =  pushbuttons;				# pushbuttons			is from   src/lib/x-kit/widget/leaf/pushbuttons.pkg
@@ -47,6 +48,44 @@ herein
 	max = 7.80e13 * 2.1;
 
 	n = 30;				#  15 
+
+	run_selfcheck =  REF FALSE;
+
+	stipulate
+	    selfcheck_tests_passed =  REF 0;
+	    selfcheck_tests_failed =  REF 0;
+	herein
+	    fun test_passed () =  selfcheck_tests_passed :=  *selfcheck_tests_passed + 1;
+	    fun test_failed () =  selfcheck_tests_failed :=  *selfcheck_tests_failed + 1;
+	    #
+	    fun assert bool    =  if bool   test_passed ();
+				  else      test_failed ();
+				  fi;				
+	    #
+	    fun test_stats  ()
+		=
+                { passed => *selfcheck_tests_passed,
+                  failed => *selfcheck_tests_failed
+                };
+	end;
+
+	# Thread to exercise the app by simulating user
+	# mouseclicks and verifying their effects:
+	#
+	fun make_selfcheck_thread  () # { topwindow, widgettree }
+	    =
+	    xtr::make_thread "plaid-app selfcheck" selfcheck
+	    where
+	        fun selfcheck ()
+		    =
+		    {
+			# All done -- shut everything down:
+			#
+#			(xw::xsession_of_window  (wg::window_of widgettree)) ->  xsession;
+#			xc::close_xsession  xsession;
+			shut_down_thread_scheduler  winix::process::success;
+		    };
+	    end;						# fun make_selfcheck_thread
 
 	fun spacer n =  low::SPACER { min_size => n, ideal_size => n, max_size => THE n };
 	fun rubber n =  low::SPACER { min_size => 1, ideal_size => n, max_size => NULL  };
@@ -476,6 +515,12 @@ herein
 		topwindow = top::topwindow (root_window, view, args)  sd;
 
 		top::start  topwindow;
+
+		if *run_selfcheck
+		    #
+		    make_selfcheck_thread  ();	 # { topwindow, widgettree };
+		    ();
+		fi;
 	    };
 
 
@@ -509,5 +554,11 @@ herein
 
 	main = (fn () = winix::process::success) o main;
 
+	fun selfcheck ()
+	    =
+	    {   run_selfcheck :=  TRUE;
+		do_it ();
+		test_stats ();
+	    };	
     };						# generic package animate_sim_g
 end;

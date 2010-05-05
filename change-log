@@ -1,3 +1,4 @@
+2010-05-04-04.40.36: src/lib/x-kit/tut/nbody/: Random cleaning and commenting.
 2010-05-03-03.11.42: src/lib/x-kit/tut/plaid/plaid-app.pkg: selfcheck() now actually checks something. :-)
 2010-05-02-03.32.41: src/lib/x-kit/tut/xkit-tut-unit-test.pkg:  Now exercises plaid-app as well as triangle-app.
 2010-05-01-01.15.32: src/lib/x-kit/tut/plaid/plaid-app.pkg: Now exits when user clicks on windowframe close button.
