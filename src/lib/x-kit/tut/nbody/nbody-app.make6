@@ -7,7 +7,7 @@ LIBRARY_COMPONENTS
 	$ROOT/src/lib/std/stdlib.make6
 	$ROOT/src/lib/x-kit/xkit.make6
 
-	sim.api
-	sim.pkg
+	gravity-simulator.api
+	gravity-simulator.pkg
 	animate-sim-g.pkg
 	nbody-app.pkg

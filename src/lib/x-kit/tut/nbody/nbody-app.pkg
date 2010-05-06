@@ -10,7 +10,7 @@
 
 package nbody_app {
 
-    package v = sim::v;
+    package v = gravity_simulator::v;
 
     fun make_data (x, y, vx, vy, m, r, cs)
 	=
@@ -21,7 +21,7 @@ package nbody_app {
           cs		# "cs" was probably "color specification"
 	);
 
-    body_data
+    planet_data
 	=
 	map
             make_data
@@ -45,8 +45,8 @@ package nbody_app {
     package animate_sim
 	=
 	animate_sim_g (
-	    package sim = sim;
-	    body_data = body_data;
+	    package gravity_simulator = gravity_simulator;
+	    planet_data = planet_data;
 	);
 
     run = animate_sim::do_it;
