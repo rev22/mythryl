@@ -446,14 +446,14 @@ package threadkit_unit_test {
 	    test_sleep_until ();
 	}
 	where
+	    now    =  time::get_current_time_utc;
 	    fun test_sleep_for ()
 		=
-		{
-		    before =  time::get ();
+		{   before =  now ();
 
 		    sleep_for (time::from_milliseconds 100);
 
-		    after  =   time::get ();
+		    after  =   now ();
 
 		    elapsed_time = time::(-) (after, before);
 		    milliseconds = time::to_milliseconds  elapsed_time;
@@ -463,13 +463,12 @@ package threadkit_unit_test {
 
 	    fun test_sleep_until ()
 		=
-		{
-		    before       =  time::get ();
+		{   before       =  now ();
 		    wakeup_time  =  time::(+) (before, time::from_milliseconds 100);
 
 		    sleep_until  wakeup_time;
 
-		    after        =  time::get ();
+		    after        =  now ();
 
 		    assert (time::(>=) (after, wakeup_time));
 		};

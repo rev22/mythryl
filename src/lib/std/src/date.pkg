@@ -165,7 +165,7 @@ herein
 
 	fun local_offset' ()
             =
-            {  t = int32::from_large (time::to_seconds (time::get ()));
+            {  t = int32::from_large (time::to_seconds (time::get_current_time_utc ()));
 
 	       t_as_utc_tm =  gm_time'     t;
 	       t_as_loc_tm =  local_time'  t;

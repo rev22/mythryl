@@ -22,7 +22,7 @@ api {
     version = {
 	    system    => "Mythryl",
 	    version_id => [110, 58, 3, 0, 2],
-	    date      => date::to_string (date::from_time_local (time::get ()))
+	    date      => date::to_string (date::from_time_local (time::get_current_time_utc ()))
         };
 
     banner

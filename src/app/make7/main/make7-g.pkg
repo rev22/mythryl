@@ -2703,7 +2703,7 @@ fi;
 		join'       =  string::join';
 		lstat       =  posix::lstat;
 		mkdir	    =  posix::mkdir;	
-		now         =  time::now;
+		now         =  time::to_float o time::get_current_time_utc;
 		product     =  int::product;
 		rename      =  posix::rename;
 		rmdir       =  posix::rmdir;

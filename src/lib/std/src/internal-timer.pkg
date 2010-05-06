@@ -51,7 +51,7 @@ package internal_timer: (weak)  api {
     end;
 
     fun start_cpu_timer  () =   CPUT (get_time());
-    fun start_real_timer () =   REAL_T (time::get ());
+    fun start_real_timer () =   REAL_T (time::get_current_time_utc ());
 
     stipulate
 
@@ -108,7 +108,7 @@ package internal_timer: (weak)  api {
 
     fun check_real_timer (REAL_T t)
         =
-        time::(-) (time::get(), t);
+        time::(-) (time::get_current_time_utc(), t);
 
 };
 

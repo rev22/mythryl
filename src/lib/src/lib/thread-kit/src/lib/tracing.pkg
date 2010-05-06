@@ -367,7 +367,7 @@ herein
 
 					  internet_socket::set_printif_fd  fd;	# Enable C-level print_if()s to this tracelog.
 
-					  file::write (stream, sprintf "# (fd==%d) This is a trace log created by %s by:\n" fd (date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()))));
+					  file::write (stream, sprintf "# (fd==%d) This is a trace log created by %s by:\n" fd (date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get_current_time_utc()))));
 					  file::write (stream, "# \n");
 					  file::write (stream, "#     src/lib/src/lib/thread-kit/src/lib/tracing.pkg\n");
 					  file::write (stream, "# \n");
@@ -547,8 +547,8 @@ herein
 		# if we're not going to print it (i.e., if
 		# tracing is disabled for that call).
 
-#               time_string  =  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get()));	# "2010-01-05:14:17:23" or such.
-		time_string  =  time::format 6 (time::get());							# "1262722876.273621"   or such.
+#               time_string  =  date::strftime "%Y-%m-%d:%H:%M:%S" (date::from_time_local (time::get_current_time_utc()));	# "2010-01-05:14:17:23" or such.
+		time_string  =  time::format 6 (time::get_current_time_utc());							# "1262722876.273621"   or such.
 		    #
 		    # NB: If you change the time_string content/format you
 		    #     should probably make corresponding changes in

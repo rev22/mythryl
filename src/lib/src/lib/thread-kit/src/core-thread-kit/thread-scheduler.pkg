@@ -502,7 +502,7 @@ herein
 		    time;
 
 		NULL =>
-		    {   time =  time::get ();
+		    {   time =  time::get_current_time_utc ();
 
 			cached_approximate_time
 			    :=

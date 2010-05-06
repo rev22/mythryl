@@ -43,8 +43,7 @@ api Time {
     >  : (Time, Time) -> Bool;
     >= : (Time, Time) -> Bool;
 
-    now:  Void -> Float;
-    get:  Void -> Time;
+    get_current_time_utc:  Void -> Time;
 
     # Format time as a string.
     # First argument is precision:

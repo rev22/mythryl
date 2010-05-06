@@ -35,14 +35,14 @@ herein
 		  };
 
 	Plea_Mail(X)
-	  = NEW_DT   Float
+	  = NEW_SIMSECS_PER_SIMSTEP Float
 	  | NEW_N    Int
 	  | NEW_BODY Body(X)
 	  | QUERY    Mailslot( List( Body(X) ))
 	  | STOP
 	  ;
 
-	fun run { g, bodies, dt, plea_slot, n }
+	fun run { g, bodies, simsecs_per_simstep, plea_slot, n }
 	    =
 	    {   fun accels []
 			=>
@@ -90,57 +90,58 @@ herein
 		end;
 
 
-		fun step (bl, dt)		# "bl" == "body_list", "dt" == "delta_time" (time step in seconds)
+		fun step (bodies, simsecs_per_simstep)		# "bl" == "body_list", "dt" == "delta_time" (time step in seconds)
 		    =
 		    paired_lists::map
 			one_body
-			(bl, accels bl)
+			(bodies, accels bodies)
 		    where 
 			fun one_body ( { p, v, m, data }, a)
 			    =
-			    { p =>  v::add (p, v::scmul (dt, v)),
-			      v =>  v::add (v, v::scmul (dt, a)),
+			    { p =>  v::add (p, v::scmul (simsecs_per_simstep, v)),
+			      v =>  v::add (v, v::scmul (simsecs_per_simstep, a)),
 			      m,
 			      data
 			    };
 		    end;
 
 
-		fun steps n (bl, dt)
+		fun steps n (bodies, simsecs_per_simstep)
 		    =
-		    loop (n, bl)
+		    loop (n, bodies)
 		    where
-			fun loop (0, bl) =>  bl;
-			    loop (n, bl) =>  loop (n - 1, step (bl, dt));
+			fun loop (0, bodies) =>  bodies;
+			    loop (n, bodies) =>  loop (n - 1, step (bodies, simsecs_per_simstep));
 			end;
 		    end;
 
 
 		always' =  always_mailop ();
+#		timeout' =  timeout_in' (time::from_milliseconds 25);
+#         time::(-) (time::of_day(), t);
 
-
-		fun loop (bl, dt, n)
+		fun loop (bodies, simsecs_per_simstep, n)
 		    =
-		    select [  take' plea_slot ==>  do_plea (bl, dt, n),
-			      always'         ==>  .{  loop (steps n (bl, dt), dt, n);  }
+		    select [  take' plea_slot ==>  do_plea (bodies, simsecs_per_simstep, n),
+			      always'         ==>  .{  loop (steps n (bodies, simsecs_per_simstep), simsecs_per_simstep, n);  }
 		           ]
 
 		also
-		fun do_plea (bl, dt, n) m
+		fun do_plea (bodies, simsecs_per_simstep, n) m
 		    =
 		    case m
 			#
-			NEW_DT dt  => loop (bl, dt, n);
-			NEW_N n    => loop (bl, dt, n);
-			NEW_BODY b => loop (b ! bl, dt, n);
-			QUERY c    => {   give (c, bl);   loop (bl, dt, n);  };
+			NEW_SIMSECS_PER_SIMSTEP simsecs_per_simstep  => loop (bodies, simsecs_per_simstep, n);
+			NEW_N n    => loop (bodies, simsecs_per_simstep, n);
+			NEW_BODY b => loop (b ! bodies, simsecs_per_simstep, n);
+			QUERY c    => {   give (c, bodies);   loop (bodies, simsecs_per_simstep, n);  };
 			STOP       => ();
 		    esac;
 
 
 		make_thread  "sim"  .{
 		    #
-		    loop (bodies, dt, n);
+		    loop (bodies, simsecs_per_simstep, n);
 		};
 	    };
     };

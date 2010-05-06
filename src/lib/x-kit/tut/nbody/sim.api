@@ -28,7 +28,7 @@ herein
 	    };
 
 	Plea_Mail(X)
-	  = NEW_DT   Float				# Delta-time (time step in seconds...?)
+	  = NEW_SIMSECS_PER_SIMSTEP  Float		# Seconds of simulation time per gravity simulation step.
 	  | NEW_N    Int				# Number of orbiting bodies.
 	  | NEW_BODY Body(X)				# New orbiting body.
 	  | QUERY    Mailslot( List( Body(X) ))		# Return list of currently orbiting bodies.
@@ -38,7 +38,7 @@ herein
 	run: { g:          Float,			# Gravitational constant in CGS (6.67428e-8)
 	       bodies:     List( Body(X)),		# List of orbiting bodies.
 	       #
-	       dt:         Float,			# Delta-time (time step in seconds).
+	       simsecs_per_simstep:  Float,		# Seconds of simulation time per gravitational simulation step.
 	       n:          Int,				# Number of orbiting bodies.
 	       plea_slot:  Mailslot(  Plea_Mail(X) )
 	     }

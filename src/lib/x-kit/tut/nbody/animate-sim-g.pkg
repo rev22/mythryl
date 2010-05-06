@@ -28,7 +28,7 @@ stipulate
     package wa  =  widget_attribute;			# widget_attribute		is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
 herein
 
-    # This generic is invoked once, in nbody:
+    # This generic is invoked once, in:
     #
     #     src/lib/x-kit/tut/nbody/nbody-app.pkg
     #
@@ -44,7 +44,7 @@ herein
 	contr_size = 12;		# "contr" may be "control" here.
 
 	g = 6.67e-8;			# Gravitational constant G == 6.67428e-8 in CGS units -- http://en.wikipedia.org/wiki/Gravitational_constant 
-	dt = 500.0;			# time delta in seconds?
+	simsecs_per_simstep = 500.0;	# Simulated seconds per gravitational-simulation step.
 	max = 7.80e13 * 2.1;
 
 	n = 30;				#  15 
@@ -55,8 +55,8 @@ herein
 	    selfcheck_tests_passed =  REF 0;
 	    selfcheck_tests_failed =  REF 0;
 	herein
-	    fun test_passed () =  selfcheck_tests_passed :=  *selfcheck_tests_passed + 1;
-	    fun test_failed () =  selfcheck_tests_failed :=  *selfcheck_tests_failed + 1;
+	    fun test_passed () =   { selfcheck_tests_passed :=  *selfcheck_tests_passed + 1; };
+	    fun test_failed () =   { selfcheck_tests_failed :=  *selfcheck_tests_failed + 1; };
 	    #
 	    fun assert bool    =  if bool   test_passed ();
 				  else      test_failed ();
@@ -119,13 +119,13 @@ herein
 		    xc::get_color o xc::CMS_NAME;
 
 		stipulate
-		    recal_slot = make_mailslot ();
+		    reset_slider_slot = make_mailslot ();
 		herein
-		    recal' = take' recal_slot;
+		    reset_slider' = take' reset_slider_slot;
 
-		    fun recal ()
+		    fun reset_slider ()
 			=
-			give (recal_slot, ());
+			give (reset_slider_slot, ());
 		end;
 
 		s_args = [ (wa::is_vertical, wa::BOOL_VAL    FALSE),
@@ -136,8 +136,8 @@ herein
 			   (wa::to_value,    wa::INT_VAL  100)
 			 ];
 
-		q_args = [ (wa::label, wa::STRING_VAL "Q") ];		# "q" == "quit"  ... ?
-		r_args = [ (wa::label, wa::STRING_VAL "R") ];		# "r" == "recal" ... ?
+		quit_args  =  [ (wa::label, wa::STRING_VAL "Quit")  ];
+		reset_args =  [ (wa::label, wa::STRING_VAL "Reset") ];
 
 		slider = sld::make_slider (root_window, view, s_args);
 
@@ -145,12 +145,12 @@ herein
 		    =
 		    sld::set_slider_value  slider  50;
 
-		my (qbutton_w, rbutton_w)		# "_w" here may be "_widget"
+		my (qbutton_w, rbutton_w)		# "_w" here may be "_widget" or "_wrapper"
 		    =
 		    {   s = 2 * contr_size;
 
-			qb =  pb::make_text_pushbutton_with_click_callback'  (root_window, view, q_args)  quit;
-			rb =  pb::make_text_pushbutton_with_click_callback'  (root_window, view, r_args)  recal;
+			qb =  pb::make_text_pushbutton_with_click_callback'  (root_window, view, quit_args )  quit;
+			rb =  pb::make_text_pushbutton_with_click_callback'  (root_window, view, reset_args)  reset_slider;
 
 			( sz::make_tight_sized_preference_wrapper (pb::as_widget qb, xg::SIZE { wide => s, high => s } ),
 			  sz::make_tight_sized_preference_wrapper (pb::as_widget rb, xg::SIZE { wide => s, high => s } )
@@ -181,7 +181,7 @@ herein
 			    fun loop (base, cur)
 				=
 				select [  slider_motion' ==>  .{ do_slider_motion (base, #slider_position); },
-				          recal'         ==>  .{ do_recal cur; }
+				          reset_slider'  ==>  .{ do_reset_slider cur; }
 				]
 
 			    also
@@ -195,7 +195,7 @@ herein
 				}
 
 			    also
-			    fun do_recal  cur
+			    fun do_reset_slider  cur
 				=
 				{   center_slider ();
 				    loop (cur, cur);
@@ -221,11 +221,11 @@ herein
 
 		plea_slot = make_mailslot ();
 
-		sim_t = sim::run { g, bodies, dt, plea_slot, n };
-
-		sim_death'
-		    =
-		    thread_death_mailop  sim_t;
+		stipulate
+		    sim_thread =  sim::run { g, bodies, simsecs_per_simstep, plea_slot, n };
+		herein
+		    sim_death' =  thread_death_mailop  sim_thread;
+		end;
 
 		fun realize { window, size => xg::SIZE { wide, high }, kidplug }
 		    =
