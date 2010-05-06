@@ -1,4 +1,4 @@
-## calc.pkg
+## calculator.pkg
 
 # Compiled by:
 #     src/lib/x-kit/tut/calc/calc-app.make6
@@ -22,7 +22,7 @@ stipulate
     package acc =  accumulator;				# accumulator			is from   src/lib/x-kit/tut/calc/accumulator.pkg
 herein
 
-    package calc:  Calc {				# Calc				is from   src/lib/x-kit/tut/calc/calc.api
+    package calculator:  Calculator {			# Calculator			is from   src/lib/x-kit/tut/calc/calculator.api
 
 	fun make_display_line  w
 	    =
@@ -76,7 +76,7 @@ herein
 		low::HZ_CENTER boxlist;
 	    };
 
-	fun make_calc (root_window, view, args)
+	fun make_calculator (root_window, view, args)
 	    =
 	    {   disp_args = [ (wa::label,  wa::STRING_VAL "          0"),
 			      (wa::relief, wa::RELIEF_VAL  wg::SUNKEN),
@@ -200,9 +200,9 @@ herein
 			    vglue
 			  ]
 		    )   );
-	    };				# fun make_calc 
+	    };				# fun make_calculator 
 
-    };					# package calc 
+    };					# package calculator 
 
 end;
 

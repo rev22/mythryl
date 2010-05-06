@@ -1,6 +1,6 @@
 LIBRARY_EXPORTS
 
-	pkg calc_app
+	pkg calculator_app
 
 LIBRARY_COMPONENTS
 
@@ -10,7 +10,7 @@ LIBRARY_COMPONENTS
 	accumulator.api
 	accumulator.pkg
 
-	calc.api
-	calc.pkg
+	calculator.api
+	calculator.pkg
 
-	calc-app.pkg
+	calculator-app.pkg

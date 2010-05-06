@@ -1,4 +1,10 @@
-## calc-app.pkg
+## calculator-app.pkg
+#
+# One way to run this app from the base-directory commandline is:
+#
+#     linux% my
+#     eval: make "src/lib/x-kit/tut/calc/calculator-app.make6";
+#     eval: calculator_app::do_it ();
 
 # Compiled by:
 #     src/lib/x-kit/tut/calc/calc-app.make6
@@ -16,10 +22,10 @@ stipulate
     package wa  =  widget_attribute;			# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy  =  widget_style;			# widget_style		is from   src/lib/x-kit/widget/lib/widget-style.pkg
     #
-    package cal =  calc;				# calc			is from   src/lib/x-kit/tut/calc/calc.pkg
+    package cal =  calculator;				# calculator		is from   src/lib/x-kit/tut/calc/calculator.pkg
 herein
 
-    package calc_app {
+    package calculator_app {
 
 	stipulate
 
@@ -45,7 +51,7 @@ herein
 
 		    view = (name, style);
 
-		    calc = cal::make_calc (root, view, []);
+		    calc = cal::make_calculator (root, view, []);
 
 		    topwindow_args
 			=

@@ -16,12 +16,12 @@ herein
 	Acc_Msg = OP Op_T | CLEAR | EQUAL | VAL Int;
 	Out_Val = OVAL Int | OINFINITY | OOVERFLOW;
 
-	Accumulator = ACCUMULATOR (Mailslot( Acc_Msg ), Mailslot( Out_Val ) );
+	Accumulator = ACCUMULATOR (Mailslot(Acc_Msg), Mailslot(Out_Val) );
 
-	fun rator_of PLUS   => int::(+);
-	    rator_of MINUS  => int::(-);
-	    rator_of TIMES  => int::(*);
-	    rator_of DIVIDE => int::(/);
+	fun arithmetic_op_of PLUS   => int::(+);
+	    arithmetic_op_of MINUS  => int::(-);
+	    arithmetic_op_of TIMES  => int::(*);
+	    arithmetic_op_of DIVIDE => int::(/);
 	end;
 
 	fun make_accumulator ()
@@ -39,7 +39,7 @@ herein
 		fun update (v, v')
 		    =
 		    {   newval = 10*v + v';
-
+			#
 			put_val newval;
 			newval;
 		    }
@@ -76,8 +76,8 @@ herein
 
 				(THE v, THE (st, operator))
 				    =>
-				    {   newval = (rator_of operator) (st, v);
-
+				    {   newval = (arithmetic_op_of operator) (st, v);
+					#
 					put_val newval;
 					read_num (NULL, THE (newval, operator'));
 				    }
@@ -109,7 +109,7 @@ herein
 		also
 		fun do_equal (THE v, THE (st, operator))
 			=>
-			{   put_val ((rator_of operator) (st, v))
+			{   put_val ((arithmetic_op_of operator) (st, v))
 			    except
 				err = do_err err;
 

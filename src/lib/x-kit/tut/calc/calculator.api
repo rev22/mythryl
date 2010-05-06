@@ -1,4 +1,4 @@
-## calc.api
+## calculator.api
 #
 # The calculator interface.
 
@@ -6,15 +6,15 @@
 #     src/lib/x-kit/tut/calc/calc-app.make6
 
 # This api is implemented in:
-#     src/lib/x-kit/tut/calc/calc-app.pkg
+#     src/lib/x-kit/tut/calc/calculator.pkg
 
 stipulate
     package wg =  widget;				# widget	is from   src/lib/x-kit/widget/basic/widget.pkg
 herein
 
-    api Calc {
+    api Calculator {
 
-	my make_calc
+	my make_calculator
 	    :
 	    ( wg::Root_Window,
               wg::View,
