@@ -86,5 +86,6 @@ LIBRARY_COMPONENTS
     $ROOT/src/lib/x-kit/tut/triangle/triangle-app.make6
     $ROOT/src/lib/x-kit/tut/plaid/plaid-app.make6
     $ROOT/src/lib/x-kit/tut/nbody/nbody-app.make6
+    $ROOT/src/lib/x-kit/tut/calc/calculator-app.make6
 
     $ROOT/src/lib/test/all-unit-tests.pkg

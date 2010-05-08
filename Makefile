@@ -222,7 +222,7 @@ rest3:	bin/mythryl-yacc \
 	src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
 	src/lib/x-kit/tut/bounce/bounce-app.make6.frozen \
 	src/lib/x-kit/tut/bricks/bricks-app.make6.frozen \
-	src/lib/x-kit/tut/calc/calc-app.make6.frozen \
+	src/lib/x-kit/tut/calc/calculator-app.make6.frozen \
 	src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
 	src/lib/x-kit/tut/nbody/nbody-app.make6.frozen \
 	src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
@@ -273,7 +273,7 @@ summary:
 		src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen \
 		src/lib/x-kit/tut/bounce/bounce-app.make6.frozen \
 		src/lib/x-kit/tut/bricks/bricks-app.make6.frozen \
-		src/lib/x-kit/tut/calc/calc-app.make6.frozen \
+		src/lib/x-kit/tut/calc/calculator-app.make6.frozen \
 		src/lib/x-kit/tut/mixer/mixer-app.make6.frozen \
 		src/lib/x-kit/tut/nbody/nbody-app.make6.frozen \
 		src/lib/x-kit/tut/plaid/plaid-app.make6.frozen \
@@ -376,8 +376,8 @@ src/lib/x-kit/tut/bounce/bounce-app.make6.frozen:
 src/lib/x-kit/tut/bricks/bricks-app.make6.frozen:
 	@src/lib/x-kit/tut/bricks/build-bricks-app
 
-src/lib/x-kit/tut/calc/calc-app.make6.frozen:
-	@src/lib/x-kit/tut/calc/build-calc-app
+src/lib/x-kit/tut/calc/calculator-app.make6.frozen:
+	@src/lib/x-kit/tut/calc/build-calculator-app
 
 src/lib/x-kit/tut/mixer/mixer-app.make6.frozen:
 	@src/lib/x-kit/tut/mixer/build-mixer-app
@@ -664,7 +664,7 @@ rest-unfrozen:
 	@-rm -f src/lib/x-kit/tut/bitmap-editor/bitmap-editor.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bounce/bounce-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/bricks/bricks-app.make6.frozen
-	@-rm -f src/lib/x-kit/tut/calc/calc-app.make6.frozen
+	@-rm -f src/lib/x-kit/tut/calc/calculator-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/mixer/mixer-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/ml-viewer/ml-viewer-app.make6.frozen
 	@-rm -f src/lib/x-kit/tut/nbody/nbody-app.make6.frozen

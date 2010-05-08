@@ -13,10 +13,10 @@ herein
     package accumulator:  Accumulator {			# Accumulator	is from   src/lib/x-kit/tut/calc/accumulator.api
 
 	Op_T = PLUS | MINUS | DIVIDE | TIMES;
-	Acc_Msg = OP Op_T | CLEAR | EQUAL | VAL Int;
+	Plea_Mail = OP Op_T | CLEAR | EQUAL | VAL Int;
 	Out_Val = OVAL Int | OINFINITY | OOVERFLOW;
 
-	Accumulator = ACCUMULATOR (Mailslot(Acc_Msg), Mailslot(Out_Val) );
+	Accumulator = ACCUMULATOR (Mailslot(Plea_Mail), Mailslot(Out_Val) );
 
 	fun arithmetic_op_of PLUS   => int::(+);
 	    arithmetic_op_of MINUS  => int::(-);
@@ -27,14 +27,14 @@ herein
 	fun make_accumulator ()
 	    =
 	    {
-		msg_slot = make_mailslot ();
-		val_slot = make_mailslot ();
+		plea_slot   =  make_mailslot ();
+		result_slot =  make_mailslot ();
 
-		fun get_msg ()  =  take  msg_slot;
+		fun get_plea ()  =  take  plea_slot;
 
-		fun put_val v   =  give (val_slot, OVAL v);
-		fun put_inf ()  =  give (val_slot, OINFINITY);
-		fun put_ovfl () =  give (val_slot, OOVERFLOW);
+		fun put_val v   =  give (result_slot, OVAL v);
+		fun put_inf ()  =  give (result_slot, OINFINITY);
+		fun put_ovfl () =  give (result_slot, OOVERFLOW);
 
 		fun update (v, v')
 		    =
@@ -53,7 +53,7 @@ herein
 
 		fun init_state ()
 		    =
-		    case (get_msg ())
+		    case (get_plea ())
 			#
 			OP _  =>   init_state ();
 			CLEAR =>   do_clear   ();
@@ -64,7 +64,7 @@ herein
 		also
 		fun read_num arg
 		    =
-		    case (get_msg ())
+		    case (get_plea ())
 			#
 			OP operator'
 			    =>
@@ -124,16 +124,16 @@ herein
 
 		make_thread "accumulator"  init_state;
 
-		ACCUMULATOR (msg_slot, val_slot);
+		ACCUMULATOR (plea_slot, result_slot);
 	    };
 
-	fun send_acc  (ACCUMULATOR (msg_slot, _))  msg
+	fun send_to_accumulator  (ACCUMULATOR (plea_slot, _))  msg
 	    =
-	    give (msg_slot, msg);
+	    give (plea_slot, msg);
 
-	fun mailop_of (ACCUMULATOR(_, val_slot))
+	fun from_accumulator_mailop_of (ACCUMULATOR(_, result_slot))
 	    =
-	    take' val_slot;
+	    take' result_slot;
 
     };					# package accumulator 
 end;

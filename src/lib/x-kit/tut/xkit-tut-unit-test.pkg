@@ -16,30 +16,22 @@ herein
 
 	name = "src/lib/x-kit/tut/xkit-tut-unit-test.pkg";
 
+	fun do selfcheck
+	    =
+	    {   (selfcheck ()) ->  { passed, failed };
+		#
+		for (i = 0; i < passed; ++i) {   assert TRUE;    };
+		for (i = 0; i < failed; ++i) {   assert FALSE;   };
+	    };  
+
 	fun run ()
 	    =
 	    {   printf "\nDoing %s:\n" name;   
 
-
-
-		(triangle_app::selfcheck ()) ->  { passed, failed };
-		#
-		for (i = 0; i < passed; ++i) {   assert TRUE;    };  
-		for (i = 0; i < failed; ++i) {   assert FALSE;   };  
-
-
-		(plaid_app::selfcheck ()) ->  { passed, failed };
-		#
-		for (i = 0; i < passed; ++i) {   assert TRUE;    };  
-		for (i = 0; i < failed; ++i) {   assert FALSE;   };  
-
-
-		(nbody_app::selfcheck ()) -> { passed, failed };
-		#
-		for (i = 0; i < passed; ++i) {   assert TRUE;    };  
-		for (i = 0; i < failed; ++i) {   assert FALSE;   };  
-
-
+		do    triangle_app::selfcheck;
+		do       plaid_app::selfcheck;
+		do       nbody_app::selfcheck;
+		do  calculator_app::selfcheck;
 
 		summarize_unit_tests  name;
 	    };

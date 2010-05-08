@@ -16,8 +16,13 @@
 stipulate
     include threadkit;					# threadkit		is from   src/lib/src/lib/thread-kit/src/core-thread-kit/threadkit.pkg
     #
+    package xc  =  xcore;				# xcore			is from   src/lib/x-kit/xclient/xcore.pkg
+    package xw  =  xwindow;				# xwindow		is from   src/lib/x-kit/xclient/xwindow.pkg
+    package xg  =  xgeometry;				# xgeometry		is from   src/lib/x-kit/xclient/xgeometry.pkg
+    package xtr =  xtracing;				# xtracing		is from   src/lib/x-kit/xclient/src/stuff/xtracing.pkg
     package rx  =  run_xkit;				# run_xkit		is from   src/lib/x-kit/widget/lib/run-xkit.pkg
-    package tw  =  topwindow;				# topwindow		is from   src/lib/x-kit/widget/basic/topwindow.pkg
+    #
+    package top =  topwindow;				# topwindow		is from   src/lib/x-kit/widget/basic/topwindow.pkg
     package wg  =  widget;				# widget		is from   src/lib/x-kit/widget/basic/widget.pkg
     package wa  =  widget_attribute;			# widget_attribute	is from   src/lib/x-kit/widget/lib/widget-attribute.pkg
     package wy  =  widget_style;			# widget_style		is from   src/lib/x-kit/widget/lib/widget-style.pkg
@@ -29,19 +34,115 @@ herein
 
 	stipulate
 
+	    run_selfcheck =  REF FALSE;
+
+	    stipulate
+		selfcheck_tests_passed =  REF 0;
+		selfcheck_tests_failed =  REF 0;
+	    herein
+		fun test_passed () =  selfcheck_tests_passed :=  *selfcheck_tests_passed + 1;
+		fun test_failed () =  selfcheck_tests_failed :=  *selfcheck_tests_failed + 1;
+		#
+		fun assert bool    =  if bool   test_passed ();
+				      else      test_failed ();
+				      fi;				
+		#
+		fun test_stats  ()
+		    =
+		    { passed => *selfcheck_tests_passed,
+		      failed => *selfcheck_tests_failed
+		    };
+	    end;
+
+	    # Thread to exercise the app by simulating user
+	    # mouseclicks and verifying their effects:
+	    #
+	    fun make_selfcheck_thread  { topwindow, widgettree }
+		=
+		xtr::make_thread "calculator-app selfcheck" selfcheck
+		where
+		    # Figure midpoint of window and also
+		    # a small box centered on the midpoint:
+		    #
+		    fun midwindow window
+			=
+			{
+			    # Get size of drawing window:
+			    #
+			    (xw::get_window_site  window)
+				->
+				xg::BOX { row, col, high, wide };
+
+			    # Define midpoint of drawing window,
+			    # and a 9x9 box enclosing it:
+			    #
+			    stipulate
+				row =  high / 2;
+				col =  wide / 2;
+			    herein
+				midpoint =  xg::POINT { row, col };
+				midbox   =  xg::BOX { row => row - 4, col => col - 4, high => 9, wide => 9 };
+			    end;
+
+			    (midpoint, midbox);
+			};
+
+		    fun selfcheck ()
+			=
+			{   # Wait until the widgettree is realized and running:
+			    # 
+			    get (wg::get_''gui_startup_complete''_oneshot_of  widgettree);
+
+#			    drawing_window =  get drawing_window_oneshot;
+#
+#			    # Fetch from X server the center pixels
+#			    # over which we are about to draw:
+#			    #
+#			    (midwindow      drawing_window) ->  (_, drawing_window_midbox);
+#			    #
+#			    antedraw_midwindow_image
+#				=
+#				xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+#
+#			    # Give the drawing thread time to
+#			    # draw over the window center:
+#			    #
+#			    sleep_for (time::from_milliseconds 500);
+#
+#			    # Re-fetch center pixels, verify
+#			    # that new result differs from original result.
+#			    #
+#			    # Strictly speaking we have a race condition
+#			    # here, but I think this is good enough for
+#			    # the purpose -- this isn't flight control:
+#			    #
+#			    postdraw_midwindow_image
+#				=
+#				xc::make_clientside_pixmap_from_window (drawing_window_midbox, drawing_window);
+#			    #
+#			    assert (not (xc::same_cs_pixmap (antedraw_midwindow_image, postdraw_midwindow_image)));
+
+			    # All done -- shut everything down:
+			    #
+			    (xw::xsession_of_window  (wg::window_of widgettree)) ->  xsession;
+			    xc::close_xsession  xsession;
+			    shut_down_thread_scheduler  winix::process::success;
+			};
+		end;						# fun make_selfcheck_thread
+
 	    resources
 		=
 		[ "*background: gray" ];
 
-	    fun tester root
+	    fun calculator_app root_window
 		=
 		{   fun quit ()
 			=
-			{   wg::delete_root_window root;
+			{   wg::delete_root_window root_window;
 			    shut_down_thread_scheduler  winix::process::success;
 			};
 
-		    style = wg::style_from_strings (root, resources);
+		    style = wg::style_from_strings (root_window, resources);
 
 		    name = wy::make_view
 			     {
@@ -51,17 +152,25 @@ herein
 
 		    view = (name, style);
 
-		    calc = cal::make_calculator (root, view, []);
+		    widgettree = cal::make_calculator (root_window, view, []);
 
 		    topwindow_args
 			=
-			[ (wa::title,      wa::STRING_VAL "calc"),
-			  (wa::icon_name,  wa::STRING_VAL "calc")
+			[ (wa::title,      wa::STRING_VAL "calculator"),
+			  (wa::icon_name,  wa::STRING_VAL "calculator")
 			];
 
-		    topwindow = tw::topwindow  (root, view, topwindow_args)  calc;
+		    topwindow = top::topwindow  (root_window, view, topwindow_args)  widgettree;
 
-		    tw::start  topwindow;
+		    top::start  topwindow;
+
+		    if *run_selfcheck
+			#
+			make_selfcheck_thread  { topwindow, widgettree };
+			();
+		    fi;
+
+		    ();
 		};
 	herein
 
@@ -70,7 +179,7 @@ herein
 		{   xtracing::init debug_flags;
 
 		    rx::run_xkit'
-			tester
+			calculator_app
 			{ display => THE server,
 			  time_quantum_in_milliseconds  => NULL
 			};
@@ -78,11 +187,19 @@ herein
 
 	    fun do_it ()
 		=
-		rx::run_xkit  tester;
+		rx::run_xkit  calculator_app;
 
 	    fun main (program, server ! _) =>  do_it' ([], server);
 		main _                     =>  do_it  ();
 	    end;
+
+	    fun selfcheck ()
+		=
+		{   run_selfcheck :=  TRUE;
+		    do_it ();
+		    test_stats ();
+		};	
+
 
 	end;			# stipulate
     };				# package calc_test 

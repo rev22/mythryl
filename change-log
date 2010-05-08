@@ -1,3 +1,4 @@
+2010-05-06-05.00.31: src/lib/x-kit/tut/calc/: Light cleaning.
 2010-05-06-04.44.36: src/lib/x-kit/tut/nbody/: Selfcheck now actually checks something. :-)
 2010-05-06-01.53.12: src/lib/std/src/time.api: Killed now() as redundant -- we are going to have a lot of different times in the end.  Renamed get() -> get_current_time_utc() for clarity.
 2010-05-05-13.47.37: src/lib/x-kit/tut/nbody/:  Hooked up to unit-test logic in src/lib/x-kit/tut/xkit-tut-unit-test.pkg.

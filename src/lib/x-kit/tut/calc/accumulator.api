@@ -17,7 +17,7 @@ herein
 
 	Op_T    = PLUS | MINUS | DIVIDE | TIMES;
 
-	Acc_Msg = OP Op_T | CLEAR | EQUAL | VAL Int;
+	Plea_Mail = OP Op_T | CLEAR | EQUAL | VAL Int;
 
 	Out_Val = OVAL Int | OINFINITY | OOVERFLOW;
 
@@ -25,8 +25,8 @@ herein
 
 	make_accumulator:  Void -> Accumulator;
 
-	send_acc:   Accumulator -> Acc_Msg -> Void;
-	mailop_of:  Accumulator -> Mailop( Out_Val );
+	send_to_accumulator:          Accumulator -> Plea_Mail -> Void;
+	from_accumulator_mailop_of:   Accumulator -> Mailop( Out_Val );
 
     };
 

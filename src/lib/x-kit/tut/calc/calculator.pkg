@@ -109,72 +109,73 @@ herein
 
 		switch_line = make_switch_line sw;
 
-		acc = acc::make_accumulator ();
+		accumulator = acc::make_accumulator ();
 
-		send_acc = acc::send_acc acc;
+		send_to_accumulator = acc::send_to_accumulator accumulator;
 
 		fun printer ()
 		    =
 		    loop ()
 		    where
-			acc_mailop = acc::mailop_of acc;
+			from_accumulator' = acc::from_accumulator_mailop_of accumulator;
 
-			fun set l
+			fun show text
 			    =
-			    lbl::set_label display (lbl::TEXT l);
+			    lbl::set_label display (lbl::TEXT text);
 
 			fun loop ()
 			    =
 			    for (;;) {
 				#
-				case (do_mailop  acc_mailop)
+				case (do_mailop  from_accumulator')
 				    #
-				    acc::OVAL v    =>  set (int::to_string v);
-				    acc::OINFINITY =>  set "Infinity";
-				    acc::OOVERFLOW =>  set "OVERFLOW";
+				    acc::OVAL v    =>  show (int::to_string v);
+				    acc::OINFINITY =>  show "Infinity";
+				    acc::OOVERFLOW =>  show "OVERFLOW";
 				esac;
 			    };
 		    end;
 
-		fun opfn msg ()
-		    =
-		    send_acc msg;
+		stipulate
+		    fun do plea () =  send_to_accumulator plea;
+		herein
 
-		line1 = make_line
-			  (root_window, view, args)
-			  [
-			    ("7", opfn (acc::VAL 7)),
-			    ("8", opfn (acc::VAL 8)),
-			    ("9", opfn (acc::VAL 9)),
-			    ("+", opfn (acc::OP acc::PLUS))
-			  ];
+		    line1 = make_line
+			      (root_window, view, args)
+			      [
+				("7", do (acc::VAL 7)),
+				("8", do (acc::VAL 8)),
+				("9", do (acc::VAL 9)),
+				("+", do (acc::OP acc::PLUS))
+			      ];
 
-		line2 = make_line
-			  (root_window, view, args)
-			  [
-			    ("4", opfn (acc::VAL 4)),
-			    ("5", opfn (acc::VAL 5)),
-			    ("6", opfn (acc::VAL 6)),
-			    ("-", opfn (acc::OP acc::MINUS))
-			  ];
+		    line2 = make_line
+			      (root_window, view, args)
+			      [
+				("4", do (acc::VAL 4)),
+				("5", do (acc::VAL 5)),
+				("6", do (acc::VAL 6)),
+				("-", do (acc::OP acc::MINUS))
+			      ];
 
-		line3 = make_line
-			  (root_window, view, args)
-			  [
-			    ("1", opfn (acc::VAL 1)),
-			    ("2", opfn (acc::VAL 2)),
-			    ("3", opfn (acc::VAL 3)),
-			    ("*", opfn (acc::OP acc::TIMES))
-			  ];
+		    line3 = make_line
+			      (root_window, view, args)
+			      [
+				("1", do (acc::VAL 1)),
+				("2", do (acc::VAL 2)),
+				("3", do (acc::VAL 3)),
+				("*", do (acc::OP acc::TIMES))
+			      ];
 
-		line4 = make_line
-			  (root_window, view, args)
-			  [
-			    ("C", opfn (acc::CLEAR)),
-			    ("0", opfn (acc::VAL 0)),
-			    ("=", opfn (acc::EQUAL)),
-			    ("/", opfn (acc::OP acc::DIVIDE))
-			  ];
+		    line4 = make_line
+			      (root_window, view, args)
+			      [
+				("C", do (acc::CLEAR)),
+				("0", do (acc::VAL 0)),
+				("=", do (acc::EQUAL)),
+				("/", do (acc::OP acc::DIVIDE))
+			      ];
+		end;
 
 		vglue = low::SPACER { min_size=>1, ideal_size=>5, max_size=>NULL };
 
