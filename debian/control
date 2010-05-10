@@ -1,7 +1,7 @@
 Source: mythryl
 Section: unknown
 Priority: extra
-Maintainer: Michele Bini <rev@rvlap>
+Maintainer: Michele Bini <michele.bini@gmail.com>
 Build-Depends: debhelper (>= 7)
 Standards-Version: 3.8.1
 Homepage: http://www.mythryl.org
@@ -9,5 +9,13 @@ Homepage: http://www.mythryl.org
 Package: mythryl
 Architecture: all
 Depends: libc6
-Description: 
- Typesafe, flexible and fast programming language.
+Description: typesafe, flexible and fast programming language.
+ Mythryl is a mostly-functional programming language with a safe
+ inferred type system, usable for scripting and application
+ development.
+ .
+ Mythryl was derived from SML/NJ by Cynbe ru Taren.  It inherits
+ advanced characteristics from SML/NJ, such as Hindley-Milner typing,
+ generics, in-memory compilation to machine code, stackless design,
+ and features a modular enviroment with useful libraries and a syntax
+ influenced by C, C++, sh, Perl, and Haskell.
