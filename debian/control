@@ -1,0 +1,13 @@
+Source: mythryl
+Section: unknown
+Priority: extra
+Maintainer: Michele Bini <rev@rvlap>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://www.mythryl.org
+
+Package: mythryl
+Architecture: all
+Depends: libc6
+Description: 
+ Typesafe, flexible and fast programming language.
