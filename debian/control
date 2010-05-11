@@ -2,13 +2,13 @@ Source: mythryl
 Section: unknown
 Priority: extra
 Maintainer: Michele Bini <michele.bini@gmail.com>
-Build-Depends: debhelper (>= 7)
+Build-Depends: libc6, debhelper (>= 7), libgtk2.0-dev, gcc-4.2, libncurses5-dev, libcv-dev
 Standards-Version: 3.8.1
 Homepage: http://www.mythryl.org
 
 Package: mythryl
 Architecture: all
-Depends: libc6
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: typesafe, flexible and fast programming language.
  Mythryl is a mostly-functional programming language with a safe
  inferred type system, usable for scripting and application
