@@ -27,7 +27,7 @@ build-stamp: configure-stamp
 	dh_testdir
 
 	# Add here commands to compile the package.
-	$(MAKE) compiler
+	sh -c "./Configure; make compiler || ((cd src/runtime && ./Configure); make compiler)"
 	#docbook-to-man debian/mythryl.sgml > mythryl.1
 
 	touch $@
